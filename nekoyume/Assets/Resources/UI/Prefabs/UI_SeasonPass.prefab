@@ -7860,7 +7860,10 @@ MonoBehaviour:
       type: 3}
     levelBackGroundSprite: {fileID: 21300000, guid: fbbfc558796b49143ae556d1fed428ac,
       type: 3}
-  - Type: 1
+    LevelTextColor: {r: 0.9529412, g: 0.52156866, b: 0.15686275, a: 1}
+    SlideLeft: {r: 0.9490196, g: 0.3019608, b: 0.07058824, a: 1}
+    SlideRight: {r: 0.99215686, g: 0.6901961, b: 0.20784314, a: 1}
+  - Type: 2
     BackGroundSprite: {fileID: 21300000, guid: ff250b1ad8d63c740b13170355c0d5e9, type: 3}
     IconNormalSprite: {fileID: 21300000, guid: 0d0c1f1b7b6fbd541941d7008d5a3b7e, type: 3}
     IconPremiumSprite: {fileID: 21300000, guid: 0d8d9983815cd874789d2436617f3396,
@@ -7869,7 +7872,10 @@ MonoBehaviour:
       type: 3}
     levelBackGroundSprite: {fileID: 21300000, guid: ad66c4e8d3f59e54dbb7312129a1e6b4,
       type: 3}
-  - Type: 2
+    LevelTextColor: {r: 0.13333334, g: 0.7019608, b: 0.84313726, a: 1}
+    SlideLeft: {r: 0.07058824, g: 0.34117648, b: 0.85882354, a: 1}
+    SlideRight: {r: 0.07058824, g: 0.89411765, b: 0.94509804, a: 1}
+  - Type: 1
     BackGroundSprite: {fileID: 21300000, guid: 4610f9d20b3d33445820757ca00b43f6, type: 3}
     IconNormalSprite: {fileID: 21300000, guid: 0695e0bf8b1037146b324fb1a43abead, type: 3}
     IconPremiumSprite: {fileID: 21300000, guid: 24edfe4354d2e684ca95ba4993467cdd,
@@ -7878,19 +7884,29 @@ MonoBehaviour:
       type: 3}
     levelBackGroundSprite: {fileID: 21300000, guid: 3bf10a58e8f920447b60b0842c289bd8,
       type: 3}
+    LevelTextColor: {r: 0.38431373, g: 0.84313726, b: 0.13333334, a: 1}
+    SlideLeft: {r: 0.039215688, g: 0.54901963, b: 0.14901961, a: 1}
+    SlideRight: {r: 0.10980392, g: 1, b: 0.6156863, a: 1}
   iconNormalImage: {fileID: 2463003127454700822}
   iconPremiumImage: {fileID: 5317352986263503089}
   iconPremiumPlusImage: {fileID: 727058466928184176}
   backGroundImage: {fileID: 8010349703754759914}
   levelBackGroundImage: {fileID: 1492307879694988212}
   seasonPassTypeName: {fileID: 33577627469175595}
+  remainingTimeObject:
+  - {fileID: 4885293388360973771}
+  - {fileID: 5353228832770051081}
+  categoryToggles:
+  - {fileID: 8814762166081929352}
+  - {fileID: 8841693321498946296}
+  - {fileID: 6064545429979967825}
+  courageIcon: {fileID: 2046655318901254889}
+  levelNameText: {fileID: 9005585150354048154}
+  sliderGradient: {fileID: 7829849820749140624}
   betweenCellViewDuration: 60
   scrollDuration: 1
   scrollWaitDuration: 300
   miniumDurationCount: 400
-  TestCellCount: 20
-  TestCurrentCellLevel: 3
-  TestLastCell: 1
 --- !u!1 &1768276291492597949
 GameObject:
   m_ObjectHideFlags: 0
@@ -20750,7 +20766,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -21896,7 +21912,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

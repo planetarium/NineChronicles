@@ -89,11 +89,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private Sprite premiumPlusIconAdventureBoss;
 
+        private SeasonPassServiceClient.PassType currentSeasonPassType;
+
         protected override void Awake()
         {
             base.Awake();
-            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) => { RefreshIcons(seasonPassInfo); }).AddTo(gameObject);
         }
 
         private void RefreshInfoText(string l10nPreText)
@@ -131,10 +131,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Show(SeasonPass.SeasonPassType seasonPassType, bool ignoreShowAnimation = false)
+        public void Show(SeasonPassServiceClient.PassType seasonPassType, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
+            currentSeasonPassType = seasonPassType;
+            RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[seasonPassType]);
             foreach (var item in premiumRewards)
             {
                 item.gameObject.SetActive(false);
@@ -151,24 +153,24 @@ namespace Nekoyume.UI
             RefreshInfoText(seasonPassType.ToString().ToUpper());
             switch (seasonPassType)
             {
-                case SeasonPass.SeasonPassType.Courage:
+                case SeasonPassServiceClient.PassType.CouragePass:
                     titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_COURAGE");
                     premiumIconImage.sprite = premiumIconCourage;
                     premiumPlusIconImage.sprite = premiumPlusIconCourage;
                     break;
-                case SeasonPass.SeasonPassType.WorldClear:
+                case SeasonPassServiceClient.PassType.WorldClearPass:
                     titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_WORLDCLEAR");
                     premiumIconImage.sprite = premiumIconWorldClear;
                     premiumPlusIconImage.sprite = premiumPlusIconWorldClear;
                     break;
-                case SeasonPass.SeasonPassType.AdventureBoss:
+                case SeasonPassServiceClient.PassType.AdventureBossPass:
                     titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_ADVENTUREBOSS");
                     premiumIconImage.sprite = premiumIconAdventureBoss;
                     premiumPlusIconImage.sprite = premiumPlusIconAdventureBoss;
                     break;
             }
 
-            var premiumProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
+            var premiumProductKey = $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].Id}Premium";
             if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
             {
                 var index = 0;
@@ -193,10 +195,10 @@ namespace Nekoyume.UI
                 }
             }
 
-            var premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}PremiumAll";
-            if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium)
+            var premiumPlusProductKey = $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].Id}PremiumAll";
+            if (ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[seasonPassType].IsPremium)
             {
-                premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
+                premiumPlusProductKey = $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].Id}Premiumplus";
             }
 
             if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductKey, out var premiumPlusProduct))
@@ -297,12 +299,12 @@ namespace Nekoyume.UI
         public void PurchaseSeasonPassPremiumButton()
         {
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            if (seasonPassManager.AvatarInfo.Value.IsPremium)
+            if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremium)
             {
                 return;
             }
 
-            var productKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
+            var productKey = $"{currentSeasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[currentSeasonPassType].Id}Premium";
 
             if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
             {
@@ -316,20 +318,20 @@ namespace Nekoyume.UI
         public void PurchaseSeasonPassPremiumPlusButton()
         {
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            if (seasonPassManager.AvatarInfo.Value.IsPremiumPlus)
+            if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremiumPlus)
             {
                 return;
             }
 
             string productKey;
 
-            if (seasonPassManager.AvatarInfo.Value.IsPremium)
+            if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremium)
             {
-                productKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
+                productKey = $"{currentSeasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[currentSeasonPassType].Id}Premiumplus";
             }
             else
             {
-                productKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}PremiumAll";
+                productKey = $"{currentSeasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[currentSeasonPassType].Id}PremiumAll";
             }
 
             if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
@@ -343,10 +345,12 @@ namespace Nekoyume.UI
 
         public void PurchaseButtonLoadingEnd()
         {
-            ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
-            premiumPurchaseButtonLoadingObj.SetActive(false);
-            premiumPlusPurchaseButtonLoadingObj.SetActive(false);
-            RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value);
+            ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+            {
+                premiumPurchaseButtonLoadingObj.SetActive(false);
+                premiumPlusPurchaseButtonLoadingObj.SetActive(false);
+                RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[currentSeasonPassType]);
+            });
         }
     }
 }

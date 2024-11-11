@@ -1035,7 +1035,8 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount()
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassManager != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
@@ -1052,14 +1053,16 @@ namespace Nekoyume.UI
                     NcDebug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
                 }
 
+                var expAmount = 0;
                 if (SharedModel.StageType == StageType.EventDungeon)
                 {
-                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
+                    expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.event_dungeon);
                 }
                 else
                 {
-                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                    expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash);
                 }
+                seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else
             {

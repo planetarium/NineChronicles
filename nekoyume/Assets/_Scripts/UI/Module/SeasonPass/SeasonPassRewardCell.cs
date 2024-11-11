@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Module
             private IDisposable disposable;
             private ItemBase itemBaseForToolTip = null;
 
-            public void SetData(SeasonPassServiceClient.ItemInfoSchema itemInfo, SeasonPassServiceClient.CurrencyInfoSchema currencyInfo, int level, bool isNormal)
+            public void SetData(SeasonPassServiceClient.ItemInfoSchema itemInfo, SeasonPassServiceClient.CurrencyInfoSchema currencyInfo, int level, bool isNormal, SeasonPassServiceClient.PassType passType)
             {
                 ItemView.Container.SetActive(true);
                 ItemView.EmptyObject.SetActive(false);
@@ -101,32 +101,32 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                disposable = ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
+                ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas.TryGetValue(passType, out var userSeasonPassData);
+                if (userSeasonPassData == null)
                 {
-                    if (avatarInfo == null)
-                    {
-                        return;
-                    }
-
-                    var lastClaim = isNormal ? avatarInfo.LastNormalClaim : avatarInfo.LastPremiumClaim;
-                    var isUnrReceived = level > lastClaim && level <= avatarInfo.Level;
-                    Light.SetActive(isUnrReceived);
-                    if (!avatarInfo.IsPremium && !isNormal)
-                    {
-                        ItemView.LevelLimitObject.SetActive(true);
-                        isNotPremium = true;
-                    }
-                    else
-                    {
-                        ItemView.LevelLimitObject.SetActive(level > avatarInfo.Level);
-                    }
-
-                    ItemView.RewardReceived.SetActive(level <= lastClaim);
-                });
-
-                if (TooltipButton.onClick.GetPersistentEventCount() < 1)
+                    return;
+                }
+                var lastClaim = isNormal ? userSeasonPassData.LastNormalClaim : userSeasonPassData.LastPremiumClaim;
+                var isUnrReceived = level > lastClaim && level <= userSeasonPassData.Level;
+                Light.SetActive(isUnrReceived);
+                if (!userSeasonPassData.IsPremium && !isNormal)
                 {
-                    TooltipButton.onClick.AddListener(() =>
+                    ItemView.LevelLimitObject.SetActive(true);
+                    isNotPremium = true;
+                }
+                else
+                {
+                    ItemView.LevelLimitObject.SetActive(level > userSeasonPassData.Level);
+                }
+
+                ItemView.RewardReceived.SetActive(level <= lastClaim);
+                TooltipButton.onClick.RemoveAllListeners();
+                TooltipButton.onClick.AddListener(() =>
+                {
+                    AudioController.PlayClick();
+
+                    if (userSeasonPassData.IsPremium ||
+                        userSeasonPassData.IsPremiumPlus)
                     {
                         if (itemBaseForToolTip == null)
                         {
@@ -134,30 +134,29 @@ namespace Nekoyume.UI.Module
                             Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
                             return;
                         }
+                        var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
+                        tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
+                        return;
+                    }
 
-                        AudioController.PlayClick();
-
-                        if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||
-                            ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremiumPlus)
+                    if (ItemView.LevelLimitObject.activeSelf && isNotPremium)
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("NOTIFICATION_SEASONPASS_PREMIUM_LIMIT_UNLOCK_GUIDE"),
+                            NotificationCell.NotificationType.Notification);
+                    }
+                    else
+                    {
+                        if (itemBaseForToolTip == null)
                         {
-                            var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
-                            tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
+                            AudioController.PlayClick();
+                            Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
                             return;
                         }
-
-                        if (ItemView.LevelLimitObject.activeSelf && isNotPremium)
-                        {
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("NOTIFICATION_SEASONPASS_PREMIUM_LIMIT_UNLOCK_GUIDE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
-                        else
-                        {
-                            var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
-                            tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
-                        }
-                    });
-                }
+                        var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
+                        tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
+                    }
+                });
             }
 
             public void ShowTweening()
@@ -191,17 +190,25 @@ namespace Nekoyume.UI.Module
         private Button ReceiveBtn;
 
         private SeasonPassServiceClient.RewardSchema rewardSchema;
+        private SeasonPassServiceClient.PassType currentPassType;
 
         public void Awake()
         {
             ReceiveBtn.onClick.AddListener(() =>
             {
                 ReceiveBtn.gameObject.SetActive(false);
-                ApiClients.Instance.SeasonPassServiceManager.ReceiveAll(
+                ApiClients.Instance.SeasonPassServiceManager.ReceiveAll(currentPassType,
                     (result) =>
                     {
                         OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
-                        ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                        ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+                        {
+                            var seassonPassWidget = Widget.Find<SeasonPass>();
+                            if (seassonPassWidget.IsActive())
+                            {
+                                Widget.Find<SeasonPass>().RefreshCurrentPage();
+                            }
+                        }).Forget();
                     },
                     (error) => { OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification); });
             });
@@ -243,17 +250,25 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetData(SeasonPassServiceClient.RewardSchema reward)
+        public void SetData(SeasonPassServiceClient.RewardSchema reward, SeasonPassServiceClient.PassType passType)
         {
             rewardSchema = reward;
+            currentPassType = passType;
 
             SetLevelText(rewardSchema.Level);
 
-            RefreshWithAvatarInfo(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value);
+            if(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas.TryGetValue(passType, out var userSeasonPassData))
+            {
+                RefreshWithAvatarInfo(userSeasonPassData);
+            }
+            else
+            {
+                Debug.LogError("Can't find avatar info");
+            }
 
             normal.SetData(rewardSchema.Normal.Item.Count > 0 ? rewardSchema.Normal.Item.First() : null,
                 rewardSchema.Normal.Currency.Count > 0 ? rewardSchema.Normal.Currency.First() : null,
-                rewardSchema.Level, true);
+                rewardSchema.Level, true, passType);
 
             var index = 0;
 
@@ -265,7 +280,7 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                premiums[index].SetData(item, null, rewardSchema.Level, false);
+                premiums[index].SetData(item, null, rewardSchema.Level, false, passType);
                 index++;
             }
 
@@ -277,22 +292,24 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                premiums[index].SetData(null, item, rewardSchema.Level, false);
+                premiums[index].SetData(null, item, rewardSchema.Level, false, passType);
                 index++;
             }
 
             for (; index < premiums.Length; index++)
             {
-                premiums[index].SetData(null, null, rewardSchema.Level, false);
+                premiums[index].SetData(null, null, rewardSchema.Level, false, passType);
             }
         }
 
-        public void SetTweeningStarting()
+        public void SetTweeningStarting(bool isVisible)
         {
-            normal.Root.transform.localScale = UnityEngine.Vector3.zero;
+            normal.Root.transform.DORewind();
+            normal.Root.transform.localScale = isVisible ? UnityEngine.Vector3.one : UnityEngine.Vector3.zero;
             foreach (var item in premiums)
             {
-                item.Root.transform.localScale = UnityEngine.Vector3.zero;
+                item.Root.transform.DORewind();
+                item.Root.transform.localScale = isVisible ? UnityEngine.Vector3.one : UnityEngine.Vector3.zero;
             }
         }
 

@@ -6,6 +6,7 @@ using Nekoyume.ApiClient;
 
 namespace Nekoyume.UI.Module.Lobby
 {
+    using Nekoyume.L10n;
     using UniRx;
 
     public class SeasonPassMenu : MainMenu
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject premiumPlusIcon;
 
         [SerializeField]
-        private TextMeshProUGUI levelText;
+        private TextMeshProUGUI[] nameText;
 
         [SerializeField]
         private TextMeshProUGUI timeText;
@@ -37,30 +38,16 @@ namespace Nekoyume.UI.Module.Lobby
 
             dim.SetActive(false);
             iconRoot.SetActive(true);
-            var seasonPassService = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassService.AvatarInfo.Subscribe((info) =>
+
+            premiumIcon.SetActive(false);
+            premiumPlusIcon.SetActive(false);
+
+            int claimCount = ApiClients.Instance.SeasonPassServiceManager.HasClaimPassType.Count + ApiClients.Instance.SeasonPassServiceManager.HasPrevClaimPassType.Count;
+            notificationObj.SetActive(claimCount > 0);
+            foreach (var text in nameText)
             {
-                dim.SetActive(info == null);
-                iconRoot.SetActive(info != null);
-                if (info == null)
-                {
-                    return;
-                }
-
-                premiumIcon.SetActive(info.IsPremium);
-                premiumPlusIcon.SetActive(info.IsPremiumPlus);
-                notificationObj.SetActive(info.LastNormalClaim != info.Level);
-
-                if (info.Level >= SeasonPass.SeasonPassMaxLevel)
-                {
-                    levelText.text = SeasonPass.MaxLevelString;
-                }
-                else
-                {
-                    levelText.text = $"Lv.{info.Level}";
-                }
-            }).AddTo(gameObject);
-
+                text.text = L10nManager.Localize("SEASON_PASS_MENU_NAME");
+            }
             ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) => { timeText.text = $"<Style=Clock> {endDate}"; });
         }
     }
