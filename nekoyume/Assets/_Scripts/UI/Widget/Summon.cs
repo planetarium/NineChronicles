@@ -57,6 +57,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private RectTransform catRectTransform;
 
+        [SerializeField]
+        private Toggle[] countToggles;
+
         private SummonObject _selectedSummonObj;
         private readonly List<IDisposable> _disposables = new();
         private int _selectedSummonCount = 10;
@@ -370,6 +373,9 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var firstCountToggle = countToggles.First();
+            firstCountToggle.isOn = true;
+            firstCountToggle.onClickToggle.Invoke();
             summonObject.tabToggle.isOn = true;
             OnClickSummonTabToggle(summonObject);
 

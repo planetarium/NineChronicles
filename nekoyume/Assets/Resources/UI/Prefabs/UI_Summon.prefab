@@ -3269,6 +3269,10 @@ MonoBehaviour:
     bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   closeButton: {fileID: 241345997775891456}
   catRectTransform: {fileID: 6939644925556165784}
+  countToggles:
+  - {fileID: 7304620260917869337}
+  - {fileID: 4403768214894282462}
+  - {fileID: 3684862463247581992}
 --- !u!1 &1889813540128101133
 GameObject:
   m_ObjectHideFlags: 0
