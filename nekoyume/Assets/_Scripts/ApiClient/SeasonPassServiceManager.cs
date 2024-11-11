@@ -40,6 +40,7 @@ namespace Nekoyume.ApiClient
         public HashSet<SeasonPassServiceClient.PassType> HasClaimPassType { get; private set; } = new HashSet<SeasonPassServiceClient.PassType>();
         public HashSet<SeasonPassServiceClient.PassType> HasPrevClaimPassType { get; private set; } = new HashSet<SeasonPassServiceClient.PassType>();
 
+        public System.Action UpdatedUserDatas;
 
         public SeasonPassServiceManager(string url)
         {
@@ -299,6 +300,7 @@ namespace Nekoyume.ApiClient
                     Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] CurrentSeasonPassData {passType} is null");  
                 }
             }
+            UpdatedUserDatas?.Invoke();
         }
 
         private async Task FetchUserStatus(SeasonPassServiceClient.PassType passType, int seasonIndex)
@@ -313,6 +315,10 @@ namespace Nekoyume.ApiClient
                             if(result.Level > result.LastNormalClaim || (result.IsPremium && result.Level > result.LastPremiumClaim))
                             {
                                 HasClaimPassType.Add(passType);
+                            }
+                            else
+                            {
+                                HasClaimPassType.Remove(passType);
                             }
                         },
                         (error) =>
@@ -335,6 +341,10 @@ namespace Nekoyume.ApiClient
                             if (result.IsPremium && result.Level > result.LastPremiumClaim)
                             {
                                 HasPrevClaimPassType.Add(passType);
+                            }
+                            else
+                            {
+                                HasPrevClaimPassType.Remove(passType);
                             }
                         },
                         (error) =>
