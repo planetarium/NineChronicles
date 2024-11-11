@@ -6051,7 +6051,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1290284917712117144}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -7077,7 +7077,11 @@ MonoBehaviour:
   - {fileID: 1688702079908849829}
   recipeOptionView: {fileID: 4505907691533377692}
   titleText: {fileID: 8253301235838097136}
-  iconImage: {fileID: 8752127862679093463}
+  iconImages:
+  - {fileID: 8326369146991521701}
+  - {fileID: 8752127862679093463}
+  spineView: {fileID: 1045888394955688568}
+  iconView: {fileID: 5019338940640310315}
   skillTooltip: {fileID: 5135991023034904313}
 --- !u!1 &2628070418442535361
 GameObject:
@@ -8064,7 +8068,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3697791907639874572
 RectTransform:
   m_ObjectHideFlags: 0

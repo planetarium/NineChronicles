@@ -19,7 +19,9 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI[] mainStatTexts;
         [SerializeField] private RecipeOptionView recipeOptionView;
         [SerializeField] private TextMeshProUGUI titleText;
-        [SerializeField] private Image iconImage;
+        [SerializeField] private Image[] iconImages;
+        [SerializeField] private GameObject spineView;
+        [SerializeField] private GameObject iconView;
 
         [SerializeField]
         private Nekoyume.UI.Module.Common.SkillPositionTooltip skillTooltip;
@@ -42,11 +44,18 @@ namespace Nekoyume.UI
 
         public void Show(SummonDetailCell.Model model)
         {
-            // CharacterView
-            SetCharacter(model.EquipmentRow);
+            var showCharacterSpine = model.EquipmentRow.ItemSubType == ItemSubType.Aura;
+            spineView.SetActive(showCharacterSpine);
+            iconView.SetActive(!showCharacterSpine);
 
             if (model.EquipmentRow is not null)
             {
+                if (model.EquipmentRow.ItemSubType == ItemSubType.Aura)
+                {
+                    // CharacterView
+                    SetCharacter(model.EquipmentRow);
+                }
+
                 // MainStatText
                 var mainStatText = mainStatTexts[0];
                 var stat = model.EquipmentRow.GetUniqueStat();
@@ -57,7 +66,11 @@ namespace Nekoyume.UI
                 // OptionView
                 recipeOptionView.SetOptions(model.EquipmentOptions, false, false);
                 titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
-                iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id);
+                foreach (var iconImage in iconImages)
+                {
+                    iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id);
+                }
+
                 SkillSheet.Row skillOption = null;
                 var skillOptionRow = model.EquipmentOptions
                     .Select(info =>
@@ -83,7 +96,10 @@ namespace Nekoyume.UI
                 if (RuneFrontHelper.TryGetRuneData(model.RuneTicker, out var data))
                 {
                     titleText.SetText(LocalizationExtensions.GetLocalizedFavName(data.ticker));
-                    iconImage.sprite = data.icon;
+                    foreach (var iconImage in iconImages)
+                    {
+                        iconImage.sprite = data.icon;
+                    }
                 }
 
                 if (Nekoyume.Game.TableSheets.Instance.SkillSheet.TryGetValue(model.RuneOptionInfo.SkillId,
