@@ -182,7 +182,7 @@ namespace Nekoyume.UI
         public void TutorialActionClickSummonEnteringButton()
         {
             summonButton.onClick?.Invoke();
-            // Find<Summon>().SetCostUIForTutorial();
+            Find<Summon>().SetCostUIForTutorial();
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

@@ -57,6 +57,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private RectTransform catRectTransform;
 
+        [SerializeField]
+        private Toggle[] countToggles;
+
         private SummonObject _selectedSummonObj;
         private readonly List<IDisposable> _disposables = new();
         private int _selectedSummonCount = 10;
@@ -358,6 +361,46 @@ namespace Nekoyume.UI
                 CombinationLoadingScreen.SpeechBubbleItemType.Rune,
                 L10nManager.Localize("UI_COST_BLOCK", 1),
                 false);
+        }
+
+        // Do not use with Aura summon tutorial. this logic is fake.
+        public void SetCostUIForTutorial()
+        {
+            var summonObject = summonObjects.FirstOrDefault(info => info.summonResult == SummonResult.Aura);
+            if (summonObject is null)
+            {
+                NcDebug.LogError("SummonObject for tutorial not found.");
+                return;
+            }
+
+            var firstCountToggle = countToggles.First();
+            firstCountToggle.isOn = true;
+            firstCountToggle.onClickToggle.Invoke();
+            summonObject.tabToggle.isOn = true;
+            OnClickSummonTabToggle(summonObject);
+
+            costButtons.FirstOrDefault()?.SetFakeUI(CostType.SilverDust, 0);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickNormal1SummonButton()
+        {
+            var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet.First;
+            var resultEquipment =
+                States.Instance.CurrentAvatarState.inventory.Equipments.FirstOrDefault(e =>
+                    e is Aura);
+            var button = costButtons.FirstOrDefault();
+            if (resultEquipment is null)
+            {
+                button.OnClickSubject.OnNext(button.CurrentState.Value);
+                return;
+            }
+
+            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> { resultEquipment },
+                () => { Game.Game.instance.Stage.TutorialController.Play(50005); });
+
+            // UI Reset for SetCostUIForTutorial() invoking
+            button.UpdateObjects();
         }
 #endregion
     }

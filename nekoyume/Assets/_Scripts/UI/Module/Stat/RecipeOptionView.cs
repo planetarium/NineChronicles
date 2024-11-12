@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
         private static readonly Color BaseColor = ColorHelper.HexToColorRGB("3E2524");
         private static readonly Color PremiumColor = ColorHelper.HexToColorRGB("602F44");
 
-        public void SetOptions(List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos, bool isPremium)
+        public void SetOptions(List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos, bool isPremium, bool showRatio = true)
         {
             foreach (var optionView in optionViews)
             {
@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Module
                 {
                     var optionView = optionViews.First(x => !x.parentObject.activeSelf);
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    optionView.optionText.text = option.OptionRowToString(normalizedRatio, siblingIndex != 1);
+                    optionView.optionText.text = option.OptionRowToString(normalizedRatio, siblingIndex != 1 && showRatio);
                     optionView.percentageSlider.value = (float)normalizedRatio;
                     optionView.sliderFillImage.color = isPremium ? PremiumColor : BaseColor;
                     optionView.parentObject.transform.SetSiblingIndex(siblingIndex);
@@ -91,6 +91,11 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
+                    if (skillViews.Count <= 0)
+                    {
+                        continue;
+                    }
+
                     var skillView = skillViews.First(x => !x.parentObject.activeSelf);
                     var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                         ? skillRow.GetLocalizedName()
@@ -150,8 +155,9 @@ namespace Nekoyume.UI.Module
 
             var siblingIndex = 1; // 0 is for the main option
 
-            if (option.SkillId != 0)
+            if (option.SkillId != 0 && skillViews.Any())
             {
+
                 var skillView = skillViews.First(x => !x.parentObject.activeSelf);
                 var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                     ? skillRow.GetLocalizedName()
@@ -165,7 +171,8 @@ namespace Nekoyume.UI.Module
                 skillView.tooltipButton.onClick.AddListener(() =>
                 {
                     var rect = skillView.tooltipButton.GetComponent<RectTransform>();
-                    skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                    skillTooltip.transform.position =
+                        rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
                     skillTooltip.Show(skillRow, option);
                 });
                 if (optionIcons != null && optionIcons.Count > 0)

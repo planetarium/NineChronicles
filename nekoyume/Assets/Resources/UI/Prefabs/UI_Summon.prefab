@@ -3239,8 +3239,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac14ccd1b440434790e723e058db915b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 50001
+    rectTransform: {fileID: 4178221099000877507}
+  tutorialActions: 52c30000
   infoButton: {fileID: 8231604600151179750}
   backgroundRect: {fileID: 1513654427148664911}
   bottomImage: {fileID: 1404002152874212377}
@@ -3267,6 +3269,10 @@ MonoBehaviour:
     bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   closeButton: {fileID: 241345997775891456}
   catRectTransform: {fileID: 6939644925556165784}
+  countToggles:
+  - {fileID: 7304620260917869337}
+  - {fileID: 4403768214894282462}
+  - {fileID: 3684862463247581992}
 --- !u!1 &1889813540128101133
 GameObject:
   m_ObjectHideFlags: 0
