@@ -1471,8 +1471,14 @@ namespace Nekoyume.Game
             // Initialize TableSheets. This should be done before initialize the Agent.
             ResourcesHelper.Initialize();
             NcDebug.Log("[Game] Start()... ResourcesHelper initialized");
-            AudioController.instance.Initialize();
+        }
+
+        public async UniTask InitializeAudioControllerAsync()
+        {
+            await AudioController.instance.InitializeAsync();
             NcDebug.Log("[Game] Start()... AudioController initialized");
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 
         public void OnAgentInitializeSucceed()
