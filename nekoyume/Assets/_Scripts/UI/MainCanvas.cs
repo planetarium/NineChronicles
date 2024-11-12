@@ -470,8 +470,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CraftResultPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<ChainInfoPopup>());
-            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());

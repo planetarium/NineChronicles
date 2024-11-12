@@ -191,7 +191,7 @@ namespace Nekoyume.UI
 
             thorSeasonPassButton.onClick.AddListener((() =>
             {
-                Find<ChainInfoPopup>().Show();
+                // TODO:
             }));
         }
 
