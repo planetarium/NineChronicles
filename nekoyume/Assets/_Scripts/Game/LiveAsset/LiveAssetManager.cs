@@ -69,6 +69,7 @@ namespace Nekoyume.Game.LiveAsset
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
         public Nekoyume.ApiClient.ThorSchedule ThorSchedule { get; private set; }
+        public EventRewardPopupData EventRewardPopupData { get; private set; }
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
@@ -83,6 +84,10 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(InitializeThorSchedule());
             InitializeStakingResource().Forget();
             InitializeEvent();
+
+            StartCoroutine(RequestManager.instance.GetJson(
+                _endpoint.EventRewardPopupDataJsonUrl,
+                value => SetEventRewardPopupData(value).Forget()));
         }
 
         private IEnumerator InitializeThorSchedule()
@@ -223,6 +228,38 @@ namespace Nekoyume.Game.LiveAsset
                 CommandLineOptions.JsonOptions);
         }
 
+        private async UniTask SetEventRewardPopupData(string response)
+        {
+            EventRewardPopupData = JsonSerializer.Deserialize<EventRewardPopupData>(response);
+
+            var tasks = EventRewardPopupData.EventRewards
+                .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
+                .Select(GetSpriteTask);
+
+            var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            try
+            {
+                await UniTask.WaitUntil(
+                    () => tasks.All(task => task.Status == UniTaskStatus.Succeeded),
+                    cancellationToken: cancellation.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                if (e.CancellationToken == cancellation.Token)
+                {
+                    _state = InitializingState.NeedInitialize;
+                    NcDebug.Log($"[{nameof(LiveAssetManager)}] NoticeData making failed by timeout.");
+                }
+            }
+
+            return;
+            UniTask<Sprite> GetSpriteTask(EventRewardPopupData.EventReward reward)
+            {
+                var uri = $"{_endpoint.ImageRootUrl}/EventRewardPopup/{reward.Content.ImageName}.png";
+                return GetTexture(uri).ContinueWith(sprite => reward.Content.Image = sprite);
+            }
+        }
+
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)
         {
             var tasks = new List<UniTask>();
@@ -291,9 +328,8 @@ namespace Nekoyume.Game.LiveAsset
             }
         }
 
-        private async UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
+        private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
-            var retryCount = 3;
             var postfix = L10nManager.CurrentLanguage switch
             {
                 LanguageType.Korean => Platform.IsMobilePlatform()
@@ -302,22 +338,27 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
-            var uri = $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png";
-            Sprite res = null;
+            return GetTexture($"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+        }
+
+        private static async UniTask<Sprite> GetTexture(string uri)
+        {
+            Sprite result = null;
             // 최대 3번까지 이미지를 다시 받길 시도한다.
+            var retryCount = 3;
             while (retryCount-- > 0)
             {
-                res = await Helper.Util.DownloadTexture(uri);
-                if (res != null)
+                result = await Helper.Util.DownloadTexture(uri);
+                if (result != null)
                 {
-                    return res;
+                    return result;
                 }
 
                 // 다운로드 실패시 1초 대기 후 재시도
                 await UniTask.Delay(1000);
             }
 
-            return res;
+            return result;
         }
 
         private async UniTaskVoid InitializeStakingResource()
