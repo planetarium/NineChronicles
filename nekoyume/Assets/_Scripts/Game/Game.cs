@@ -1477,7 +1477,7 @@ namespace Nekoyume.Game
         {
             await AudioController.instance.InitializeAsync();
             NcDebug.Log("[Game] Start()... AudioController initialized");
-            
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 

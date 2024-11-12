@@ -327,8 +327,10 @@ namespace Nekoyume.Game.Controller
             }
 
             CurrentState = State.InInitializing;
-            await InitializeInternal(ResourceManager.MusicAudioLabel, typeof(MusicCode), _musicPrefabs, _musicPool);
-            await InitializeInternal(ResourceManager.SfxAudioLabel, typeof(SfxCode), _sfxPrefabs, _sfxPool);
+            await UniTask.WhenAll(
+                InitializeInternal(ResourceManager.MusicAudioLabel, typeof(MusicCode), _musicPrefabs, _musicPool),
+                InitializeInternal(ResourceManager.SfxAudioLabel, typeof(SfxCode), _sfxPrefabs, _sfxPool)
+            );
             CurrentState = State.Idle;
         }
 

@@ -206,7 +206,7 @@ namespace Nekoyume.Game.Scene
 
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             game.InitializeFirstResources();
-            
+
             // AudioController 초기화
             // 에디터의 경우 에셋 로드 속도(use asset database)가 비정상적으로 느리기 때문에
             // AudioController의 초기화를 대기하지 않고 아래 로직을 수행한다
