@@ -5,6 +5,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -81,7 +82,7 @@ namespace Nekoyume.TestScene
             loadSpineButton.onClick.AddListener(LoadSpineObject);
             loadBgButton.onClick.AddListener(LoadBackground);
             resourceWarningText.gameObject.SetActive(false);
-            AudioController.instance.Initialize();
+            AudioController.instance.InitializeAsync().Forget();
             objectPool.Initialize();
         }
 

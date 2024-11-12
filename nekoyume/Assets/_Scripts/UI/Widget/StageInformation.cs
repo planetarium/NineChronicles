@@ -94,8 +94,6 @@ namespace Nekoyume.UI
             L10nManager.OnLanguageChange
                 .Subscribe(_ => submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER"))
                 .AddTo(gameObject);
-
-            Game.Event.OnRoomEnter.AddListener(b => Close(true));
         }
 
         private static void ShowTooltip(StageRewardItemView view)
@@ -109,7 +107,7 @@ namespace Nekoyume.UI
         {
             if (_stageType == StageType.Mimisbrunnr)
             {
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             }
 
             Close(true);
@@ -117,21 +115,24 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(bool isEventDungeon = false)
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            var seasonPassServiceManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
 
+                var expAmount = 0;
                 if (isEventDungeon)
                 {
-                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.EventDungeonCourageAmount}";
+                    expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.event_dungeon);
                 }
                 else
                 {
-                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount}";
+                    expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash);
                 }
+                seasonPassCourageAmount.text = $"+{expAmount}";
             }
             else
             {
@@ -383,24 +384,24 @@ namespace Nekoyume.UI
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
-                {
-                    stageNumber = _sharedViewModel.SelectedStageId.Value;
-                    headerMenuState = HeaderMenuStatic.AssetVisibleState.Battle;
-                    break;
-                }
+                    {
+                        stageNumber = _sharedViewModel.SelectedStageId.Value;
+                        headerMenuState = HeaderMenuStatic.AssetVisibleState.Battle;
+                        break;
+                    }
                 case StageType.Mimisbrunnr:
-                {
-                    stageNumber = _sharedViewModel.SelectedStageId.Value % 10000000;
-                    headerMenuState = HeaderMenuStatic.AssetVisibleState.Battle;
-                    break;
-                }
+                    {
+                        stageNumber = _sharedViewModel.SelectedStageId.Value % 10000000;
+                        headerMenuState = HeaderMenuStatic.AssetVisibleState.Battle;
+                        break;
+                    }
                 case StageType.EventDungeon:
-                {
-                    stageNumber = _sharedViewModel.SelectedStageId.Value
-                        .ToEventDungeonStageNumber();
-                    headerMenuState = HeaderMenuStatic.AssetVisibleState.EventDungeon;
-                    break;
-                }
+                    {
+                        stageNumber = _sharedViewModel.SelectedStageId.Value
+                            .ToEventDungeonStageNumber();
+                        headerMenuState = HeaderMenuStatic.AssetVisibleState.EventDungeon;
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

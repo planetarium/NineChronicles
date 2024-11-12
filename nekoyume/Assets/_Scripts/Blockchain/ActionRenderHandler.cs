@@ -168,6 +168,7 @@ namespace Nekoyume.Blockchain
             EventMaterialItemCrafts();
             AuraSummon();
             RuneSummon();
+            CostumeSummon();
             CustomEquipmentCraft();
 
             // Market
@@ -181,6 +182,7 @@ namespace Nekoyume.Blockchain
             RedeemCode();
             ChargeActionPoint();
             ClaimStakeReward();
+            ClaimGifts();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -570,6 +572,23 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void ClaimGifts()
+        {
+            _actionRenderer.EveryRender<ClaimGifts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimGifts)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<ClaimGifts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionClaimGifts)
+                .AddTo(_disposables);
+        }
+
         private void InitializeArenaActions()
         {
             _actionRenderer.EveryRender<JoinArena>()
@@ -771,6 +790,19 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneSummon)
+                .AddTo(_disposables);
+        }
+
+        private void CostumeSummon()
+        {
+            _actionRenderer.EveryRender<CostumeSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval =>
+                    eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCostumeSummon)
                 .AddTo(_disposables);
         }
 
@@ -1142,7 +1174,7 @@ namespace Nekoyume.Blockchain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var menu = Widget.Find<Menu>();
+                            var menu = Widget.Find<LobbyMenu>();
                             if (menu.isActiveAndEnabled)
                             {
                                 menu.UpdateGuideQuest(avatarState);
@@ -1182,11 +1214,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = renderArgs.Evaluation.Action.slotIndex;
-            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = slot.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
@@ -1300,7 +1332,7 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
@@ -1357,7 +1389,7 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
@@ -1520,11 +1552,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                renderArgs.CombinationSlotState.UnlockBlockIndex,
+                renderArgs.CombinationSlotState.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = renderArgs.Evaluation.Action.slotIndex;
-            var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = renderArgs.CombinationSlotState.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
@@ -1587,7 +1619,26 @@ namespace Nekoyume.Blockchain
             {
                 var action = eval.Action;
                 var tableSheets = Game.Game.instance.TableSheets;
-                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var summonRow = tableSheets.RuneSummonSheet[action.GroupId];
+                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+                var count = summonRow.CostMaterialCount * action.SummonCount;
+
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
+        }
+
+        private void ResponseCostumeSummon(ActionEvaluation<CostumeSummon> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var summonRow = tableSheets.CostumeSummonSheet[action.GroupId];
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
@@ -2768,6 +2819,47 @@ namespace Nekoyume.Blockchain
             });
         }
 
+        private void ResponseClaimGifts(ActionEvaluation<ClaimGifts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim gifts. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(() =>
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var giftId = eval.Action.GiftId;
+                States.Instance.ClaimedGiftIds.Add(giftId);
+                LoadingHelper.ClaimGifts.Value = false;
+
+                var giftsSheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
+                if (!giftsSheet.TryGetValue(giftId, out var giftRow))
+                {
+                    return;
+                }
+
+                var costumeSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
+                var random = new LocalRandom(eval.RandomSeed);
+                var (itemId, quantity) = giftRow.Items.First();
+
+                var costume = ItemFactory.CreateCostume(costumeSheet[itemId], random.GenerateRandomGuid());
+                Widget.Find<ClaimGiftsResultScreen>().Show(costume);
+            });
+        }
+
+        private void ExceptionClaimGifts(ActionEvaluation<ClaimGifts> eval)
+        {
+            NcDebug.LogError(eval.Exception);
+            OneLineSystem.Push(
+                MailType.System,
+                eval.Exception.InnerException.Message,
+                NotificationCell.NotificationType.Alert);
+        }
+
 
         internal class LocalRandom : System.Random, IRandom
         {
@@ -3117,7 +3209,7 @@ namespace Nekoyume.Blockchain
                 worldBoss.Close();
                 await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
 
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 return;
             }
 
@@ -3151,7 +3243,7 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
-            Widget.Find<Menu>().Close();
+            Widget.Find<LobbyMenu>().Close();
 
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
@@ -3584,7 +3676,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var productName = L10nManager.Localize(product.L10nKey);
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,
@@ -3702,7 +3794,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var productName = L10nManager.Localize(product.L10nKey);
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,
@@ -4410,11 +4502,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.CustomCraft,
                 message,
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = evaluation.Action.CraftList.FirstOrDefault().SlotIndex;
-            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = slot.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =

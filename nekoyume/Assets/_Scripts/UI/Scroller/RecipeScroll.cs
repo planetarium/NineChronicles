@@ -416,7 +416,7 @@ namespace Nekoyume.UI.Scroller
                 row.StartBlockIndex,
                 row.RecipeEndBlockIndex,
                 Game.Game.instance.Agent.BlockIndex,
-                LiveAssetManager.instance.GameConfig.SecondsPerBlock,
+                Util.BlockInterval,
                 DateTime.UtcNow);
         }
 
@@ -544,7 +544,7 @@ namespace Nekoyume.UI.Scroller
 
             string GetItemNameString(T recipeRow)
             {
-                return L10nManager.Localize($"ITEM_NAME_{ResultItemId(recipeRow)}");
+                return L10nManager.LocalizeItemName(ResultItemId(recipeRow));
             }
 
             int GetItemRequirementLevel(T recipeRow)

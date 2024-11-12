@@ -2,12 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Nekoyume.EnumType;
-using Nekoyume.Helper;
-using Nekoyume.L10n;
-using Nekoyume.Game;
-using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -198,7 +193,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            _secondWidgets.Add(Widget.Create<LobbyMenu>());
             yield return null;
 
             _secondWidgets.Add(Widget.Create<MobileShop>());
@@ -269,13 +264,15 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CustomCraftResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<ClaimGiftsResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            _secondWidgets.Add(Widget.Create<LobbyMenu>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
@@ -328,6 +325,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Collection>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionItemFilterPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<EventRewardPopup>());
             yield return null;
 
             // loading
@@ -437,7 +436,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            _secondWidgets.Add(Widget.Create<SummonProbabilityPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
             yield return null;
@@ -470,6 +469,10 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<CustomCraftResultPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CraftResultPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<ChainInfoPopup>());
             yield return null;
 
             // tooltip
@@ -537,7 +540,7 @@ namespace Nekoyume.UI
             {
                 var child = layer.GetChild(i);
                 var widget = child.GetComponent<Widget>();
-                if (widget is Status || widget is Menu)
+                if (widget is Status || widget is LobbyMenu)
                 {
                     widget.Show();
                 }

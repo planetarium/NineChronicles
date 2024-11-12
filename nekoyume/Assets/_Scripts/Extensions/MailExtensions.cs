@@ -7,8 +7,6 @@ using Nekoyume.Blockchain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 
 namespace Nekoyume
@@ -20,6 +18,11 @@ namespace Nekoyume
             if (mail.Memo is null)
             {
                 return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo.Contains("world boss"))
+            {
+                return L10nManager.Localize("UI_WORLDBOSS_MAIL_PRETEXT") + mail.GetCellContentsForException();
             }
 
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
@@ -34,7 +37,6 @@ namespace Nekoyume
                 }
             }
 
-            ;
             var iapServiceManager = ApiClients.Instance.IAPServiceManager;
             if (iapServiceManager is null)
             {
@@ -47,7 +49,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            ProductSchema product = null;
+            InAppPurchaseServiceClient.ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
             {
                 product = GetProductFromMemo(mail.Memo);
@@ -58,7 +60,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var productName = L10nManager.Localize(product.L10n_Key);
+            var productName = L10nManager.Localize(product.L10nKey);
 
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
@@ -81,9 +83,9 @@ namespace Nekoyume
             return sku;
         }
 
-        public static ProductSchema GetProductFromMemo(string memo)
+        public static InAppPurchaseServiceClient.ProductSchema GetProductFromMemo(string memo)
         {
-            ProductSchema product = null;
+            InAppPurchaseServiceClient.ProductSchema product = null;
             var sku = GetSkuFromMemo(memo);
     
             if (!string.IsNullOrEmpty(sku))
@@ -118,7 +120,7 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
@@ -129,7 +131,7 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
@@ -137,7 +139,7 @@ namespace Nekoyume
                     if (itemRow != null)
                     {
                         var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                        itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(item) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
                 }
@@ -161,6 +163,11 @@ namespace Nekoyume
             if (mail.Memo is null)
             {
                 return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo.Contains("world boss"))
+            {
+                return L10nManager.Localize("UI_WORLDBOSS_MAIL_PRETEXT") + mail.GetCellContentsForException();
             }
 
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
@@ -193,7 +200,7 @@ namespace Nekoyume
             var game = Game.Game.instance;
             var agentAddr = game.Agent.Address;
 
-            ProductSchema product = null;
+            InAppPurchaseServiceClient.ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
             {
                 product = GetProductFromMemo(mail.Memo);
@@ -204,7 +211,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var productName = L10nManager.Localize(product.L10n_Key);
+            var productName = L10nManager.Localize(product.L10nKey);
 
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
@@ -235,7 +242,7 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
@@ -244,14 +251,14 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
                     if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
                     {
                         var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
-                        itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(item) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 

@@ -1,6 +1,7 @@
 Key,English,Korean,Portuguese,Japanese,Spanish,Thai,Indonesian,Russian,ChineseSimplified,ChineseTraditional,Tagalog,Vietnam
 TITLE,Nine Chronicles,나인 크로니클,Nine Chronicles,Nine Chronicles M,Nine Chronicles,Nine Chronicles,Nine Chronicles,,Nine Chronicles,九个編年史,Nine Chronicles,Nine Chronicles
 ALL,All,전체,Todos,全体,Todos,ทั้งหมด,Semua,,全部,全部,Lahat,Toàn bộ
+NONE,None,없음,Nenhum,なし,Ninguno,ไม่มี,Tidak,,没有,沒有,Wala,Không
 ADVENTURE,Adventure,모험,Aventura,冒険,Aventura,ผจญภัย,Petualangan,,冒险,冒險,Pakikipagsapalaran,Cuộc phiêu lưu
 ACTION_HANDLE,Action Handling…,액션 처리,Manipulação de ação,アクション処理,Manejo de Acciones,การจัดการการดำเนินการ,Penanganan Aksi,,动作处理,動作處理中,Action Handling,Đang xử lý hành động…
 BLOCK_DOWNLOAD,Block Downloading…,블록 다운로드 중...,Download de Bloco,ブロックダウンロード中···,Descarga de información de bloques,บล็อกกำลังดาวน์โหลด,Mengunduh Block,,块下载,區塊下載中,Block Downloading,Đang tải Khối…
@@ -1959,13 +1960,14 @@ NPC_46_NAME,Modgud,모드구드,Moodgud,モドグド,Moodgud,Moodgud,Moodgud,М�
 NPC_47_NAME,Hrímgrímnir,흐림그림니르,Blurgrimnir,フリムグリームニル,Borrosogrím,ฝุ่นกริมนีล์,Blurgrimnir,Блюргримнир,模糊格里尼尔,模糊格里尼爾,Blurgrimnir,Hrímgrímnir
 NPC_48_NAME,Garmr,가름,Garam,ガルム,Garum,Garam,Garam,Гарам,Garam,Garam,Garam,Garmr
 NPC_49_NAME,Hella,헬라,Hera,ヘラ,Hera,เฮร่า,Hera,Гера,赫拉,赫拉,Hera,Hella
-UI_INTRODUCE_MIGRATION,"<color=#1264a3><link={0}>current rewards</link>
-<link={1}>new rewards</link></color>
-The reward has been updated.
-Would you like to migrate the contract?","<color=#1264A3><link={0}>현재 보상</link>
+UI_INTRODUCE_MIGRATION,"<Style=Link><link={0}>current rewards</link>
+<link={1}>new rewards</link></Style>
+Would you like to migrate the contract?
+<size=14>Upon migration, the block for claiming rewards
+and adjusting the amount will be updated.</size>","<color=#1264A3><link={0}>현재 보상</link>
 <link={1}>새로운 보상</link></color>
-보상이 업데이트되었습니다.
-계약을 이전하시겠습니까?","<color=#1264A3><link={0}>recompensas atuais</link>
+계약을 이전하시겠습니까?
+이전시 보상 claim과 금액을 변경할수 있는 block이 갱신됩니다.","<color=#1264A3><link={0}>recompensas atuais</link>
 <link={1}>novas recompensas</link></color>
 A recompensa foi atualizada.
 Gostaria de migrar o contrato?","<color=#1264A3><link={0}>現在の報酬</link>
@@ -2073,3 +2075,21 @@ UI_MENU_MONSTER_COLLECTION,MONSTER COLLECTION,몬스터 컬렉션,Coleção de M
 UI_LOCK_MONSTER_COLLECTION_NOTI,The monster collection menu is locked.,몬스터 컬렉션 메뉴는 잠겨 있습니다.,El menú de colección de monstruos está bloqueado.,モンスターコレクションメニューはロックされています。,El menú de colección de monstruos está bloqueado.,เมนูการสะสมมอนสเตอร์ถูกล็อก,Menu koleksi monster terkunci.,Меню коллекции монстров заблокировано.,怪物收集菜单被锁定,怪物收集菜单被锁定,Ang menu ng koleksyon ng halimaw ay nakalock.,Menu Bộ Sưu Tập Quái Vật bị khóa
 UI_LOCK_GRIND_NOTI,The grind menu is locked.,그라인드 메뉴는 잠겨 있습니다.,El menú de molienda está bloqueado.,グラインドメニューはロックされています。,El menú de molienda está bloqueado.,เมนูการบดถูกล็อก,Menu grind terkunci.,Меню измельчения заблокировано.,研磨菜单被锁定,研磨菜单被锁定,Ang grind menu ay nakalock.,Menu nghiền bị khóa
 UI_LOCK_SHOP_NOTI,The shop menu is locked.,상점 메뉴는 잠겨 있습니다.,El menú de la tienda está bloqueado.,ショップメニューはロックされています。,El menú de la tienda está bloqueado.,เมนูร้านค้าถูกล็อก,Menu toko terkunci.,Меню магазина заблокировано.,商店菜单被锁定,商店菜单被锁定,Ang menu ng tindahan ay nakalock.,Menu cửa hàng bị khóa
+UI_VIEW_DETAILS,View Details,자세히 보기,Ver Detalles,詳細を見る,Ver Detalles,ดูรายละเอียด,Lihat Detail,Посмотреть детали,查看详情,查看詳情,Tingnan ang mga Detalye,Xem Chi tiết
+UI_THOR_INFO_TITLE,THOR. SEASONAL EVENT CHAIN,토르. 시즌 이벤트 체인,THOR. CADEIA DE EVENTOS SAZONAIS,THOR. シーズンイベントチェーン,THOR. CADENA DE EVENTOS ESTACIONALES,THOR. ซีซั่นอีเว้นท์เชน,THOR. RANTAI ACARA MUSIM,THOR. СЕЗОННАЯ ЦЕПЬ СОБЫТИЙ,THOR. 季节性活动链,THOR. 季節性活動鏈,THOR. CHAIN NG EVENT NG PANAHON,THOR. Chuỗi Sự kiện Mùa
+UI_THOR_INFO_DESC,At the end of the season. you can receive huge rewards based on your performance.,시즌 종료시 당신의 성과에 따라 거대한 보상을 받을 수 있습니다.,No final da temporada. você pode receber grandes recompensas com base em seu desempenho.,シーズンの終わりには、あなたのパフォーマンスに基づいて巨大な報酬を受け取ることができます。,Al final de la temporada. puedes recibir grandes recompensas basadas en tu rendimiento.,ที่สุดของฤดูกาล คุณสามารถรับรางวัลขนาดใหญ่ตามผลงานของคุณได้,Pada akhir musim. Anda dapat menerima hadiah besar berdasarkan kinerja Anda.,В конце сезона. вы можете получить огромные награды на основе вашего выступления.,赛季结束时，您可以根据自己的表现获得丰厚的奖励。,賽季結束時，您可以根據自己的表現獲得豐厚的獎勵。,Sa dulo ng panahon. maaari kang makatanggap ng malalaking gantimpala batay sa iyong performance.,Cuối mùa. bạn có thể nhận được phần thưởng lớn dựa trên hiệu suất của mình.
+MIGRATE_NOTICE,"A new contract with different rewards from the current one has been added. Would you like to migrate?",현재와 보상이 다른 신규 계약이 추가되었습니다. 이전하시겠습니까?,,,,,,,,,,,
+UI_MILEAGE_PRICE,<size=18><Style=Mileage><size=22>{0},,,,,,,,,,,,
+UI_SKILL_NOT_CONTAINS,Skill not contains,,,,,,,,,,,
+UI_EVENT_REWARD_POPUP_TITLE,1st Anniversary Event,1주년 이벤트,,,,,,,,,,
+UI_EVENT_TOGGLE_0,Custom Gift,코스튬 선물,,,,,,,,,,
+UI_EVENT_TOGGLE_1,Patrol Reward,정찰 보상,,,,,,,,,,
+UI_EVENT_TOGGLE_2,Shop Package,기념 패키지,,,,,,,,,,
+UI_EVENT_TOGGLE_3,Double Contents Rewards,컨텐츠 보상 2배,,,,,,,,,,
+UI_EVENT_TOGGLE_4,Growth Boost,성장 지원,,,,,,,,,,
+UI_EVENT_DESCRIPTION_0,Custom Gift Description,코스튬 선물 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_1,Patrol Reward Description,정찰 보상 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_2,Shop Package Description,기념 패키지 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_3,Double Contents Rewards Description,컨텐츠 보상 2배 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_4,Growth Boost Description,성장 지원 관련 설명,,,,,,,,,,
+UI_MAIN_MENU_EVENT_REWARD,1st Anniversary,1주년 기념,,,,,,,,,,

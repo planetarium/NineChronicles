@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Elemental;
@@ -19,7 +20,8 @@ namespace Tests.EditMode.VFX
         {
             _gameObject = new GameObject();
             _objectPool = new ObjectPool.Impl(_gameObject.transform, null);
-            _skillController = new SkillController(_objectPool);
+            _skillController = new SkillController();
+            _skillController.InitializeAsync(_objectPool).Forget();
         }
 
         [Test]

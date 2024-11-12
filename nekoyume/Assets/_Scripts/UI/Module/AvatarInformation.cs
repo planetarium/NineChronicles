@@ -340,7 +340,7 @@ namespace Nekoyume.UI.Module
             Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
             Widget.Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-            Widget.Find<Menu>().Close();
+            Widget.Find<LobbyMenu>().Close();
             Widget.Find<WorldMap>().Close();
             Widget.Find<StageInformation>().Close();
             Widget.Find<BattlePreparation>().Close();

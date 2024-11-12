@@ -11,7 +11,7 @@ namespace Nekoyume
         public static string BlockIndexToDateTimeString(
             this long targetBlockIndex,
             long currentBlockIndex,
-            int secondsPerBlock,
+            double secondsPerBlock,
             DateTime now,
             string format)
         {
@@ -24,7 +24,7 @@ namespace Nekoyume
         public static string BlockIndexToDateTimeString(
             this long targetBlockIndex,
             long currentBlockIndex,
-            int secondsPerBlock,
+            double secondsPerBlock,
             DateTime now)
         {
             return BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
@@ -34,7 +34,7 @@ namespace Nekoyume
             this long targetBlockIndex,
             long currentBlockIndex)
         {
-            return BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, LiveAssetManager.instance.GameConfig.SecondsPerBlock, DateTime.Now, "yyyy/MM/dd HH:mm");
+            return BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, Nekoyume.Helper.Util.BlockInterval, DateTime.Now, "yyyy/MM/dd HH:mm");
         }
 
         public static string BlockRangeToTimeSpanString(this long blockRange, bool limitUnit = false)
@@ -45,13 +45,9 @@ namespace Nekoyume
 
         public static TimeSpan BlockToTimeSpan(this long block)
         {
-            if (block < 0)
-            {
-                return TimeSpan.Zero;
-            }
-
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            return TimeSpan.FromSeconds(block * secondsPerBlock);
+            return block < 0 ?
+                TimeSpan.Zero :
+                TimeSpan.FromSeconds(block * Nekoyume.Helper.Util.BlockInterval);
         }
 
         public static string TimespanToString(this TimeSpan timeSpan, bool limitUnit = false)

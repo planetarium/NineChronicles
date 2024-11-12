@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
@@ -110,13 +111,13 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 ForceClose(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             };
 
             backButton.OnClickAsObservable().Subscribe(_ =>
             {
                 ForceClose(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             }).AddTo(gameObject);
 
             rewardButton.OnClickAsObservable()
@@ -187,8 +188,7 @@ namespace Nekoyume.UI
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
             _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
+            UpdateRemainTimer(_period, currentBlockIndex, Nekoyume.Helper.Util.BlockInterval);
             SetActiveQueryLoading(false);
         }
 
@@ -255,7 +255,7 @@ namespace Nekoyume.UI
             if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 return;
             }
 
@@ -336,7 +336,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateRemainTimer((long, long) time, long current, int secondsPerBlock)
+        private void UpdateRemainTimer((long, long) time, long current, double secondsPerBlock)
         {
             var (begin, end) = time;
             var range = end - begin;
@@ -411,7 +411,7 @@ namespace Nekoyume.UI
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking?.RankingInfo ?? new List<WorldBossRankingRecord>();
             var myRecord =
-                records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+                records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
             var userCount = response?.WorldBossTotalUsers ?? 0;
             var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
             return (myRecord, blockIndex, userCount);

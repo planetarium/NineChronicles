@@ -138,7 +138,7 @@ namespace Nekoyume.UI.Model
                 {
                     try
                     {
-                        var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                        var secondsPerBlock = Nekoyume.Helper.Util.BlockInterval;
                         var blocksPerHour = 3600.0 / secondsPerBlock;
                         var roundedBlocksPerHour = (int)Math.Round(blocksPerHour);
                         ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_HOUR_AGO_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex - roundedBlocksPerHour);

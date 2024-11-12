@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
         {
             base.SetData(itemBase);
 
-            if (itemBase is not Equipment equipment)
+            if (itemBase is not IEquippableItem)
             {
                 return;
             }
@@ -56,20 +56,20 @@ namespace Nekoyume.UI.Module
                 canvasGroup.alpha = 0;
             }
 
-            grade6Effect.SetActive(equipment.Grade == 6);
-            grade5Effect.SetActive(equipment.Grade == 5);
-            grade4Effect.SetActive(equipment.Grade == 4);
+            grade6Effect.SetActive(itemBase.Grade == 6);
+            grade5Effect.SetActive(itemBase.Grade == 5);
+            grade4Effect.SetActive(itemBase.Grade == 4);
             gradeEffect.SetActive(false);
 
             countText.gameObject.SetActive(false);
-            optionTag.Set(equipment);
+            optionTag.Set(itemBase);
             optionTag.gameObject.SetActive(true);
 
             nameText.gameObject.SetActive(showDetail);
             if (showDetail)
             {
-                nameText.text = equipment.GetLocalizedName(false);
-                infoText.text = equipment.GetLocalizedInformation();
+                nameText.text = itemBase.GetLocalizedName(false);
+                infoText.text = itemBase.GetLocalizedInformation();
             }
         }
 

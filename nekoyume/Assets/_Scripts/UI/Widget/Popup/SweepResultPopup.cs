@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Libplanet.Action;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -101,7 +102,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             CloseWidget = null;
-        } 
+        }
 
         private void Start()
         {
@@ -114,10 +115,7 @@ namespace Nekoyume.UI
             mainButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Close();
-                Find<BattlePreparation>().Close();
-                Find<StageInformation>().Close();
-                Find<WorldMap>().Close();
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             }).AddTo(gameObject);
         }
 
@@ -295,14 +293,15 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(int playCount)
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-
-                seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureSweepCourageAmount * playCount}";
+                var expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.sweep_adventure_boss);
+                seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else
             {

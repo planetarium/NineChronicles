@@ -1126,7 +1126,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = States.Instance.AgentState.address;
             var hourglassDataRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
-            
+
             var cost = CombinationSlotsPopup.GetWorkingSlotsOpenCost(stateList, currentBlockIndex);
             LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
@@ -1485,7 +1485,7 @@ namespace Nekoyume.Blockchain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 SlotIndex = slotIndex
             };
-            
+
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<UnlockCombinationSlot>()
                 .Timeout(ActionTimeout)
@@ -1655,6 +1655,39 @@ namespace Nekoyume.Blockchain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
+        public IObservable<ActionEvaluation<CostumeSummon>> CostumeSummon(int groupId, int summonCount)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+
+            // analytics
+            var sentryTrace = Analyzer.Instance.Track(
+                "Unity/AuraSummon",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["GroupId"] = groupId,
+                    ["SummonCount"] = summonCount
+                }, true);
+
+            var action = new CostumeSummon
+            {
+                AvatarAddress = avatarAddress,
+                GroupId = groupId,
+                SummonCount = summonCount
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<CostumeSummon>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); })
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
+
         public IObservable<ActionEvaluation<ClaimItems>> ClaimItems(
             params (Address, IReadOnlyList<FungibleAssetValue>)[] claimData)
         {
@@ -1718,6 +1751,25 @@ namespace Nekoyume.Blockchain
             var action = new ClaimStakeReward(avatarAddress);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ClaimStakeReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<ClaimGifts>> ClaimGifts(
+            Address avatarAddress,
+            int giftId)
+        {
+            var action = new ClaimGifts
+            {
+                AvatarAddress = avatarAddress,
+                GiftId = giftId,
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimGifts>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()

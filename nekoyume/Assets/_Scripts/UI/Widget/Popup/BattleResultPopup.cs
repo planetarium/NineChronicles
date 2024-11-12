@@ -317,7 +317,6 @@ namespace Nekoyume.UI
 
                 if (SharedModel.ActionPointNotEnough)
                 {
-                    var balance = States.Instance.GoldBalanceState.Gold;
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
@@ -327,13 +326,10 @@ namespace Nekoyume.UI
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
-                        CostType.NCG,
-                        balance,
                         cost,
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoProceedNextStage(true)),
-                        GoToMarket,
                         true
                     );
                     yield break;
@@ -364,7 +360,6 @@ namespace Nekoyume.UI
 
                 if (SharedModel.ActionPointNotEnough)
                 {
-                    var balance = States.Instance.GoldBalanceState.Gold;
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
@@ -374,13 +369,10 @@ namespace Nekoyume.UI
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
-                        CostType.NCG,
-                        balance,
                         cost,
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoRepeatStage(true)),
-                        GoToMarket,
                         true
                     );
                     yield break;
@@ -488,11 +480,6 @@ namespace Nekoyume.UI
             }
 
             UpdateView(isBoosted);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateView(bool isBoosted)
@@ -758,7 +745,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -795,7 +782,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -886,7 +873,7 @@ namespace Nekoyume.UI
 
         private async UniTask CoGoToNextStageClose(BattleLog log)
         {   
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 return;
             }
@@ -905,20 +892,9 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(BattleLog log)
-        {
-            StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
-        }
-
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
-        {
-            if (Find<Menu>().IsActive())
-            {
-                yield break;
-            }
-
-            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
-            yield return StartCoroutine(CoFadeOut());
+        private void CloseWithBattle()
+        {            
+            Lobby.Enter(true);
             Close();
         }
 
@@ -936,20 +912,16 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent(category);
             evt.SetValue(Game.Game.instance.Stage.stageId);
             AirbridgeUnity.TrackEvent(evt);
-
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             if (worldClear)
             {
                 var worldMapLoading = Find<LoadingScreen>();
                 worldMapLoading.Show(LoadingScreen.LoadingType.Adventure);
-                Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+                Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
                 {
                     Find<HeaderMenuStatic>().Show();
-                    Find<Menu>().Close();
+                    Find<LobbyMenu>().Close();
                     Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
                     worldMapLoading.Close(true);
                 });
@@ -958,14 +930,11 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -1020,29 +989,11 @@ namespace Nekoyume.UI
             });
         }
 
-        private void GoToMarket()
-        {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
-
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
-            {
-                CloseWithOtherWidgets();
-                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                Find<ShopSell>().Show();
-            });
-        }
-
         private void GoToProduct()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
@@ -1052,29 +1003,12 @@ namespace Nekoyume.UI
 
         private void GoToCraft()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
-                Find<Menu>().GoToCraftEquipment();
-            });
-        }
-
-        private void GoToFood()
-        {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
-
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
-            {
-                CloseWithOtherWidgets();
-                Find<Menu>().GoToFood();
+                Find<LobbyMenu>().GoToCraftEquipment();
             });
         }
 
@@ -1101,7 +1035,8 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount()
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassManager != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
@@ -1118,14 +1053,16 @@ namespace Nekoyume.UI
                     NcDebug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
                 }
 
+                var expAmount = 0;
                 if (SharedModel.StageType == StageType.EventDungeon)
                 {
-                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
+                    expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.event_dungeon);
                 }
                 else
                 {
-                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                    expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash);
                 }
+                seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else
             {

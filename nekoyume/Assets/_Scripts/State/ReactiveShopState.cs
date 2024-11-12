@@ -59,7 +59,8 @@ namespace Nekoyume.State
             MarketOrderType orderType,
             int limit,
             bool reset = false,
-            int[] itemIds = null)
+            int[] iconIds = null,
+            bool isCustom = false)
         {
             if (!reset && BuyProductMaxChecker)
             {
@@ -70,7 +71,7 @@ namespace Nekoyume.State
             var statType = filter.ToItemStatType();
             var offset = reset ? 0 : CachedBuyItemProducts.Count;
             var (products, totalCount) =
-                await ApiClients.Instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType, itemIds);
+                await ApiClients.Instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType, iconIds, isCustom);
 
             if (reset)
             {

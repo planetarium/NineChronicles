@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using Libplanet.Crypto;
@@ -97,9 +97,10 @@ namespace Nekoyume.UI
             string content,
             string labelYes = "UI_OK",
             bool localize = true,
-            SystemType type = SystemType.Error)
+            SystemType type = SystemType.Error,
+            params object[] contentArgs)
         {
-            Set(title, content, labelYes, "", localize, type);
+            Set(title, content, labelYes, "", localize, type, contentArgs);
             if (gameObject.activeSelf)
             {
                 return;
@@ -114,9 +115,10 @@ namespace Nekoyume.UI
             string labelYes = "UI_OK",
             string labelNo = "UI_CANCEL",
             bool localize = true,
-            SystemType type = SystemType.Error)
+            SystemType type = SystemType.Error,
+            params object[] contentArgs)
         {
-            Set(title, content, labelYes, labelNo, localize, type);
+            Set(title, content, labelYes, labelNo, localize, type, contentArgs);
             if (gameObject.activeSelf)
             {
                 return;
@@ -197,7 +199,8 @@ namespace Nekoyume.UI
             string labelYes = "UI_OK",
             string labelNo = "UI_CANCEL",
             bool localize = true,
-            SystemType type = SystemType.Error)
+            SystemType type = SystemType.Error,
+            params object[] contentArgs)
         {
             SetUIByType(type);
             _type = type;
@@ -211,7 +214,7 @@ namespace Nekoyume.UI
                 else
                 {
                     setText?.Invoke(localize
-                        ? L10nManager.Localize(text)
+                        ? L10nManager.Localize(text, contentArgs)
                         : text);
                     setActive?.Invoke(true);
                 }
