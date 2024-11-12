@@ -433,8 +433,7 @@ namespace Nekoyume.ApiClient
         {
             if (LevelInfos == null
                 || !LevelInfos.TryGetValue(passType, out var levelInfoList)
-                || levelInfoList.Count - 2 < 0
-                || levelInfoList.Count - 1 < 0)
+                || levelInfoList.Count - 2 < 0)
             {
                 NcDebug.LogError("[SeasonPassServiceManager] LevelInfos Not Set");
                 minExp = 0;

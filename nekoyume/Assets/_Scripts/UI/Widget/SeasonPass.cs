@@ -425,6 +425,8 @@ namespace Nekoyume.UI
         {
             // 기존 작업이 있다면 취소하고 새 토큰으로 갱신
             _cts?.Cancel();
+            _cts?.Dispose();
+
             _cts = new CancellationTokenSource();
             CancellationToken token = _cts.Token;
 
