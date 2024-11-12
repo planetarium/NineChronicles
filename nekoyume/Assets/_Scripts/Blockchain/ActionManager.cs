@@ -1763,11 +1763,7 @@ namespace Nekoyume.Blockchain
             Address avatarAddress,
             int giftId)
         {
-            var action = new ClaimGifts
-            {
-                AvatarAddress = avatarAddress,
-                GiftId = giftId,
-            };
+            var action = new ClaimGifts(avatarAddress, giftId);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ClaimGifts>()
                 .Timeout(ActionTimeout)
