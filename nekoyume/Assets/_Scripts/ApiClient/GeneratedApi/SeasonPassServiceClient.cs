@@ -305,8 +305,6 @@ public class SeasonPassServiceClient
 
     public class SeasonChangeRequestSchema
     {
-        [JsonPropertyName("planet_id")]
-        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("pass_type")]
         public PassType PassType { get; set; }
         [JsonPropertyName("season_index")]
@@ -337,6 +335,16 @@ public class SeasonPassServiceClient
         public List<RewardSchema> RewardList { get; set; }
         [JsonPropertyName("repeat_last_reward")]
         public bool RepeatLastReward { get; set; }
+    }
+
+    public class SimpleSeasonPassSchema
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("pass_type")]
+        public PassType PassType { get; set; }
+        [JsonPropertyName("season_index")]
+        public int SeasonIndex { get; set; }
     }
 
     public class UpgradeRequestSchema
@@ -371,8 +379,8 @@ public class SeasonPassServiceClient
         public string AgentAddr { get; set; }
         [JsonPropertyName("avatar_addr")]
         public string AvatarAddr { get; set; }
-        [JsonPropertyName("season_pass_id")]
-        public int SeasonPassId { get; set; }
+        [JsonPropertyName("season_pass")]
+        public SimpleSeasonPassSchema SeasonPass { get; set; }
         [JsonPropertyName("level")]
         public int Level { get; set; }
         [JsonPropertyName("exp")]
@@ -537,6 +545,36 @@ public class SeasonPassServiceClient
                 }
                 string responseBody = request.downloadHandler.text;
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task GetUserStatusAllAsync(string planet_id, string avatar_addr, Action<UserSeasonPassSchema[]> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/user/status/all";
+        using (var request = new UnityWebRequest(url, "GET"))
+        {
+            url += $"?planet_id={planet_id}&avatar_addr={avatar_addr}";
+            request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                UserSeasonPassSchema[] result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema[]>(responseBody);
                 onSuccess?.Invoke(result);
             }
             catch (Exception ex)
