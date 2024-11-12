@@ -5,10 +5,12 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Common;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI
 {
@@ -24,7 +26,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject iconView;
 
         [SerializeField]
-        private Nekoyume.UI.Module.Common.SkillPositionTooltip skillTooltip;
+        private SkillPositionTooltip skillTooltip;
 
         private const string StatTextFormat = "{0} {1}";
 
@@ -74,9 +76,9 @@ namespace Nekoyume.UI
                 SkillSheet.Row skillOption = null;
                 var skillOptionRow = model.EquipmentOptions
                     .Select(info =>
-                        Nekoyume.Game.TableSheets.Instance.EquipmentItemOptionSheet[info.Id])
+                        TableSheets.Instance.EquipmentItemOptionSheet[info.Id])
                     .FirstOrDefault(optionRow =>
-                        Nekoyume.Game.TableSheets.Instance.SkillSheet.TryGetValue(optionRow.SkillId,
+                        TableSheets.Instance.SkillSheet.TryGetValue(optionRow.SkillId,
                             out skillOption));
 
                 if (skillOption != null)
@@ -102,7 +104,7 @@ namespace Nekoyume.UI
                     }
                 }
 
-                if (Nekoyume.Game.TableSheets.Instance.SkillSheet.TryGetValue(model.RuneOptionInfo.SkillId,
+                if (TableSheets.Instance.SkillSheet.TryGetValue(model.RuneOptionInfo.SkillId,
                     out var skillOption))
                 {
                     skillTooltip.Show(skillOption, model.RuneOptionInfo);

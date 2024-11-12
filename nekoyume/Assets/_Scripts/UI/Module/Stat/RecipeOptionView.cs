@@ -149,33 +149,32 @@ namespace Nekoyume.UI.Module
 
             var siblingIndex = 1; // 0 is for the main option
 
-            if (option.SkillId != 0)
+            if (option.SkillId != 0 && skillViews.Any())
             {
-                if (skillViews.Count > 0)
-                {
-                    var skillView = skillViews.First(x => !x.parentObject.activeSelf);
-                    var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
-                        ? skillRow.GetLocalizedName()
-                        : string.Empty;
-                    skillView.optionText.text = skillName;
-                    skillView.percentageSlider.value = skillView.percentageSlider.maxValue;
-                    skillView.sliderFillImage.color = BaseColor;
-                    skillView.parentObject.transform.SetSiblingIndex(siblingIndex);
-                    skillView.parentObject.SetActive(true);
-                    skillView.tooltipButton.onClick.RemoveAllListeners();
-                    skillView.tooltipButton.onClick.AddListener(() =>
-                    {
-                        var rect = skillView.tooltipButton.GetComponent<RectTransform>();
-                        skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
-                        skillTooltip.Show(skillRow, option);
-                    });
-                    if (optionIcons != null && optionIcons.Count > 0)
-                    {
-                        optionIcons.Last().SetActive(true);
-                    }
 
-                    ++siblingIndex;
+                var skillView = skillViews.First(x => !x.parentObject.activeSelf);
+                var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
+                    ? skillRow.GetLocalizedName()
+                    : string.Empty;
+                skillView.optionText.text = skillName;
+                skillView.percentageSlider.value = skillView.percentageSlider.maxValue;
+                skillView.sliderFillImage.color = BaseColor;
+                skillView.parentObject.transform.SetSiblingIndex(siblingIndex);
+                skillView.parentObject.SetActive(true);
+                skillView.tooltipButton.onClick.RemoveAllListeners();
+                skillView.tooltipButton.onClick.AddListener(() =>
+                {
+                    var rect = skillView.tooltipButton.GetComponent<RectTransform>();
+                    skillTooltip.transform.position =
+                        rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                    skillTooltip.Show(skillRow, option);
+                });
+                if (optionIcons != null && optionIcons.Count > 0)
+                {
+                    optionIcons.Last().SetActive(true);
                 }
+
+                ++siblingIndex;
             }
 
             foreach (var (stat, _) in option.Stats)
