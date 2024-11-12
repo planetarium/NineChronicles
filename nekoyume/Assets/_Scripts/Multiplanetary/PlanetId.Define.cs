@@ -48,6 +48,12 @@ namespace Nekoyume.Multiplanetary
             return Planet.Odin;
         }
         
+        // TODO: Flag로 변경?
+        public static bool IsMainNet(PlanetId planetId)
+        {
+            return planetId == Odin || planetId == Heimdall || planetId == Thor;
+        }
+        
         public static bool IsThor(PlanetId planetId)
         {
             return planetId == Thor || planetId == ThorInternal;
