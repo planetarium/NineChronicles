@@ -124,8 +124,6 @@ namespace Nekoyume.UI.Scroller
             }
 
             _disposables.DisposeAllAndClear();
-            Context?.Selected.Subscribe(model =>
-                selected.SetActive(itemData.Equals(model))).AddTo(_disposables);
         }
 
         private static string GetRatioString(float ratio)
