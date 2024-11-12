@@ -14,6 +14,9 @@ using System;
 
 namespace Nekoyume.UI
 {
+    using Coffee.UIEffects;
+    using System.Linq;
+    using System.Threading;
     using UniRx;
     public class SeasonPass : Widget
     {
@@ -68,22 +71,18 @@ namespace Nekoyume.UI
         [SerializeField]
         private HorizontalLayoutGroup scrollHorizontalLayout;
 
-        public enum SeasonPassType
-        {
-            Courage,
-            WorldClear,
-            AdventureBoss
-        }
-
         [Serializable]
         private struct SeasonPassUiInfoByType
         {
-            public SeasonPassType Type;
+            public SeasonPassServiceClient.PassType Type;
             public Sprite BackGroundSprite;
             public Sprite IconNormalSprite;
             public Sprite IconPremiumSprite;
             public Sprite IconPremiumPlusSprite;
             public Sprite levelBackGroundSprite;
+            public Color LevelTextColor;
+            public Color SlideLeft;
+            public Color SlideRight;
         }
 
         [SerializeField]
@@ -102,6 +101,26 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI seasonPassTypeName;
 
+        [SerializeField]
+        private GameObject[] remainingTimeObject;
+
+        [SerializeField]
+        private UI.Module.Toggle[] categoryToggles;
+
+        [SerializeField]
+        private GameObject courageIcon;
+        [SerializeField]
+        private TextMeshProUGUI levelNameText;
+        [SerializeField]
+        private UIGradient sliderGradient;
+
+        [SerializeField]
+        private GameObject CourageRedDot;
+        [SerializeField]
+        private GameObject WorldClearRedDot;
+        [SerializeField]
+        private GameObject AdventureBossRedDot;
+
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
         private float lastRewardCellWidth;
@@ -110,7 +129,7 @@ namespace Nekoyume.UI
         public const string MaxLevelString = "30";
         private int popupViewDelay = 1200;
 
-        private SeasonPassType currentSeasonPassType = SeasonPassType.Courage;
+        private SeasonPassServiceClient.PassType currentSeasonPassType = SeasonPassServiceClient.PassType.CouragePass;
 
         protected override void Awake()
         {
@@ -119,23 +138,28 @@ namespace Nekoyume.UI
             lastRewardCellWidth = lastRewardCell.GetComponent<RectTransform>().rect.width;
             base.Awake();
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+
             seasonPassManager.RemainingDateTime.Subscribe((endDate) => { remainingText.text = endDate; });
-            seasonPassManager.SeasonEndDate.Subscribe((endTime) =>
-            {
-                if (seasonPassManager.CurrentSeasonPassData == null)
-                {
-                    NcDebug.LogError("[RefreshRewardCells] RefreshFailed");
-                    return;
-                }
-                RefreshRewardCells(seasonPassManager.CurrentSeasonPassData.RewardList);
-            }).AddTo(gameObject);
-            seasonPassManager.PrevSeasonClaimAvailable.Subscribe(visible => { prevSeasonClaimButton.gameObject.SetActive(visible); }).AddTo(gameObject);
-            seasonPassManager.PrevSeasonClaimRemainingDateTime.Subscribe(remaining => { prevSeasonClaimButtonRemainingText.text = remaining; }).AddTo(gameObject);
 
             rewardCellScrollbar.value = 0;
         }
 
-        private SeasonPassUiInfoByType GetSeasonPassUiInfoByType(SeasonPassType type)
+        private void RefreshPrevSeasonClaimButton(SeasonPassServiceClient.PassType passType)
+        {
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassManager.HasPrevClaimPassType.Contains(passType))
+            {
+                prevSeasonClaimButton.gameObject.SetActive(true);
+            }
+            else
+            {
+                prevSeasonClaimButton.gameObject.SetActive(false);
+            }
+
+            prevSeasonClaimButtonRemainingText.text = seasonPassManager.GetPrevRemainingClaim(passType);
+        }
+
+        private SeasonPassUiInfoByType GetSeasonPassUiInfoByType(SeasonPassServiceClient.PassType type)
         {
             foreach (var info in seasonPassUiInfoByType)
             {
@@ -157,14 +181,7 @@ namespace Nekoyume.UI
                 if (i < rewardSchemas.Count)
                 {
                     rewardCells[i].gameObject.SetActive(true);
-                    if(currentSeasonPassType == SeasonPassType.Courage)
-                    {
-                        rewardCells[i].SetData(rewardSchemas[i]);
-                    }
-                    else
-                    {
-                        rewardCells[i].SetLevelText(i + 1);
-                    }
+                    rewardCells[i].SetData(rewardSchemas[i], currentSeasonPassType);
                 }
                 else
                 {
@@ -172,6 +189,11 @@ namespace Nekoyume.UI
                 }
             }
             lastRewardCell.gameObject.SetActive(existLastCell);
+            if (existLastCell)
+            {
+                rewardCells[rewardSchemas.Count - 1].gameObject.SetActive(false);
+                lastRewardCell.SetData(rewardSchemas.Last(), currentSeasonPassType);
+            }
 
             scrollHorizontalLayout.CalculateLayoutInputHorizontal();
             scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
@@ -224,34 +246,39 @@ namespace Nekoyume.UI
 #endif
         }
 
-        public void Show(SeasonPassType seasonPassType = SeasonPassType.Courage, bool ignoreShowAnimation = false)
+        public void Show(SeasonPassServiceClient.PassType seasonPassType = SeasonPassServiceClient.PassType.CouragePass, bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
+            Find<LoadingScreen>().Show();
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
-
-            ChangePageByType(seasonPassType);
-
-            if (!PlayerPrefs.HasKey(seasonPassManager.GetSeasonPassPopupViewKey()))
+            seasonPassManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
             {
-                async UniTaskVoid AwaitSeasonPassPopup()
-                {
-                    await UniTask.Delay(popupViewDelay);
-                    Find<SeasonPassCouragePopup>().Show();
-                    PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
-                }
+                Find<LoadingScreen>().Close();
+                base.Show(ignoreShowAnimation);
+                RefreshRedDotObj();
+                categoryToggles[(int)seasonPassType].isOn = true;
+                categoryToggles[(int)seasonPassType].onClickToggle.Invoke();
 
-                AwaitSeasonPassPopup().Forget();
-            }
+                if (!PlayerPrefs.HasKey(seasonPassManager.GetSeasonPassPopupViewKey()))
+                {
+                    async UniTaskVoid AwaitSeasonPassPopup()
+                    {
+                        await UniTask.Delay(popupViewDelay);
+                        Find<SeasonPassCouragePopup>().Show();
+                        PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
+                    }
+
+                    AwaitSeasonPassPopup().Forget();
+                }
+            }).Forget();
         }
 
         public void OnClickSeasonPassToggle(int index)
         {
-            var type = (SeasonPassType)index;
+            var type = (SeasonPassServiceClient.PassType)index;
             ChangePageByType(type);
         }
 
-        public void ChangePageByType(SeasonPassType type)
+        public void ChangePageByType(SeasonPassServiceClient.PassType type)
         {
             currentSeasonPassType = type;
             var info = GetSeasonPassUiInfoByType(type);
@@ -264,59 +291,113 @@ namespace Nekoyume.UI
             iconPremiumPlusImage.sprite = info.IconPremiumPlusSprite;
             iconPremiumPlusImage.SetNativeSize();
             levelBackGroundImage.sprite = info.levelBackGroundSprite;
+            levelNameText.color = info.LevelTextColor;
+            sliderGradient.color1 = info.SlideLeft;
+            sliderGradient.color2 = info.SlideRight;
 
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            SeasonPassServiceClient.UserSeasonPassSchema seasonPassAvatarInfo = seasonPassManager.AvatarInfo.Value;
-            List<SeasonPassServiceClient.RewardSchema> rewardListData;
-            int currentLevel = seasonPassManager.AvatarInfo.Value.Level;
+            int currentLevel = 0;
+            if (seasonPassManager.UserSeasonPassDatas.TryGetValue(type, out var userSeasonPassData))
+            {
+                currentLevel = userSeasonPassData.Level;
+            }
+            else
+            {
+                NcDebug.LogError($"Not found UserSeasonPassData: {type}");
+            }
+
+            List<SeasonPassServiceClient.RewardSchema> rewardListData = new List<SeasonPassServiceClient.RewardSchema>();
+            bool existLastCell = false;
+            if (seasonPassManager.CurrentSeasonPassData.TryGetValue(type, out var seasonPassSchema))
+            {
+                rewardListData = seasonPassSchema.RewardList;
+                existLastCell = seasonPassSchema.RepeatLastReward;
+            }
+            else
+            {
+                // todo: 시즌 비활성화 처리
+            }
+
             int minExp;
             int maxExp;
-            bool existLastCell = false;
             // 타입별 데이터 분기처리 예정.
+            string expL10nKey = "UI_SEASONPASS_COURAGE_EXP";
             switch (type)
             {
-                case SeasonPassType.Courage:
-                    rewardListData = seasonPassManager.CurrentSeasonPassData.RewardList;
-                    existLastCell = true;
+                case SeasonPassServiceClient.PassType.CouragePass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_COURAGE");
+                    foreach (var obj in remainingTimeObject)
+                    {
+                        obj.SetActive(true);
+                    }
+                    courageIcon.SetActive(true);
+                    expL10nKey = "UI_SEASONPASS_COURAGE_EXP";
                     break;
-                case SeasonPassType.WorldClear:
-                    rewardListData = new List<SeasonPassServiceClient.RewardSchema>(new SeasonPassServiceClient.RewardSchema[15]);
-                    existLastCell = false;
+                case SeasonPassServiceClient.PassType.WorldClearPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");
+                    foreach (var obj in remainingTimeObject)
+                    {
+                        obj.SetActive(false);
+                    }
+                    courageIcon.SetActive(false);
+                    expL10nKey = "UI_SEASONPASS_WORLD_CLEAR_EXP";
                     break;
-                case SeasonPassType.AdventureBoss:
-                    rewardListData = new List<SeasonPassServiceClient.RewardSchema>(new SeasonPassServiceClient.RewardSchema[40]);
-                    existLastCell = true;
+                case SeasonPassServiceClient.PassType.AdventureBossPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");
+                    foreach (var obj in remainingTimeObject)
+                    {
+                        obj.SetActive(true);
+                    }
+                    courageIcon.SetActive(false);
+                    expL10nKey = "UI_SEASONPASS_ADVENTUREBOSS_EXP";
                     break;
                 default:
-                    rewardListData = seasonPassManager.CurrentSeasonPassData.RewardList;
+                    NcDebug.LogError($"Not found SeasonPassType: {type}");
                     break;
             }
-            seasonPassManager.GetExp(currentLevel, out minExp, out maxExp);
+            seasonPassManager.GetExp(type, currentLevel, out minExp, out maxExp);
 
-            //최대래밸 고정
-            levelText.text = Mathf.Min(seasonPassAvatarInfo.Level, rewardListData.Count).ToString();
-            expText.text = $"{seasonPassAvatarInfo.Exp - minExp} / {maxExp - minExp}";
-            expLineImage.fillAmount = (float)(seasonPassAvatarInfo.Exp - minExp) / (float)(maxExp - minExp);
-            receiveBtn.Interactable = seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastNormalClaim
-                || (seasonPassAvatarInfo.IsPremium && seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastPremiumClaim);
+            if(userSeasonPassData != null)
+            {
+                //최대래밸 고정
+                levelText.text = Mathf.Min(userSeasonPassData.Level, rewardListData.Count).ToString();
+                expText.text = L10nManager.Localize(expL10nKey, userSeasonPassData.Exp - minExp, maxExp - minExp);
+                expLineImage.fillAmount = (float)(userSeasonPassData.Exp - minExp) / (float)(maxExp - minExp);
+                receiveBtn.Interactable = userSeasonPassData.Level > userSeasonPassData.LastNormalClaim
+                    || (userSeasonPassData.IsPremium && userSeasonPassData.Level > userSeasonPassData.LastPremiumClaim);
 
-            premiumIcon.SetActive(!seasonPassAvatarInfo.IsPremiumPlus);
-            premiumUnlockBtn.SetActive(!seasonPassAvatarInfo.IsPremium);
-            premiumPlusUnlockBtn.SetActive(seasonPassAvatarInfo.IsPremium && !seasonPassAvatarInfo.IsPremiumPlus);
-            premiumPlusIcon.SetActive(seasonPassAvatarInfo.IsPremiumPlus);
+                premiumIcon.SetActive(!userSeasonPassData.IsPremiumPlus);
+                premiumUnlockBtn.SetActive(!userSeasonPassData.IsPremium);
+                premiumPlusUnlockBtn.SetActive(userSeasonPassData.IsPremium && !userSeasonPassData.IsPremiumPlus);
+                premiumPlusIcon.SetActive(userSeasonPassData.IsPremiumPlus);
+            }
+            else
+            {
+                levelText.text = "0";
+                expText.text = L10nManager.Localize(expL10nKey, 0, maxExp - minExp);
+                expLineImage.fillAmount = 0;
+                receiveBtn.Interactable = false;
+
+                premiumIcon.SetActive(true);
+                premiumUnlockBtn.SetActive(true);
+                premiumPlusUnlockBtn.SetActive(false);
+                premiumPlusIcon.SetActive(false);
+            }
 
             // 보상 샐 데이터 갱신
             RefreshRewardCells(rewardListData, existLastCell);
 
             // 라인 이미지 채우는 비율 계산 (현재 레벨 - 1) / (총 셀 갯수 - 1) 래벨이 1부터 시작임을 가정.
-            lineImage.fillAmount = (float)(currentLevel - 1) / (float)(rewardListData.Count - 1);
+            if(rewardListData.Count > 2 )
+            {
+                var lastIndexAdjuster = existLastCell ? 2 : 1;
+                lineImage.fillAmount = (float)(currentLevel - 1) / (float)(rewardListData.Count - lastIndexAdjuster);
+            }
 
             // 현재 래밸까지 스크롤 이동 연출
             rewardCellScrollbar.value = 0;
             var cellIndex = Mathf.Max(0, currentLevel - 1);
+            RefreshPrevSeasonClaimButton(type);
             ShowCellEffect(cellIndex).Forget();
         }
 
@@ -338,26 +419,43 @@ namespace Nekoyume.UI
         [SerializeField]
         private int miniumDurationCount = 400;
 
+        private CancellationTokenSource _cts;
+
         private async UniTaskVoid ShowCellEffect(int cellIndex)
         {
+            // 기존 작업이 있다면 취소하고 새 토큰으로 갱신
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            CancellationToken token = _cts.Token;
+
             var tween = DOTween.To(() => rewardCellScrollbar.value,
                 value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(cellIndex), scrollDuration).SetEase(Ease.OutQuart);
             rewardCellScrollbar.value = 0;
             tween.Play();
+            // 트윈이 취소될 수 있도록 토큰 감시
+            token.Register(() => tween.Kill());
 
-            for (var i = cellIndex; i < rewardCells.Count; i++)
+            for (var i = 0; i < rewardCells.Count; i++)
             {
-                rewardCells[i].SetTweeningStarting();
+                rewardCells[i].SetTweeningStarting(i < cellIndex);
             }
 
-            await UniTask.Delay(scrollWaitDuration);
-
-            var durationCount = 0;
-            for (var i = cellIndex; i < rewardCells.Count; i++)
+            try
             {
-                rewardCells[i].ShowTweening();
-                await UniTask.Delay(betweenCellViewDuration);
-                durationCount += betweenCellViewDuration;
+                await UniTask.Delay(scrollWaitDuration, cancellationToken: token);
+
+                var durationCount = 0;
+                for (var i = cellIndex; i < rewardCells.Count; i++)
+                {
+                    rewardCells[i].ShowTweening();
+                    await UniTask.Delay(betweenCellViewDuration, cancellationToken: token);
+                    durationCount += betweenCellViewDuration;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // 토큰이 취소되면 무시
+                Debug.Log("ShowCellEffect Cancelled");
             }
         }
 
@@ -383,27 +481,48 @@ namespace Nekoyume.UI
         public void ReceiveAllBtn()
         {
             receiveBtn.Interactable = false;
-            ApiClients.Instance.SeasonPassServiceManager.ReceiveAll(
+            ApiClients.Instance.SeasonPassServiceManager.ReceiveAll(currentSeasonPassType,
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
-                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+                    {
+                        RefreshCurrentPage();
+                    }).Forget();
                 },
                 (error) => { OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification); });
+        }
+
+        public void RefreshCurrentPage()
+        {
+            ChangePageByType(currentSeasonPassType);
+            RefreshRedDotObj();
+        }
+
+        public void RefreshRedDotObj()
+        {
+            //레드닷 갱신
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            CourageRedDot.SetActive(seasonPassManager.HasClaimPassType.Contains(SeasonPassServiceClient.PassType.CouragePass) || seasonPassManager.HasPrevClaimPassType.Contains(SeasonPassServiceClient.PassType.CouragePass));
+            WorldClearRedDot.SetActive(seasonPassManager.HasClaimPassType.Contains(SeasonPassServiceClient.PassType.WorldClearPass) || seasonPassManager.HasPrevClaimPassType.Contains(SeasonPassServiceClient.PassType.WorldClearPass));
+            AdventureBossRedDot.SetActive(seasonPassManager.HasClaimPassType.Contains(SeasonPassServiceClient.PassType.AdventureBossPass) || seasonPassManager.HasPrevClaimPassType.Contains(SeasonPassServiceClient.PassType.AdventureBossPass));
         }
 
         public void PrevSeasonClaim()
         {
             prevSeasonClaimButton.SetConditionalState(false);
 
-            ApiClients.Instance.SeasonPassServiceManager.PrevClaim(
+            ApiClients.Instance.SeasonPassServiceManager.PrevClaim(currentSeasonPassType,
                 result =>
                 {
                     OneLineSystem.Push(
                         MailType.System,
                         L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),
                         NotificationCell.NotificationType.Notification);
-                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+                    {
+                        RefreshCurrentPage();
+                    }).Forget();
                     prevSeasonClaimButton.SetConditionalState(true);
                     prevSeasonClaimButton.gameObject.SetActive(false);
                 },
@@ -437,31 +556,6 @@ namespace Nekoyume.UI
             var offsetMax = lineImageRectTransform.offsetMax;
             offsetMax.x = lastLineImagePositon;
             lineImageRectTransform.offsetMax = offsetMax;
-        }
-
-        public int TestCellCount = 20;
-        public int TestCurrentCellLevel = 3;
-        public bool TestLastCell = true;
-        [ContextMenu("TestScrollRefresh")]
-        public void TestScrollRefresh()
-        {
-            AddRewardCellIfNeeded(TestCellCount);
-
-            for (var i = 0; i < rewardCells.Count; i++)
-            {
-                rewardCells[i].gameObject.SetActive(i < TestCellCount);
-                rewardCells[i].SetLevelText(i + 1);
-            }
-            lastRewardCell.gameObject.SetActive(TestLastCell);
-
-            scrollHorizontalLayout.CalculateLayoutInputHorizontal();
-            scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
-            CalculateLineImageWith(TestLastCell);
-
-            // 라인 이미지 채우는 비율 계산 (현재 레벨 - 1) / (총 셀 갯수 - 1) 래벨이 1부터 시작임을 가정.
-            lineImage.fillAmount = (float)(TestCurrentCellLevel - 1) / (float)(TestCellCount - 1);
-
-            ShowCellEffect(TestCurrentCellLevel - 1).Forget();
         }
     }
 }

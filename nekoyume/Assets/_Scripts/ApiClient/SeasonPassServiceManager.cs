@@ -7,34 +7,40 @@ using System.Linq;
 namespace Nekoyume.ApiClient
 {
     using UniRx;
+    using UnityEngine;
 
     public class SeasonPassServiceManager : IDisposable
     {
-        public int AdventureCourageAmount = 10;
-        public int AdventureSweepCourageAmount = 10;
-        public int ArenaCourageAmount = 10;
-        public int WorldBossCourageAmount = 10;
-        public int EventDungeonCourageAmount = 10;
+        public Dictionary<SeasonPassServiceClient.PassType, Dictionary<SeasonPassServiceClient.ActionType, int>> SeasonExpPointAmount { get; private set; } = new Dictionary<SeasonPassServiceClient.PassType, Dictionary<SeasonPassServiceClient.ActionType, int>>();
 
         public SeasonPassServiceClient Client { get; private set; }
 
-        public SeasonPassServiceClient.SeasonPassSchema CurrentSeasonPassData { get; private set; }
-        public List<SeasonPassServiceClient.LevelInfoSchema> LevelInfos { get; private set; }
-        public ReactiveProperty<SeasonPassServiceClient.UserSeasonPassSchema> AvatarInfo = new();
+        public Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.SeasonPassSchema> CurrentSeasonPassData { get; private set; } = new Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.SeasonPassSchema>();
+        public Dictionary<SeasonPassServiceClient.PassType, List<SeasonPassServiceClient.LevelInfoSchema>> LevelInfos { get; private set; } = new Dictionary<SeasonPassServiceClient.PassType, List<SeasonPassServiceClient.LevelInfoSchema>>();
+        public Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.UserSeasonPassSchema> UserSeasonPassDatas = new();
 
+        //Courage Season pass의 주기를 공통으로 사용함으로 해당데이터는 분기처리해두지않음.
         public ReactiveProperty<DateTime> SeasonEndDate = new(DateTime.MinValue);
         public ReactiveProperty<string> RemainingDateTime = new("");
 
-        public ReactiveProperty<DateTime> PrevSeasonClaimEndDate = new(DateTime.MinValue);
-        public ReactiveProperty<string> PrevSeasonClaimRemainingDateTime = new("");
-        public ReactiveProperty<bool> PrevSeasonClaimAvailable = new(false);
-
-        private bool _prevSeasonClaimAvailable = false;
+        public Dictionary<SeasonPassServiceClient.PassType, DateTime> PrevSeasonClaimEndDates = new Dictionary<SeasonPassServiceClient.PassType, DateTime>();
 
         public string GoogleMarketURL { get; set; } = "https://play.google.com/store/search?q=Nine%20Chronicles&c=apps&hl=en-EN"; // default
         public string AppleMarketURL { get; set; } = "https://nine-chronicles.com/"; // default
 
         public bool IsInitialized => Client != null;
+
+        private SeasonPassServiceClient.PassType[] passTypes =
+        {
+            SeasonPassServiceClient.PassType.CouragePass,
+            SeasonPassServiceClient.PassType.WorldClearPass,
+            SeasonPassServiceClient.PassType.AdventureBossPass
+        };
+
+        public HashSet<SeasonPassServiceClient.PassType> HasClaimPassType { get; private set; } = new HashSet<SeasonPassServiceClient.PassType>();
+        public HashSet<SeasonPassServiceClient.PassType> HasPrevClaimPassType { get; private set; } = new HashSet<SeasonPassServiceClient.PassType>();
+
+        public System.Action UpdatedUserDatas;
 
         public SeasonPassServiceManager(string url)
         {
@@ -43,105 +49,174 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"SeasonPassServiceManager Initialized Fail url is Null");
                 return;
             }
-
             Client = new SeasonPassServiceClient(url);
             Initialize();
         }
 
-        private void Initialize()
+        private async Task FetchCurrentSeasonPassDatas()
         {
-            void GetSeasonPassCurrentRetry(int retry)
+            // Fetch current season pass data with retries
+            foreach (var passType in passTypes)
             {
-                Client.GetSeasonpassCurrentAsync((result) =>
+                if (!IsCurrentSeasonPassValid(passType))
                 {
-                    CurrentSeasonPassData = result;
-                    DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
-                    SeasonEndDate.SetValueAndForceNotify(endDateTime);
-                    RefreshRemainingTime();
-                }, (error) =>
-                {
-                    NcDebug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonPassCurrentAsync] error: {error}");
-                    if (retry <= 0)
-                    {
-                        return;
-                    }
+                    await FetchSeasonPassDataWithRetry(passType);
 
-                    GetSeasonPassCurrentRetry(--retry);
-                }).AsUniTask().Forget();
+                    await FetchLevelInfoDataWithRetry(passType);
+                }
             }
 
-            GetSeasonPassCurrentRetry(3);
+        }
 
+        private bool IsCurrentSeasonPassValid(SeasonPassServiceClient.PassType passType)
+        {
+            if (CurrentSeasonPassData != null &&
+                CurrentSeasonPassData.TryGetValue(passType, out var SeasonPassSchema) &&
+                DateTime.TryParse(SeasonPassSchema.EndTimestamp, out var endDateTime) &&
+                endDateTime >= DateTime.Now)
+            {
+                return true;
+            }
+
+            //월드패스의경우 종료기간이 없기때문에 리워드가 있으면 유효하다고 판단한다.
+            if (passType == SeasonPassServiceClient.PassType.WorldClearPass &&
+                CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema) &&
+                seasonPassSchema.RewardList.Count > 0)
+            {
+                NcDebug.LogWarning($"SeasonPassServiceManager IsCurrentSeasonPassValid [WorldClearPass] is null");
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task FetchSeasonPassDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
+        {
+            int retryCount = 0;
+            
+            while (retryCount < maxRetries)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                await Client.GetSeasonpassCurrentAsync(passType, (result) =>
+                {
+                    CurrentSeasonPassData[passType] = result;
+
+                    // 용기 시즌패스의 경우만 종료일을 설정하고 남은 시간을 갱신한다.
+                    // 현재는 용기시즌패스, 어드벤쳐보스 시즌패스 모두 같은 시즌주기시간을 사용하기때문. 
+                    if (passType == SeasonPassServiceClient.PassType.CouragePass)
+                    {
+                        DateTime.TryParse(result.EndTimestamp, out var endDateTime);
+                        SeasonEndDate.SetValueAndForceNotify(endDateTime);
+                        RefreshRemainingTime();
+                    }
+
+                    tcs.SetResult(true);
+                },
+                (error) =>
+                {
+                    NcDebug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonPassCurrentAsync] [{passType}] error: {error}");
+                    tcs.SetResult(false);
+                });
+
+                if (await tcs.Task)
+                    break;
+
+                retryCount++;
+            }
+        }
+
+        private async Task FetchLevelInfoDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
+        {
+            int retryCount = 0;
+            while (retryCount < maxRetries)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                await Client.GetSeasonpassLevelAsync(passType, (result) =>
+                {
+                    LevelInfos[passType] = result.OrderBy(info => info.Level).ToList();
+                    tcs.SetResult(true);
+                },
+                (error) =>
+                {
+                    NcDebug.LogError($"SeasonPassServiceManager RefreshSeasonpassExpAmount [GetSeasonpassLevelAsync] [{passType}] error: {error}");
+                    tcs.SetResult(false);
+                });
+
+                if (await tcs.Task)
+                    break;
+
+                retryCount++;
+            }
+        }
+
+        private void Initialize()
+        {
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
             {
                 RefreshRemainingTime();
-                RefreshPrevRemainingClaim();
             }).AddTo(Game.Game.instance);
 
-            RefreshSeasonPassExpAmount();
+            InitializeSeasonPassDatasAsync().Forget();
 
             Game.Lobby.OnLobbyEnterEvent += () => AvatarStateRefreshAsync().AsUniTask().Forget();
         }
 
-        private void RefreshSeasonPassExpAmount()
+        private async UniTaskVoid InitializeSeasonPassDatasAsync()
         {
-            void GetSeasonPassLevelRetry(int retry)
+            await FetchCurrentSeasonPassDatas();
+            foreach (var passType in passTypes)
             {
-                Client.GetSeasonpassLevelAsync((result) => { LevelInfos = result.OrderBy(info => info.Level).ToList(); }, (error) =>
-                {
-                    NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
-                    if (retry <= 0)
-                    {
-                        return;
-                    }
-
-                    GetSeasonPassLevelRetry(--retry);
-                }).AsUniTask().Forget();
+                await FetchExpInfoDataWithRetry(passType);
             }
+        }
 
-            GetSeasonPassLevelRetry(3);
-
-            void GetSeasonPassExpRetry(int retry)
+        public int ExpPointAmount(SeasonPassServiceClient.PassType passType, SeasonPassServiceClient.ActionType actionType)
+        {
+            if (SeasonExpPointAmount.TryGetValue(passType, out var expPointAmountDic))
             {
-                Client.GetSeasonpassExpAsync((result) =>
+                if (expPointAmountDic.TryGetValue(actionType, out var expPointAmount))
+                {
+                    return expPointAmount;
+                }
+            }
+            return 0;
+        }
+
+        private async Task FetchExpInfoDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
+        {
+            int retryCount = 0;
+            while (retryCount < maxRetries)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                await Client.GetSeasonpassExpAsync(passType, 0, (result) =>
                 {
                     foreach (var item in result)
                     {
-                        switch (item.ActionType)
+                        if(!SeasonExpPointAmount.TryGetValue(passType, out var expPointAmountDic))
                         {
-                            case SeasonPassServiceClient.ActionType.hack_and_slash:
-                                AdventureCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.hack_and_slash_sweep:
-                                AdventureSweepCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.battle_arena:
-                                ArenaCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.raid:
-                                WorldBossCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.event_dungeon:
-                                EventDungeonCourageAmount = item.Exp;
-                                break;
-                            default:
-                                break;
+                            SeasonExpPointAmount.Add(passType, new Dictionary<SeasonPassServiceClient.ActionType, int>());
                         }
+
+                        SeasonExpPointAmount[passType][item.ActionType] = item.Exp;
                     }
-                }, (error) =>
+                    tcs.SetResult(true);
+                },
+                (error) =>
                 {
-                    NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
-                    if (retry <= 0)
-                    {
-                        return;
-                    }
+                    NcDebug.LogError($"SeasonPassServiceManager FetchExpInfoDataWithRetry [GetSeasonpassExpAsync] [{passType}] error: {error}");
+                    tcs.SetResult(false);
+                });
 
-                    GetSeasonPassExpRetry(--retry);
-                }).AsUniTask().Forget();
+                if (await tcs.Task)
+                    break;
+
+                retryCount++;
             }
-
-            GetSeasonPassExpRetry(3);
         }
+
 
         private void RefreshRemainingTime()
         {
@@ -159,16 +234,14 @@ namespace Nekoyume.ApiClient
             RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}{minText}");
         }
 
-        private void RefreshPrevRemainingClaim()
+        public string GetPrevRemainingClaim(SeasonPassServiceClient.PassType passType)
         {
-            if (PrevSeasonClaimEndDate.Value < DateTime.Now || !_prevSeasonClaimAvailable)
+            if (!PrevSeasonClaimEndDates.TryGetValue(passType, out var claimEndDate)|| claimEndDate < DateTime.Now || !HasPrevClaimPassType.Contains(passType))
             {
-                PrevSeasonClaimRemainingDateTime.SetValueAndForceNotify("0m");
-                PrevSeasonClaimAvailable.Value = false;
-                return;
+                return "0m";
             }
 
-            var prevSeasonTimeSpan = PrevSeasonClaimEndDate.Value - DateTime.Now;
+            var prevSeasonTimeSpan = claimEndDate - DateTime.Now;
             var prevSeasonDayExist = prevSeasonTimeSpan.TotalDays > 1;
             var prevSeasonHourExist = prevSeasonTimeSpan.TotalHours >= 1;
             var prevSeasonDayText = prevSeasonDayExist ? $"{(int)prevSeasonTimeSpan.TotalDays}d " : string.Empty;
@@ -179,79 +252,108 @@ namespace Nekoyume.ApiClient
                 prevSeasonMinText = $"{(int)prevSeasonTimeSpan.Minutes}m";
             }
 
-            PrevSeasonClaimRemainingDateTime.SetValueAndForceNotify($"{prevSeasonDayText}{prevSeasonHourText}{prevSeasonMinText}");
-            PrevSeasonClaimAvailable.Value = _prevSeasonClaimAvailable;
+            return $"{prevSeasonDayText}{prevSeasonHourText}{prevSeasonMinText}";
         }
 
         public async Task AvatarStateRefreshAsync()
         {
             if (Client == null)
             {
-                AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogWarning("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
                 return;
             }
 
             if (CurrentSeasonPassData == null || LevelInfos == null)
             {
-                AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
                 return;
             }
 
             if (!Game.Game.instance.CurrentPlanetId.HasValue)
             {
-                AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Game.Game.instance.CurrentPlanetId is null");
                 return;
             }
 
             if (Game.Game.instance.States == null || Game.Game.instance.States.CurrentAvatarState == null)
             {
-                AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] States or CurrentAvatarState is null");
                 return;
             }
 
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-
-            await Client.GetSeasonpassCurrentAsync(
-                (result) =>
-                {
-                    if (CurrentSeasonPassData.Id == result.Id)
-                    {
-                        return;
-                    }
-
-                    CurrentSeasonPassData = result;
-                    DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
-                    SeasonEndDate.SetValueAndForceNotify(endDateTime);
-                    RefreshRemainingTime();
-                    RefreshSeasonPassExpAmount();
-                },
-                (error) => { NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonPassCurrentAsync] error: {error}"); });
-
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
-                (result) => { AvatarInfo.SetValueAndForceNotify(result); },
-                (error) =>
-                {
-                    AvatarInfo.SetValueAndForceNotify(null);
-                    NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
-                });
-
-
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id - 1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
-                (result) =>
-                {
-                    _prevSeasonClaimAvailable = result.IsPremium && result.LastPremiumClaim < result.Level;
-                    DateTime.TryParse(result.ClaimLimitTimestamp, out var claimLimitTimestamp);
-                    PrevSeasonClaimEndDate.SetValueAndForceNotify(claimLimitTimestamp);
-                    RefreshPrevRemainingClaim();
-                },
-                (error) => { NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [PrevSeasonStatus] error: {error}"); });
+            await FetchCurrentSeasonPassDatas();
+            await FetchUserAllStatus();
         }
 
-        public void ReceiveAll(Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
+        public async Task FetchUserAllStatus()
+        {
+            HasClaimPassType.Clear();
+            HasPrevClaimPassType.Clear();
+            foreach (var passType in passTypes)
+            {
+                if(CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema))
+                {
+                    await FetchUserStatus(passType, seasonPassSchema.SeasonIndex);
+                }
+                else
+                {
+                    Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] CurrentSeasonPassData {passType} is null");  
+                }
+            }
+            UpdatedUserDatas?.Invoke();
+        }
+
+        private async Task FetchUserStatus(SeasonPassServiceClient.PassType passType, int seasonIndex)
+        {
+            await Client.GetUserStatusAsync(
+                        Game.Game.instance.CurrentPlanetId.ToString(),
+                        Game.Game.instance.States.CurrentAvatarState.address.ToString(),
+                        passType,
+                        seasonIndex, (result) =>
+                        {
+                            UserSeasonPassDatas[passType] = result;
+                            if(result.Level > result.LastNormalClaim || (result.IsPremium && result.Level > result.LastPremiumClaim))
+                            {
+                                HasClaimPassType.Add(passType);
+                            }
+                            else
+                            {
+                                HasClaimPassType.Remove(passType);
+                            }
+                        },
+                        (error) =>
+                        {
+                            NcDebug.LogError($"SeasonPassServiceManager [FetchUserStatus] error: {error}");
+                        });
+
+            //이전 시즌정보 조회
+            await Client.GetUserStatusAsync(
+                        Game.Game.instance.CurrentPlanetId.ToString(),
+                        Game.Game.instance.States.CurrentAvatarState.address.ToString(),
+                        passType,
+                        seasonIndex - 1, (result) =>
+                        {
+                            DateTime.TryParse(result.ClaimLimitTimestamp, out var claimLimitTimestamp);
+                            PrevSeasonClaimEndDates[passType] = claimLimitTimestamp;
+
+                            //이전시즌 보상의경우 프리미엄일때만 체크합니다.
+                            //https://github.com/planetarium/NineChronicles/issues/4731#issuecomment-2044277184
+                            if (result.IsPremium && result.Level > result.LastPremiumClaim)
+                            {
+                                HasPrevClaimPassType.Add(passType);
+                            }
+                            else
+                            {
+                                HasPrevClaimPassType.Remove(passType);
+                            }
+                        },
+                        (error) =>
+                        {
+                            NcDebug.LogError($"SeasonPassServiceManager Prev [FetchUserStatus] error: {error}");
+                        });
+        }
+
+        public void ReceiveAll(SeasonPassServiceClient.PassType passType, Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
         {
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
@@ -263,15 +365,24 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
+            if (!CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema))
+            {
+                var errorString = $"SeasonPassServiceManager [PrevClaim] CurrentSeasonPassData {passType} is null";
+                NcDebug.LogError(errorString);
+                onError?.Invoke(errorString);
+                return;
+            }
+
             Client.PostUserClaimAsync(new SeasonPassServiceClient.ClaimRequestSchema
-                {
-                    AgentAddr = agentAddress.ToString(),
-                    AvatarAddr = avatarAddress.ToString(),
-                    SeasonId = AvatarInfo.Value.SeasonPassId,
-                    PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
-                    Force = false,
-                    Prev = false
-                },
+            {
+                AgentAddr = agentAddress.ToString(),
+                AvatarAddr = avatarAddress.ToString(),
+                SeasonIndex = seasonPassSchema.SeasonIndex,
+                PassType = passType,
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
+                Force = false,
+                Prev = false
+            },
                 (result) => { onSucces?.Invoke(result); },
                 (error) =>
                 {
@@ -280,7 +391,7 @@ namespace Nekoyume.ApiClient
                 }).AsUniTask().Forget();
         }
 
-        public void PrevClaim(Action<SeasonPassServiceClient.ClaimResultSchema> onSuccess, Action<string> onError)
+        public void PrevClaim(SeasonPassServiceClient.PassType passType, Action<SeasonPassServiceClient.ClaimResultSchema> onSuccess, Action<string> onError)
         {
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
@@ -292,15 +403,24 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
+            if(!CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema))
+            {
+                var errorString = $"SeasonPassServiceManager [PrevClaim] CurrentSeasonPassData {passType} is null";
+                NcDebug.LogError(errorString);
+                onError?.Invoke(errorString);
+                return;
+            }
+
             Client.PostUserClaimprevAsync(new SeasonPassServiceClient.ClaimRequestSchema
-                {
-                    AgentAddr = agentAddress.ToString(),
-                    AvatarAddr = avatarAddress.ToString(),
-                    SeasonId = AvatarInfo.Value.SeasonPassId - 1,
-                    PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
-                    Force = false,
-                    Prev = true
-                },
+            {
+                AgentAddr = agentAddress.ToString(),
+                AvatarAddr = avatarAddress.ToString(),
+                SeasonIndex = seasonPassSchema.SeasonIndex - 1,
+                PassType = passType,
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
+                Force = false,
+                Prev = true
+            },
                 (result) => { onSuccess?.Invoke(result); },
                 (error) =>
                 {
@@ -309,9 +429,12 @@ namespace Nekoyume.ApiClient
                 }).AsUniTask().Forget();
         }
 
-        public void GetExp(int level, out int minExp, out int maxExp)
+        public void GetExp(SeasonPassServiceClient.PassType passType, int level, out int minExp, out int maxExp)
         {
-            if (LevelInfos == null)
+            if (LevelInfos == null
+                || !LevelInfos.TryGetValue(passType, out var levelInfoList)
+                || levelInfoList.Count - 2 < 0
+                || levelInfoList.Count - 1 < 0)
             {
                 NcDebug.LogError("[SeasonPassServiceManager] LevelInfos Not Set");
                 minExp = 0;
@@ -319,20 +442,20 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
-            if (level >= LevelInfos.Count)
+            if (level >= levelInfoList.Count)
             {
-                minExp = LevelInfos[LevelInfos.Count - 2].Exp;
-                maxExp = LevelInfos[LevelInfos.Count - 1].Exp;
+                minExp = levelInfoList[levelInfoList.Count - 2].Exp;
+                maxExp = levelInfoList[levelInfoList.Count - 1].Exp;
                 return;
             }
 
-            minExp = level - 1 >= 0 ? LevelInfos[level - 1].Exp : 0;
-            maxExp = LevelInfos[level].Exp;
+            minExp = level - 1 >= 0 ? levelInfoList[level - 1].Exp : 0;
+            maxExp = levelInfoList[level].Exp;
         }
 
         public string GetSeasonPassPopupViewKey()
         {
-            var result = $"SeasonPassCouragePopupViewed {Game.Game.instance.States.CurrentAvatarState.address.ToHex()} SeasonPassID {CurrentSeasonPassData.Id}";
+            var result = $"SeasonPassCouragePopupViewed {Game.Game.instance.States.CurrentAvatarState.address.ToHex()} SeasonPassID {CurrentSeasonPassData[SeasonPassServiceClient.PassType.CouragePass].Id}";
             return result;
         }
 

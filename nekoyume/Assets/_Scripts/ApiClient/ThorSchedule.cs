@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 
 namespace Nekoyume.ApiClient
 {
@@ -21,6 +22,13 @@ namespace Nekoyume.ApiClient
         
         public double DiffFromEndSeconds => DiffFromEndTimeSpan.TotalSeconds;
 
-        public long DiffFromEndBlockIndex => (long)(DiffFromEndSeconds / Nekoyume.Blockchain.Policy.BlockPolicySource.BlockInterval.TotalSeconds);
+        public long DiffFromEndBlockIndex => (long)(DiffFromEndSeconds / Util.BlockInterval);
+    }
+    
+    [Serializable]
+    public class ThorSchedules
+    {
+        public ThorSchedule MainNet { get; set; }
+        public ThorSchedule Others { get; set; }
     }
 }

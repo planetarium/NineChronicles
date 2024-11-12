@@ -112,6 +112,7 @@ namespace Nekoyume.Game
             {
                 NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
                 _currentPlanetId = value;
+                LiveAssetManager.instance.SetThorSchedule(value);
             }
         }
 
@@ -186,7 +187,7 @@ namespace Nekoyume.Game
         private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
         private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
         private const int TicketPushBlockCountThreshold = 300;
-        
+
         private PlanetId? _currentPlanetId;
 
 #region Mono & Initialization
@@ -225,12 +226,12 @@ namespace Nekoyume.Game
             CreateAgent();
             PostAwake();
         }
-        
+
         public void AddRequestManager()
         {
             gameObject.AddComponent<RequestManager>();
         }
-        
+
         /// <summary>
         /// Invoke On RUN_ON_MOBILE
         /// </summary>
@@ -240,10 +241,10 @@ namespace Nekoyume.Game
             Application.targetFrameRate = 30;
         }
 
-        public IEnumerator InitializeLiveAssetManager(System.Action onSucceededThor = null)
-        {            
-            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
-            liveAssetManager.InitializeData(onSucceededThor);
+        public IEnumerator InitializeLiveAssetManager()
+        {
+            var liveAssetManager = LiveAssetManager.instance;
+            liveAssetManager.InitializeData();
 #if RUN_ON_MOBILE
             yield return liveAssetManager.InitializeApplicationCLO();
 
@@ -271,7 +272,7 @@ namespace Nekoyume.Game
 #endif
             NcSceneManager.Instance.LoadScene(SceneType.Login).Forget();
         }
-        
+
         /// <summary>
         /// Invoke On Window Editor
         /// </summary>
@@ -1019,7 +1020,7 @@ namespace Nekoyume.Game
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
         }
-        
+
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
@@ -1397,7 +1398,7 @@ namespace Nekoyume.Game
                 }
                 yield break;
             }
-            
+
             yield return L10nManager
                 .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
                     ? L10nManager.CurrentLanguage
@@ -1507,7 +1508,7 @@ namespace Nekoyume.Game
         public async UniTask InitializeStage()
         {
             Stage.Initialize();
-            
+
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();

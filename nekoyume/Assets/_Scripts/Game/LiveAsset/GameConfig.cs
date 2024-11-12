@@ -6,8 +6,6 @@ namespace Nekoyume.Game.LiveAsset
     [Serializable]
     public class GameConfig
     {
-        public int SecondsPerBlock { get; set; }
-
         public class RequiredStage
         {
             public const int WorkShop = 0;
