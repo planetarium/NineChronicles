@@ -4,12 +4,12 @@ using System.Linq;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,8 +28,23 @@ namespace Nekoyume.UI
             public Image image;
         }
 
+        [Serializable]
+        private struct EventToggle
+        {
+            public Toggle toggle;
+            public TextMeshProUGUI disabledText;
+            public TextMeshProUGUI enabledText;
+
+            public void SetText(string text)
+            {
+                disabledText.text = text;
+                enabledText.text = text;
+            }
+        }
+
         [SerializeField] private Button closeButton;
-        [SerializeField] private Toggle[] tabToggles;
+        [SerializeField] private TextMeshProUGUI titleText;
+        [SerializeField] private EventToggle[] tabToggles;
         [SerializeField] private TextMeshProUGUI eventPeriodText;
 
         [SerializeField] private TextMeshProUGUI descriptionText;
@@ -38,8 +53,6 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton[] actionButtons;
         [SerializeField] private ConditionalButton receiveButton;
         [SerializeField] private GameObject receiveButtonIndicator;
-
-        [SerializeField] private Sprite[] eventBannerSprites;
 
         private readonly List<IDisposable> _disposables = new ();
 
@@ -53,33 +66,45 @@ namespace Nekoyume.UI
                 Close();
             });
             CloseWidget = () => Close(true);
+        }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            var eventRewardPopupData = LiveAssetManager.instance.EventRewardPopupData;
+            titleText.text = L10nManager.Localize(eventRewardPopupData.TitleL10NKey);
+
+            var eventRewards = eventRewardPopupData.EventRewards
+                .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
+                .ToList();
             for (var i = 0; i < tabToggles.Length; i++)
             {
-                var index = i;
-                tabToggles[i].onValueChanged.AddListener(value =>
+                var tabToggle = tabToggles[i];
+                if (i >= eventRewards.Count)
+                {
+                    tabToggle.toggle.gameObject.SetActive(false);
+                    continue;
+                }
+
+                var eventReward = eventRewards[i];
+                System.Action action = eventReward.ContentPresetType switch
+                {
+                    EventRewardPopupData.ContentPresetType.None => () => SetContent(eventReward.Content),
+                    EventRewardPopupData.ContentPresetType.ClaimGift => () => SetClaimGift(eventReward.Content),
+                    EventRewardPopupData.ContentPresetType.PatrolReward => SetPatrolReward,
+                    EventRewardPopupData.ContentPresetType.ThorChain => SetThorChain,
+                    _ => null,
+                };
+                tabToggle.toggle.onValueChanged.AddListener(value =>
                 {
                     if (value)
                     {
-                        SetData(index);
-
-                        switch (index)
-                        {
-                            case 0:
-                                SetCustomGift();
-                                break;
-                            case 1:
-                                SetPatrolReward();
-                                break;
-                            case 2:
-                                SetShopPackage();
-                                break;
-                            case 3:
-                                SetDoubleContentsRewards();
-                                break;
-                        }
+                        SetData(eventReward);
+                        action?.Invoke();
                     }
                 });
+                tabToggle.SetText(L10nManager.Localize(eventReward.ToggleL10NKey));
             }
         }
 
@@ -88,8 +113,9 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             // init toggle state
-            tabToggles.First().isOn = false;
-            tabToggles.First().isOn = true;
+            var defaultToggle = tabToggles.First().toggle;
+            defaultToggle.isOn = false;
+            defaultToggle.isOn = true;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -99,14 +125,14 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
-        private void SetData(int index)
+        private void SetData(EventRewardPopupData.EventReward eventReward)
         {
             _disposables.DisposeAllAndClear();
 
-            descriptionText.text = L10nManager.Localize($"UI_EVENT_DESCRIPTION_{index}");
+            eventPeriodText.text = L10nManager.Localize("UI_EVENT_PERIOD", eventReward.BeginDateTime, eventReward.EndDateTime);
+            descriptionText.text = L10nManager.Localize(eventReward.DescriptionL10NKey);
 
             eventImage.container.SetActive(false);
-            eventImage.image.sprite = eventBannerSprites[index];
             patrolRewardModule.gameObject.SetActive(false);
 
             receiveButton.gameObject.SetActive(false);
@@ -116,9 +142,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetCustomGift()
+        private void SetClaimGift(EventRewardPopupData.Content content)
         {
             eventImage.container.SetActive(true);
+            eventImage.image.sprite = content.Image;
 
             receiveButton.gameObject.SetActive(true);
             receiveButton.OnSubmitSubject
@@ -166,39 +193,26 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
         }
 
-        private void SetShopPackage()
+        private void SetThorChain()
         {
-            eventImage.container.SetActive(true);
-
-            var button = actionButtons.First();
-            button.gameObject.SetActive(true);
-            button.Interactable =
-                ShortcutHelper.CheckConditionOfShortcut(ShortcutHelper.PlaceType.MobileShop);
-
-            var shortcut =
-                ShortcutHelper.GetAcquisitionPlace(this, ShortcutHelper.PlaceType.MobileShop);
-            button.Text = shortcut.GuideText;
-            button.OnSubmitSubject.Subscribe(_ => shortcut.OnClick?.Invoke()).AddTo(_disposables);
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
+            var isOpened = thorSchedule != null && thorSchedule.IsOpened;
         }
 
-        private void SetDoubleContentsRewards()
+        private void SetContent(EventRewardPopupData.Content content)
         {
             eventImage.container.SetActive(true);
+            eventImage.image.sprite = content.Image;
 
-            var shortcutTypes = new[]
+            for (var i = 0; i < content.ShortcutTypes.Length; i++)
             {
-                ShortcutHelper.PlaceType.Arena,
-                ShortcutHelper.PlaceType.AdventureBoss,
-                ShortcutHelper.PlaceType.WorldBoss,
-            };
+                var shortcutType = content.ShortcutTypes[i];
 
-            for (var i = 0; i < shortcutTypes.Length; i++)
-            {
                 var button = actionButtons[i];
                 button.gameObject.SetActive(true);
-                button.Interactable = ShortcutHelper.CheckConditionOfShortcut(shortcutTypes[i]);
+                button.Interactable = ShortcutHelper.CheckConditionOfShortcut(shortcutType);
 
-                var shortcut = ShortcutHelper.GetAcquisitionPlace(this, shortcutTypes[i]);
+                var shortcut = ShortcutHelper.GetAcquisitionPlace(this, shortcutType);
                 button.Text = shortcut.GuideText;
                 button.OnSubmitSubject
                     .Subscribe(_ => shortcut.OnClick?.Invoke())
