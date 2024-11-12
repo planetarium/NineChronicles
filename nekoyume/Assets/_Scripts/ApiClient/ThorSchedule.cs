@@ -19,10 +19,6 @@ namespace Nekoyume.ApiClient
         public bool IsOpened => StartDateUtc <= DateTimeOffset.UtcNow && DateTimeOffset.UtcNow <= EndDateUtc;
 
         public TimeSpan DiffFromEndTimeSpan => EndDateUtc - DateTimeOffset.UtcNow;
-
-        public double DiffFromEndSeconds => DiffFromEndTimeSpan.TotalSeconds;
-
-        public long DiffFromEndBlockIndex => (long)(DiffFromEndSeconds / Util.BlockInterval);
     }
 
     [Serializable]

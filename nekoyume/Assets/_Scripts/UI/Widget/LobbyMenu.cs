@@ -28,6 +28,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
 using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -110,7 +111,9 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject adventureBossUnMark;
 
-        [SerializeField] private Button thorSeasonPassButton;
+        [SerializeField] private Button thorSeasonButton;
+
+        [SerializeField] private TMP_Text thorScheduleText;
 
         private Coroutine _coLazyClose;
 
@@ -189,9 +192,10 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            thorSeasonPassButton.onClick.AddListener((() =>
+            thorSeasonButton.onClick.AddListener((() =>
             {
-                // TODO:
+                // TODO: open thor season
+                Find<EventRewardPopup>().Show();
             }));
         }
 
@@ -746,8 +750,8 @@ namespace Nekoyume.UI
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
 
-            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
-            thorSeasonPassButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
+            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            thorSeasonButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
 
             var isInEventDate = true;
             btnPatrolReward.gameObject.SetActive(!isInEventDate);
@@ -770,6 +774,27 @@ namespace Nekoyume.UI
                 eventDungeonTicketsText.text =
                     value.currentTickets.ToString(CultureInfo.InvariantCulture);
             }).AddTo(_disposablesAtShow);
+
+            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule.IsOpened)
+            {
+                Observable.Interval(TimeSpan.FromMinutes(1))
+                    .Subscribe(_ => UpdateThorScheduleText())
+                    .AddTo(_disposablesAtShow);
+                UpdateThorScheduleText();
+            }
+        }
+
+        private void UpdateThorScheduleText()
+        {
+            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule is null || !thorSchedule.IsOpened)
+            {
+                return;
+            }
+
+            var timeSpan = thorSchedule.DiffFromEndTimeSpan;
+            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()})";
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

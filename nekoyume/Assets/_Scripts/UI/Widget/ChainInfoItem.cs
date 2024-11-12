@@ -7,18 +7,18 @@ namespace Nekoyume.UI
 {
     using Game;
     using UniRx;
-    
+
     public class ChainInfoItem : MonoBehaviour
     {
         private const string DefaultUrl = "https://ninechronicles.medium.com/";
-        
+
         [field: SerializeField] public TMP_Text BlockIndexText { get; private set; }
         [field: SerializeField] public UnityEngine.UI.Button ViewDetailButton { get; private set; }
-        
+
         private readonly List<IDisposable> _disposables = new();
-        
+
         private System.Action _onOpenDetailWebPage;
-        
+
         public event System.Action OnOpenDetailWebPage
         {
             add
@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             }
             remove => _onOpenDetailWebPage -= value;
         }
-        
+
 #region MonoBehaviour
         private void Awake()
         {
@@ -38,22 +38,16 @@ namespace Nekoyume.UI
         private void OnEnable()
         {
             UpdateUI();
-            Game.instance.Agent.BlockIndexSubject
-                .ObserveOnMainThread()
-                .Subscribe(UpdateBlockIndex)
+            Observable.Interval(TimeSpan.FromMinutes(1))
+                .Subscribe(_ => UpdateUI())
                 .AddTo(_disposables);
         }
-        
+
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
         }
 #endregion MonoBehaviour
-        
-        private void UpdateBlockIndex(long _)
-        {
-            UpdateUI();
-        }
 
         private void UpdateUI()
         {
@@ -62,11 +56,11 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
-            var remainBlock = thorSchedule.DiffFromEndBlockIndex;
-            BlockIndexText.text = $"{Nekoyume.L10n.L10nManager.Localize("UI_REMAINING_TIME_ONLY")} <style=G5>{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
+
+            var timeSpan = thorSchedule.DiffFromEndTimeSpan;
+            BlockIndexText.text = $"{L10n.L10nManager.Localize("UI_REMAINING_TIME_ONLY")} <style=Clock>{timeSpan.TimespanToString()}";
         }
-        
+
         private void OpenDetailWebPage()
         {
             var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
