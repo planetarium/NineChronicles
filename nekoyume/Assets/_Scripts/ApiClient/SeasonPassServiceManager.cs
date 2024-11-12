@@ -315,8 +315,14 @@ namespace Nekoyume.ApiClient
                             else if (currentSeasonPassData.SeasonIndex - 1 == userSeasonPassSchema.SeasonPass.SeasonIndex)
                             {
                                 //이전 시즌 정보
-                                DateTime.TryParse(userSeasonPassSchema.ClaimLimitTimestamp, out var claimLimitTimestamp);
-                                PrevSeasonClaimEndDates[userSeasonPassSchema.SeasonPass.PassType] = claimLimitTimestamp;
+                                if (DateTime.TryParse(userSeasonPassSchema.ClaimLimitTimestamp, out var claimLimitTimestamp))
+                                {
+                                    PrevSeasonClaimEndDates[userSeasonPassSchema.SeasonPass.PassType] = claimLimitTimestamp;
+                                }
+                                else
+                                {
+                                    Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] PrevSeasonClaimEndDates {userSeasonPassSchema.SeasonPass.PassType} is Not DateTime {userSeasonPassSchema.ClaimLimitTimestamp}");
+                                }
 
                                 //이전시즌 보상의경우 프리미엄일때만 체크합니다.
                                 //https://github.com/planetarium/NineChronicles/issues/4731#issuecomment-2044277184
