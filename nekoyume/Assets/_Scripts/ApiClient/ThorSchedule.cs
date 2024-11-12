@@ -24,4 +24,11 @@ namespace Nekoyume.ApiClient
 
         public long DiffFromEndBlockIndex => (long)(DiffFromEndSeconds / Util.BlockInterval);
     }
+    
+    [Serializable]
+    public class ThorSchedules
+    {
+        public ThorSchedule MainNet { get; set; }
+        public ThorSchedule Others { get; set; }
+    }
 }

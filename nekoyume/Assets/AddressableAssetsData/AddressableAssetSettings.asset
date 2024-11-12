@@ -47,6 +47,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0033a757bfbaeac479ed5dd1b08f19b1, type: 2}
   - {fileID: 11400000, guid: ae964126ea486de4aba5da44e684ffde, type: 2}
   - {fileID: 11400000, guid: 48645fd9ccfdfbb4487c45d0f5f76660, type: 2}
+  - {fileID: 11400000, guid: 72ee59e642e0eae4e85c19c89c75ba19, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -108,6 +109,8 @@ MonoBehaviour:
     - Character
     - Skills
     - Buffs
+    - MusicAudio
+    - SfxAudio
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 9f4f41e954ec39941904844ab832b4ea, type: 2}
