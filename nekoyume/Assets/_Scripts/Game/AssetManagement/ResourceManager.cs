@@ -129,7 +129,7 @@ namespace Nekoyume
         {
             var opHandle = Addressables.LoadResourceLocationsAsync(label, typeof(T));
             await opHandle;
-            
+
             NcDebug.Log($"LoadAllAsync : {label}");
 
             foreach (var result in opHandle.Result)
