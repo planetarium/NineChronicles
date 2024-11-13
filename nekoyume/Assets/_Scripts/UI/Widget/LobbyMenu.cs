@@ -195,8 +195,7 @@ namespace Nekoyume.UI
 
             thorSeasonButton.onClick.AddListener((() =>
             {
-                // TODO: open thor season
-                Find<EventRewardPopup>().Show();
+                Find<EventRewardPopup>().ShowAsThorChain();
             }));
         }
 

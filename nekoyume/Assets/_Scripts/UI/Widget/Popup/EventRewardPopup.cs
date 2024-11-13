@@ -119,7 +119,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
-            if (_isInitialized)
+            if (!_isInitialized)
             {
                 Initialize();
             }
@@ -128,6 +128,26 @@ namespace Nekoyume.UI
             var defaultToggle = tabToggles.First().toggle;
             defaultToggle.isOn = false;
             defaultToggle.isOn = true;
+        }
+
+        public void ShowAsThorChain()
+        {
+            base.Show();
+
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
+
+            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            var thor = eventRewards.FirstOrDefault(reward =>
+                reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ThorChain);
+            var index = Array.IndexOf(eventRewards, thor);
+
+            // init toggle state
+            var thorToggle = tabToggles[index].toggle;
+            thorToggle.isOn = false;
+            thorToggle.isOn = true;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
