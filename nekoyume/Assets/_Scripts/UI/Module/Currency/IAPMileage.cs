@@ -21,5 +21,10 @@ namespace Nekoyume.UI.Module
                 amountText.text = mileage.ToCurrencyNotation();
             });
         }
+
+        public void ShowMaterialNavigationPopup()
+        {
+            Widget.Find<MaterialNavigationPopup>().ShowIAPMileage();
+        }
     }
 }

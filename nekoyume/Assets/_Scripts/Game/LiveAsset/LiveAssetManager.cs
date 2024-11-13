@@ -41,7 +41,7 @@ namespace Nekoyume.Game.LiveAsset
         private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
-        private Nekoyume.ApiClient.ThorSchedules _cachedThorSchedules;
+        private ApiClient.ThorSchedules _cachedThorSchedules;
 
         public bool HasUnreadEvent => _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
 
@@ -182,29 +182,29 @@ namespace Nekoyume.Game.LiveAsset
 #region ThorSchedule
         private void SetThorScheduleUrl(string response)
         {
-            _cachedThorSchedules = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedules>(
+            _cachedThorSchedules = JsonSerializer.Deserialize<ApiClient.ThorSchedules>(
                 response,
                 CommandLineOptions.JsonOptions);
 
             var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
             SetThorSchedule(planetId);
         }
-        
-        public void SetThorSchedule(Nekoyume.Multiplanetary.PlanetId? planetId)
+
+        public void SetThorSchedule(Multiplanetary.PlanetId? planetId)
         {
             if (planetId == null)
             {
-                // PlanetId 초기화 전에는 항상 메인넷 기준으로 설정
-                ThorSchedule = _cachedThorSchedules.MainNet;
-                OnChangedThorSchedule?.Invoke(ThorSchedule);
+                // PlanetId 초기화 전에는 항상 인텨널 기준으로 설정
+                ThorSchedule = _cachedThorSchedules.Others;
+                // 모바일 메인넷에서 인터널 관련 정보가 보이지 않게 OnChangedThorSchedule를 호출하지 않는다.
                 return;
             }
-            
-            var isMainNet = Nekoyume.Multiplanetary.PlanetId.IsMainNet(planetId.Value);
+
+            var isMainNet = Multiplanetary.PlanetId.IsMainNet(planetId.Value);
             ThorSchedule = isMainNet ?
                 _cachedThorSchedules.MainNet :
                 _cachedThorSchedules.Others;
-            
+
             OnChangedThorSchedule?.Invoke(ThorSchedule);
         }
 #endregion ThorSchedule

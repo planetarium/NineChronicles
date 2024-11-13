@@ -1,5 +1,7 @@
 using System;
 using Coffee.UIEffects;
+using Cysharp.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
@@ -383,6 +385,41 @@ namespace Nekoyume.UI
                 };
             }
 
+            Show(callback, icon, itemName, count, content, buttonText);
+        }
+
+        public void ShowIAPMileage()
+        {
+            var itemName = L10nManager.Localize("UI_IAP_MILEAGE");
+            var content = L10nManager.Localize("UI_IAP_MILEAGE_DESCRIPTION");
+            var icon = SpriteHelper.GetFavIcon("SHOPMILEAGE");
+            var count = ApiClients.Instance.IAPServiceManager.CurrentMileage.Value.ToCurrencyNotation();
+            var buttonText = L10nManager.Localize("UI_SHOP");
+            System.Action callback = () =>
+            {
+                if (BattleRenderer.Instance.IsOnBattle)
+                {
+                    return;
+                }
+
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+#if UNITY_ANDROID || UNITY_IOS
+                if (Find<MobileShop>().IsActive())
+                {
+                    Close();
+                    Find<MobileShop>().SetCategoryTab();
+                }
+                else
+                {
+                    CloseWithOtherWidgets();
+                    Find<MobileShop>().ShowAsTab().Forget();
+                }
+#else
+                CloseWithOtherWidgets();
+                Find<MobileShop>().ShowAsTab().Forget();
+                Find<ShopBuy>().Show();
+#endif
+            };
             Show(callback, icon, itemName, count, content, buttonText);
         }
 
