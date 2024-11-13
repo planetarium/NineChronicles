@@ -20,7 +20,6 @@ namespace Nekoyume.UI
         [Serializable]
         private class ResultVideoClip
         {
-            public VideoClip summoning;
             public VideoClip result;
             public VideoClip great;
         }
@@ -263,15 +262,6 @@ namespace Nekoyume.UI
             var currentVideoClip = GetCurrentVideoClip(costType);
             if (currentVideoClip != null)
             {
-                videoPlayer.clip = currentVideoClip.summoning;
-                videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
-                videoPlayer.gameObject.SetActive(true);
-                skipButton.gameObject.SetActive(true);
-                videoPlayer.Play();
-
-                yield return new WaitUntil(() => videoPlayer.isPlaying);
-                yield return new WaitUntil(() => !videoPlayer.isPlaying);
-
                 if (great && currentVideoClip.great)
                 {
                     videoPlayer.clip = currentVideoClip.great;
@@ -281,6 +271,9 @@ namespace Nekoyume.UI
                     videoPlayer.clip = currentVideoClip.result;
                 }
 
+                videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
+                videoPlayer.gameObject.SetActive(true);
+                skipButton.gameObject.SetActive(true);
                 videoPlayer.Play();
 
                 yield return new WaitUntil(() => videoPlayer.isPlaying);
