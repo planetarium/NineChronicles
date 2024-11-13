@@ -2844,7 +2844,7 @@ namespace Nekoyume.Blockchain
 
                 var costumeSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
                 var random = new LocalRandom(eval.RandomSeed);
-                var (itemId, quantity) = giftRow.Items.First();
+                var (itemId, quantity, tradable) = giftRow.Items.First();
 
                 var costume = ItemFactory.CreateCostume(costumeSheet[itemId], random.GenerateRandomGuid());
                 Widget.Find<ClaimGiftsResultScreen>().Show(costume);

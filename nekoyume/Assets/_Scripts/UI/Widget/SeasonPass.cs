@@ -121,6 +121,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject AdventureBossRedDot;
 
+        [SerializeField]
+        private GameObject[] objectsToDisableWhenNoSeason;
+        [SerializeField]
+        private GameObject[] objectsToEnableWhenNoSeason;
+
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
         private float lastRewardCellWidth;
@@ -312,10 +317,12 @@ namespace Nekoyume.UI
             {
                 rewardListData = seasonPassSchema.RewardList;
                 existLastCell = seasonPassSchema.RepeatLastReward;
+                UpdateSeasonalObjects(true);
             }
             else
             {
-                // todo: 시즌 비활성화 처리
+                //시즌정보가 없을때 준비중 UI 준비
+                UpdateSeasonalObjects(false);
             }
 
             int minExp;
@@ -401,6 +408,18 @@ namespace Nekoyume.UI
             ShowCellEffect(cellIndex).Forget();
         }
 
+        private void UpdateSeasonalObjects(bool isSeasonActive)
+        {
+            foreach (var obj in objectsToDisableWhenNoSeason)
+            {
+                obj.SetActive(isSeasonActive);
+            }
+            foreach (var obj in objectsToEnableWhenNoSeason)
+            {
+                obj.SetActive(!isSeasonActive);
+            }
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
@@ -425,6 +444,8 @@ namespace Nekoyume.UI
         {
             // 기존 작업이 있다면 취소하고 새 토큰으로 갱신
             _cts?.Cancel();
+            _cts?.Dispose();
+
             _cts = new CancellationTokenSource();
             CancellationToken token = _cts.Token;
 

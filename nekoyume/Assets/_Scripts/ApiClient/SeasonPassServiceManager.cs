@@ -289,68 +289,69 @@ namespace Nekoyume.ApiClient
         {
             HasClaimPassType.Clear();
             HasPrevClaimPassType.Clear();
-            foreach (var passType in passTypes)
-            {
-                if(CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema))
+
+            await Client.GetUserStatusAllAsync(
+                Game.Game.instance.CurrentPlanetId.ToString(),
+                Game.Game.instance.States.CurrentAvatarState.address.ToString(),
+                (result) =>
                 {
-                    await FetchUserStatus(passType, seasonPassSchema.SeasonIndex);
-                }
-                else
+                    foreach (var userSeasonPassSchema in result)
+                    {
+                        if (CurrentSeasonPassData.TryGetValue(userSeasonPassSchema.SeasonPass.PassType, out var currentSeasonPassData))
+                        {
+                            if (currentSeasonPassData.SeasonIndex == userSeasonPassSchema.SeasonPass.SeasonIndex)
+                            {
+                                //현재 시즌 정보
+                                UserSeasonPassDatas[userSeasonPassSchema.SeasonPass.PassType] = userSeasonPassSchema;
+                                if (userSeasonPassSchema.Level > userSeasonPassSchema.LastNormalClaim || (userSeasonPassSchema.IsPremium && userSeasonPassSchema.Level > userSeasonPassSchema.LastPremiumClaim))
+                                {
+                                    HasClaimPassType.Add(userSeasonPassSchema.SeasonPass.PassType);
+                                }
+                                else
+                                {
+                                    HasClaimPassType.Remove(userSeasonPassSchema.SeasonPass.PassType);
+                                }
+                            }
+                            else if (currentSeasonPassData.SeasonIndex - 1 == userSeasonPassSchema.SeasonPass.SeasonIndex)
+                            {
+                                //이전 시즌 정보
+                                if (DateTime.TryParse(userSeasonPassSchema.ClaimLimitTimestamp, out var claimLimitTimestamp))
+                                {
+                                    PrevSeasonClaimEndDates[userSeasonPassSchema.SeasonPass.PassType] = claimLimitTimestamp;
+                                }
+                                else
+                                {
+                                    Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] PrevSeasonClaimEndDates {userSeasonPassSchema.SeasonPass.PassType} is Not DateTime {userSeasonPassSchema.ClaimLimitTimestamp}");
+                                }
+
+                                //이전시즌 보상의경우 프리미엄일때만 체크합니다.
+                                //https://github.com/planetarium/NineChronicles/issues/4731#issuecomment-2044277184
+                                if (userSeasonPassSchema.IsPremium && userSeasonPassSchema.Level > userSeasonPassSchema.LastPremiumClaim)
+                                {
+                                    HasPrevClaimPassType.Add(userSeasonPassSchema.SeasonPass.PassType);
+                                }
+                                else
+                                {
+                                    HasPrevClaimPassType.Remove(userSeasonPassSchema.SeasonPass.PassType);
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] CurrentSeasonPassData {userSeasonPassSchema.SeasonPass.PassType} SeasonIndex is not matched PrevSeasonIndex is {currentSeasonPassData.SeasonIndex - 1}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] CurrentSeasonPassData {userSeasonPassSchema.SeasonPass.PassType} is null");
+                        }
+                    }
+                },
+                (error) =>
                 {
-                    Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] CurrentSeasonPassData {passType} is null");  
-                }
-            }
+                    Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] error: {error}");
+                });
+
             UpdatedUserDatas?.Invoke();
-        }
-
-        private async Task FetchUserStatus(SeasonPassServiceClient.PassType passType, int seasonIndex)
-        {
-            await Client.GetUserStatusAsync(
-                        Game.Game.instance.CurrentPlanetId.ToString(),
-                        Game.Game.instance.States.CurrentAvatarState.address.ToString(),
-                        passType,
-                        seasonIndex, (result) =>
-                        {
-                            UserSeasonPassDatas[passType] = result;
-                            if(result.Level > result.LastNormalClaim || (result.IsPremium && result.Level > result.LastPremiumClaim))
-                            {
-                                HasClaimPassType.Add(passType);
-                            }
-                            else
-                            {
-                                HasClaimPassType.Remove(passType);
-                            }
-                        },
-                        (error) =>
-                        {
-                            NcDebug.LogError($"SeasonPassServiceManager [FetchUserStatus] error: {error}");
-                        });
-
-            //이전 시즌정보 조회
-            await Client.GetUserStatusAsync(
-                        Game.Game.instance.CurrentPlanetId.ToString(),
-                        Game.Game.instance.States.CurrentAvatarState.address.ToString(),
-                        passType,
-                        seasonIndex - 1, (result) =>
-                        {
-                            DateTime.TryParse(result.ClaimLimitTimestamp, out var claimLimitTimestamp);
-                            PrevSeasonClaimEndDates[passType] = claimLimitTimestamp;
-
-                            //이전시즌 보상의경우 프리미엄일때만 체크합니다.
-                            //https://github.com/planetarium/NineChronicles/issues/4731#issuecomment-2044277184
-                            if (result.IsPremium && result.Level > result.LastPremiumClaim)
-                            {
-                                HasPrevClaimPassType.Add(passType);
-                            }
-                            else
-                            {
-                                HasPrevClaimPassType.Remove(passType);
-                            }
-                        },
-                        (error) =>
-                        {
-                            NcDebug.LogError($"SeasonPassServiceManager Prev [FetchUserStatus] error: {error}");
-                        });
         }
 
         public void ReceiveAll(SeasonPassServiceClient.PassType passType, Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
@@ -433,8 +434,7 @@ namespace Nekoyume.ApiClient
         {
             if (LevelInfos == null
                 || !LevelInfos.TryGetValue(passType, out var levelInfoList)
-                || levelInfoList.Count - 2 < 0
-                || levelInfoList.Count - 1 < 0)
+                || levelInfoList.Count - 2 < 0)
             {
                 NcDebug.LogError("[SeasonPassServiceManager] LevelInfos Not Set");
                 minExp = 0;
