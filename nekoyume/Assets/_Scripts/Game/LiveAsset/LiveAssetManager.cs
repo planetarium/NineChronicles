@@ -75,7 +75,7 @@ namespace Nekoyume.Game.LiveAsset
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
         public bool IsInitialized => _state == InitializingState.Initialized;
-        
+
         public System.Action<Nekoyume.ApiClient.ThorSchedule> OnChangedThorSchedule;
 
         public void InitializeData()
