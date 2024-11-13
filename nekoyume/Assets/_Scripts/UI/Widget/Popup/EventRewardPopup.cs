@@ -82,19 +82,16 @@ namespace Nekoyume.UI
             var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
             titleText.text = L10nManager.Localize(eventRewardPopupData.TitleL10NKey);
 
-            var eventRewards = eventRewardPopupData.EventRewards
-                .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
-                .ToList();
             for (var i = 0; i < tabToggles.Length; i++)
             {
                 var tabToggle = tabToggles[i];
-                if (i >= eventRewards.Count)
+                if (i >= eventRewardPopupData.EventRewards.Length)
                 {
                     tabToggle.toggle.gameObject.SetActive(false);
                     continue;
                 }
 
-                var eventReward = eventRewards[i];
+                var eventReward = eventRewardPopupData.EventRewards[i];
                 System.Action setContent = eventReward.ContentPresetType switch
                 {
                     EventRewardPopupData.ContentPresetType.None => () => SetContent(eventReward.Content),

@@ -236,9 +236,11 @@ namespace Nekoyume.Game.LiveAsset
                 Converters = { new JsonStringEnumConverter(), },
             };
             EventRewardPopupData = JsonSerializer.Deserialize<EventRewardPopupData>(response, options);
+            EventRewardPopupData.EventRewards = EventRewardPopupData.EventRewards
+                .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
+                .ToArray();
 
             var tasks = EventRewardPopupData.EventRewards
-                .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
                 .Where(reward => reward.Content != null && reward.Content.ImageName != null)
                 .Select(reward => GetSpriteTask(reward.Content))
                 .ToList();
