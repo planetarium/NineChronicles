@@ -92,10 +92,15 @@ namespace Nekoyume.UI
             Find<ShopListPopup>().Show(product, purchasingData).Forget();
         }
 
-        public async UniTask ShowAsTab(string categoryName)
+        public async UniTask ShowAsTab(string categoryName = RecommendedString)
         {
             await ShowAsync();
 
+            SetCategoryTab(categoryName);
+        }
+
+        public void SetCategoryTab(string categoryName = RecommendedString)
+        {
             if (_allCategoryTab.TryGetValue(categoryName, out var categoryTab))
             {
                 var toggle = categoryTab.GetComponent<Toggle>();

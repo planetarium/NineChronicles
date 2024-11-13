@@ -506,7 +506,7 @@ namespace Nekoyume.UI.Module
 #if UNITY_IOS || UNITY_ANDROID
                     if (Game.instance.IAPStoreManager.CheckCategoryName("Mileage"))
                     {
-                        SetActiveAssets(true, true, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
+                        SetActiveAssets(true, false, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
                     }
                     else
                     {
