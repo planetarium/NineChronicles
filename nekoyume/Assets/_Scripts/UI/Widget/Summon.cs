@@ -18,6 +18,7 @@ using Nekoyume.State;
 using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,6 +35,7 @@ namespace Nekoyume.UI
             public Toggle tabToggle;
             public GameObject[] enableObj;
             public Color bottomImageColor;
+            public string descL10nKey;
         }
 
         [SerializeField]
@@ -59,6 +61,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Toggle[] countToggles;
+
+        [SerializeField]
+        private TextMeshProUGUI descriptionText;
 
         private SummonObject _selectedSummonObj;
         private readonly List<IDisposable> _disposables = new();
@@ -123,6 +128,7 @@ namespace Nekoyume.UI
             }
 
             _selectedSummonObj.tabToggle.isOn = true;
+            descriptionText.SetText(L10nManager.Localize(summonObject.descL10nKey));
         }
 
         private void SetBySummonResult(SummonResult resultType)
