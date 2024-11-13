@@ -10,6 +10,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using System.Collections;
+using System.Text.Json.Serialization;
 using System.Threading;
 using Nekoyume.L10n;
 
@@ -230,33 +231,36 @@ namespace Nekoyume.Game.LiveAsset
 
         private async UniTask SetEventRewardPopupData(string response)
         {
-            EventRewardPopupData = JsonSerializer.Deserialize<EventRewardPopupData>(response);
+            var options = new JsonSerializerOptions
+            {
+                Converters = { new JsonStringEnumConverter(), },
+            };
+            EventRewardPopupData = JsonSerializer.Deserialize<EventRewardPopupData>(response, options);
 
             var tasks = EventRewardPopupData.EventRewards
                 .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
-                .Select(GetSpriteTask);
+                .Where(reward => reward.Content != null && reward.Content.ImageName != null)
+                .Select(reward => GetSpriteTask(reward.Content))
+                .ToList();
+            var thorEnabledContent = EventRewardPopupData.EnabledThorChainContent;
+            if (thorEnabledContent != null && thorEnabledContent.ImageName != null)
+            {
+                tasks.Add(GetSpriteTask(thorEnabledContent));
+            }
 
-            var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            try
+            var thorDisabledContent = EventRewardPopupData.DisabledThorChainContent;
+            if (thorDisabledContent != null && thorDisabledContent.ImageName != null)
             {
-                await UniTask.WaitUntil(
-                    () => tasks.All(task => task.Status == UniTaskStatus.Succeeded),
-                    cancellationToken: cancellation.Token);
+                tasks.Add(GetSpriteTask(thorDisabledContent));
             }
-            catch (OperationCanceledException e)
-            {
-                if (e.CancellationToken == cancellation.Token)
-                {
-                    _state = InitializingState.NeedInitialize;
-                    NcDebug.Log($"[{nameof(LiveAssetManager)}] NoticeData making failed by timeout.");
-                }
-            }
+
+            await UniTask.WhenAll(tasks);
 
             return;
-            UniTask<Sprite> GetSpriteTask(EventRewardPopupData.EventReward reward)
+            UniTask<Sprite> GetSpriteTask(EventRewardPopupData.Content content)
             {
-                var uri = $"{_endpoint.ImageRootUrl}/EventRewardPopup/{reward.Content.ImageName}.png";
-                return GetTexture(uri).ContinueWith(sprite => reward.Content.Image = sprite);
+                var uri = $"{_endpoint.ImageRootUrl}/EventRewardPopup/{content.ImageName}.png";
+                return GetTexture(uri).ContinueWith(sprite => content.Image = sprite);
             }
         }
 

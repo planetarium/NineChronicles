@@ -39,5 +39,8 @@ namespace Nekoyume.UI.Model
 
         public string TitleL10NKey { get; set; }
         public EventReward[] EventRewards { get; set; }
+
+        public Content EnabledThorChainContent { get; set; }
+        public Content DisabledThorChainContent { get; set; }
     }
 }

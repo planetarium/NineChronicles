@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
@@ -54,6 +55,7 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton receiveButton;
         [SerializeField] private GameObject receiveButtonIndicator;
 
+        private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new ();
 
         protected override void Awake()
@@ -70,9 +72,13 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            base.Initialize();
+            var liveAssetManager = LiveAssetManager.instance;
+            if (!liveAssetManager.IsInitialized || _isInitialized)
+            {
+                return;
+            }
 
-            var eventRewardPopupData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
             titleText.text = L10nManager.Localize(eventRewardPopupData.TitleL10NKey);
 
             var eventRewards = eventRewardPopupData.EventRewards
@@ -101,16 +107,23 @@ namespace Nekoyume.UI
                     if (value)
                     {
                         SetData(eventReward);
-                        action?.Invoke();
                     }
                 });
                 tabToggle.SetText(L10nManager.Localize(eventReward.ToggleL10NKey));
+                tabToggle.toggle.gameObject.SetActive(true);
             }
+
+            _isInitialized = true;
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+
+            if (_isInitialized)
+            {
+                Initialize();
+            }
 
             // init toggle state
             var defaultToggle = tabToggles.First().toggle;
@@ -129,7 +142,13 @@ namespace Nekoyume.UI
         {
             _disposables.DisposeAllAndClear();
 
-            eventPeriodText.text = L10nManager.Localize("UI_EVENT_PERIOD", eventReward.BeginDateTime, eventReward.EndDateTime);
+            var begin = DateTime
+                .ParseExact(eventReward.BeginDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                .ToString("M/d", CultureInfo.InvariantCulture);
+            var end = DateTime
+                .ParseExact(eventReward.EndDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                .ToString("M/d", CultureInfo.InvariantCulture);
+            eventPeriodText.text = $"{L10nManager.Localize("UI_EVENT_PERIOD")} : {begin} - {end}";
             descriptionText.text = L10nManager.Localize(eventReward.DescriptionL10NKey);
 
             eventImage.container.SetActive(false);
