@@ -20,8 +20,6 @@ namespace Nekoyume.UI
         [Serializable]
         private class ResultVideoClip
         {
-            [Obsolete("Not Used in 250 build")]
-            public VideoClip summoning;
             public VideoClip result;
             public VideoClip great;
         }
