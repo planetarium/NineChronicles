@@ -159,8 +159,8 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            summonItemViews.First().transform.parent.parent.gameObject.SetActive(false);
-            manySummonItemViews.First().transform.parent.gameObject.SetActive(false);
+            summonItemViewParentObject.SetActive(false);
+            manySummonItemViewParentObject.SetActive(false);
             singleSummonItemView.Hide();
 
             if (summonCount == 1)
@@ -170,7 +170,7 @@ namespace Nekoyume.UI
             }
             else if (summonCount == 10)
             {
-                summonItemViews.First().transform.parent.parent.gameObject.SetActive(true);
+                summonItemViewParentObject.SetActive(true);
                 for (var i = 0; i < summonItemViews.Length; i++)
                 {
                     var view = summonItemViews[i];
@@ -187,7 +187,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                manySummonItemViews.First().transform.parent.gameObject.SetActive(true);
+                manySummonItemViewParentObject.SetActive(true);
                 for (var i = 0; i < manySummonItemViews.Length; i++)
                 {
                     var view = manySummonItemViews[i];
