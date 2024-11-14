@@ -262,7 +262,7 @@ namespace Nekoyume.UI
                     break;
                 case CostType.Crystal:
                     itemId = 9999998;
-                    count = States.Instance.CrystalBalance.GetQuantityString();
+                    count = States.Instance.CrystalBalance.MajorUnit.ToString();
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
