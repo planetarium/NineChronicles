@@ -3565,11 +3565,13 @@ MonoBehaviour:
     rectTransform: {fileID: 1224776344879185514}
   - type: 100000
     rectTransform: {fileID: 4715720422514842558}
+  - type: 101000
+    rectTransform: {fileID: 7441355045120185599}
   - type: 1000000
     rectTransform: {fileID: 359115451029900426}
   - type: 1000013
     rectTransform: {fileID: 310077401747823704}
-  tutorialActions: 01000000020000000e00000050c30000a086010040420f0049420f00
+  tutorialActions: 01000000020000000e00000050c30000a086010040420f0049420f00888a0100
   btnQuest: {fileID: 553648111353541289}
   btnCombination: {fileID: 553648110939848765}
   btnShop: {fileID: 1227858067435832074}

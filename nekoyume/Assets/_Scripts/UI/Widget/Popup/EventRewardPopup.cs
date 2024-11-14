@@ -149,6 +149,16 @@ namespace Nekoyume.UI
             ShowAsTab(index);
         }
 
+        public void ShowAsPatrolReward()
+        {
+            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            var patrolReward = eventRewards.FirstOrDefault(reward =>
+                reward.ContentPresetType == EventRewardPopupData.ContentPresetType.PatrolReward);
+            var index = Array.IndexOf(eventRewards, patrolReward);
+
+            ShowAsTab(index);
+        }
+
         private void ShowAsTab(int index, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
@@ -367,6 +377,13 @@ namespace Nekoyume.UI
                 type: IconAndButtonSystem.SystemType.Information);
             confirm.SetConfirmCallbackToExit();
             confirm.CancelCallback = () => confirm.Close();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickClaimPatrolRewardButtonInEvent()
+        {
+            receiveButton.OnSubmitSubject.OnNext(default);
+            Close();
         }
     }
 }

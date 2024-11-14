@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Coffee.UIEffects;
 using Cysharp.Threading.Tasks;
 using Nekoyume.ApiClient;
@@ -6,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -304,7 +306,15 @@ namespace Nekoyume.UI
 
                             Lobby.Enter(true);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
-                            Find<PatrolRewardPopup>().Show();
+                            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
+                            if (isInEventDate)
+                            {
+                                Find<EventRewardPopup>().Show();
+                            }
+                            else
+                            {
+                                Find<PatrolRewardPopup>().Show();
+                            }
                         };
                     }
                     else // All other dusts
