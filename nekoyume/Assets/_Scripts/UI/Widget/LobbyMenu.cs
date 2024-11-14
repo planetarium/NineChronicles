@@ -17,6 +17,7 @@ using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Battle;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -194,8 +195,7 @@ namespace Nekoyume.UI
 
             thorSeasonButton.onClick.AddListener((() =>
             {
-                // TODO: open thor season
-                Find<EventRewardPopup>().Show();
+                Find<EventRewardPopup>().ShowAsThorChain();
             }));
         }
 
@@ -753,7 +753,7 @@ namespace Nekoyume.UI
             var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
             thorSeasonButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
 
-            var isInEventDate = true;
+            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
             btnPatrolReward.gameObject.SetActive(!isInEventDate);
             btnEventReward.gameObject.SetActive(isInEventDate);
         }

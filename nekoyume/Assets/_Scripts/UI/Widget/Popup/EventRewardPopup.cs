@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
+using Nekoyume.Multiplanetary;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,8 +30,23 @@ namespace Nekoyume.UI
             public Image image;
         }
 
+        [Serializable]
+        private struct EventToggle
+        {
+            public Toggle toggle;
+            public TextMeshProUGUI disabledText;
+            public TextMeshProUGUI enabledText;
+
+            public void SetText(string text)
+            {
+                disabledText.text = text;
+                enabledText.text = text;
+            }
+        }
+
         [SerializeField] private Button closeButton;
-        [SerializeField] private Toggle[] tabToggles;
+        [SerializeField] private TextMeshProUGUI titleText;
+        [SerializeField] private EventToggle[] tabToggles;
         [SerializeField] private TextMeshProUGUI eventPeriodText;
 
         [SerializeField] private TextMeshProUGUI descriptionText;
@@ -39,8 +56,7 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton receiveButton;
         [SerializeField] private GameObject receiveButtonIndicator;
 
-        [SerializeField] private Sprite[] eventBannerSprites;
-
+        private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new ();
 
         protected override void Awake()
@@ -53,43 +69,85 @@ namespace Nekoyume.UI
                 Close();
             });
             CloseWidget = () => Close(true);
+        }
+
+        public override void Initialize()
+        {
+            var liveAssetManager = LiveAssetManager.instance;
+            if (!liveAssetManager.IsInitialized || _isInitialized)
+            {
+                return;
+            }
+
+            var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
+            titleText.text = L10nManager.Localize(eventRewardPopupData.TitleL10NKey);
 
             for (var i = 0; i < tabToggles.Length; i++)
             {
-                var index = i;
-                tabToggles[i].onValueChanged.AddListener(value =>
+                var tabToggle = tabToggles[i];
+                if (i >= eventRewardPopupData.EventRewards.Length)
+                {
+                    tabToggle.toggle.gameObject.SetActive(false);
+                    continue;
+                }
+
+                var eventReward = eventRewardPopupData.EventRewards[i];
+                System.Action setContent = eventReward.ContentPresetType switch
+                {
+                    EventRewardPopupData.ContentPresetType.None => () => SetContent(eventReward.Content),
+                    EventRewardPopupData.ContentPresetType.ClaimGift => () => SetClaimGift(eventReward.Content),
+                    EventRewardPopupData.ContentPresetType.PatrolReward => SetPatrolReward,
+                    EventRewardPopupData.ContentPresetType.ThorChain => () => SetThorChain(eventRewardPopupData),
+                    _ => null,
+                };
+                tabToggle.toggle.onValueChanged.AddListener(value =>
                 {
                     if (value)
                     {
-                        SetData(index);
-
-                        switch (index)
-                        {
-                            case 0:
-                                SetCustomGift();
-                                break;
-                            case 1:
-                                SetPatrolReward();
-                                break;
-                            case 2:
-                                SetShopPackage();
-                                break;
-                            case 3:
-                                SetDoubleContentsRewards();
-                                break;
-                        }
+                        SetData(eventReward);
+                        setContent?.Invoke();
                     }
                 });
+                tabToggle.SetText(L10nManager.Localize(eventReward.ToggleL10NKey));
+                tabToggle.toggle.gameObject.SetActive(true);
             }
+
+            _isInitialized = true;
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
+
             // init toggle state
-            tabToggles.First().isOn = false;
-            tabToggles.First().isOn = true;
+            var defaultToggle = tabToggles.First().toggle;
+            defaultToggle.isOn = false;
+            defaultToggle.isOn = true;
+        }
+
+        public void ShowAsThorChain()
+        {
+            base.Show();
+
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
+
+            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            var thor = eventRewards.FirstOrDefault(reward =>
+                reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ThorChain);
+            var index = Array.IndexOf(eventRewards, thor);
+
+            // init toggle state
+            var thorToggle = tabToggles[index].toggle;
+            thorToggle.isOn = false;
+            thorToggle.isOn = true;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -99,14 +157,20 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
-        private void SetData(int index)
+        private void SetData(EventRewardPopupData.EventReward eventReward)
         {
             _disposables.DisposeAllAndClear();
 
-            descriptionText.text = L10nManager.Localize($"UI_EVENT_DESCRIPTION_{index}");
+            var begin = DateTime
+                .ParseExact(eventReward.BeginDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                .ToString("M/d", CultureInfo.InvariantCulture);
+            var end = DateTime
+                .ParseExact(eventReward.EndDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                .ToString("M/d", CultureInfo.InvariantCulture);
+            eventPeriodText.text = $"{L10nManager.Localize("UI_EVENT_PERIOD")} : {begin} - {end}";
+            descriptionText.text = L10nManager.Localize(eventReward.DescriptionL10NKey);
 
             eventImage.container.SetActive(false);
-            eventImage.image.sprite = eventBannerSprites[index];
             patrolRewardModule.gameObject.SetActive(false);
 
             receiveButton.gameObject.SetActive(false);
@@ -116,9 +180,9 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetCustomGift()
+        private void SetClaimGift(EventRewardPopupData.Content content)
         {
-            eventImage.container.SetActive(true);
+            SetImage(content.Image);
 
             receiveButton.gameObject.SetActive(true);
             receiveButton.OnSubmitSubject
@@ -166,39 +230,61 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
         }
 
-        private void SetShopPackage()
+        private void SetThorChain(EventRewardPopupData popupData)
         {
-            eventImage.container.SetActive(true);
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
+            var isOpened = thorSchedule != null && thorSchedule.IsOpened;
+            var content = isOpened
+                ? popupData.EnabledThorChainContent
+                : popupData.DisabledThorChainContent;
+            SetImage(content.Image);
 
-            var button = actionButtons.First();
-            button.gameObject.SetActive(true);
-            button.Interactable =
-                ShortcutHelper.CheckConditionOfShortcut(ShortcutHelper.PlaceType.MobileShop);
+            if (!isOpened)
+            {
+                return;
+            }
 
-            var shortcut =
-                ShortcutHelper.GetAcquisitionPlace(this, ShortcutHelper.PlaceType.MobileShop);
-            button.Text = shortcut.GuideText;
-            button.OnSubmitSubject.Subscribe(_ => shortcut.OnClick?.Invoke()).AddTo(_disposables);
+            var currentPlanetId = Game.Game.instance.CurrentPlanetId;
+            var isPlanetThor = currentPlanetId.HasValue && PlanetId.IsThor(currentPlanetId.Value);
+            if (isPlanetThor)
+            {
+                SetShortcutButtons(content.ShortcutTypes);
+            }
+            else
+            {
+                var button = actionButtons.First();
+                button.gameObject.SetActive(true);
+                button.Interactable = true;
+                button.Text = L10nManager.Localize("UI_PARTICIPATE");
+                button.OnSubmitSubject
+                    .Subscribe(_ => ShowQuitConfirmPopup())
+                    .AddTo(_disposables);
+            }
         }
 
-        private void SetDoubleContentsRewards()
+        private void SetContent(EventRewardPopupData.Content content)
+        {
+            SetImage(content.Image);
+            SetShortcutButtons(content.ShortcutTypes);
+        }
+
+        private void SetImage(Sprite image)
         {
             eventImage.container.SetActive(true);
+            eventImage.image.sprite = image;
+        }
 
-            var shortcutTypes = new[]
-            {
-                ShortcutHelper.PlaceType.Arena,
-                ShortcutHelper.PlaceType.AdventureBoss,
-                ShortcutHelper.PlaceType.WorldBoss,
-            };
-
+        private void SetShortcutButtons(ShortcutHelper.PlaceType[] shortcutTypes)
+        {
             for (var i = 0; i < shortcutTypes.Length; i++)
             {
+                var shortcutType = shortcutTypes[i];
+
                 var button = actionButtons[i];
                 button.gameObject.SetActive(true);
-                button.Interactable = ShortcutHelper.CheckConditionOfShortcut(shortcutTypes[i]);
+                button.Interactable = ShortcutHelper.CheckConditionOfShortcut(shortcutType);
 
-                var shortcut = ShortcutHelper.GetAcquisitionPlace(this, shortcutTypes[i]);
+                var shortcut = ShortcutHelper.GetAcquisitionPlace(this, shortcutType);
                 button.Text = shortcut.GuideText;
                 button.OnSubmitSubject
                     .Subscribe(_ => shortcut.OnClick?.Invoke())
@@ -256,6 +342,17 @@ namespace Nekoyume.UI
 
             row = null;
             return false;
+        }
+
+        private static void ShowQuitConfirmPopup()
+        {
+            var confirm = Find<IconAndButtonSystem>();
+            confirm.ShowWithTwoButton(
+                "UI_CONFIRM",
+                "UI_QUIT_FOR_THOR_CHAIN_CONFIRM",
+                type: IconAndButtonSystem.SystemType.Information);
+            confirm.SetConfirmCallbackToExit();
+            confirm.CancelCallback = () => confirm.Close();
         }
     }
 }

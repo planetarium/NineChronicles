@@ -10,6 +10,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using System.Collections;
+using System.Text.Json.Serialization;
 using System.Threading;
 using Nekoyume.L10n;
 
@@ -69,11 +70,12 @@ namespace Nekoyume.Game.LiveAsset
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
         public Nekoyume.ApiClient.ThorSchedule ThorSchedule { get; private set; }
+        public EventRewardPopupData EventRewardPopupData { get; private set; }
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
         public bool IsInitialized => _state == InitializingState.Initialized;
-        
+
         public System.Action<Nekoyume.ApiClient.ThorSchedule> OnChangedThorSchedule;
 
         public void InitializeData()
@@ -83,6 +85,10 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(InitializeThorSchedule());
             InitializeStakingResource().Forget();
             InitializeEvent();
+
+            StartCoroutine(RequestManager.instance.GetJson(
+                _endpoint.EventRewardPopupDataJsonUrl,
+                value => SetEventRewardPopupData(value).Forget()));
         }
 
         private IEnumerator InitializeThorSchedule()
@@ -223,6 +229,43 @@ namespace Nekoyume.Game.LiveAsset
                 CommandLineOptions.JsonOptions);
         }
 
+        private async UniTask SetEventRewardPopupData(string response)
+        {
+            var options = new JsonSerializerOptions
+            {
+                Converters = { new JsonStringEnumConverter(), },
+            };
+            EventRewardPopupData = JsonSerializer.Deserialize<EventRewardPopupData>(response, options);
+            EventRewardPopupData.EventRewards = EventRewardPopupData.EventRewards
+                .Where(reward => DateTime.UtcNow.IsInTime(reward.BeginDateTime, reward.EndDateTime))
+                .ToArray();
+
+            var tasks = EventRewardPopupData.EventRewards
+                .Where(reward => reward.Content != null && reward.Content.ImageName != null)
+                .Select(reward => GetSpriteTask(reward.Content))
+                .ToList();
+            var thorEnabledContent = EventRewardPopupData.EnabledThorChainContent;
+            if (thorEnabledContent != null && thorEnabledContent.ImageName != null)
+            {
+                tasks.Add(GetSpriteTask(thorEnabledContent));
+            }
+
+            var thorDisabledContent = EventRewardPopupData.DisabledThorChainContent;
+            if (thorDisabledContent != null && thorDisabledContent.ImageName != null)
+            {
+                tasks.Add(GetSpriteTask(thorDisabledContent));
+            }
+
+            await UniTask.WhenAll(tasks);
+
+            return;
+            UniTask<Sprite> GetSpriteTask(EventRewardPopupData.Content content)
+            {
+                var uri = $"{_endpoint.ImageRootUrl}/EventRewardPopup/{content.ImageName}.png";
+                return GetTexture(uri).ContinueWith(sprite => content.Image = sprite);
+            }
+        }
+
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)
         {
             var tasks = new List<UniTask>();
@@ -291,9 +334,8 @@ namespace Nekoyume.Game.LiveAsset
             }
         }
 
-        private async UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
+        private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
-            var retryCount = 3;
             var postfix = L10nManager.CurrentLanguage switch
             {
                 LanguageType.Korean => Platform.IsMobilePlatform()
@@ -302,22 +344,27 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
-            var uri = $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png";
-            Sprite res = null;
+            return GetTexture($"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+        }
+
+        private static async UniTask<Sprite> GetTexture(string uri)
+        {
+            Sprite result = null;
             // 최대 3번까지 이미지를 다시 받길 시도한다.
+            var retryCount = 3;
             while (retryCount-- > 0)
             {
-                res = await Helper.Util.DownloadTexture(uri);
-                if (res != null)
+                result = await Helper.Util.DownloadTexture(uri);
+                if (result != null)
                 {
-                    return res;
+                    return result;
                 }
 
                 // 다운로드 실패시 1초 대기 후 재시도
                 await UniTask.Delay(1000);
             }
 
-            return res;
+            return result;
         }
 
         private async UniTaskVoid InitializeStakingResource()
