@@ -170,6 +170,9 @@ namespace Nekoyume.UI.Module
         {
             AudioController.PlayClick();
             OnClickSubject.OnNext(this);
+            _animationState.SetValueAndForceNotify(IsLocked
+                        ? AnimationState.None
+                        : AnimationState.Idle);
         }
 
         private void OnEnterWorldButtonState(WorldState worldState)
