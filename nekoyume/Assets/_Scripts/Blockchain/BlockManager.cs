@@ -112,13 +112,21 @@ namespace Nekoyume.Blockchain
             // NOTE: UnityWebRequest requires to be called in main thread.
             await UniTask.SwitchToMainThread();
             using var loadingRequest = UnityWebRequest.Get(localPath);
-            await loadingRequest.SendWebRequest();
-            if (loadingRequest.result == UnityWebRequest.Result.Success)
+            try
             {
-                NcDebug.Log($"[BlockManager] Load genesis block from local path via UnityWebRequest. {localPath}");
-                var buffer = loadingRequest.downloadHandler.data;
-                var dict = (Dictionary)_codec.Decode(buffer);
-                return BlockMarshaler.UnmarshalBlock(dict);
+                await loadingRequest.SendWebRequest();
+                if (loadingRequest.result == UnityWebRequest.Result.Success)
+                {
+                    NcDebug.Log($"[BlockManager] Load genesis block from local path via UnityWebRequest. {localPath}");
+                    var buffer = loadingRequest.downloadHandler.data;
+                    var dict = (Dictionary)_codec.Decode(buffer);
+                    return BlockMarshaler.UnmarshalBlock(dict);
+                }
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[BlockManager] Failed to load genesis block from local path via UnityWebRequest. {localPath}");
+                NcDebug.LogError(e);
             }
 #else
             if (File.Exists(localPath))
