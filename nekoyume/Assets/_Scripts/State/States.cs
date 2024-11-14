@@ -640,7 +640,7 @@ namespace Nekoyume.State
                 ? proficiency
                 : 0);
             SetClaimedGiftIds(listStates[5] is List rawIds
-                ? rawIds.ToList(StateExtensions.ToInteger)
+                ? rawIds.ToList(serialized => (int)(Integer)serialized)
                 : new List<int>());
 
             var allCombinationSlotState = await agent.GetAllCombinationSlotStateAsync(curAvatarState.address);
