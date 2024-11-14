@@ -794,7 +794,7 @@ namespace Nekoyume.UI
             }
 
             var timeSpan = thorSchedule.DiffFromEndTimeSpan;
-            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()})";
+            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()}";
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
