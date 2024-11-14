@@ -123,6 +123,8 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            InitializeObjectState();
+
             base.Awake();
 
             twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
@@ -325,6 +327,20 @@ namespace Nekoyume.UI
                     Find<LoginSystem>().Show(pk?.ToHexWithZeroPaddings() ?? string.Empty);
                 });
             });
+        }
+
+        private void InitializeObjectState()
+        {
+            pcContainer.SetActive(false);
+            mobileContainer.SetActive(false);
+#if RUN_ON_MOBILE
+            logoAreaGO.SetActive(true);
+#else
+            logoAreaGO.SetActive(false);
+#endif
+            qrCodeGuideContainer.SetActive(false);
+            touchScreenButtonGO.SetActive(true);
+            startButtonContainer.SetActive(false);
         }
 
         private static PrivateKey ImportPrivateKeyFromJson(string json)
