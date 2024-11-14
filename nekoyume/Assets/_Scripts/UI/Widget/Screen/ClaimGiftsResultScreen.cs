@@ -26,6 +26,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject titleBg;
         [SerializeField] private RawImage fullCostumeImage;
         [SerializeField] private Transform titleSocket;
+        [SerializeField] private RectTransform background;
 
         private GameObject _cachedCharacterTitle;
 
@@ -75,6 +76,11 @@ namespace Nekoyume.UI
 
             fullCostumeImage.color =
                 costume.ItemSubType == ItemSubType.Title ? Color.black : Color.white;
+
+            background.anchoredPosition = Vector2.up * SummonUtil.GetBackGroundPosition(
+                costume.ItemSubType == ItemSubType.FullCostume
+                    ? SummonResult.FullCostume
+                    : SummonResult.Title);
 
             SetCharacter(costume);
 
