@@ -30,6 +30,7 @@ Category {
 			};
 
 			struct v2f {
+				float4 vertex : SV_POSITION;
 				fixed4 color : COLOR;
 				float2 texcoord : TEXCOORD0;
 			};
@@ -39,6 +40,7 @@ Category {
 			v2f vert (appdata_t IN)
 			{
 				v2f v;
+				v.vertex = UnityObjectToClipPos(IN.vertex);
 				v.color = IN.color;
 				v.texcoord = TRANSFORM_TEX(IN.texcoord,_MainTex);
 
