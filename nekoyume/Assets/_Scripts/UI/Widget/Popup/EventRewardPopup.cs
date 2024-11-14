@@ -59,6 +59,25 @@ namespace Nekoyume.UI
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new ();
 
+        private const string LastReadingDayKey = "EVENT_REWARD_POPUP_LAST_READING_DAY";
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
+        public bool HasUnread
+        {
+            get
+            {
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(LastReadingDayKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
+                        DateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                return notReadAtToday;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();

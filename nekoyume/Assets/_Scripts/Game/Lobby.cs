@@ -147,6 +147,14 @@ namespace Nekoyume.Game
                         eventReleaseNotePopup.Show();
                     }
                 }
+
+                if (Widget.TryFind<EventRewardPopup>(out var notificationPopup))
+                {
+                    if (notificationPopup.HasUnread)
+                    {
+                        notificationPopup.Show();
+                    }
+                }
             }
             catch (Exception e)
             {
