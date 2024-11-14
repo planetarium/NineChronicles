@@ -33,7 +33,7 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
-        private static readonly List<int> EventEquipmentRecipes = new() { 158, 159, 160, 253, 254, };
+        private static readonly List<int> EventEquipmentRecipes = new() { 158, 159, 160, 256, 257, };
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private static Dictionary<string, Sprite> CachedDownloadTextures = new();
 
