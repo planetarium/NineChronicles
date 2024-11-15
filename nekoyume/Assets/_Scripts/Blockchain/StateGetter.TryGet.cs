@@ -59,7 +59,7 @@ namespace Nekoyume.Blockchain
         public static bool TryGetStakeStateV2(
             HashDigest<SHA256> hash,
             Address address,
-            out StakeStateV2 stakeStateV2)
+            out StakeState stakeStateV2)
         {
             try
             {

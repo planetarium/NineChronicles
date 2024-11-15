@@ -48,7 +48,7 @@ namespace Nekoyume.State
 
         // NOTE: Staking Properties
         public GoldBalanceState StakedBalanceState { get; private set; }
-        public StakeStateV2? StakeStateV2 { get; private set; }
+        public StakeState? StakeStateV2 { get; private set; }
         public int StakingLevel { get; private set; }
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
@@ -426,7 +426,7 @@ namespace Nekoyume.State
         }
 
         public void SetStakeState(
-            StakeStateV2? stakeStateV2,
+            StakeState? stakeStateV2,
             GoldBalanceState stakedBalanceState,
             int stakingLevel,
             [CanBeNull] StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,

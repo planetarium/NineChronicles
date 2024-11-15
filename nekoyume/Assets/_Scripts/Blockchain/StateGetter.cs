@@ -91,9 +91,9 @@ namespace Nekoyume.Blockchain
                 Game.Game.instance.Agent.GetBalanceAsync(hash, address, currency).Result);
         }
 
-        public static StakeStateV2? GetStakeStateV2(HashDigest<SHA256> hash, Address address)
+        public static StakeState? GetStakeStateV2(HashDigest<SHA256> hash, Address address)
         {
-            var stakeStateAddr = StakeStateV2.DeriveAddress(address);
+            var stakeStateAddr = StakeState.DeriveAddress(address);
             var serialized = Game.Game.instance.Agent.GetState(
                 hash,
                 ReservedAddresses.LegacyAccount,
@@ -106,7 +106,8 @@ namespace Nekoyume.Blockchain
 
             try
             {
-                return StakeStateUtils.Migrate(serialized, GetGameConfigState(hash));
+                // todo : 스테이킹 추가 수정 이슈 v3 대응해야함.
+                return StakeStateUtils.MigrateV1ToV2(serialized, GetGameConfigState(hash));
             }
             catch (InvalidCastException e)
             {

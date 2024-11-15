@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Libplanet.Types.Assets;
 using Nekoyume.Model.Stake;
 using Nekoyume.TableData;
@@ -8,13 +8,13 @@ namespace Nekoyume.State.Subjects
 {
     public static class StakingSubject
     {
-        private static readonly Subject<StakeStateV2?> StakeStateV2Internal;
+        private static readonly Subject<StakeState?> StakeStateV2Internal;
         private static readonly Subject<FungibleAssetValue> StakedNCGInternal;
         private static readonly Subject<int> LevelInternal;
         private static readonly Subject<StakeRegularFixedRewardSheet> StakeRegularFixedRewardSheetInternal;
         private static readonly Subject<StakeRegularRewardSheet> StakeRegularRewardSheetInternal;
 
-        public static readonly IObservable<StakeStateV2?> StakeStateV2;
+        public static readonly IObservable<StakeState?> StakeStateV2;
         public static readonly IObservable<FungibleAssetValue> StakedNCG;
         public static readonly IObservable<int> Level;
         public static readonly IObservable<StakeRegularFixedRewardSheet>
@@ -23,7 +23,7 @@ namespace Nekoyume.State.Subjects
 
         static StakingSubject()
         {
-            StakeStateV2Internal = new Subject<StakeStateV2?>();
+            StakeStateV2Internal = new Subject<StakeState?>();
             StakedNCGInternal = new Subject<FungibleAssetValue>();
             LevelInternal = new Subject<int>();
             StakeRegularFixedRewardSheetInternal = new Subject<StakeRegularFixedRewardSheet>();
@@ -36,7 +36,7 @@ namespace Nekoyume.State.Subjects
             StakeRegularRewardSheet = StakeRegularRewardSheetInternal.ObserveOnMainThread();
         }
 
-        public static void OnNextStakeStateV2(StakeStateV2? stakeStateV2)
+        public static void OnNextStakeStateV2(StakeState? stakeStateV2)
         {
             StakeStateV2Internal.OnNext(stakeStateV2);
         }

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Numerics;
-using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Libplanet.Crypto;
-using Libplanet.Types.Blocks;
+using Libplanet.Types.Consensus;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -17,6 +16,7 @@ using UnityEngine.Networking;
 
 namespace Nekoyume.Blockchain
 {
+    using Libplanet.Types.Blocks;
     public static class BlockManager
     {
         // Editor가 아닌 환경에서 사용할 제네시스 블록의 파일명입니다.
@@ -153,12 +153,13 @@ namespace Nekoyume.Blockchain
                 initialValidatorSet[proposer] = BigInteger.One;
             }
 
+            // todo : 스테이킹 추가 수정 이슈 new ValidatorSet() 값 넣어야함.
             return BlockHelper.ProposeGenesisBlock(
+                new ValidatorSet(),
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates,
                 new AdminState(new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"), 1500000),
-                initialValidators: initialValidatorSet,
                 isActivateAdminAddress: false);
         }
 
