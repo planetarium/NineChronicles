@@ -89,6 +89,13 @@ namespace Nekoyume.UI
 
         private SeasonPassServiceClient.PassType currentSeasonPassType;
 
+        private enum PassPremiumType
+        {
+            Premium,
+            Premiumplus,
+            PremiumAll
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -168,7 +175,7 @@ namespace Nekoyume.UI
                     break;
             }
 
-            var premiumProductKey = $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].SeasonIndex}Premium";
+            var premiumProductKey = GetProductKey(seasonPassType, PassPremiumType.Premium);
             if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
             {
                 var index = 0;
@@ -193,8 +200,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            var premiumAllProductkey = $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].SeasonIndex}PremiumAll";
-            var premiumPlusProductkey = $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].SeasonIndex}Premiumplus";
+            var premiumAllProductkey = GetProductKey(seasonPassType, PassPremiumType.PremiumAll);
+            var premiumPlusProductkey = GetProductKey(seasonPassType, PassPremiumType.Premiumplus);
 
             var premiumPlusProductKey = premiumAllProductkey;
             if (ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[seasonPassType].IsPremium)
@@ -313,7 +320,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var productKey = $"{currentSeasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[currentSeasonPassType].SeasonIndex}Premium";
+            var productKey = GetProductKey(currentSeasonPassType, PassPremiumType.Premium);
 
             if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
             {
@@ -336,11 +343,11 @@ namespace Nekoyume.UI
 
             if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremium)
             {
-                productKey = $"{currentSeasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[currentSeasonPassType].SeasonIndex}Premiumplus";
+                productKey = GetProductKey(currentSeasonPassType, PassPremiumType.Premiumplus);
             }
             else
             {
-                productKey = $"{currentSeasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[currentSeasonPassType].SeasonIndex}PremiumAll";
+                productKey = GetProductKey(currentSeasonPassType,PassPremiumType.PremiumAll);
             }
 
             if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
@@ -360,6 +367,20 @@ namespace Nekoyume.UI
                 premiumPlusPurchaseButtonLoadingObj.SetActive(false);
                 RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[currentSeasonPassType]);
             });
+        }
+
+        private string GetProductKey(SeasonPassServiceClient.PassType seasonPassType, PassPremiumType premiumType)
+        {
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            var seasonData = seasonPassManager.CurrentSeasonPassData[seasonPassType];
+
+            // 11월 시즌패스의경우 바뀐 상품규칙 전 규칙을 적용하여 상품 검색하도록 예외처리. 이후 다음시즌에선 해당스크립트 제거해야함
+            if (seasonPassType == SeasonPassServiceClient.PassType.CouragePass && seasonData.SeasonIndex == 11)
+            {
+                return $"SeasonPass11{premiumType}";
+            }
+
+            return $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].SeasonIndex}{premiumType}";
         }
     }
 }
