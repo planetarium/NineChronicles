@@ -69,7 +69,7 @@ namespace Nekoyume.Blockchain
 
         protected async UniTask<(
                 Address stakeAddr,
-                StakeStateV2? stakeStateV2,
+                StakeState? stakeStateV2,
                 FungibleAssetValue deposit,
                 int stakingLevel,
                 StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
@@ -77,11 +77,11 @@ namespace Nekoyume.Blockchain
             GetStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddr = States.Instance.AgentState.address;
-            var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
+            var stakeAddr = StakeState.DeriveAddress(agentAddr);
             var agent = Game.Game.instance.Agent;
             Address[] sheetAddrArr;
             FungibleAssetValue balance;
-            StakeStateV2? nullableStakeState;
+            StakeState? nullableStakeState;
             if (!StateGetter.TryGetStakeStateV2(evaluation.OutputState, agentAddr, out var stakeStateV2))
             {
                 nullableStakeState = null;
