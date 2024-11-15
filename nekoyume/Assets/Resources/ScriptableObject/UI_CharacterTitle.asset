@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: UI_CharacterTitle
   m_EditorClassIdentifier: 
   title:
+  - grade: 3
+    title: {fileID: 6406598601677895317, guid: 8f529e897c4094df48b221726f64c981, type: 3}
   - grade: 4
     title: {fileID: 6406598601677895317, guid: 55ff3516922924047bc8b4bc96f3f2e6, type: 3}
   - grade: 5
     title: {fileID: 6406598601677895317, guid: f14451fb709068d45aa9ac430a948907, type: 3}
-  - grade: 3
-    title: {fileID: 6406598601677895317, guid: 8f529e897c4094df48b221726f64c981, type: 3}
   - grade: 6
     title: {fileID: 6406598601677895317, guid: 711a4c22ef2a94637b0b1a018afb2937, type: 3}

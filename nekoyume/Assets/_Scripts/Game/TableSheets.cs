@@ -254,7 +254,9 @@ namespace Nekoyume.Game
         public PetCostSheet PetCostSheet { get; private set; }
         public PetOptionSheet PetOptionSheet { get; private set; }
 
-        public SummonSheet SummonSheet { get; private set; }
+        public EquipmentSummonSheet EquipmentSummonSheet { get; private set; }
+        public RuneSummonSheet RuneSummonSheet { get; private set; }
+        public CostumeSummonSheet CostumeSummonSheet { get; private set; }
 
         public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 
@@ -291,6 +293,7 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftRelationshipSheet CustomEquipmentCraftRelationshipSheet { get; private set; }
         public CustomEquipmentCraftRecipeSheet CustomEquipmentCraftRecipeSheet { get; private set; }
         public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
+        public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

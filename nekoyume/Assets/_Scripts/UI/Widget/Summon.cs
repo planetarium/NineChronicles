@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +13,11 @@ using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,74 +26,61 @@ namespace Nekoyume.UI
 {
     using UniRx;
     using Toggle = Module.Toggle;
-
     public class Summon : Widget
     {
         [Serializable]
-        private class SummonInfo
+        public class SummonObject
         {
-            public int summonSheetId;
+            public SummonResult summonResult;
             public Toggle tabToggle;
             public GameObject[] enableObj;
-            public string nameEng;
-            public string phrase1;
-            public string phrase2;
             public Color bottomImageColor;
-
-            public SummonSheet.Row SummonSheetRow;
+            public string descL10nKey;
         }
 
-        [Serializable]
-        private class SummonItem
-        {
-            public Button infoButton;
-            public TextMeshProUGUI nameText;
-            public SummonButtonGroup normalButtonGroup;
-            public SummonButtonGroup goldButtonGroup;
-            public RectTransform backgroundRect;
-            public TextMeshProUGUI phrase1Text;
-            public GameObject phrase1Obj;
-            public TextMeshProUGUI phrase2Text;
-            public GameObject phrase2Obj;
-            public Image bottomImage;
-        }
+        [SerializeField]
+        private Button infoButton;
 
-        [Serializable]
-        private class SummonButtonGroup
-        {
-            public GameObject container;
-            public SummonCostButton draw1Button;
-            public SummonCostButton draw10Button;
-        }
+        [SerializeField]
+        private RectTransform backgroundRect;
 
-        [SerializeField] private Button closeButton;
-        [SerializeField] private SummonInfo[] summonInfos;
-        [SerializeField] private SummonItem summonItem;
-        [SerializeField] private Button skillInfoButton;
+        [SerializeField]
+        private Image bottomImage;
 
-        private bool _isInitialized;
+        [SerializeField]
+        private SummonCostButton[] costButtons;
+
+        [SerializeField]
+        private SummonObject[] summonObjects;
+
+        [SerializeField]
+        private Button closeButton;
+
+        [SerializeField]
+        private RectTransform catRectTransform;
+
+        [SerializeField]
+        private Toggle[] countToggles;
+
+        [SerializeField]
+        private TextMeshProUGUI descriptionText;
+
+        private SummonObject _selectedSummonObj;
         private readonly List<IDisposable> _disposables = new();
-
-        public static bool HasNotification
-        {
-            get
-            {
-                var result = false;
-                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                foreach (var summonRow in summonSheet)
-                {
-                    var costType = (CostType)summonRow.CostMaterial;
-                    var cost = summonRow.CostMaterialCount;
-                    result |= SimpleCostButton.CheckCostOfType(costType, cost);
-                }
-
-                return result;
-            }
-        }
+        private int _selectedSummonCount = 10;
 
         protected override void Awake()
         {
-            base.Awake();
+            infoButton.OnClickAsObservable()
+                .Subscribe(_ => Find<SummonProbabilityPopup>().Show(_selectedSummonObj.summonResult))
+                .AddTo(gameObject);
+            foreach (var summonObject in summonObjects)
+            {
+                summonObject.tabToggle.onClickToggle.AddListener(() =>
+                {
+                    OnClickSummonTabToggle(summonObject);
+                });
+            }
 
             closeButton.onClick.AddListener(() =>
             {
@@ -104,162 +89,114 @@ namespace Nekoyume.UI
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             });
             CloseWidget = closeButton.onClick.Invoke;
-
-            foreach (var summonInfo in summonInfos)
+            foreach (var costButton in costButtons)
             {
-                summonInfo.tabToggle.onClickToggle.AddListener(() => SetSummonInfo(summonInfo));
-                summonInfo.tabToggle.onClickObsoletedToggle.AddListener(() =>
-                {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("NOTIFICATION_COMING_SOON"),
-                        NotificationCell.NotificationType.Information);
-                });
+                costButton.Subscribe(gameObject);
             }
-
-            summonItem.normalButtonGroup.draw1Button.Subscribe(gameObject);
-            summonItem.normalButtonGroup.draw10Button.Subscribe(gameObject);
-            summonItem.goldButtonGroup.draw1Button.Subscribe(gameObject);
-            summonItem.goldButtonGroup.draw10Button.Subscribe(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            closeButton.interactable = true;
-
-            if (!_isInitialized)
-            {
-                _isInitialized = true;
-
-                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                foreach (var summonInfo in summonInfos)
-                {
-                    summonInfo.SummonSheetRow =
-                        summonSheet.TryGetValue(summonInfo.summonSheetId, out var row) ? row : null;
-                }
-            }
-
-            summonInfos[0].tabToggle.isOn = true;
-            SetSummonInfo(summonInfos[0]);
+            OnClickSummonTabToggle(summonObjects.First());
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
         }
 
-        private void SetSummonInfo(SummonInfo currentInfo)
+        private void OnClickSummonTabToggle(SummonObject summonObject)
         {
-            foreach (var info in summonInfos)
+            if (summonObject == _selectedSummonObj)
             {
-                foreach (var obj in info.enableObj)
+                return;
+            }
+
+            if (_selectedSummonObj != null)
+            {
+                foreach (var obj in _selectedSummonObj.enableObj)
                 {
                     obj.SetActive(false);
                 }
+
+                _selectedSummonObj.tabToggle.isOn = false;
             }
 
-            foreach (var obj in currentInfo.enableObj)
+            _selectedSummonObj = summonObject;
+            SetBySummonResult(summonObject.summonResult);
+            bottomImage.color = summonObject.bottomImageColor;
+            foreach (var obj in summonObject.enableObj)
             {
                 obj.SetActive(true);
             }
 
-            var summonRow = currentInfo.SummonSheetRow;
-            var costType = (CostType)summonRow.CostMaterial;
-            summonItem.backgroundRect
-                .DOAnchorPosY(SummonUtil.GetBackGroundPosition(costType), .5f)
-                .SetEase(Ease.InOutCubic);
-
-            var enablePhrase1 = !string.IsNullOrEmpty(currentInfo.phrase1);
-            summonItem.phrase1Obj.SetActive(enablePhrase1);
-            summonItem.phrase1Text.text = enablePhrase1
-                ? L10nManager.Localize(currentInfo.phrase1)
-                : string.Empty;
-
-            var enablePhrase2 = !string.IsNullOrEmpty(currentInfo.phrase2);
-            summonItem.phrase2Obj.SetActive(enablePhrase2);
-            summonItem.phrase2Text.text = enablePhrase2
-                ? L10nManager.Localize(currentInfo.phrase2)
-                : string.Empty;
-
-            summonItem.bottomImage.color = currentInfo.bottomImageColor;
-
-            skillInfoButton.onClick.RemoveAllListeners();
-            skillInfoButton.onClick.AddListener(() => Find<SummonSkillsPopup>().Show(summonRow));
-
-            _disposables.DisposeAllAndClear();
-
-            summonItem.infoButton.OnClickAsObservable()
-                .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
-                .AddTo(_disposables);
-            summonItem.nameText.text = currentInfo.nameEng;
-
-            summonItem.normalButtonGroup.container.SetActive(false);
-            summonItem.goldButtonGroup.container.SetActive(false);
-
-            var buttonGroup = costType switch
-            {
-                CostType.SilverDust => summonItem.normalButtonGroup,
-                CostType.GoldDust => summonItem.goldButtonGroup,
-                CostType.RubyDust => summonItem.goldButtonGroup,
-                CostType.EmeraldDust => summonItem.goldButtonGroup,
-                _ => null
-            };
-            if (buttonGroup != null)
-            {
-                buttonGroup.container.SetActive(true);
-                buttonGroup.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
-                buttonGroup.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
-            }
-
-            var state = costType switch
-            {
-                CostType.SilverDust => HeaderMenuStatic.AssetVisibleState.SummonNormal,
-                _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
-            };
-            LoadingHelper.Summon
-                .Where(_ => gameObject.activeSelf)
-                .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
-                .AddTo(_disposables);
+            _selectedSummonObj.tabToggle.isOn = true;
+            descriptionText.SetText(L10nManager.Localize(summonObject.descL10nKey));
         }
 
-#region Action
-
-        public void SummonAction(int groupId, int summonCount)
+        private void SetBySummonResult(SummonResult resultType)
         {
-            // Check material enough
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[groupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-
-            var totalCost = summonRow.CostMaterialCount * summonCount;
-            var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
-                ? items.Sum(x => x.count)
-                : 0;
-
-            if (count < totalCost)
+            _disposables.DisposeAllAndClear();
+            foreach (var costButton in costButtons)
             {
-                // Not enough
-                NcDebug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
-                return;
+                costButton.gameObject.SetActive(false);
             }
 
-            var firstRecipeId = summonRow.Recipes.First().Item1;
-            if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
+            var rows = SummonFrontHelper.GetSummonRowsBySummonResult(resultType);
+            // 실버 더스트를 안쓰는 소환의 경우, 못생긴 0번 버튼을 스킵하고 그 다음부터 선택한다.
+            var index = rows.Any(row => (CostType)row.CostMaterial == CostType.SilverDust) ? 0 : 1;
+            foreach (var (row, costMaterial, materialCount) in rows.Select(row => (row, row.CostMaterial, row.CostMaterialCount)))
             {
-                ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
-                StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
-            }
-            else if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
-            {
-                ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
-                StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+                var costButton = costButtons[index++];
+                costButton.SetCost((CostType)costMaterial, materialCount);
+                costButton.gameObject.SetActive(true);
+                costButton.Subscribe(row, _selectedSummonCount, _disposables);
             }
 
-            LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
+            backgroundRect
+                .DOAnchorPosY(SummonUtil.GetBackGroundPosition(resultType), .5f)
+                .SetEase(Ease.InOutCubic);
+            // 표시해야할 버튼이 2개 이하인 경우, 고양이 NPC의 위치를 밑으로 조금 내린다.
+            var catPos = catRectTransform.anchoredPosition;
+            catPos.y = rows.Count > 2 ? 0 : -120;
+            catRectTransform.anchoredPosition = catPos;
         }
 
+        public void SummonAction(SummonSheet.Row row)
+        {
+            // 어떤걸 뽑느냐에 따라 LoadingScreen 형태가 바뀐다.
+            switch (_selectedSummonObj.summonResult)
+            {
+                case SummonResult.Aura:
+                case SummonResult.Grimoire:
+                    ActionManager.Instance.AuraSummon(row.GroupId, _selectedSummonCount);
+                    StartCoroutine(CoShowAuraSummonLoadingScreen(row.Recipes.Select(r => r.Item1).ToList()));
+                    break;
+                case SummonResult.Rune:
+                    ActionManager.Instance.RuneSummon(row.GroupId, _selectedSummonCount);
+                    StartCoroutine(CoShowRuneSummonLoadingScreen(row.Recipes.Select(r => r.Item1).ToList()));
+                    break;
+                case SummonResult.FullCostume:
+                case SummonResult.Title:
+                    ActionManager.Instance.CostumeSummon(row.GroupId, _selectedSummonCount);
+                    // TODO: 코스튬 뚱땅창 연출 추가해야함
+                    break;
+            }
+
+            // 액션을 처리하는 동안 LoadingHelper에 사용중인 재화를 할당한다
+            LoadingHelper.Summon.Value = new Tuple<int, int>(row.CostMaterial, row.CostMaterialCount * _selectedSummonCount);
+        }
+
+        // used in UGUI event
+        public void OnCountToggleValueChanged(int count)
+        {
+            _selectedSummonCount = count;
+            SetBySummonResult(_selectedSummonObj.summonResult);
+        }
+
+#region copy from old Summon.cs
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
@@ -269,11 +206,22 @@ namespace Nekoyume.UI
         public void OnActionRender(ActionEvaluation<RuneSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            var summonRow = Game.Game.instance.TableSheets.RuneSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateRune(summonRow, summonCount, random);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
+        }
+
+        public void OnActionRender(ActionEvaluation<CostumeSummon> eval)
+        {
+            LoadingHelper.Summon.Value = null;
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            var summonRow = Game.Game.instance.TableSheets.CostumeSummonSheet[eval.Action.GroupId];
+            var summonCount = eval.Action.SummonCount;
+            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
+            var resultList = SimulateCostume(summonRow, summonCount, random);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
@@ -295,7 +243,23 @@ namespace Nekoyume.UI
                     tableSheets.SkillSheet,
                     summonRow, summonCount, random, blockIndex)
                 .Select(tuple => tuple.Item2)
-                .OrderByDescending(row => row.Grade)
+                .OrderBy(row => row.Grade)
+                .ToList();
+        }
+
+        private static List<Costume> SimulateCostume(
+            SummonSheet.Row summonRow,
+            int summonCount,
+            IRandom random)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
+            return CostumeSummon.SimulateSummon(
+                    addressHex,
+                    tableSheets.CostumeItemSheet,
+                    summonRow,
+                    summonCount,
+                    random)
                 .ToList();
         }
 
@@ -328,7 +292,7 @@ namespace Nekoyume.UI
             }
 
             return result
-                .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
+                .OrderBy(rune => Util.GetTickerGrade(rune.Currency.Ticker))
                 .ThenBy(rune =>
                     RuneFrontHelper.TryGetRuneData(rune.Currency.Ticker, out var runeData)
                         ? runeData.sortingOrder
@@ -336,7 +300,6 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-#endregion
 
         private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
         {
@@ -406,46 +369,33 @@ namespace Nekoyume.UI
                 false);
         }
 
-        private static void GoToMarket()
-        {
-            Find<Summon>().Close(true);
-
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            if (TryFind<MobileShop>(out var mobileShop))
-            {
-                mobileShop.Show();
-            }
-        }
-
         // Do not use with Aura summon tutorial. this logic is fake.
         public void SetCostUIForTutorial()
         {
-            const int normalAuraId = 10001;
-            var summonInfo = summonInfos.FirstOrDefault(info => info.summonSheetId == normalAuraId);
-            if (summonInfo is null)
+            var summonObject = summonObjects.FirstOrDefault(info => info.summonResult == SummonResult.Aura);
+            if (summonObject is null)
             {
-                NcDebug.LogError($"SummonInfo for tutorial not found. id : {normalAuraId}");
+                NcDebug.LogError("SummonObject for tutorial not found.");
                 return;
             }
 
-            summonInfo.tabToggle.isOn = true;
-            SetSummonInfo(summonInfo);
+            var firstCountToggle = countToggles.First();
+            firstCountToggle.isOn = true;
+            firstCountToggle.onClickToggle.Invoke();
+            summonObject.tabToggle.isOn = true;
+            OnClickSummonTabToggle(summonObject);
 
-            var costButton = summonItem.normalButtonGroup.draw1Button;
-            if (costButton)
-            {
-                costButton.SetFakeUI(CostType.SilverDust, 0);
-            }
+            costButtons.FirstOrDefault()?.SetFakeUI(CostType.SilverDust, 0);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickNormal1SummonButton()
         {
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
+            var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet.First;
             var resultEquipment =
                 States.Instance.CurrentAvatarState.inventory.Equipments.FirstOrDefault(e =>
                     e is Aura);
-            var button = summonItem.normalButtonGroup.draw1Button;
+            var button = costButtons.FirstOrDefault();
             if (resultEquipment is null)
             {
                 button.OnClickSubject.OnNext(button.CurrentState.Value);
@@ -458,5 +408,6 @@ namespace Nekoyume.UI
             // UI Reset for SetCostUIForTutorial() invoking
             button.UpdateObjects();
         }
+#endregion
     }
 }

@@ -107,14 +107,15 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(int count)
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            var seasonPassServiceManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-
-                seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
+                var expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.battle_arena);
+                seasonPassCourageAmount.text = $"+{expAmount * count}";
             }
             else
             {

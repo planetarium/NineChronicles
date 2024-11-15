@@ -514,7 +514,7 @@ namespace Nekoyume.Helper
                         adventureBossData.SeasonInfo.Value.Season, out var endedSeasonInfo))
                     {
                         var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                        var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                        var secondsPerBlock = Nekoyume.Helper.Util.BlockInterval;
 
                         var remainBlock = endedSeasonInfo.NextStartBlockIndex - currentBlockIndex;
                         var nextStartTime = endedSeasonInfo.NextStartBlockIndex
@@ -546,7 +546,7 @@ namespace Nekoyume.Helper
                     if (WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var next))
                     {
                         var remainBlock = next.StartedBlockIndex - currentBlockIndex;
-                        var secondPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                        var secondPerBlock = Util.BlockInterval;
                         var nextStartTime = next.StartedBlockIndex
                             .BlockIndexToDateTimeString(currentBlockIndex, secondPerBlock, DateTime.Now, "yyyy/MM/dd HH:mm");
                         var message = L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED",

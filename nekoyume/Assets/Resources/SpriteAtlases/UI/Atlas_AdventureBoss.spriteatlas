@@ -107,7 +107,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cd419122221f101438c2c4a301e99600, type: 3}
   - {fileID: 21300000, guid: eeb70762cc3cd1d4fa0163349c4f3f2c, type: 3}
   - {fileID: 21300000, guid: 4d410672b38053046ae3b2a514ca1740, type: 3}
-  - {fileID: 21300000, guid: 8e956c92761068d4890503e964819c99, type: 3}
   - {fileID: 21300000, guid: 22b456b2f67d2994bb77b5a0c65b335d, type: 3}
   - {fileID: 21300000, guid: 9efdbde28e2564745bff3e3cbf74b052, type: 3}
   - {fileID: 21300000, guid: 3f7d166340566d549a01f379667b9e6d, type: 3}
@@ -119,7 +118,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 103e1fa495438604a859673520863304, type: 3}
   - {fileID: 21300000, guid: 0ca53fb40ecea1944b8f54f609e5eedb, type: 3}
   - {fileID: 21300000, guid: b86285d4a1b43ff438ba0bd3152ba4b0, type: 3}
-  - {fileID: 21300000, guid: a657da150014baf47aafc1279b2b2022, type: 3}
   - {fileID: 21300000, guid: 8281ee254223dd645b58733a070e4a95, type: 3}
   - {fileID: 21300000, guid: 10e0c535f95e068488525551f42e6ea3, type: 3}
   - {fileID: 21300000, guid: b3551b45f94fa144eb821a60822baa7a, type: 3}
@@ -140,6 +138,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ce2db9a7a8e708047bb7f74813d24645, type: 3}
   - {fileID: 21300000, guid: 245ca008e7cb25d41b6fe77d7a18d7c5, type: 3}
   - {fileID: 21300000, guid: 1e5ae6483f96a24408e49b359df12796, type: 3}
+  - {fileID: 21300000, guid: 4fef94585f837da47955a249b8b68001, type: 3}
   - {fileID: 21300000, guid: 307ed068fc421974abb118493280a31c, type: 3}
   - {fileID: 21300000, guid: 78da8488afc1370418de84cd0c19efe8, type: 3}
   - {fileID: 21300000, guid: 7223b4a8b3e4eb9409002b5864636f78, type: 3}
@@ -190,7 +189,6 @@ SpriteAtlas:
   - Cloud_03
   - AdventureBoss_bg_05
   - AdventureUI_08
-  - Icon_Ranking
   - AdventureUI_25
   - Obj_F_02
   - Obj_F_12
@@ -202,7 +200,6 @@ SpriteAtlas:
   - Obj_B_02
   - AdventureBoss_bg_03
   - Obj_B_01
-  - Icon_Bonus
   - WB_Button_Bg_Green
   - Door_Lock
   - AdventureUI_12
@@ -223,6 +220,7 @@ SpriteAtlas:
   - Icon_Reward
   - AdventureUI_10
   - AdventureUI_18
+  - Icon_Prev
   - AdventureUI_15
   - Obj_F_14
   - AdventureUI_07

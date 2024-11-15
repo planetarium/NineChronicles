@@ -17,6 +17,7 @@ using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Battle;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -28,6 +29,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
 using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -73,6 +75,9 @@ namespace Nekoyume.UI
         private MainMenu btnCollection;
 
         [SerializeField]
+        private MainMenu btnEventReward;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
         [SerializeField] private GameObject shopExclamationMark;
@@ -106,6 +111,10 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject adventureBossMark;
 
         [SerializeField] private GameObject adventureBossUnMark;
+
+        [SerializeField] private Button thorSeasonButton;
+
+        [SerializeField] private TMP_Text thorScheduleText;
 
         private Coroutine _coLazyClose;
 
@@ -150,7 +159,8 @@ namespace Nekoyume.UI
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
                     btnSeasonPass.GetComponent<Button>(),
-                    btnCollection.GetComponent<Button>()
+                    btnCollection.GetComponent<Button>(),
+                    btnEventReward.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -182,6 +192,11 @@ namespace Nekoyume.UI
                     adventureBossUnMark.SetActive(!activeMark);
                 })
                 .AddTo(gameObject);
+
+            thorSeasonButton.onClick.AddListener((() =>
+            {
+                Find<EventRewardPopup>().ShowAsThorChain();
+            }));
         }
 
         protected override void OnDestroy()
@@ -394,7 +409,7 @@ namespace Nekoyume.UI
             combinationExclamationMark.SetActive(
                 (btnCombination.IsUnlocked &&
                     (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                        Craft.SharedModel.HasNotification)) || Summon.HasNotification);
+                        Craft.SharedModel.HasNotification))/* || Summon.HasNotification*/);
             shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
                 && ShopNoti(addressHex));
@@ -664,6 +679,16 @@ namespace Nekoyume.UI
             Find<PatrolRewardPopup>().Show();
         }
 
+        public void EventRewardClick()
+        {
+            if (!btnEventReward.IsUnlocked)
+            {
+                return;
+            }
+
+            Find<EventRewardPopup>().Show();
+        }
+
         public void SeasonPassClick()
         {
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
@@ -673,7 +698,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!seasonPassManager.IsInitialized || seasonPassManager.AvatarInfo.Value == null)
+            if (!seasonPassManager.IsInitialized || seasonPassManager.UserSeasonPassDatas == null)
             {
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
                 NcDebug.LogWarning("SeasonPassClick() : SeasonPass Is not Initialized");
@@ -724,6 +749,13 @@ namespace Nekoyume.UI
             UpdateButtons();
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
+
+            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            thorSeasonButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
+
+            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
+            btnPatrolReward.gameObject.SetActive(!isInEventDate);
+            btnEventReward.gameObject.SetActive(isInEventDate);
         }
 
         private void SubscribeAtShow()
@@ -742,6 +774,27 @@ namespace Nekoyume.UI
                 eventDungeonTicketsText.text =
                     value.currentTickets.ToString(CultureInfo.InvariantCulture);
             }).AddTo(_disposablesAtShow);
+
+            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule.IsOpened)
+            {
+                Observable.Interval(TimeSpan.FromMinutes(1))
+                    .Subscribe(_ => UpdateThorScheduleText())
+                    .AddTo(_disposablesAtShow);
+                UpdateThorScheduleText();
+            }
+        }
+
+        private void UpdateThorScheduleText()
+        {
+            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule is null || !thorSchedule.IsOpened)
+            {
+                return;
+            }
+
+            var timeSpan = thorSchedule.DiffFromEndTimeSpan;
+            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()}";
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -870,6 +923,12 @@ namespace Nekoyume.UI
         public void TutorialActionClickPatrolRewardMenu()
         {
             PatrolRewardClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickEventRewardMenu()
+        {
+            Find<EventRewardPopup>().ShowAsPatrolReward();
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

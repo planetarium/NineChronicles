@@ -41,18 +41,28 @@ namespace Nekoyume.Game.Scene
 
         [SerializeField] private IntroScreen introScreen;
         [SerializeField] private Synopsis synopsis;
+        [SerializeField] private ChainInfoItem thorChainInfoItem;
 
 #region MonoBehaviour
         private void Awake()
         {
             var canvas = GetComponent<Canvas>();
             canvas.worldCamera = ActionCamera.instance.Cam;
+
+            Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule +=
+                OnSetThorScheduleUrl;
         }
 
         protected override void Start()
         {
             base.Start();
             StartCoroutine(LoginStart());
+        }
+
+        private void OnDestroy()
+        {
+            Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule -=
+                OnSetThorScheduleUrl;
         }
 #endregion MonoBehaviour
 
@@ -196,7 +206,16 @@ namespace Nekoyume.Game.Scene
 
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             game.InitializeFirstResources();
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+
+            // AudioController 초기화
+            // 에디터의 경우 에셋 로드 속도(use asset database)가 비정상적으로 느리기 때문에
+            // AudioController의 초기화를 대기하지 않고 아래 로직을 수행한다
+            // AudioController가 초기화되지 않은 상태에서 사운드 재생시 안내 로그 출력 후 사운드가 재생되지 않음 
+#if UNITY_EDITOR
+            game.InitializeAudioControllerAsync().Forget();
+#else
+            yield return game.InitializeAudioControllerAsync().ToCoroutine();
+#endif
 
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
@@ -856,6 +875,11 @@ namespace Nekoyume.Game.Scene
                 portalConnect.PortalUrl,
                 email,
                 agentAddrInPortal?.ToString() ?? "null");
+        }
+
+        private void OnSetThorScheduleUrl(ThorSchedule thorSchedule)
+        {
+            thorChainInfoItem.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
     }
 }

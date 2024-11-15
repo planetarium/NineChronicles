@@ -19,9 +19,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            arena.text = $"+{ApiClients.Instance.SeasonPassServiceManager.ArenaCourageAmount}";
-            worldboss.text = $"+{ApiClients.Instance.SeasonPassServiceManager.WorldBossCourageAmount}";
-            advanture.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount}";
+            var seasonPassServiceManager = ApiClients.Instance.SeasonPassServiceManager;
+            arena.text = $"+{seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.battle_arena)}";
+            worldboss.text = $"+{seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.raid)}";
+            advanture.text = $"+{seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash)}";
             base.Show(ignoreShowAnimation);
         }
 

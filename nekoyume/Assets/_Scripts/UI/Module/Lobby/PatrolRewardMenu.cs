@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.ApiClient;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -45,24 +46,25 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void OnEnable()
         {
-            if (!Widget.TryFind<PatrolRewardPopup>(out var popup))
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (avatarState is null)
             {
                 return;
             }
 
-            if (!popup.PatrolReward.Initialized)
+            if (PatrolReward.NeedToInitialize(avatarState.address))
             {
                 NcDebug.LogWarning("PatrolReward is not initialized.");
                 return;
             }
 
-            popup.PatrolReward.PatrolTime
-                .Select(time => time < popup.PatrolReward.Interval)
-                .Where(_ => !popup.Claiming.Value)
+            PatrolReward.PatrolTime
+                .Select(time => time < PatrolReward.Interval)
+                .Where(_ => !PatrolReward.Claiming.Value)
                 .Subscribe(patrolling => SetCanClaim(patrolling, false))
                 .AddTo(_disposables);
 
-            popup.Claiming.Where(claiming => claiming)
+            PatrolReward.Claiming.Where(claiming => claiming)
                 .Subscribe(value => SetCanClaim(false, true)).AddTo(_disposables);
         }
 

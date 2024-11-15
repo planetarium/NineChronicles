@@ -536,6 +536,17 @@ namespace Nekoyume.UI
                 }
                 else
                 {
+                    if (options.Count > 1)
+                    {
+                        // Hide the equipment description text
+                        mainStatTexts[1].gameObject.SetActive(false);
+                        optionView.SetOptions(options, false);
+                    }
+                    else
+                    {
+                        optionView.SetOptions(null, false);
+                    }
+
                     var list = new List<EquipmentItemSubRecipeSheet.MaterialInfo>
                         { baseMaterialInfo };
                     list.AddRange(subRecipe.Materials);

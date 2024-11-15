@@ -54,6 +54,11 @@ MonoBehaviour:
       offset: {x: 0, y: -2.3}
     selectedColor: {r: 1, g: 0.7058824, b: 0.23137255, a: 1}
     eventType: 5
+  - icon:
+      sprite: {fileID: 21300000, guid: 810ef072c8e29b743a492067ed79e535, type: 3}
+      offset: {x: 0, y: 0}
+    selectedColor: {r: 1, g: 0.7058824, b: 0.23137255, a: 1}
+    eventType: 6
   bossMarkIcons:
   - bossType: 1
     icon:
