@@ -334,7 +334,7 @@ namespace Nekoyume.UI.Model
                 var response = await apiClient.GetObjectAsync<EquipmentRankingResponse>(query);
                 if (response is null)
                 {
-                    NcDebug.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)}");
+                    NcDebug.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)} for {subType}");
                     return;
                 }
 
