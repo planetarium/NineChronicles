@@ -1277,10 +1277,10 @@ RectTransform:
   m_Father: {fileID: 7629895324776978819}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 25.9}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 18.33, y: -14}
+  m_SizeDelta: {x: 36.66, y: 25.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &167195087138763644
 CanvasRenderer:
@@ -11559,7 +11559,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8572547868344254225
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21028,7 +21028,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: 9}
-  m_SizeDelta: {x: 0, y: -18}
+  m_SizeDelta: {x: 130.58, y: -18}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7492105294225622958
 CanvasRenderer:
@@ -21142,7 +21142,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6400211548144750783
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25903,10 +25903,10 @@ RectTransform:
   m_Father: {fileID: 7629895324776978819}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 25.9}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 86.119995, y: -14}
+  m_SizeDelta: {x: 88.92, y: 25.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8147089687192881580
 CanvasRenderer:
@@ -30965,19 +30965,15 @@ MonoBehaviour:
   videoPlayer: {fileID: 2774891704748942382}
   skipButton: {fileID: 4856101183949997340}
   normalVideoClip:
-    summoning: {fileID: 0}
     result: {fileID: 32900000, guid: 1845c175fc2cb114b855e0ff47e3a7c4, type: 3}
     great: {fileID: 32900000, guid: b3ebb598ff5aa4344a5810d82f1e09ef, type: 3}
   goldenVideoClip:
-    summoning: {fileID: 0}
     result: {fileID: 32900000, guid: ea8ec93f0ddd5bb49b28fd0ff2e5e6c6, type: 3}
     great: {fileID: 32900000, guid: f1264ff853f91ae419a643794bd7557b, type: 3}
   rubyVideoClip:
-    summoning: {fileID: 0}
     result: {fileID: 32900000, guid: 9d333a27d58819c4986bfb37afc0213c, type: 3}
     great: {fileID: 32900000, guid: 79f0453940687c04d9dfeadb36d8db48, type: 3}
   emeraldVideoClip:
-    summoning: {fileID: 32900000, guid: 629d3181e403d384eb0a4e28d6c52f96, type: 3}
     result: {fileID: 32900000, guid: 4070e5b4487fdb445bd42e5824e5b3f4, type: 3}
     great: {fileID: 32900000, guid: 2be9dd32a1950864c9be2bba7df83cde, type: 3}
   manySummonItemViews:
@@ -36189,10 +36185,10 @@ RectTransform:
   m_Father: {fileID: 5278623198619313923}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 25.9}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 86.119995, y: -14}
+  m_SizeDelta: {x: 88.92, y: 25.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4109240233042597564
 CanvasRenderer:
@@ -41390,7 +41386,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: 9}
-  m_SizeDelta: {x: 0, y: -18}
+  m_SizeDelta: {x: 130.58, y: -18}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3318661194366042084
 CanvasRenderer:
@@ -41473,10 +41469,10 @@ RectTransform:
   m_Father: {fileID: 5278623198619313923}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 25.9}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 18.33, y: -14}
+  m_SizeDelta: {x: 36.66, y: 25.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6225280599806497920
 CanvasRenderer:
