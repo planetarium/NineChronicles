@@ -723,6 +723,8 @@ UI_RANKING_CATEGORY_ARMOR,Armor,방어구,armaduras,アーマー,Armadura,เก
 UI_RANKING_CATEGORY_BELT,Belt,벨트,Cinto,ベルト,Cinturón,เข็มขัด,Sabuk,Пояс,腰带,腰帶,Sinturon,Thắt lưng
 UI_RANKING_CATEGORY_NECKLACE,Necklace,목걸이,Colar,ネックレス,Collar,สร้อยคอ,Kalung,Ожерелье,项链,項鍊,Kwintas,Vòng cổ
 UI_RANKING_CATEGORY_RING,Ring,반지,Anel,リング,Anillo,แหวน,Cincin,Звенеть,戒指,戒指,Singsing,Nhẫn
+UI_RANKING_CATEGORY_AURA,Aura,아우라,,,,,,,,,,
+UI_RANKING_CATEGORY_GRIMOIRE,Grimoire,그리모어,,,,,,,,,,
 UI_RANKING_CATEGORY_WORLD,World,월드,Mundo,ワールド,Mundo,โลก,Dunia,Мир,世界,世界,Mundo,Thế giới
 UI_RANKING_CATEGORY_MIMISBRUNNR,Mimisbrunnr,미미르의 샘,Mimisbrunnr,ミーミルの泉,Mimisbrunnr,Mimisbrunnr,Mimisbrunnr,Mimisbrunnr,Mimisbrunnr,mimisbrunnr,Mimisbrunnr,Mimisbrunnr
 UI_RANKING_RENEWAL_RESET_TEXT,Ranking is updated each time you turn on the game.,게임을 새로 켤 때마다 랭킹이 갱신됩니다.,Ranking é atualizado a cada vez que você ligar o jogo.,ランキングはゲームを起動するたびに更新されます。,El ranking se actualiza cada vez que ingresas al juego.,การจัดอันดับมีการปรับปรุงทุกครั้งที่คุณเปิดเกม,Peringkat diperbarui setiap kali Anda menghidupkan permainan.,"Рейтинг обновляется каждый раз, когда вы включаете игру.",排名是每次打开游戏时更新。,每次打開遊戲時，排名都會更新。,Ang ranking ay naa-update tuwing i-on mo ang laro.,Xếp hạng được cập nhật mỗi khi bạn mở trò chơi.
@@ -2086,10 +2088,15 @@ UI_EVENT_TOGGLE_0,Custom Gift,코스튬 선물,,,,,,,,,,
 UI_EVENT_TOGGLE_1,Patrol Reward,정찰 보상,,,,,,,,,,
 UI_EVENT_TOGGLE_2,Shop Package,기념 패키지,,,,,,,,,,
 UI_EVENT_TOGGLE_3,Double Contents Rewards,컨텐츠 보상 2배,,,,,,,,,,
-UI_EVENT_TOGGLE_4,Growth Boost,성장 지원,,,,,,,,,,
+UI_EVENT_TOGGLE_4,Seasonal Chain,시즌제 체인,,,,,,,,,,
 UI_EVENT_DESCRIPTION_0,Custom Gift Description,코스튬 선물 관련 설명,,,,,,,,,,
 UI_EVENT_DESCRIPTION_1,Patrol Reward Description,정찰 보상 관련 설명,,,,,,,,,,
 UI_EVENT_DESCRIPTION_2,Shop Package Description,기념 패키지 관련 설명,,,,,,,,,,
 UI_EVENT_DESCRIPTION_3,Double Contents Rewards Description,컨텐츠 보상 2배 관련 설명,,,,,,,,,,
-UI_EVENT_DESCRIPTION_4,Growth Boost Description,성장 지원 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_4,Seasonal Chain,시즌제 체인,,,,,,,,,,
 UI_MAIN_MENU_EVENT_REWARD,1st Anniversary,1주년 기념,,,,,,,,,,
+UI_SUMMON_GRIMORE_PHRASE_NEW,Grimore summon desc,그리모어 소환 설명,,,,,,,,,,,
+UI_SUMMON_AURA_PHRASE_NEW,Aura summon desc,아우라 소환 설명,,,,,,,,,,,
+UI_SUMMON_RUNE_PHRASE_NEW,Rune summon desc,룬 소환 설명,,,,,,,,,,,
+UI_PARTICIPATE,Participate,참여하기,,,,,,,,,,
+UI_QUIT_FOR_THOR_CHAIN_CONFIRM,Do you want to close the app and restart to participate the Thor chain?,앱을 종료 후 재시작하여 토르 체인에 참가하시겠습니까?,,,,,,,,,,

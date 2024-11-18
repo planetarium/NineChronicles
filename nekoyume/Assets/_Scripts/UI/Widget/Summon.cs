@@ -18,6 +18,7 @@ using Nekoyume.State;
 using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,6 +35,7 @@ namespace Nekoyume.UI
             public Toggle tabToggle;
             public GameObject[] enableObj;
             public Color bottomImageColor;
+            public string descL10nKey;
         }
 
         [SerializeField]
@@ -55,10 +57,10 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private RectTransform catRectTransform;
+        private Toggle[] countToggles;
 
         [SerializeField]
-        private Toggle[] countToggles;
+        private TextMeshProUGUI descriptionText;
 
         private SummonObject _selectedSummonObj;
         private readonly List<IDisposable> _disposables = new();
@@ -123,6 +125,7 @@ namespace Nekoyume.UI
             }
 
             _selectedSummonObj.tabToggle.isOn = true;
+            descriptionText.SetText(L10nManager.Localize(summonObject.descL10nKey));
         }
 
         private void SetBySummonResult(SummonResult resultType)
@@ -147,10 +150,6 @@ namespace Nekoyume.UI
             backgroundRect
                 .DOAnchorPosY(SummonUtil.GetBackGroundPosition(resultType), .5f)
                 .SetEase(Ease.InOutCubic);
-            // 표시해야할 버튼이 2개 이하인 경우, 고양이 NPC의 위치를 밑으로 조금 내린다.
-            var catPos = catRectTransform.anchoredPosition;
-            catPos.y = rows.Count > 2 ? 0 : -120;
-            catRectTransform.anchoredPosition = catPos;
         }
 
         public void SummonAction(SummonSheet.Row row)

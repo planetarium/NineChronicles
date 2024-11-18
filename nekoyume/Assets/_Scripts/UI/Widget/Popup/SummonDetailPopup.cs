@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -46,7 +46,7 @@ namespace Nekoyume.UI
 
         public void Show(SummonDetailCell.Model model)
         {
-            var showCharacterSpine = model.EquipmentRow.ItemSubType == ItemSubType.Aura;
+            var showCharacterSpine = model.EquipmentRow != null && model.EquipmentRow.ItemSubType == ItemSubType.Aura;
             spineView.SetActive(showCharacterSpine);
             iconView.SetActive(!showCharacterSpine);
 

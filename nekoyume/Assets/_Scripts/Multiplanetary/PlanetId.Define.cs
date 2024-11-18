@@ -18,42 +18,42 @@ namespace Nekoyume.Multiplanetary
             {
                 return Planet.Odin;
             }
-                
+
             if (planetId == Heimdall)
             {
                 return Planet.Heimdall;
             }
-                
+
             if (planetId == Thor)
             {
                 return Planet.Thor;
             }
-                
+
             if (planetId == OdinInternal)
             {
                 return Planet.OdinInternal;
             }
-                
+
             if (planetId == HeimdallInternal)
             {
                 return Planet.HeimdallInternal;
             }
-                
+
             if (planetId == ThorInternal)
             {
                 return Planet.ThorInternal;
-            } 
-            
+            }
+
             // Default to Odin
             return Planet.Odin;
         }
-        
+
         // TODO: Flag로 변경?
         public static bool IsMainNet(PlanetId planetId)
         {
             return planetId == Odin || planetId == Heimdall || planetId == Thor;
         }
-        
+
         public static bool IsThor(PlanetId planetId)
         {
             return planetId == Thor || planetId == ThorInternal;

@@ -804,7 +804,7 @@ namespace Nekoyume.Game
         private async UniTask InitializeStakeStateAsync()
         {
             // NOTE: Initialize staking states after setting GameConfigState.
-            var stakeAddr = Model.Stake.StakeStateV2.DeriveAddress(Agent.Address);
+            var stakeAddr = Model.Stake.StakeState.DeriveAddress(Agent.Address);
             var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
             var goldCurrency = States.GoldBalanceState.Gold.Currency;
             var balance = goldCurrency * 0;
@@ -812,7 +812,7 @@ namespace Nekoyume.Game
             var stakeRegularRewardSheet = new StakeRegularRewardSheet();
             var policySheet = TableSheets.StakePolicySheet;
             Address[] sheetAddr;
-            Model.Stake.StakeStateV2? stakeState = null;
+            Model.Stake.StakeState? stakeState = null;
             if (!StakeStateUtilsForClient.TryMigrate(
                 stakeStateIValue,
                 States.Instance.GameConfigState,

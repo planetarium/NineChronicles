@@ -11,9 +11,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -69,6 +67,9 @@ namespace Nekoyume.UI
 
         private PopupType _type;
 
+        // TODO: 티켓 구매를 위해 임시로 추가, 전투 상태 구분 로직 추가 후 제거
+        private bool _canForceMoveToLobby;
+
         protected override void Awake()
         {
             base.Awake();
@@ -84,6 +85,7 @@ namespace Nekoyume.UI
 
         private void SetPopupType(PopupType popupType)
         {
+            _canForceMoveToLobby = false;
             _type = popupType;
             switch (popupType)
             {
@@ -219,10 +221,11 @@ namespace Nekoyume.UI
             Show(title, content, labelYesText, string.Empty, false);
         }
 
-        public void ShowLackPaymentNCG(string cost, bool isStaking = false)
+        public void ShowLackPaymentNCG(string cost, bool isStaking = false, bool canForceMoveToLobby = false)
         {
             var canAttract = CanAttractShop();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            _canForceMoveToLobby = canForceMoveToLobby;
 
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
             var title = L10nManager.Localize("UI_REQUIRED_COST");
@@ -586,6 +589,23 @@ namespace Nekoyume.UI
 
         private void AttractToMonsterCollection()
         {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                // K빌드인 경우 이동하지 않음
+                NcDebug.LogWarning("Korean build is not supported.");
+                Lobby.Enter(true);
+                return;
+            }
+
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             Lobby.Enter();
             Find<StakingPopup>().Show();
         }
@@ -601,6 +621,15 @@ namespace Nekoyume.UI
             {
                 // K빌드인 경우 이동하지 않음
                 NcDebug.LogWarning("Korean build is not supported.");
+                return;
+            }
+
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -621,6 +650,15 @@ namespace Nekoyume.UI
 
         private void AttractGrind()
         {
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             Find<LobbyMenu>().Close();
             Find<WorldMap>().Close();
             Find<StageInformation>().Close();
@@ -645,11 +683,29 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             AttractShopAsync().Forget();
         }
 
         private async UniTask AttractShopAsync()
         {
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             CloseWithOtherWidgets();
             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
@@ -659,6 +715,15 @@ namespace Nekoyume.UI
 
         private async UniTask AttractMobileShopAsync(int id)
         {
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
 #if !(UNITY_ANDROID || UNITY_IOS)
             return;
 #endif
@@ -675,6 +740,15 @@ namespace Nekoyume.UI
 
         private void AttractToSummon()
         {
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             CloseWithOtherWidgets();
             Find<Summon>().Show();
         }
@@ -868,10 +942,12 @@ namespace Nekoyume.UI
         {
             base.Close();
 
-            if (_type == PopupType.AttractAction && BattleRenderer.Instance.IsOnBattle)
+            // TODO: _canForceMoveToLobby -> 티켓 구매를 위해 임시로 추가, 전투 상태 구분 로직 추가 후 제거
+            // TODO: BattleRenderer.Instance.IsOnBattle을 전투 후 대기와같은 상태로 변경 가능하게 설정
+            if (_type == PopupType.AttractAction && BattleRenderer.Instance.IsOnBattle && _canForceMoveToLobby)
             {
                 Lobby.Enter(true);
-                
+
                 Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
                 {
                     YesCallback?.Invoke();

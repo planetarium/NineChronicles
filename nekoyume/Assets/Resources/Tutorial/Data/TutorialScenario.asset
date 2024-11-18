@@ -1817,6 +1817,105 @@ MonoBehaviour:
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
+  - title: Stage 10-1
+    description: PatrolReward (on Event Reward Popup)
+    tutorialScenario:
+      scenario:
+      - id: 101000
+        nextId: 101001
+        checkPointId: 101000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 101000
+          actionType: 101000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 101001
+        nextId: 101002
+        checkPointId: 101000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 101001
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 101002
+        nextId: 101003
+        checkPointId: 101000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 101002
+          actionType: 101001
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 101003
+        nextId: 101004
+        checkPointId: 101000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: -50, y: 0}
+          targetPositionOffset: {x: -20, y: 0}
+          targetSizeOffset: {x: 25, y: 20}
+          buttonRaycastPadding: {x: -20, y: -20, z: -20, w: -20}
+          targetType: 17
+          actionType: 14
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_004
+          arrowAdditionalDelay: 1.5
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 101004
+        nextId: 0
+        checkPointId: -10
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 30001
+          actionType: 30001
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_10_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
   - title: Stage 15
     description: Arena
     tutorialScenario:

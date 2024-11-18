@@ -26,6 +26,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject titleBg;
         [SerializeField] private RawImage fullCostumeImage;
         [SerializeField] private Transform titleSocket;
+        [SerializeField] private RectTransform background;
 
         private GameObject _cachedCharacterTitle;
 
@@ -76,6 +77,11 @@ namespace Nekoyume.UI
             fullCostumeImage.color =
                 costume.ItemSubType == ItemSubType.Title ? Color.black : Color.white;
 
+            background.anchoredPosition = Vector2.up * SummonUtil.GetBackGroundPosition(
+                costume.ItemSubType == ItemSubType.FullCostume
+                    ? SummonResult.FullCostume
+                    : SummonResult.Title);
+
             SetCharacter(costume);
 
             Show(ignoreShowAnimation);
@@ -92,10 +98,8 @@ namespace Nekoyume.UI
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
-            var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var equipments = new List<Equipment>();
             var costumes = new List<Costume> { costume, };
-            Game.Game.instance.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
+            Game.Game.instance.Lobby.FriendCharacter.SetForCostumes(costumes);
         }
     }
 }

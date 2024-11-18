@@ -204,7 +204,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -10341,7 +10341,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -15116,7 +15116,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -31033,6 +31033,11 @@ PrefabInstance:
     - target: {fileID: 4566386519380980832, guid: 5b8d64f2198d3dd449f2e353dc79925d,
         type: 3}
       propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5461036282897098562, guid: 5b8d64f2198d3dd449f2e353dc79925d,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6699527492194300398, guid: 5b8d64f2198d3dd449f2e353dc79925d,

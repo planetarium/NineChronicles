@@ -140,7 +140,7 @@ namespace Nekoyume.UI.Module.Common
                     debuffIconImage.overrideSprite = deBuffIcon;
                     debuffStatTypeText.text = deBuff.StatType.GetAcronym();
 
-                    if (sheets.DeBuffLimitSheet.TryGetValue(deBuff.GroupId, out var debuffLimitRow))
+                    if (sheets.BuffLimitSheet.TryGetValue(deBuff.GroupId, out var debuffLimitRow))
                     {
                         debuffLimitDisc = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF_LIMIT", debuffStatTypeText.text, debuffLimitRow.Value);
                     }
@@ -171,7 +171,7 @@ namespace Nekoyume.UI.Module.Common
                         debuffStatTypeText.text = buff.StatType.GetAcronym();
                         debuffObject.SetActive(true);
 
-                        if (sheets.DeBuffLimitSheet.TryGetValue(buff.GroupId, out var debuffLimitRow))
+                        if (sheets.BuffLimitSheet.TryGetValue(buff.GroupId, out var debuffLimitRow))
                         {
                             debuffLimitDisc = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF_LIMIT", debuffStatTypeText.text, debuffLimitRow.Value);
                         }
@@ -386,7 +386,7 @@ namespace Nekoyume.UI.Module.Common
                 debuffIconImage.overrideSprite = icon;
 
                 var debuffLimitDisc = string.Empty;
-                if (sheets.DeBuffLimitSheet.TryGetValue(buffRow.GroupId, out var debuffLimitRow))
+                if (sheets.BuffLimitSheet.TryGetValue(buffRow.GroupId, out var debuffLimitRow))
                 {
                     debuffLimitDisc = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF_LIMIT", statType, debuffLimitRow.Value);
                 }

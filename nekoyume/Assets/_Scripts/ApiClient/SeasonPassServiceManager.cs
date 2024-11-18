@@ -168,7 +168,7 @@ namespace Nekoyume.ApiClient
             await FetchCurrentSeasonPassDatas();
             foreach (var passType in passTypes)
             {
-                await FetchExpInfoDataWithRetry(passType);
+                await FetchExpInfoDataWithRetry(passType, 1);
             }
         }
 
@@ -187,11 +187,18 @@ namespace Nekoyume.ApiClient
         private async Task FetchExpInfoDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
         {
             int retryCount = 0;
+
+            int seasonIndex = 0;
+            if (CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema))
+            {
+                seasonIndex = seasonPassSchema.SeasonIndex;
+            }
+
             while (retryCount < maxRetries)
             {
                 var tcs = new TaskCompletionSource<bool>();
-
-                await Client.GetSeasonpassExpAsync(passType, 0, (result) =>
+                
+                await Client.GetSeasonpassExpAsync(passType, seasonIndex, (result) =>
                 {
                     foreach (var item in result)
                     {

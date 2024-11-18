@@ -20,7 +20,6 @@ namespace Nekoyume.UI
         [Serializable]
         private class ResultVideoClip
         {
-            public VideoClip summoning;
             public VideoClip result;
             public VideoClip great;
         }
@@ -97,7 +96,7 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            var great = resultList.First().Grade >= 5;
+            var great = resultList.Any(res => res.Grade >= 5);
             summonItemViewParentObject.SetActive(false);
             manySummonItemViewParentObject.SetActive(false);
             singleSummonItemView.Hide();
@@ -159,8 +158,8 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            summonItemViews.First().transform.parent.parent.gameObject.SetActive(false);
-            manySummonItemViews.First().transform.parent.gameObject.SetActive(false);
+            summonItemViewParentObject.SetActive(false);
+            manySummonItemViewParentObject.SetActive(false);
             singleSummonItemView.Hide();
 
             if (summonCount == 1)
@@ -170,7 +169,7 @@ namespace Nekoyume.UI
             }
             else if (summonCount == 10)
             {
-                summonItemViews.First().transform.parent.parent.gameObject.SetActive(true);
+                summonItemViewParentObject.SetActive(true);
                 for (var i = 0; i < summonItemViews.Length; i++)
                 {
                     var view = summonItemViews[i];
@@ -187,7 +186,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                manySummonItemViews.First().transform.parent.gameObject.SetActive(true);
+                manySummonItemViewParentObject.SetActive(true);
                 for (var i = 0; i < manySummonItemViews.Length; i++)
                 {
                     var view = manySummonItemViews[i];
@@ -263,15 +262,6 @@ namespace Nekoyume.UI
             var currentVideoClip = GetCurrentVideoClip(costType);
             if (currentVideoClip != null)
             {
-                videoPlayer.clip = currentVideoClip.summoning;
-                videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
-                videoPlayer.gameObject.SetActive(true);
-                skipButton.gameObject.SetActive(true);
-                videoPlayer.Play();
-
-                yield return new WaitUntil(() => videoPlayer.isPlaying);
-                yield return new WaitUntil(() => !videoPlayer.isPlaying);
-
                 if (great && currentVideoClip.great)
                 {
                     videoPlayer.clip = currentVideoClip.great;
@@ -281,6 +271,9 @@ namespace Nekoyume.UI
                     videoPlayer.clip = currentVideoClip.result;
                 }
 
+                videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
+                videoPlayer.gameObject.SetActive(true);
+                skipButton.gameObject.SetActive(true);
                 videoPlayer.Play();
 
                 yield return new WaitUntil(() => videoPlayer.isPlaying);

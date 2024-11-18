@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using Coffee.UIExtensions;
     using UniRx;
 
     public class SummonItemView : VanillaItemView
@@ -113,8 +114,17 @@ namespace Nekoyume.UI.Module
             canvasGroup.alpha = 1;
             animator.SetTrigger(AnimatorHashShow);
 
-            if (grade4Effect.activeSelf || grade5Effect.activeSelf || grade6Effect.activeSelf)
+            if (grade5Effect.activeSelf || grade6Effect.activeSelf)
             {
+                var effect = gradeEffect.GetComponent<UIParticle>();
+                if (grade5Effect.activeSelf)
+                {
+                    effect.scale = 80;
+                }
+                else if (grade6Effect.activeSelf)
+                {
+                    effect.scale = 160;
+                }
                 gradeEffect.SetActive(true);
             }
         }
