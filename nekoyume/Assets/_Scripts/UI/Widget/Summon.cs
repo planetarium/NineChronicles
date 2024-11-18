@@ -57,9 +57,6 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private RectTransform catRectTransform;
-
-        [SerializeField]
         private Toggle[] countToggles;
 
         [SerializeField]
@@ -153,10 +150,6 @@ namespace Nekoyume.UI
             backgroundRect
                 .DOAnchorPosY(SummonUtil.GetBackGroundPosition(resultType), .5f)
                 .SetEase(Ease.InOutCubic);
-            // 표시해야할 버튼이 2개 이하인 경우, 고양이 NPC의 위치를 밑으로 조금 내린다.
-            var catPos = catRectTransform.anchoredPosition;
-            catPos.y = rows.Count > 2 ? 0 : -120;
-            catRectTransform.anchoredPosition = catPos;
         }
 
         public void SummonAction(SummonSheet.Row row)
