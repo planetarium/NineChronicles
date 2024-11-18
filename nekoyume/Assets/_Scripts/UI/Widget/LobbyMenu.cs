@@ -195,6 +195,11 @@ namespace Nekoyume.UI
 
             thorSeasonButton.onClick.AddListener((() =>
             {
+                if (!btnEventReward.IsUnlocked)
+                {
+                    return;
+                }
+
                 Find<EventRewardPopup>().ShowAsThorChain();
             }));
         }
