@@ -603,7 +603,7 @@ namespace Nekoyume.Game
                     L10nManager.Localize("UI_QUIT"),
                     false,
                     IconAndButtonSystem.SystemType.BlockChainError);
-                popup.SetConfirmCallbackToExit();
+                popup.SetConfirmCallbackToExit(true);
 
                 return;
             }
@@ -625,7 +625,7 @@ namespace Nekoyume.Game
 
             popup = Widget.Find<IconAndButtonSystem>();
             popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
-            popup.SetConfirmCallbackToExit();
+            popup.SetConfirmCallbackToExit(true);
         }
 
         /// <summary>
