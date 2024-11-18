@@ -119,6 +119,29 @@ namespace Nekoyume.Game.Character
             UpdateHitPoint();
         }
 
+        public void SetForCostumes(
+            CharacterAnimator animator,
+            HudContainer hudContainer,
+            List<Costume> costumes)
+        {
+            _animator = animator;
+            _hudContainer = hudContainer;
+            Destroy(_cachedCharacterTitle);
+
+            var fullCostume =
+                costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            if (fullCostume is not null)
+            {
+                UpdateFullCostume(fullCostume);
+            }
+
+            var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
+            if (title is not null)
+            {
+                UpdateTitle(title);
+            }
+        }
+
         private async void UpdateAvatar(
             Address avatarAddress,
             CharacterAnimator animator,
