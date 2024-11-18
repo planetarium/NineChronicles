@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nekoyume.ApiClient;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -19,18 +20,11 @@ namespace Nekoyume.UI.Module
         private class RewardView
         {
             public GameObject container;
+            public Image icon;
             public TextMeshProUGUI text;
         }
 
-        [Serializable]
-        private class RewardData
-        {
-            public PatrolRewardType rewardType;
-            public RewardView cumulativeReward;
-            public RewardView rewardPerTime;
-        }
-
-        [SerializeField] private RewardData[] rewardViews;
+        [SerializeField] private RewardView[] rewardViews;
         [SerializeField] private TextMeshProUGUI patrolTimeText;
         [SerializeField] private Image patrolTimeGauge;
         [SerializeField] private TextMeshProUGUI gaugeUnitText1;
@@ -73,23 +67,29 @@ namespace Nekoyume.UI.Module
         // RewardModels
         private void SetRewardModels(List<PatrolRewardModel> rewardModels)
         {
-            foreach (var rewardView in rewardViews)
+            for (var i = 0; i < rewardViews.Length; i++)
             {
-                rewardView.cumulativeReward.container.SetActive(false);
-            }
-
-            foreach (var model in rewardModels)
-            {
-                var rewardType = GetRewardType(model);
-                var value = model.PerInterval;
-                var view = rewardViews.FirstOrDefault(view => view.rewardType == rewardType);
-                if (view == null)
+                var view = rewardViews[i];
+                if (i >= rewardModels.Count)
                 {
-                    continue;
+                    view.container.SetActive(false);
+                    return;
                 }
 
-                view.cumulativeReward.container.SetActive(value > 0);
-                view.cumulativeReward.text.text = $"{value}";
+                var model = rewardModels[i];
+                var value = model.PerInterval;
+                view.container.SetActive(value > 0);
+                view.icon.sprite = GetSprite(model);
+                view.text.text = $"{value}";
+            }
+
+            for (var i = 0; i < rewardModels.Count; i++)
+            {
+                if (i >= rewardViews.Length)
+                {
+                    return;
+                }
+
             }
         }
 
@@ -116,25 +116,19 @@ namespace Nekoyume.UI.Module
             return $"{hourText}{minuteText}";
         }
 
-        private static PatrolRewardType GetRewardType(PatrolRewardModel reward)
+        private static Sprite GetSprite(PatrolRewardModel reward)
         {
             if (reward.ItemId != null)
             {
-                return reward.ItemId switch
-                {
-                    500000 => PatrolRewardType.ApStone,
-                    600201 => PatrolRewardType.GoldPowder,
-                    800201 => PatrolRewardType.SilverPowder,
-                    400000 => PatrolRewardType.Hourglass,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
+                return SpriteHelper.GetItemIcon(reward.ItemId.Value);
             }
 
-            return reward.Currency switch
+            if (!string.IsNullOrEmpty(reward.Currency))
             {
-                "CRYSTAL" => PatrolRewardType.Crystal,
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                return SpriteHelper.GetFavIcon(reward.Currency);
+            }
+
+            return null;
         }
 
         #endregion
