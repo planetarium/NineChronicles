@@ -98,10 +98,8 @@ namespace Nekoyume.UI
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
-            var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var equipments = new List<Equipment>();
             var costumes = new List<Costume> { costume, };
-            Game.Game.instance.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
+            Game.Game.instance.Lobby.FriendCharacter.SetForCostumes(costumes);
         }
     }
 }
