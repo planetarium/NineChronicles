@@ -256,7 +256,7 @@ namespace Nekoyume.UI
                     LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any())
                 {
                     // if there is event reward data, play other patrol reward tutorial for event
-                    Check(101000);
+                    checkPoint = 101000;
                 }
                 else
                 {
