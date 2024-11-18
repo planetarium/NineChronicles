@@ -266,7 +266,7 @@ namespace Nekoyume.Game
 
         public CollectionSheet CollectionSheet { get; private set; }
 
-        public DeBuffLimitSheet DeBuffLimitSheet { get; private set; }
+        public BuffLimitSheet BuffLimitSheet { get; private set; }
 
         public BuffLinkSheet BuffLinkSheet { get; private set; }
 
