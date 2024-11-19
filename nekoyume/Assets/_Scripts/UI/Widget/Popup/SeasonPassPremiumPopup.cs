@@ -109,9 +109,9 @@ namespace Nekoyume.UI
         private void RefreshInfoText(string l10nPreText,bool isPlus, GameObject[] infoTexts)
         {
             var infoKeyIndex = 1;
-            string l10nKey = $"{l10nPreText}_SEASONPASS_PREMIUM_{(isPlus ? "PLUS_" : "")}INFO_{infoKeyIndex}";
             foreach (var item in infoTexts)
             {
+                string l10nKey = $"{l10nPreText}_SEASONPASS_PREMIUM_{(isPlus ? "PLUS_" : "")}INFO_{infoKeyIndex}";
                 if (L10nManager.ContainsKey(l10nKey))
                 {
                     item.SetActive(true);
