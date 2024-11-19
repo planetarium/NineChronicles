@@ -209,7 +209,7 @@ namespace Nekoyume.Blockchain
                 else
                 {
                     popup.Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
-                    popup.SetConfirmCallbackToExit();
+                    popup.SetConfirmCallbackToExit(true);
                 }
             }
 
