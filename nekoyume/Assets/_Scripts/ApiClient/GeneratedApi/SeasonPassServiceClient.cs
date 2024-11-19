@@ -212,9 +212,11 @@ public class SeasonPassServiceClient
         _0x000000000000,
         _0x000000000001,
         _0x000000000002,
+        _0x000000000003,
         _0x100000000000,
         _0x100000000001,
         _0x100000000002,
+        _0x100000000003,
     }
 
     public class PlanetIDTypeConverter : JsonConverter<PlanetID>
@@ -224,9 +226,11 @@ public class SeasonPassServiceClient
             { "0x000000000000", "_0x000000000000" },
             { "0x000000000001", "_0x000000000001" },
             { "0x000000000002", "_0x000000000002" },
+            { "0x000000000003", "_0x000000000003" },
             { "0x100000000000", "_0x100000000000" },
             { "0x100000000001", "_0x100000000001" },
             { "0x100000000002", "_0x100000000002" },
+            { "0x100000000003", "_0x100000000003" },
         };
         public override PlanetID Read(
             ref Utf8JsonReader reader,
@@ -356,7 +360,7 @@ public class SeasonPassServiceClient
         [JsonPropertyName("avatar_addr")]
         public string AvatarAddr { get; set; }
         [JsonPropertyName("pass_type")]
-        public PassType PassType { get; set; }
+        public string? PassType { get; set; }
         [JsonPropertyName("season_index")]
         public int SeasonIndex { get; set; }
         [JsonPropertyName("is_premium")]
