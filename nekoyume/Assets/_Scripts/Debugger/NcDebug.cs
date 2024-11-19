@@ -16,7 +16,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogChannel(channel, message.ToString());
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.Log(InsertTimestamp(message.ToString()));
 #endif
         }
@@ -25,7 +25,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogChannel(channel, message.ToString(), context);
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.Log(InsertTimestamp(message.ToString()), context);
 #endif
         }
@@ -35,7 +35,7 @@ namespace Nekoyume
             var message = string.Format(format, args);
 #if UNITY_EDITOR
             UberDebug.Log(message);
-#elif DEBUG_USE
+#else
             // LogFormat() in itself expands an array when it takes only one array.
             UnityEngine.Debug.Log(InsertTimestamp(message));
 #endif
@@ -45,7 +45,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogWarningChannel(channel, message.ToString());
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()));
 #endif
         }
@@ -54,7 +54,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogWarningChannel(channel, message.ToString(), context);
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()), context);
 #endif
         }
@@ -64,7 +64,7 @@ namespace Nekoyume
             var message = string.Format(format, args);
 #if UNITY_EDITOR
             UberDebug.LogWarning(message);
-#elif DEBUG_USE
+#else
             // LogWarningFormat() in itself expands an array when it takes only one array.
             UnityEngine.Debug.LogWarningFormat(InsertTimestamp(message));
 #endif
@@ -74,7 +74,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogErrorChannel(channel, message.ToString());
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()));
 #endif
         }
@@ -83,7 +83,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogErrorChannel(channel, message.ToString(), context);
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()), context);
 #endif
         }
@@ -93,7 +93,7 @@ namespace Nekoyume
             var message = string.Format(format, args);
 #if UNITY_EDITOR
             UberDebug.LogError(message);
-#elif DEBUG_USE
+#else
             // LogErrorFormat() in itself expands an array when it takes only one array.
             UnityEngine.Debug.LogErrorFormat(InsertTimestamp(message));
 #endif
@@ -103,7 +103,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogErrorChannel(channel, exception.Message);
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.LogError(InsertTimestamp(exception.Message));
 #endif
         }
@@ -112,7 +112,7 @@ namespace Nekoyume
         {
 #if UNITY_EDITOR
             UberDebug.LogErrorChannel(channel, exception.Message, context);
-#elif DEBUG_USE
+#else
             UnityEngine.Debug.LogError(InsertTimestamp(exception.Message), context);
 #endif
         }
