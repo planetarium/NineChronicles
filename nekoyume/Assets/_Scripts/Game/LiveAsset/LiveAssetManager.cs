@@ -207,6 +207,7 @@ namespace Nekoyume.Game.LiveAsset
             }
 
             var isMainNet = Multiplanetary.PlanetId.IsMainNet(planetId.Value);
+            NcDebug.Log($"[{nameof(LiveAssetManager)}] SetThorSchedule: {planetId}, isMainNet: {isMainNet}");
             ThorSchedule = isMainNet ?
                 _cachedThorSchedules.MainNet :
                 _cachedThorSchedules.Others;
