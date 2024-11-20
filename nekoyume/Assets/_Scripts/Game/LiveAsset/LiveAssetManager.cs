@@ -69,7 +69,7 @@ namespace Nekoyume.Game.LiveAsset
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
-        public Nekoyume.ApiClient.ThorSchedule ThorSchedule { get; private set; }
+        public ApiClient.ThorSchedule ThorSchedule { get; private set; }
         public EventRewardPopupData EventRewardPopupData { get; private set; }
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
