@@ -158,12 +158,11 @@ namespace Nekoyume.Blockchain
             var initialValidatorSet = new Dictionary<PublicKey, BigInteger>();
             if (proposer is not null)
             {
-                initialValidatorSet[proposer] = BigInteger.One;
+                initialValidatorSet[proposer] = 10_000_000_000_000_000_000;
             }
 
-            // todo : 스테이킹 추가 수정 이슈 new ValidatorSet() 값 넣어야함.
             return BlockHelper.ProposeGenesisBlock(
-                new ValidatorSet(),
+                new ValidatorSet(initialValidatorSet.Select(v => new Validator(v.Key, v.Value)).ToList()),
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates,
