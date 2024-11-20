@@ -191,9 +191,6 @@ namespace Nekoyume.Game.LiveAsset
             _cachedThorSchedules = JsonSerializer.Deserialize<ApiClient.ThorSchedules>(
                 response,
                 CommandLineOptions.JsonOptions);
-
-            var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
-            SetThorSchedule(planetId);
         }
 
         public void SetThorSchedule(Multiplanetary.PlanetId? planetId)
@@ -212,10 +209,14 @@ namespace Nekoyume.Game.LiveAsset
             }
 
             var isMainNet = Multiplanetary.PlanetId.IsMainNet(planetId.Value);
-            NcDebug.Log($"[{nameof(LiveAssetManager)}] SetThorSchedule: {planetId}, isMainNet: {isMainNet}");
+            var previousThorSchedule = ThorSchedule;
             ThorSchedule = isMainNet ?
                 _cachedThorSchedules.MainNet :
                 _cachedThorSchedules.Others;
+            if (previousThorSchedule != ThorSchedule)
+            {
+                NcDebug.Log($"[{nameof(LiveAssetManager)}] SetThorSchedule: {planetId}, isMainNet: {isMainNet}");
+            }
 
             OnChangedThorSchedule?.Invoke(ThorSchedule);
         }
