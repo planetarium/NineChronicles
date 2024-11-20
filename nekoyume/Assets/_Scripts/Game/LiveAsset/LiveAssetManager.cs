@@ -200,8 +200,13 @@ namespace Nekoyume.Game.LiveAsset
         {
             if (planetId == null)
             {
-                // PlanetId 초기화 전에는 항상 인텨널 기준으로 설정
+#if UNITY_EDITOR
+                // 에디터에서는 주로 테스트 용도로 사용하므로 PlanetID가 없으면 Others로 설정한다.
                 ThorSchedule = _cachedThorSchedules.Others;
+#else
+                // 빌드에서는 메인넷으로 설정한다.
+                ThorSchedule = _cachedThorSchedules.MainNet;
+#endif
                 // 모바일 메인넷에서 인터널 관련 정보가 보이지 않게 OnChangedThorSchedule를 호출하지 않는다.
                 return;
             }
