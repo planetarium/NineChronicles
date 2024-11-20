@@ -77,6 +77,7 @@ namespace Nekoyume.UI
         public const string AppleAuthEndpoint = "/api/auth/login/apple";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
+        private const string RequestPledgeWithoutTokenPath = "/address";
         private const string AccessTokenEndpoint = "/api/auth/token";
         private const string RefreshTokenEndpoint = "/api/auth/mobile/refresh";
         private const string ReferralEndpoint = "/api/invitations/mobile/referral";
@@ -640,7 +641,7 @@ namespace Nekoyume.UI
 
         public IEnumerator RequestPledge(PlanetId planetId, Address address)
         {
-            var url = $"{PortalUrl}{RequestPledgeEndpoint}";
+            var url = $"{PortalUrl}{RequestPledgeEndpoint}{(HasAccessToken ? string.Empty : RequestPledgeWithoutTokenPath)}";
             var os = string.Empty;
 #if UNITY_ANDROID
             os = "android";
@@ -658,7 +659,10 @@ namespace Nekoyume.UI
 
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
-            request.SetRequestHeader("authorization", $"Bearer {accessToken}");
+            if (HasAccessToken)
+            {
+                request.SetRequestHeader("authorization", $"Bearer {accessToken}");
+            }
 
             yield return request.SendWebRequest();
 
