@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     // TODO: Costume, NPC 로직 추가
     // TODO: 사용자가 알기 쉽게 예외 상황 전부 알림 띄워주기.

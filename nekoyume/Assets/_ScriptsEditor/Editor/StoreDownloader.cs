@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public static class StoreDownloader
     {

@@ -4,7 +4,7 @@ using Nekoyume.Game.Util;
 using UnityEditor;
 using UnityEngine;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public class ScreenEditorMenuItems
     {

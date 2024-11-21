@@ -3,7 +3,7 @@ using Nekoyume.UI;
 using UnityEditor;
 using UnityEngine;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public static class PlayerPrefsEditor
     {

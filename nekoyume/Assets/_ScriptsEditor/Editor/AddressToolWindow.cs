@@ -2,16 +2,16 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Libplanet.Crypto;
-using Nekoyume;
 using Nekoyume.Action;
-using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
+using Nekoyume;
+using Nekoyume.Game;
 using UnityEditor;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public class AddressToolWindow : EditorWindow
     {

@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public class HeadlessTool : EditorWindow
     {

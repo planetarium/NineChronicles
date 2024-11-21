@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using System.Text;
-using Lib9c.Model.Order;
-using Nekoyume;
-using Nekoyume.Extensions;
 using Nekoyume.Game;
-using Nekoyume.Model.Item;
-using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume;
 using UnityEditor;
 using UnityEngine;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public static class ReportAnything
     {

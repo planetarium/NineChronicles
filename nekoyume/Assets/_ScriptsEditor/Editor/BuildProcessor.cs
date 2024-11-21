@@ -2,7 +2,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public class BuildProcessor : IPreprocessBuildWithReport
     {

@@ -3,7 +3,7 @@ using Ionic.Zip;
 using UnityEditor;
 using UnityEngine;
 
-namespace Planetarium.Nekoyume.Editor
+namespace NekoyumeEditor
 {
     public static class ZipUnzip
     {
