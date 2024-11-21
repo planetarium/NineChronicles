@@ -1,5 +1,5 @@
 {
-    "name": "Nekoyume-editor",
+    "name": "NekoyumeEditor",
     "rootNamespace": "",
     "references": [
         "GUID:4917a533e46ad684ba1f3274c8c59bab",
@@ -28,7 +28,7 @@
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
