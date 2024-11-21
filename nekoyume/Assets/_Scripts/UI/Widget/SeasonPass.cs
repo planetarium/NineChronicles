@@ -271,7 +271,7 @@ namespace Nekoyume.UI
                     async UniTaskVoid AwaitSeasonPassPopup()
                     {
                         await UniTask.Delay(popupViewDelay);
-                        Find<SeasonPassCouragePopup>().Show();
+                        Find<SeasonPassNewPopup>().Show();
                         PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
                     }
 
