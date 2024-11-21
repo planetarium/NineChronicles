@@ -88,16 +88,19 @@ namespace Nekoyume.UI
                     skillTooltip.gameObject.SetActive(false);
                 }
 
-                var cp = CPHelper.GetStatCP(stat.StatType, stat.BaseValue);
+                var minCp = CPHelper.GetStatCP(stat.StatType, stat.BaseValue);
+                var maxCp = minCp;
                 foreach (var optionRow in optionRows.Where(option => option.StatType != StatType.NONE))
                 {
-                    cp += CPHelper.GetStatCP(optionRow.StatType, optionRow.StatMax);
+                    minCp += CPHelper.GetStatCP(optionRow.StatType, optionRow.StatMin);
+                    maxCp += CPHelper.GetStatCP(optionRow.StatType, optionRow.StatMax);
                 }
 
                 var skillCount = optionRows.Count(option => option.StatType == StatType.NONE);
-                cp += CPHelper.GetSkillsMultiplier(skillCount);
+                minCp += CPHelper.GetSkillsMultiplier(skillCount);
+                maxCp += CPHelper.GetSkillsMultiplier(skillCount);
 
-                combatPointText.text = $"CP {(int)cp}";
+                combatPointText.text = $"CP {(int)minCp} ~ {(int)maxCp}";
 
                 titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
                 foreach (var iconImage in iconImages)
