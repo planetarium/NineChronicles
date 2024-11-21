@@ -288,11 +288,11 @@ namespace Nekoyume.Game.Scene
                     Game.QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"), "Failed to Get Tokens.");
                     yield break;
                 }
+            }
 
-                if (!planetContext.IsSelectedPlanetAccountPledged)
-                {
-                    yield return StartCoroutine(game.CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
-                }
+            if (!planetContext.IsSelectedPlanetAccountPledged)
+            {
+                yield return StartCoroutine(game.CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
             }
 #endif
 
