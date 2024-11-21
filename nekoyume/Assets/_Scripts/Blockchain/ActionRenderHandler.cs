@@ -877,7 +877,7 @@ namespace Nekoyume.Blockchain
                 // 아바타 생성시 States초기화를 위해 forceNewSelection을 true로 설정합니다.
                 await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState, true);
 
-                // need AgentAddress
+                // need AgentAddress check 'ValidateEvaluationForCurrentAgent'
                 var agentAddress = eval.Signer;
                 var avatarAddress = agentAddress.Derive(
                     string.Format(
