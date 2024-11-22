@@ -225,6 +225,7 @@ namespace Nekoyume.UI
             for (var i = 0; i < product.FavList.Count && index < rewards.Length; i++, index++)
             {
                 rewards[index].ItemViewSetCurrencyData(product.FavList[i].Ticker, product.FavList[i].Amount);
+                AddToolTip(rewards[index], product.FavList[i].Ticker, product.FavList[i].Amount);
             }
 
             for (var i = 0; i < product.FungibleItemList.Count && index < rewards.Length; i++, index++)
@@ -247,6 +248,7 @@ namespace Nekoyume.UI
         {
             if (itemView.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
             {
+                seasonPassPremiumItemView.TooltipButton.onClick.RemoveAllListeners();
                 var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemId];
                 if (seasonPassPremiumItemView.TooltipButton.onClick.GetPersistentEventCount() < 1)
                 {
@@ -265,6 +267,22 @@ namespace Nekoyume.UI
                 }
             }
         }
+
+        private void AddToolTip(BaseItemView itemView, string ticker, decimal amount)
+        {
+            if (itemView.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
+            {
+                seasonPassPremiumItemView.TooltipButton.onClick.RemoveAllListeners();
+                if (seasonPassPremiumItemView.TooltipButton.onClick.GetPersistentEventCount() < 1)
+                {
+                    seasonPassPremiumItemView.TooltipButton.onClick.AddListener(() =>
+                    {
+                        Find<FungibleAssetTooltip>().Show(ticker, amount.ToCurrencyNotation(), null);
+                    });
+                }
+            }
+        }
+
 
         private void RefreshIcons(SeasonPassServiceClient.UserSeasonPassSchema seasonPassInfo)
         {
