@@ -16,7 +16,7 @@ using UnityEditor.iOS.Xcode;
 using UnityEditor.OSXStandalone;
 #endif
 
-namespace Editor
+namespace NekoyumeEditor
 {
     [ExecuteInEditMode]
     public class Builder
