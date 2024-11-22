@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Util
             {
                 EnumGenerator.Generate(script.type, script.Enums);
                 AssetDatabase.Refresh();
-                EditorUtility.DisplayDialog("success", "Apply Complete!", "ok");
+                EditorUtility.DisplayDialog("success", "Apply Complete!", "ok2");
             }
 
             if (GUILayout.Button("Get Enum to List", GUILayout.Height(40)))
