@@ -67,6 +67,8 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
         [SerializeField] private TextMeshProUGUI planetAccountInfoText;
 
+        [SerializeField] private GameObject currentPlanetIsNew;
+
         [Header("Mobile/SocialButtons")]
         [SerializeField] private GameObject startButtonGO;
 
@@ -614,11 +616,14 @@ namespace Nekoyume.UI
                 NcDebug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
+                currentPlanetIsNew.SetActive(false);
                 return;
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
+            currentPlanetIsNew.SetActive(planetInfo.ID.Equals(PlanetId.Thor) ||
+                planetInfo.ID.Equals(PlanetId.ThorInternal));
         }
 
         private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)

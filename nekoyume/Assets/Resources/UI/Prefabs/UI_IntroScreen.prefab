@@ -6080,6 +6080,7 @@ MonoBehaviour:
   yourPlanetButton: {fileID: 231605217515246203}
   yourPlanetButtonText: {fileID: 1224978541094035838}
   planetAccountInfoText: {fileID: 7332692407551682838}
+  currentPlanetIsNew: {fileID: 4801615077043930480}
   startButtonGO: {fileID: 1538208578570579394}
   startButton: {fileID: 7727217365998047435}
   socialButtonsGO: {fileID: 843719839190003221}
@@ -11613,7 +11614,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3559090190831191221
 RectTransform:
   m_ObjectHideFlags: 0
