@@ -7526,7 +7526,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
   m_Value: 0.67127895
-  m_Size: 0.25555557
+  m_Size: 0.68603176
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18305,7 +18305,6 @@ GameObject:
   - component: {fileID: 9034332628609846799}
   - component: {fileID: 6656283678736425251}
   - component: {fileID: 252577196454949600}
-  - component: {fileID: 3209997926322968342}
   m_Layer: 5
   m_Name: ConditionalButton_Type3 (1)
   m_TagString: Untagged
@@ -18457,19 +18456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
---- !u!114 &3209997926322968342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5319848521498764861}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NotchType: 2
 --- !u!1 &5353228832770051081
 GameObject:
   m_ObjectHideFlags: 0
@@ -22903,7 +22889,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0.8508034, y: 0}
+  m_AnchoredPosition: {x: 911.1051, y: 0}
   m_SizeDelta: {x: 3500, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8029291072304469993
@@ -25498,19 +25484,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
---- !u!114 &5907217913027498837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5686261164877829651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NotchType: 3
 --- !u!114 &6428580889367387682 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6378403036447978670, guid: 4bc425b6a451d495a87d6ff37b4a1029,
