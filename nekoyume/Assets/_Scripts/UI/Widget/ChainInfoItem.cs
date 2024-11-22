@@ -64,7 +64,10 @@ namespace Nekoyume.UI
         private void OpenDetailWebPage()
         {
             var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
-            Application.OpenURL(thorSchedule is null ? DefaultUrl : thorSchedule.InformationUrl);
+            var targetUrl = thorSchedule is null ? DefaultUrl : thorSchedule.InformationUrl;
+
+            NcDebug.Log($"On Open Detail Web Page: {targetUrl}, number of subscribers: {_onOpenDetailWebPage?.GetInvocationList().Length}");
+            Application.OpenURL(targetUrl);
             _onOpenDetailWebPage?.Invoke();
         }
     }
