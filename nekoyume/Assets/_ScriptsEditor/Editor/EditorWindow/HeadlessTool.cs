@@ -162,8 +162,7 @@ namespace NekoyumeEditor
         [MenuItem("Tools/Headless/Setup headless config")]
         private static void SetupAppsettingsJson()
         {
-            var appsettings = File.ReadAllText(Path.Combine("Assets", "Planetarium",
-                "Nekoyume", "Editor", "appsettings.example.json"));
+            var appsettings = File.ReadAllText(Path.Combine("Assets", "_ScriptsEditor", "appsettings.example.json"));
             Debug.Log($"{appsettings.Length} text read from appsettings.");
             if (string.IsNullOrEmpty(_headlessPath))
             {
