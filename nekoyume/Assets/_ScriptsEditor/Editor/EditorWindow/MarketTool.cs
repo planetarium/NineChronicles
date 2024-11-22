@@ -1,9 +1,6 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Nekoyume;
-using Nekoyume.Helper;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

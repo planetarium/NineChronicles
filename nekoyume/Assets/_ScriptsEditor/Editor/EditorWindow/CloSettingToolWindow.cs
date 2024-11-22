@@ -12,7 +12,7 @@ namespace NekoyumeEditor
     public class CloSettingToolWindow : EditorWindow
     {
         private const string SAVE_FILE_PREFIX = "clo-";
-        private bool _currentCLOSettingEditState = false;
+        private bool _currentCLOSettingEditState;
         private string _lastEditJson;
         private string _saveFileName = SAVE_FILE_PREFIX;
         private Vector2 _scrollPosition;
