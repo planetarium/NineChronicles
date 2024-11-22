@@ -557,9 +557,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (Util.GetKeystoreJson() != string.Empty)
+            {
+                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Keystore already exists, skip setting guest private key");
+                return;
+            }
+
             if (Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
             {
-                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Failed find Commandlineoptions");
+                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Failed find Commandline Options");
                 return;
             }
 
