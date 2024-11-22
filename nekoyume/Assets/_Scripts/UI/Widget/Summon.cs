@@ -70,17 +70,13 @@ namespace Nekoyume.UI
         {
             get
             {
-                var result = false;
                 var equipmentSummonSheet = Game.Game.instance.TableSheets.EquipmentSummonSheet;
                 var runeSummonSheet = Game.Game.instance.TableSheets.RuneSummonSheet;
-                foreach (var summonRow in equipmentSummonSheet.Values.Concat(runeSummonSheet.Values))
-                {
-                    var costType = (CostType)summonRow.CostMaterial;
-                    var cost = summonRow.CostMaterialCount;
-                    result |= SimpleCostButton.CheckCostOfType(costType, cost);
-                }
-
-                return result;
+                var rows = equipmentSummonSheet.Values
+                    .Concat(runeSummonSheet.Values).ToList();
+                return rows.Any(row =>
+                    SimpleCostButton.CheckCostOfType((CostType) row.CostMaterial,
+                        row.CostMaterialCount));
             }
         }
 
