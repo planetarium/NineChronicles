@@ -31,7 +31,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace Editor
+namespace NekoyumeEditor
 {
     public static class Plist
     {
