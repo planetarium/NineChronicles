@@ -273,13 +273,10 @@ namespace Nekoyume.UI
             if (itemView.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
             {
                 seasonPassPremiumItemView.TooltipButton.onClick.RemoveAllListeners();
-                if (seasonPassPremiumItemView.TooltipButton.onClick.GetPersistentEventCount() < 1)
+                seasonPassPremiumItemView.TooltipButton.onClick.AddListener(() =>
                 {
-                    seasonPassPremiumItemView.TooltipButton.onClick.AddListener(() =>
-                    {
-                        Find<FungibleAssetTooltip>().Show(ticker, amount.ToCurrencyNotation(), null);
-                    });
-                }
+                    Find<FungibleAssetTooltip>().Show(ticker, amount.ToCurrencyNotation(), null);
+                });
             }
         }
 
