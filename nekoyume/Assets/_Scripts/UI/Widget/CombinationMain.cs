@@ -172,7 +172,7 @@ namespace Nekoyume.UI
             }
 
             // summon
-            // summonNotificationImage.enabled = Summon.HasNotification;
+            summonNotificationImage.enabled = Summon.HasNotification;
 
             // custom craft
             customCraftNotificationImage.enabled = CustomCraft.HasNotification;
