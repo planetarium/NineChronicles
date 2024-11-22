@@ -1,12 +1,10 @@
-using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
-using Nekoyume.Game.Util;
 using UnityEditor;
 using UnityEngine;
 
 namespace NekoyumeEditor
 {
-    public class ScreenEditorMenuItems
+    public static class ScreenEditorMenuItems
     {
         [MenuItem("Screen/DynamicRatio")]
         private static void SetScreenDynamicRatio()

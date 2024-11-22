@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.ScriptableObject;
 using Nekoyume.TestScene;
 using Spine.Unity;
 using Spine.Unity.Editor;
