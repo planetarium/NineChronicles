@@ -16,7 +16,6 @@ using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Multiplanetary;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
