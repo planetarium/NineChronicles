@@ -376,6 +376,10 @@ namespace Nekoyume.UI
                 premiumPurchaseButtonLoadingObj.SetActive(false);
                 premiumPlusPurchaseButtonLoadingObj.SetActive(false);
                 RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[currentSeasonPassType]);
+                if (Find<SeasonPass>().IsActive())
+                {
+                    Find<SeasonPass>().RefreshCurrentPage();
+                }
             });
         }
 
