@@ -66,6 +66,20 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private int _selectedSummonCount = 10;
 
+        public static bool HasNotification
+        {
+            get
+            {
+                var equipmentSummonSheet = Game.Game.instance.TableSheets.EquipmentSummonSheet;
+                var runeSummonSheet = Game.Game.instance.TableSheets.RuneSummonSheet;
+                var rows = equipmentSummonSheet.Values
+                    .Concat(runeSummonSheet.Values).ToList();
+                return rows.Any(row =>
+                    SimpleCostButton.CheckCostOfType((CostType) row.CostMaterial,
+                        row.CostMaterialCount));
+            }
+        }
+
         protected override void Awake()
         {
             infoButton.OnClickAsObservable()
