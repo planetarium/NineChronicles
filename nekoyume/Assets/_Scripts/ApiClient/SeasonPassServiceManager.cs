@@ -98,7 +98,7 @@ namespace Nekoyume.ApiClient
             {
                 var tcs = new TaskCompletionSource<bool>();
 
-                await Client.GetSeasonpassCurrentAsync(passType, (result) =>
+                await Client.GetSeasonpassCurrentAsync(Game.Game.instance.CurrentPlanetId.ToString(), passType, (result) =>
                 {
                     CurrentSeasonPassData[passType] = result;
 
@@ -299,6 +299,7 @@ namespace Nekoyume.ApiClient
 
             await Client.GetUserStatusAllAsync(
                 Game.Game.instance.CurrentPlanetId.ToString(),
+                Game.Game.instance.States.AgentState.address.ToString(),
                 Game.Game.instance.States.CurrentAvatarState.address.ToString(),
                 (result) =>
                 {
