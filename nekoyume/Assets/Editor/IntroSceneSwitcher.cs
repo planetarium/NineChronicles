@@ -34,7 +34,7 @@ namespace Nekoyume.Editor
             const string toolTip = "Start IntroScene";
             const string sceneName = "IntroScene";
 
-            var sprite = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/UI/Textures/icon_executable.png");
+            var sprite = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/UI/Textures/99_AppIcon/1st_anniversary/icon_executable_mobile.png");
             if (sprite == null)
             {
                 if (GUILayout.Button(new GUIContent("Intro", toolTip), ToolbarStyles.commandButtonStyle))

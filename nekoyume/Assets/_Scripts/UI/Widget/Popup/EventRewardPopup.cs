@@ -136,7 +136,22 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            ShowAsTab(0);
+            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            int index;
+            if (TryGetClaimableGifts(out _))
+            {
+                var claimGifts = eventRewards.FirstOrDefault(reward =>
+                    reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ClaimGift);
+                index = Array.IndexOf(eventRewards, claimGifts);
+            }
+            else
+            {
+                var other = eventRewards.FirstOrDefault(reward =>
+                    reward.ContentPresetType != EventRewardPopupData.ContentPresetType.ClaimGift);
+                index = Array.IndexOf(eventRewards, other);
+            }
+
+            ShowAsTab(index);
         }
 
         public void ShowAsThorChain()

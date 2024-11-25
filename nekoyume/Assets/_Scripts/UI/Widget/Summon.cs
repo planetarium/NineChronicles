@@ -66,6 +66,20 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private int _selectedSummonCount = 10;
 
+        public static bool HasNotification
+        {
+            get
+            {
+                var equipmentSummonSheet = Game.Game.instance.TableSheets.EquipmentSummonSheet;
+                var runeSummonSheet = Game.Game.instance.TableSheets.RuneSummonSheet;
+                var rows = equipmentSummonSheet.Values
+                    .Concat(runeSummonSheet.Values).ToList();
+                return rows.Any(row =>
+                    SimpleCostButton.CheckCostOfType((CostType) row.CostMaterial,
+                        row.CostMaterialCount));
+            }
+        }
+
         protected override void Awake()
         {
             infoButton.OnClickAsObservable()
@@ -188,7 +202,11 @@ namespace Nekoyume.UI
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            if (isActiveAndEnabled)
+            {
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            }
+
             var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
@@ -199,7 +217,11 @@ namespace Nekoyume.UI
         public void OnActionRender(ActionEvaluation<RuneSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            if (isActiveAndEnabled)
+            {
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            }
+
             var summonRow = Game.Game.instance.TableSheets.RuneSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
@@ -210,7 +232,11 @@ namespace Nekoyume.UI
         public void OnActionRender(ActionEvaluation<CostumeSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            if (isActiveAndEnabled)
+            {
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            }
+
             var summonRow = Game.Game.instance.TableSheets.CostumeSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);

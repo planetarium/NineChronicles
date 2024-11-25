@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Module
                 if (i >= rewardModels.Count)
                 {
                     view.container.SetActive(false);
-                    return;
+                    continue;
                 }
 
                 var model = rewardModels[i];
@@ -81,15 +81,6 @@ namespace Nekoyume.UI.Module
                 view.container.SetActive(value > 0);
                 view.icon.sprite = GetSprite(model);
                 view.text.text = $"{value}";
-            }
-
-            for (var i = 0; i < rewardModels.Count; i++)
-            {
-                if (i >= rewardViews.Length)
-                {
-                    return;
-                }
-
             }
         }
 

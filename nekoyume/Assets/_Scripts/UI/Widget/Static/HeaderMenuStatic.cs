@@ -504,14 +504,7 @@ namespace Nekoyume.UI.Module
                     break;
                 case AssetVisibleState.Shop:
 #if UNITY_IOS || UNITY_ANDROID
-                    if (Game.instance.IAPStoreManager.CheckCategoryName("Mileage"))
-                    {
-                        SetActiveAssets(true, false, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
-                    }
-                    else
-                    {
-                        SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
-                    }
+                    SetActiveAssets(true, false, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
 #else
                     SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
 #endif

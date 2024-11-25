@@ -576,7 +576,7 @@ namespace Nekoyume.Helper
                 Options = new QrCodeEncodingOptions
                 {
                     Width = 800,
-                    Height = 800
+                    Height = 800,
                 }
             };
 

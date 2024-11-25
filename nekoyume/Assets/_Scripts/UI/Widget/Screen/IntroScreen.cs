@@ -67,6 +67,8 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
         [SerializeField] private TextMeshProUGUI planetAccountInfoText;
 
+        [SerializeField] private GameObject currentPlanetIsNew;
+
         [Header("Mobile/SocialButtons")]
         [SerializeField] private GameObject startButtonGO;
 
@@ -557,9 +559,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (Util.GetKeystoreJson() != string.Empty)
+            {
+                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Keystore already exists, skip setting guest private key");
+                return;
+            }
+
             if (Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
             {
-                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Failed find Commandlineoptions");
+                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Failed find Commandline Options");
                 return;
             }
 
@@ -614,11 +622,14 @@ namespace Nekoyume.UI
                 NcDebug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
+                currentPlanetIsNew.SetActive(false);
                 return;
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
+            currentPlanetIsNew.SetActive(planetInfo.ID.Equals(PlanetId.Thor) ||
+                planetInfo.ID.Equals(PlanetId.ThorInternal));
         }
 
         private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)
