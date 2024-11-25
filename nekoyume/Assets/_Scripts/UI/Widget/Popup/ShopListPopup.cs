@@ -112,6 +112,13 @@ namespace Nekoyume.UI
             CloseWidget = () => Close();
             buyButton.onClick.AddListener(() =>
             {
+                var currentMileage = ApiClients.Instance.IAPServiceManager.CurrentMileage.Value;
+                if (_data.ProductType == InAppPurchaseServiceClient.ProductType.MILEAGE && _data.MileagePrice > currentMileage)
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_CODE_NOT_ENOUGH_MILEAGE"), NotificationCell.NotificationType.Alert);
+                    return;
+                }
+
                 if (_isInLobby)
                 {
                     Close();
@@ -293,8 +300,13 @@ namespace Nekoyume.UI
                 item.gameObject.SetActive(true);
             }
 
-
-            if (_data.RequiredLevel != null)
+            var currentMileage = ApiClients.Instance.IAPServiceManager.CurrentMileage.Value;
+            if (_data.ProductType == InAppPurchaseServiceClient.ProductType.MILEAGE && _data.MileagePrice > currentMileage)
+            {
+                buttonDisableObj.SetActive(true);
+                buyButton.interactable = true;
+            }
+            else if (_data.RequiredLevel != null)
             {
                 buttonDisableObj.SetActive(_data.RequiredLevel > States.Instance.CurrentAvatarState.level);
                 buyButton.interactable = !buttonDisableObj.activeSelf;

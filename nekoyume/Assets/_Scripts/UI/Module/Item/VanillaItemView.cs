@@ -61,13 +61,21 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var data = GetItemViewData(itemBase);
-            gradeImage.overrideSprite = data.GradeBackground;
+            // 오브젝트가 과도하게 많을경우 hsv를 사용하지않고 image만사용하는 케이스에 사용하기위해 분기 추가.
+            if(gradeHsv == null)
+            {
+                gradeImage.sprite = SpriteHelper.GetItemBackground(itemBase.Grade);
+            }
+            else
+            {
+                var data = GetItemViewData(itemBase);
+                gradeImage.overrideSprite = data.GradeBackground;
 
-            gradeHsv.range = data.GradeHsvRange;
-            gradeHsv.hue = data.GradeHsvHue;
-            gradeHsv.saturation = data.GradeHsvSaturation;
-            gradeHsv.value = data.GradeHsvValue;
+                gradeHsv.range = data.GradeHsvRange;
+                gradeHsv.hue = data.GradeHsvHue;
+                gradeHsv.saturation = data.GradeHsvSaturation;
+                gradeHsv.value = data.GradeHsvValue;
+            }
 
             iconImage.enabled = true;
             iconImage.overrideSprite = itemBase.GetIconSprite();
@@ -103,14 +111,22 @@ namespace Nekoyume.UI.Module
                 grade = petRow.Grade;
             }
 
-            var data = itemViewData.GetItemViewData(grade);
 
-            gradeHsv.range = data.GradeHsvRange;
-            gradeHsv.hue = data.GradeHsvHue;
-            gradeHsv.saturation = data.GradeHsvSaturation;
-            gradeHsv.value = data.GradeHsvValue;
+            if (gradeHsv == null)
+            {
+                gradeImage.sprite = SpriteHelper.GetItemBackground(grade);
+            }
+            else
+            {
+                var data = itemViewData.GetItemViewData(grade);
 
-            gradeImage.overrideSprite = data.GradeBackground;
+                gradeHsv.range = data.GradeHsvRange;
+                gradeHsv.hue = data.GradeHsvHue;
+                gradeHsv.saturation = data.GradeHsvSaturation;
+                gradeHsv.value = data.GradeHsvValue;
+                gradeImage.overrideSprite = data.GradeBackground;
+            }
+
             iconImage.enabled = true;
             iconImage.overrideSprite = fav.GetIconSprite();
             iconImage.SetNativeSize();

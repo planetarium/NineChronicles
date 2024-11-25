@@ -235,7 +235,7 @@ public class BattleSimulator : Widget
             tableSheets.CostumeStatSheet,
             StageSimulator.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet),
             collectionModifiers,
-            tableSheets.DeBuffLimitSheet,
+            tableSheets.BuffLimitSheet,
             tableSheets.BuffLinkSheet,
             true,
             States.Instance.GameConfigState.ShatterStrikeMaxDamage);

@@ -195,6 +195,11 @@ namespace Nekoyume.UI
 
             thorSeasonButton.onClick.AddListener((() =>
             {
+                if (!btnEventReward.IsUnlocked)
+                {
+                    return;
+                }
+
                 Find<EventRewardPopup>().ShowAsThorChain();
             }));
         }
@@ -794,7 +799,7 @@ namespace Nekoyume.UI
             }
 
             var timeSpan = thorSchedule.DiffFromEndTimeSpan;
-            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()})";
+            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()}";
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -923,6 +928,12 @@ namespace Nekoyume.UI
         public void TutorialActionClickPatrolRewardMenu()
         {
             PatrolRewardClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickEventRewardMenu()
+        {
+            Find<EventRewardPopup>().ShowAsPatrolReward();
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

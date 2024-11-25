@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Multiplanetary;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
@@ -67,7 +68,15 @@ namespace Nekoyume.UI.Scroller
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
-            var newItemsSource = planetRegistry.PlanetInfos.Select(e =>
+            var newItemsSource = planetRegistry.PlanetInfos.Where(e =>
+            {
+                if (LiveAssetManager.instance.ThorSchedule.IsOpened)
+                {
+                    return true;
+                }
+
+                return !IsThor(e);
+            }).Select(e =>
             {
                 if (e is null)
                 {
@@ -76,7 +85,7 @@ namespace Nekoyume.UI.Scroller
                         PlanetId = default,
                         PlanetName = "null",
                         IsSelected = false,
-                        IsNew = false
+                        IsNew = false,
                     };
                 }
 
@@ -87,8 +96,7 @@ namespace Nekoyume.UI.Scroller
                         PlanetId = e.ID,
                         PlanetName = textInfo.ToTitleCase(e.Name),
                         IsSelected = false,
-                        IsNew = !(e.ID.Equals(PlanetId.Odin) ||
-                            e.ID.Equals(PlanetId.OdinInternal))
+                        IsNew = IsThor(e),
                     };
                 }
 
@@ -97,11 +105,13 @@ namespace Nekoyume.UI.Scroller
                     PlanetId = e.ID,
                     PlanetName = textInfo.ToTitleCase(e.Name),
                     IsSelected = e.ID.Equals(selectedPlanetId),
-                    IsNew = !(e.ID.Equals(PlanetId.Odin) ||
-                        e.ID.Equals(PlanetId.OdinInternal))
+                    IsNew = IsThor(e),
                 };
             }).ToArray();
             UpdateContents(newItemsSource);
+
+            bool IsThor(PlanetInfo e) => e.ID.Equals(PlanetId.Thor) ||
+                e.ID.Equals(PlanetId.ThorInternal);
         }
 
         private void OnClickCell((

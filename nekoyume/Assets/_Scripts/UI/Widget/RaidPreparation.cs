@@ -267,7 +267,7 @@ namespace Nekoyume.UI
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
                 collectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLimitSheet,
                 tableSheets.BuffLinkSheet
             );
             var log = simulator.Simulate();

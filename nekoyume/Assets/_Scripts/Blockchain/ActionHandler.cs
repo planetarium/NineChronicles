@@ -15,6 +15,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
@@ -69,7 +70,7 @@ namespace Nekoyume.Blockchain
 
         protected async UniTask<(
                 Address stakeAddr,
-                StakeStateV2? stakeStateV2,
+                StakeState? stakeStateV2,
                 FungibleAssetValue deposit,
                 int stakingLevel,
                 StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
@@ -77,11 +78,11 @@ namespace Nekoyume.Blockchain
             GetStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddr = States.Instance.AgentState.address;
-            var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
+            var stakeAddr = StakeState.DeriveAddress(agentAddr);
             var agent = Game.Game.instance.Agent;
             Address[] sheetAddrArr;
             FungibleAssetValue balance;
-            StakeStateV2? nullableStakeState;
+            StakeState? nullableStakeState;
             if (!StateGetter.TryGetStakeStateV2(evaluation.OutputState, agentAddr, out var stakeStateV2))
             {
                 nullableStakeState = null;
@@ -423,6 +424,18 @@ namespace Nekoyume.Blockchain
                 avatarState.address,
                 battleType);
             States.Instance.UpdateItemSlotState(itemSlotState);
+            //simulator에서 CurrentItemSlotStates를 사용하지않고 AvatarState.inventory의 착용정보를 직접사용함으로 인해 추가적으로 갱신
+            foreach (var inventoryItem in States.Instance.CurrentAvatarState.inventory.Items)
+            {
+                if(inventoryItem.item is Equipment equipment)
+                {
+                    equipment.equipped = itemSlotState.Equipments.Exists(e => e == equipment.ItemId);
+                }
+                else if(inventoryItem.item is Costume costume)
+                {
+                    costume.equipped = itemSlotState.Costumes.Exists(c => c == costume.ItemId);
+                }
+            }
         }
 
         protected static void UpdateCurrentAvatarRuneSlotState<T>(

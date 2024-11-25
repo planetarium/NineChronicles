@@ -10,7 +10,7 @@ namespace Nekoyume
         public static bool TryMigrate(
             IValue serialized,
             GameConfigState gameConfigState,
-            out StakeStateV2 stakeStateV2)
+            out StakeState stakeStateV2)
         {
             if (serialized is null or Null)
             {
@@ -21,7 +21,7 @@ namespace Nekoyume
             // NOTE: StakeStateV2 is serialized as Bencodex List.
             if (serialized is List list)
             {
-                stakeStateV2 = new StakeStateV2(list);
+                stakeStateV2 = new StakeState(list);
                 return true;
             }
 
@@ -57,7 +57,7 @@ namespace Nekoyume
             //       - StakeStateV2.Contract.LockupInterval is StakeState.LockupInterval.
             //       - StakeStateV2.StartedBlockIndex is StakeState.StartedBlockIndex.
             //       - StakeStateV2.ReceivedBlockIndex is StakeState.ReceivedBlockIndex.
-            var stakeStateV1 = new StakeState(dict);
+            var stakeStateV1 = new LegacyStakeState(dict);
             var stakeRegularFixedRewardSheetTableName =
                 stakeStateV1.StartedBlockIndex <
                 gameConfigState.StakeRegularFixedRewardSheet_V2_StartBlockIndex
@@ -89,13 +89,13 @@ namespace Nekoyume
                 stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V5";
             }
 
-            stakeStateV2 = new StakeStateV2(
+            stakeStateV2 = new StakeState(
                 stakeStateV1,
                 new Contract(
                     stakeRegularFixedRewardSheetTableName,
                     stakeRegularRewardSheetTableName,
-                    StakeState.RewardInterval,
-                    StakeState.LockupInterval));
+                    LegacyStakeState.RewardInterval,
+                    LegacyStakeState.LockupInterval));
             return true;
         }
     }

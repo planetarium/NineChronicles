@@ -42,5 +42,15 @@ namespace Nekoyume.Game.Character
                 avatarState.tail,
                 true);
         }
+
+        public void SetForCostumes(List<Costume> costumes)
+        {
+            _hudContainer ??= Widget.Create<HudContainer>(true);
+            _hudContainer.transform.localPosition = Vector3.left * 200000;
+            appearance.SetForCostumes(
+                Animator,
+                _hudContainer,
+                costumes);
+        }
     }
 }

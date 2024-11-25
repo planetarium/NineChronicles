@@ -9,6 +9,7 @@ namespace BalanceTool.Util
     using Libplanet.Action.State;
     using Libplanet.Common;
     using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Libplanet.Types.Blocks;
     using Libplanet.Types.Tx;
 
@@ -54,6 +55,10 @@ namespace BalanceTool.Util
             get => _evs ?? ImmutableList<EvidenceBase>.Empty;
             set => _evs = value;
         }
+
+        public BlockCommit LastCommit => throw new System.NotImplementedException();
+
+        public FungibleAssetValue? MaxGasPrice => throw new System.NotImplementedException();
 
         public void UseGas(long gas)
         {

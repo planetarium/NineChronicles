@@ -142,8 +142,23 @@ namespace Nekoyume.UI
 #endif
         }
 
-        public void SetConfirmCallbackToExit()
+        public void SetConfirmCallbackToExit(bool forceExit = false)
         {
+            if (forceExit)
+            {
+                CloseWidget = Confirm;
+
+                if (CapturedImage)
+                {
+                    CapturedImage.OnClick = CloseWidget;
+                }
+
+                if (Background)
+                {
+                    Background.OnClick = CloseWidget;
+                }
+            }
+
             ConfirmCallback = () =>
             {
 #if UNITY_EDITOR

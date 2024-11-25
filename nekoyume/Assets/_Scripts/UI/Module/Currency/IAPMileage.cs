@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module
         {
             ApiClients.Instance.IAPServiceManager.CurrentMileage.Subscribe(mileage =>
             {
-                amountText.text = mileage.ToCurrencyNotation();
+                amountText.text = mileage.ToString("N0", System.Globalization.CultureInfo.CurrentCulture);
             });
         }
 

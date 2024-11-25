@@ -439,7 +439,7 @@ namespace Nekoyume
                     tableSheets.StageSheet[stageId],
                     tableSheets.MaterialItemSheet),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLimitSheet,
                 tableSheets.BuffLinkSheet,
                 true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage

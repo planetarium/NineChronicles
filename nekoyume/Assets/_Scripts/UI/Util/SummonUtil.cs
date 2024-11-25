@@ -9,9 +9,9 @@ namespace Nekoyume.UI
             switch (result)
             {
                 case SummonResult.Title:
-                    return 2070;
-                case SummonResult.FullCostume:
                     return 1380;
+                case SummonResult.FullCostume:
+                    return 690;
                 case SummonResult.Rune:
                     return 0;
                 case SummonResult.Aura:
