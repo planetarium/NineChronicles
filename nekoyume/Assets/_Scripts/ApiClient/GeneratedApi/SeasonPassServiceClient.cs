@@ -438,12 +438,12 @@ public class SeasonPassServiceClient
         }
     }
 
-    public async Task GetSeasonpassCurrentAsync(PassType pass_type, Action<SeasonPassSchema> onSuccess, Action<string> onError)
+    public async Task GetSeasonpassCurrentAsync(string planet_id, PassType pass_type, Action<SeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/api/season-pass/current";
         using (var request = new UnityWebRequest(url, "GET"))
         {
-            url += $"?pass_type={pass_type}";
+            url += $"?planet_id={planet_id}&pass_type={pass_type}";
             request.uri = new Uri(url);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
@@ -528,12 +528,12 @@ public class SeasonPassServiceClient
         }
     }
 
-    public async Task GetUserStatusAsync(string planet_id, string avatar_addr, PassType pass_type, int season_index, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    public async Task GetUserStatusAsync(string planet_id, string agent_addr, string avatar_addr, PassType pass_type, int season_index, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/api/user/status";
         using (var request = new UnityWebRequest(url, "GET"))
         {
-            url += $"?planet_id={planet_id}&avatar_addr={avatar_addr}&pass_type={pass_type}&season_index={season_index}";
+            url += $"?planet_id={planet_id}&agent_addr={agent_addr}&avatar_addr={avatar_addr}&pass_type={pass_type}&season_index={season_index}";
             request.uri = new Uri(url);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
@@ -558,12 +558,12 @@ public class SeasonPassServiceClient
         }
     }
 
-    public async Task GetUserStatusAllAsync(string planet_id, string avatar_addr, Action<UserSeasonPassSchema[]> onSuccess, Action<string> onError)
+    public async Task GetUserStatusAllAsync(string planet_id, string agent_addr, string avatar_addr, Action<UserSeasonPassSchema[]> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/api/user/status/all";
         using (var request = new UnityWebRequest(url, "GET"))
         {
-            url += $"?planet_id={planet_id}&avatar_addr={avatar_addr}";
+            url += $"?planet_id={planet_id}&agent_addr={agent_addr}&avatar_addr={avatar_addr}";
             request.uri = new Uri(url);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
