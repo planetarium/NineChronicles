@@ -23,8 +23,6 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
-using UnityEngine;
-using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
@@ -1241,18 +1239,7 @@ namespace Nekoyume.Blockchain
 
             if (chargeAp)
             {
-                var row = TableSheets.Instance.MaterialItemSheet
-                    .OrderedList
-                    .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-
-                var address = States.Instance.CurrentAvatarState.address;
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(address);
-                }
-
-                GameConfigStateSubject.ActionPointState.Add(address, true);
+                ChargeAP(avatarAddress);
             }
 
             var sentryTrace = Analyzer.Instance.Track("Unity/Grinding", new Dictionary<string, Value>()
@@ -1979,6 +1966,21 @@ namespace Nekoyume.Blockchain
 #endif
 
 #endregion
+
+        private void ChargeAP(Address avatarAddress)
+        {
+            var row = TableSheets.Instance.MaterialItemSheet
+                                 .OrderedList
+                                 .First(r => r.ItemSubType == ItemSubType.ApStone);
+            LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(avatarAddress);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(avatarAddress, true);
+        }
 
         public void Dispose()
         {

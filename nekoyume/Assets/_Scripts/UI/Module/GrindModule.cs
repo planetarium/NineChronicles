@@ -24,9 +24,6 @@ namespace Nekoyume.UI.Module
 
     public class GrindModule : MonoBehaviour
     {
-        // TODO: 셋팅 파일 or lib9c 등으로 분리
-        private const int GrindCost = 5;
-
         [Serializable]
         private struct CrystalAnimationData
         {
@@ -92,7 +89,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            grindButton.SetCost(CostType.ActionPoint, GrindCost);
+            grindButton.SetCost(CostType.ActionPoint, GameConfig.ActionCostAP);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
                 foreach (var item in _selectedItemsForGrind.ToList())
@@ -397,7 +394,7 @@ namespace Nekoyume.UI.Module
                     var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        paymentPopup.ShowCheckPaymentApPotion(GrindCost, () => chargeAp(true));
+                        paymentPopup.ShowCheckPaymentApPotion(GameConfig.ActionCostAP, () => chargeAp(true));
                     }
                     else
                     {
