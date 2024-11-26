@@ -108,9 +108,9 @@ namespace Nekoyume.Blockchain
             {
                 var stakeState = StakeStateUtils.MigrateV1ToV2(serialized, GetGameConfigState(hash));
                 return new StakeState(
-                    stakeState.Contract,
-                    stakeState.StartedBlockIndex,
-                    stakeState.ReceivedBlockIndex,
+                    stakeState.Value.Contract,
+                    stakeState.Value.StartedBlockIndex,
+                    stakeState.Value.ReceivedBlockIndex,
                     stateVersion: 3);
             }
             catch (InvalidCastException e)

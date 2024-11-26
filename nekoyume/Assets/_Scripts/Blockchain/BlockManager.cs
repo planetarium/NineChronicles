@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Numerics;
 using Bencodex;
@@ -149,7 +150,7 @@ namespace Nekoyume.Blockchain
 
         public static Block ProposeGenesisBlock(
             PendingActivationState[] pendingActivationStates,
-            [CanBeNull] PublicKey proposer)
+            [CanBeNull] PrivateKey proposer)
         {
             var tableSheets = Game.Game.GetTableCsvAssets();
             var goldDistributionCsvPath = Platform.GetStreamingAssetsPath("GoldDistribution.csv");
@@ -158,7 +159,7 @@ namespace Nekoyume.Blockchain
             var initialValidatorSet = new Dictionary<PublicKey, BigInteger>();
             if (proposer is not null)
             {
-                initialValidatorSet[proposer] = 10_000_000_000_000_000_000;
+                initialValidatorSet[proposer.PublicKey] = 10_000_000_000_000_000_000;
             }
 
             return BlockHelper.ProposeGenesisBlock(
@@ -167,7 +168,8 @@ namespace Nekoyume.Blockchain
                 goldDistributions,
                 pendingActivationStates,
                 new AdminState(new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"), 1500000),
-                isActivateAdminAddress: false);
+                isActivateAdminAddress: false,
+                privateKey:proposer);
         }
 
         public static string BlockPath(string filename)
