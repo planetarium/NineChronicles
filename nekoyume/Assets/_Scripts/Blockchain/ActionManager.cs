@@ -1274,6 +1274,54 @@ namespace Nekoyume.Blockchain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
+        public IObservable<ActionEvaluation<Synthesize>> Synthesize(
+            List<Equipment> equipmentList,
+            bool chargeAp)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            equipmentList.ForEach(equipment =>
+            {
+                if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
+                {
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(
+                        avatarAddress,
+                        equipment.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        equipment.ItemId,
+                        equipment.RequiredBlockIndex,
+                        1);
+                }
+            });
+
+            if (chargeAp)
+            {
+                ChargeAP(avatarAddress);
+            }
+
+            // TODO: If need sentry or airBridge trace, add it.
+
+            var action = new Synthesize
+            {
+                AvatarAddress = avatarAddress,
+                MaterialIds = equipmentList.Select(i => i.ItemId).ToList(),
+                ChargeAp = chargeAp,
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<Synthesize>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => {  });
+        }
+
         public IObservable<ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
             List<int> recipeIdList,
             BigInteger openCost)
