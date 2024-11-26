@@ -622,7 +622,7 @@ GameObject:
   - component: {fileID: 1727222402575569441}
   - component: {fileID: 1046618781824811272}
   - component: {fileID: 6884040735540276822}
-  - component: {fileID: 461716812957238571}
+  - component: {fileID: 3548798149531297779}
   m_Layer: 5
   m_Name: SynthesisSlotScroll
   m_TagString: Untagged
@@ -716,7 +716,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 0}
---- !u!114 &461716812957238571
+--- !u!114 &3548798149531297779
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -725,7 +725,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 258297661778698271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae62e30f960b4133aa8611bf35f2da92, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f9009ee08a2098469007e453bb02f12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cellInterval: 0.2956989
@@ -742,8 +742,8 @@ MonoBehaviour:
   forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 1
   fillWithNullToEmptyCellGroup: 1
-  fillWithNullToMinimumCount: 10
-  cellTemplate: {fileID: 898394704325195344, guid: 176fb423faaf8b943b36ea9d1e8e6220,
+  fillWithNullToMinimumCount: 24
+  cellTemplate: {fileID: 1536233334768284040, guid: 3ede9306a8d36284d80a784f2bfd2cb3,
     type: 3}
 --- !u!1 &345516325830446577
 GameObject:
@@ -4113,7 +4113,7 @@ GameObject:
   - component: {fileID: 4989662561131859654}
   - component: {fileID: 8715582415376704672}
   m_Layer: 5
-  m_Name: GrindInventory
+  m_Name: SynthesisInventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17046,6 +17046,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6895176124048580337}
   - component: {fileID: 7636275802587777226}
+  - component: {fileID: 6301497053295873039}
   m_Layer: 5
   m_Name: SynthesisModule
   m_TagString: Untagged
@@ -17087,6 +17088,26 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &6301497053295873039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7067204844476449445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2619bbe85257c9e4780b80c8a8b45129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scroll: {fileID: 0}
+  synthesisButton: {fileID: 3207874609565849406}
+  removeAllButton: {fileID: 6177294638856666031}
+  possibleSynthesisTextObj: {fileID: 4759416887961526554}
+  impossibleSynthesisTextObj: {fileID: 915706092705939146}
+  impossibleSynthesisText: {fileID: 4222044436550838581}
+  numberSynthesisText: {fileID: 9195380543239296438}
+  successRateText: {fileID: 9180770785161209661}
 --- !u!1 &7321097936453467419
 GameObject:
   m_ObjectHideFlags: 0
@@ -25242,6 +25263,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2433863235616668613}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6177294638856666031 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8393857624628101226, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2433863235616668613}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2597029297082178757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30259,6 +30292,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!114 &3207874609565849406 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
+    type: 3}
+  m_PrefabInstance: {fileID: 8906760575613642701}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4489341800256367187 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5032336186445680030, guid: 9067b4811aa0241b7a96a2cc09536ced,
