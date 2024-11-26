@@ -70,7 +70,7 @@ namespace Nekoyume.Blockchain
 
         protected async UniTask<(
                 Address stakeAddr,
-                StakeState? stakeStateV2,
+                StakeState? stakeState,
                 FungibleAssetValue deposit,
                 int stakingLevel,
                 StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
@@ -83,7 +83,7 @@ namespace Nekoyume.Blockchain
             Address[] sheetAddrArr;
             FungibleAssetValue balance;
             StakeState? nullableStakeState;
-            if (!StateGetter.TryGetStakeStateV2(evaluation.OutputState, agentAddr, out var stakeStateV2))
+            if (!StateGetter.TryGetStakeState(evaluation.OutputState, agentAddr, out var stakeState))
             {
                 nullableStakeState = null;
                 var policySheet = TableSheets.Instance.StakePolicySheet;
@@ -96,14 +96,14 @@ namespace Nekoyume.Blockchain
             }
             else
             {
-                nullableStakeState = stakeStateV2;
+                nullableStakeState = stakeState;
                 balance = StateGetter.GetBalance(evaluation.OutputState, stakeAddr, GoldCurrency);
                 sheetAddrArr = new[]
                 {
                     Addresses.GetSheetAddress(
-                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                        stakeState.Contract.StakeRegularFixedRewardSheetTableName),
                     Addresses.GetSheetAddress(
-                        stakeStateV2.Contract.StakeRegularRewardSheetTableName)
+                        stakeState.Contract.StakeRegularRewardSheetTableName)
                 };
             }
 
@@ -326,14 +326,14 @@ namespace Nekoyume.Blockchain
         {
             var (
                     stakeAddr,
-                    stakeStateV2,
+                    stakeState,
                     deposit,
                     stakingLevel,
                     stakeRegularFixedRewardSheet,
                     stakeRegularRewardSheet) =
                 await GetStakeStateAsync(evaluation);
             States.Instance.SetStakeState(
-                stakeStateV2,
+                stakeState,
                 new GoldBalanceState(stakeAddr, deposit),
                 stakingLevel,
                 stakeRegularFixedRewardSheet,

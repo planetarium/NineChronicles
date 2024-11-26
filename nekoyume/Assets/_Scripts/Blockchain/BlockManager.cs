@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Numerics;
 using Bencodex;
@@ -149,7 +150,7 @@ namespace Nekoyume.Blockchain
 
         public static Block ProposeGenesisBlock(
             PendingActivationState[] pendingActivationStates,
-            [CanBeNull] PublicKey proposer)
+            [CanBeNull] PrivateKey proposer)
         {
             var tableSheets = Game.Game.GetTableCsvAssets();
             var goldDistributionCsvPath = Platform.GetStreamingAssetsPath("GoldDistribution.csv");
@@ -158,17 +159,17 @@ namespace Nekoyume.Blockchain
             var initialValidatorSet = new Dictionary<PublicKey, BigInteger>();
             if (proposer is not null)
             {
-                initialValidatorSet[proposer] = BigInteger.One;
+                initialValidatorSet[proposer.PublicKey] = 10_000_000_000_000_000_000;
             }
 
-            // todo : 스테이킹 추가 수정 이슈 new ValidatorSet() 값 넣어야함.
             return BlockHelper.ProposeGenesisBlock(
-                new ValidatorSet(),
+                new ValidatorSet(initialValidatorSet.Select(v => new Validator(v.Key, v.Value)).ToList()),
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates,
                 new AdminState(new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"), 1500000),
-                isActivateAdminAddress: false);
+                isActivateAdminAddress: false,
+                privateKey:proposer);
         }
 
         public static string BlockPath(string filename)
