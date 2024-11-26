@@ -100,7 +100,7 @@ namespace Nekoyume.UI
                 minCp += CPHelper.GetSkillsMultiplier(skillCount);
                 maxCp += CPHelper.GetSkillsMultiplier(skillCount);
 
-                combatPointText.text = $"CP {(int)minCp} ~ {(int)maxCp}";
+                combatPointText.text = $"CP {(int)minCp} - {(int)maxCp}";
 
                 titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
                 foreach (var iconImage in iconImages)
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
 
             if (!string.IsNullOrEmpty(model.RuneTicker))
             {
-                mainStatTexts[0].gameObject.SetActive(false);
+                mainStatTexts[0].text = string.Empty;
                 recipeOptionView.SetOptions(model.RuneOptionInfo);
                 if (RuneFrontHelper.TryGetRuneData(model.RuneTicker, out var data))
                 {
