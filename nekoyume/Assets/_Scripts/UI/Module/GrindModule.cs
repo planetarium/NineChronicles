@@ -94,7 +94,7 @@ namespace Nekoyume.UI.Module
             {
                 foreach (var item in _selectedItemsForGrind.ToList())
                 {
-                    item.GrindingCountEnabled.SetValueAndForceNotify(false);
+                    item.SelectCountEnabled.SetValueAndForceNotify(false);
                 }
 
                 _selectedItemsForGrind.Clear();
@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
-                item.Value.GrindingCountEnabled.SetValueAndForceNotify(true);
+                item.Value.SelectCountEnabled.SetValueAndForceNotify(true);
 
                 if (_selectedItemsForGrind.Count == 1 && animator)
                 {
@@ -147,7 +147,7 @@ namespace Nekoyume.UI.Module
                 }
             }).AddTo(gameObject);
             _selectedItemsForGrind.ObserveRemove()
-                .Subscribe(item => item.Value.GrindingCountEnabled.SetValueAndForceNotify(false))
+                .Subscribe(item => item.Value.SelectCountEnabled.SetValueAndForceNotify(false))
                 .AddTo(gameObject);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
             {
