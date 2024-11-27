@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Module
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b))
                 .AddTo(Disposables);
             model.GrindingCountEnabled
-                .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
+                .Subscribe(b => baseItemView.SelectCountObject.SetActive(b))
                 .AddTo(Disposables);
             model.CollectionSelected
                 .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))

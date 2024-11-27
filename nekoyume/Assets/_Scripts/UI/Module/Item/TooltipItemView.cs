@@ -225,7 +225,7 @@ namespace Nekoyume.UI.Module
             baseItemView.ItemImage.gameObject.SetActive(true);
             baseItemView.SpineItemImage.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
+            baseItemView.SelectCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectCollectionObject.SetActive(false);

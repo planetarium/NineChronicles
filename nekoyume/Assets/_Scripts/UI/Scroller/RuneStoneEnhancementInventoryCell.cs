@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Scroller
             view.CountText.gameObject.SetActive(false);
             view.LevelLimitObject.SetActive(false);
             view.TradableObject.SetActive(false);
-            view.GrindingCountObject.SetActive(false);
+            view.SelectCountObject.SetActive(false);
             view.RuneNotificationObj.SetActiveSafe(false);
             view.RuneSelectMove.SetActive(false);
             view.SelectCollectionObject.SetActive(false);
