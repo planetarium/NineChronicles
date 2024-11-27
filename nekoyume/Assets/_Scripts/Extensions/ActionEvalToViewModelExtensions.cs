@@ -67,7 +67,7 @@ namespace Nekoyume
                     sheets.CostumeStatSheet,
                     StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet),
                     collectionState.GetEffects(sheets.CollectionSheet),
-                    sheets.DeBuffLimitSheet,
+                    sheets.BuffLimitSheet,
                     sheets.BuffLinkSheet,
                     true,
                     States.Instance.GameConfigState.ShatterStrikeMaxDamage);

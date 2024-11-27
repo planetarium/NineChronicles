@@ -188,8 +188,7 @@ namespace Nekoyume.UI
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
             _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
+            UpdateRemainTimer(_period, currentBlockIndex, Nekoyume.Helper.Util.BlockInterval);
             SetActiveQueryLoading(false);
         }
 
@@ -337,7 +336,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateRemainTimer((long, long) time, long current, int secondsPerBlock)
+        private void UpdateRemainTimer((long, long) time, long current, double secondsPerBlock)
         {
             var (begin, end) = time;
             var range = end - begin;
@@ -412,7 +411,7 @@ namespace Nekoyume.UI
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking?.RankingInfo ?? new List<WorldBossRankingRecord>();
             var myRecord =
-                records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+                records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
             var userCount = response?.WorldBossTotalUsers ?? 0;
             var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
             return (myRecord, blockIndex, userCount);

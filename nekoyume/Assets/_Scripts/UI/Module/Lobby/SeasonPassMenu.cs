@@ -6,6 +6,7 @@ using Nekoyume.ApiClient;
 
 namespace Nekoyume.UI.Module.Lobby
 {
+    using Nekoyume.L10n;
     using UniRx;
 
     public class SeasonPassMenu : MainMenu
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject premiumPlusIcon;
 
         [SerializeField]
-        private TextMeshProUGUI levelText;
+        private TextMeshProUGUI[] nameText;
 
         [SerializeField]
         private TextMeshProUGUI timeText;
@@ -31,37 +32,35 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject iconRoot;
 
+        public System.Action OnUserValueChanged;
+
         protected override void Awake()
         {
             base.Awake();
 
             dim.SetActive(false);
             iconRoot.SetActive(true);
-            var seasonPassService = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassService.AvatarInfo.Subscribe((info) =>
+
+            premiumIcon.SetActive(false);
+            premiumPlusIcon.SetActive(false);
+
+            OnUserValueChanged = () =>
             {
-                dim.SetActive(info == null);
-                iconRoot.SetActive(info != null);
-                if (info == null)
-                {
-                    return;
-                }
+                int claimCount = ApiClients.Instance.SeasonPassServiceManager.HasClaimPassType.Count + ApiClients.Instance.SeasonPassServiceManager.HasPrevClaimPassType.Count;
+                notificationObj.SetActive(claimCount > 0);
+            };
+            ApiClients.Instance.SeasonPassServiceManager.UpdatedUserDatas += OnUserValueChanged;
 
-                premiumIcon.SetActive(info.IsPremium);
-                premiumPlusIcon.SetActive(info.IsPremiumPlus);
-                notificationObj.SetActive(info.LastNormalClaim != info.Level);
-
-                if (info.Level >= SeasonPass.SeasonPassMaxLevel)
-                {
-                    levelText.text = SeasonPass.MaxLevelString;
-                }
-                else
-                {
-                    levelText.text = $"Lv.{info.Level}";
-                }
-            }).AddTo(gameObject);
-
+            foreach (var text in nameText)
+            {
+                text.text = L10nManager.Localize("SEASON_PASS_MENU_NAME");
+            }
             ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) => { timeText.text = $"<Style=Clock> {endDate}"; });
+        }
+
+        protected void OnDestroy()
+        {
+            ApiClients.Instance.SeasonPassServiceManager.UpdatedUserDatas -= OnUserValueChanged;
         }
     }
 }

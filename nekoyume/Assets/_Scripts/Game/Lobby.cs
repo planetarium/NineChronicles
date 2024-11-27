@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 using Cysharp.Threading.Tasks;
@@ -129,22 +129,20 @@ namespace Nekoyume.Game
                         shopListPopup.ShowAtLobbyEntering();
                     }
 #endif
-                var avatarInfo = ApiClients.Instance.SeasonPassServiceManager.AvatarInfo;
-                if (avatarInfo.Value != null && Widget.TryFind<SeasonPassNewPopup>(out var seasonPassNewPopup))
-                {
-                    if (seasonPassNewPopup.HasUnread &&
-                        avatarInfo.HasValue &&
-                        !avatarInfo.Value.IsPremium)
-                    {
-                        seasonPassNewPopup.Show();
-                    }
-                }
 
                 if (Widget.TryFind<EventReleaseNotePopup>(out var eventReleaseNotePopup))
                 {
                     if (eventReleaseNotePopup.HasUnread)
                     {
                         eventReleaseNotePopup.Show();
+                    }
+                }
+
+                if (Widget.TryFind<EventRewardPopup>(out var notificationPopup))
+                {
+                    if (notificationPopup.HasUnread)
+                    {
+                        notificationPopup.Show();
                     }
                 }
             }

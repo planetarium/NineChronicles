@@ -186,7 +186,7 @@ namespace Nekoyume.UI
                     .StakeRegularRewardSheetValue;
             stakingStartButton.gameObject.SetActive(!hasStakeState);
             migrateButton.gameObject.SetActive(requiredMigrate);
-            ncgEditButton.gameObject.SetActive(hasStakeState && !requiredMigrate);
+            ncgEditButton.gameObject.SetActive(hasStakeState);
 
             foreach (var toggleable in _toggleGroup.Toggleables)
             {

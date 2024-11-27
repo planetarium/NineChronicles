@@ -33,13 +33,15 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
-        private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
+        private static readonly List<int> EventEquipmentRecipes = new() { 158, 159, 160, 256, 257, };
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private static Dictionary<string, Sprite> CachedDownloadTextures = new();
 
         private static Dictionary<string, byte[]> CachedDownloadTexturesRaw = new();
 
         public const float GridScrollerAdjustCellCount = 20;
+
+        public static double BlockInterval => Blockchain.Policy.BlockPolicySource.BlockInterval.TotalSeconds;
 
         public static async Task<Order> GetOrder(Guid orderId)
         {
@@ -416,7 +418,7 @@ namespace Nekoyume.Helper
 
         public static bool IsEventEquipmentRecipe(int recipeId)
         {
-            return CrystalEquipmentRecipes.Contains(recipeId);
+            return EventEquipmentRecipes.Contains(recipeId);
         }
 
         public static int GetTickerGrade(string ticker)
@@ -574,7 +576,7 @@ namespace Nekoyume.Helper
                 Options = new QrCodeEncodingOptions
                 {
                     Width = 800,
-                    Height = 800
+                    Height = 800,
                 }
             };
 

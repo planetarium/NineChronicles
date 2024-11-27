@@ -32,5 +32,11 @@ namespace Nekoyume.Game.ScriptableObject
 
         [field: SerializeField]
         public string CommandLineOptionsJsonDefaultUrlKr { get; private set; }
+
+        [field: SerializeField]
+        public string ThorScheduleUrl { get; private set; }
+
+        [field: SerializeField]
+        public string EventRewardPopupDataJsonUrl { get; private set; }
     }
 }

@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
 using Cysharp.Threading.Tasks;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UnityEngine.UI;
 using Nekoyume.Game.Controller;
-using System.Numerics;
 using TMPro;
 using System.Linq;
 using Nekoyume.ApiClient;
@@ -18,6 +13,7 @@ using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class SeasonPassPremiumPopup : PopupWidget
     {
         [SerializeField]
@@ -68,35 +64,58 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject[] premiumPlusInfoList;
 
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+        [SerializeField]
+        private Image premiumIconImage;
+        [SerializeField]
+        private Image premiumPlusIconImage;
+
+        [SerializeField]
+        private Sprite premiumIconCourage;
+        [SerializeField]
+        private Sprite premiumIconWorldClear;
+        [SerializeField]
+        private Sprite premiumIconAdventureBoss;
+        [SerializeField]
+        private Sprite premiumPlusIconCourage;
+        [SerializeField]
+        private Sprite premiumPlusIconWorldClear;
+        [SerializeField]
+        private Sprite premiumPlusIconAdventureBoss;
+
+        [SerializeField]
+        private GameObject premiumContents;
+
+        [SerializeField]
+        private TextMeshProUGUI premiumContentsTitle;
+        [SerializeField]
+        private TextMeshProUGUI premiumPlusContentsTitle;
+
+        private SeasonPassServiceClient.PassType currentSeasonPassType;
+
+        private enum PassPremiumType
+        {
+            Premium,
+            Premiumplus,
+            PremiumAll
+        }
+
         protected override void Awake()
         {
             base.Awake();
-            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) => { RefreshIcons(seasonPassInfo); }).AddTo(gameObject);
+        }
 
+        private void RefreshInfoText(string l10nPreText,bool isPlus, GameObject[] infoTexts)
+        {
             var infoKeyIndex = 1;
-            foreach (var item in premiumInfoList)
+            foreach (var item in infoTexts)
             {
-                if (L10nManager.ContainsKey($"SEASONPASS_PREMIUM_INFO_{infoKeyIndex}"))
+                string l10nKey = $"{l10nPreText}_SEASONPASS_PREMIUM_{(isPlus ? "PLUS_" : "")}INFO_{infoKeyIndex}";
+                if (L10nManager.ContainsKey(l10nKey))
                 {
                     item.SetActive(true);
-                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"SEASONPASS_PREMIUM_INFO_{infoKeyIndex}");
-                }
-                else
-                {
-                    item.SetActive(false);
-                }
-
-                infoKeyIndex++;
-            }
-
-            infoKeyIndex = 1;
-            foreach (var item in premiumPlusInfoList)
-            {
-                if (L10nManager.ContainsKey($"SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}"))
-                {
-                    item.SetActive(true);
-                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}");
+                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize(l10nKey);
                 }
                 else
                 {
@@ -107,10 +126,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(SeasonPassServiceClient.PassType seasonPassType, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
+            currentSeasonPassType = seasonPassType;
+            RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[seasonPassType]);
             foreach (var item in premiumRewards)
             {
                 item.gameObject.SetActive(false);
@@ -121,61 +142,104 @@ namespace Nekoyume.UI
                 item.gameObject.SetActive(false);
             }
 
-            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             var iapStoreManager = Game.Game.instance.IAPStoreManager;
 
-            var premiumProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
-            if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
+            switch (seasonPassType)
             {
-                var index = 0;
-                for (var i = 0; i < premiumProduct.FavList.Count && index < premiumRewards.Length; i++, index++)
+                case SeasonPassServiceClient.PassType.CouragePass:
+                    titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_COURAGE");
+                    premiumIconImage.sprite = premiumIconCourage;
+                    premiumPlusIconImage.sprite = premiumPlusIconCourage;
+                    break;
+                case SeasonPassServiceClient.PassType.WorldClearPass:
+                    titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_WORLDCLEAR");
+                    premiumIconImage.sprite = premiumIconWorldClear;
+                    premiumPlusIconImage.sprite = premiumPlusIconWorldClear;
+                    break;
+                case SeasonPassServiceClient.PassType.AdventureBossPass:
+                    titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_ADVENTUREBOSS");
+                    premiumIconImage.sprite = premiumIconAdventureBoss;
+                    premiumPlusIconImage.sprite = premiumPlusIconAdventureBoss;
+                    break;
+            }
+
+            var premiumProductKey = GetProductKey(seasonPassType, PassPremiumType.Premium);
+            var premiumAllProductkey = GetProductKey(seasonPassType, PassPremiumType.PremiumAll);
+            var premiumPlusProductkey = GetProductKey(seasonPassType, PassPremiumType.Premiumplus);
+
+            // 프리미엄 상품 하나만있는경우 프리미엄 플러스 컨텐츠에 프리미엄 상품정보를 갱신시킨다.
+            if(!iapStoreManager.SeasonPassProduct.ContainsKey(premiumPlusProductkey) && !iapStoreManager.SeasonPassProduct.ContainsKey(premiumAllProductkey))
+            {
+                //기존 프리미엄 상품설명창을 숨긴다.
+                premiumContents.SetActive(false);
+
+                premiumPlusContentsTitle.text = L10nManager.Localize("UI_SEASONPASS_PREMIUM");
+
+                //기존 프리미엄 Plus 상품 설명에 프리미엄키를 세팅한다.
+                RefreshInfoText(seasonPassType.ToString().ToUpper(), false, premiumPlusInfoList);
+                //기존 프리미엄 Plus 상품정보에 프리미엄 상품정보를 갱신시킨다.
+                if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
                 {
-                    premiumRewards[index].ItemViewSetCurrencyData(premiumProduct.FavList[i].Ticker, premiumProduct.FavList[i].Amount);
+                    ProcessProduct(premiumProduct, premiumPlusRewards, premiumPlusPrices);
+                }
+            }
+            else
+            {
+                premiumContents.SetActive(true);
+
+                premiumContentsTitle.text = L10nManager.Localize("UI_SEASONPASS_PREMIUM");
+                premiumPlusContentsTitle.text = L10nManager.Localize("UI_SEASONPASS_PREMIUM_PLUS");
+
+                RefreshInfoText(seasonPassType.ToString().ToUpper(), false, premiumInfoList);
+                RefreshInfoText(seasonPassType.ToString().ToUpper(), true, premiumPlusInfoList);
+
+                //프리미엄 상품정보갱신
+                if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
+                {
+                    ProcessProduct(premiumProduct, premiumRewards, premiumPrices);
                 }
 
-                for (var i = 0; i < premiumProduct.FungibleItemList.Count && index < premiumRewards.Length; i++, index++)
+                //프리미엄상태일경우 프리미엄플러스 상품정보갱신 아닐경우 프리미엄ALL 상품갱신
+                if (ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[seasonPassType].IsPremium)
                 {
-                    premiumRewards[index].ItemViewSetItemData(premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
-                    AddToolTip(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId);
-                }
-
-                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku());
-                if (_puchasingData != null)
-                {
-                    foreach (var item in premiumPrices)
+                    if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductkey, out var premiumPlusProduct))
                     {
-                        item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
+                        ProcessProduct(premiumPlusProduct, premiumPlusRewards, premiumPlusPrices);
+                    }
+                }
+                else
+                {
+                    if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumAllProductkey, out var premiumAllProduct))
+                    {
+                        ProcessProduct(premiumAllProduct, premiumPlusRewards, premiumPlusPrices);
                     }
                 }
             }
+        }
 
-            var premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}PremiumAll";
-            if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium)
+        private void ProcessProduct(InAppPurchaseServiceClient.ProductSchema product, BaseItemView[] rewards, TextMeshProUGUI[] prices)
+        {
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+            var index = 0;
+
+            for (var i = 0; i < product.FavList.Count && index < rewards.Length; i++, index++)
             {
-                premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
+                rewards[index].ItemViewSetCurrencyData(product.FavList[i].Ticker, product.FavList[i].Amount);
+                AddToolTip(rewards[index], product.FavList[i].Ticker, product.FavList[i].Amount);
             }
 
-            if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductKey, out var premiumPlusProduct))
+            for (var i = 0; i < product.FungibleItemList.Count && index < rewards.Length; i++, index++)
             {
-                var index = 0;
-                for (var i = 0; i < premiumPlusProduct.FavList.Count && index < premiumPlusRewards.Length; i++, index++)
-                {
-                    premiumPlusRewards[index].ItemViewSetCurrencyData(premiumPlusProduct.FavList[i].Ticker, premiumPlusProduct.FavList[i].Amount);
-                }
+                rewards[index].ItemViewSetItemData(product.FungibleItemList[i].SheetItemId, product.FungibleItemList[i].Amount);
+                AddToolTip(rewards[index], product.FungibleItemList[i].SheetItemId);
+            }
 
-                for (var i = 0; i < premiumPlusProduct.FungibleItemList.Count && index < premiumPlusRewards.Length; i++, index++)
+            var purchasingData = iapStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == product.Sku());
+            if (purchasingData != null)
+            {
+                foreach (var item in prices)
                 {
-                    premiumPlusRewards[index].ItemViewSetItemData(premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
-                    AddToolTip(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId);
-                }
-
-                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku());
-                if (_puchasingData != null)
-                {
-                    foreach (var item in premiumPlusPrices)
-                    {
-                        item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
-                    }
+                    item.text = MobileShop.GetPrice(purchasingData.metadata.isoCurrencyCode, purchasingData.metadata.localizedPrice);
                 }
             }
         }
@@ -184,6 +248,7 @@ namespace Nekoyume.UI
         {
             if (itemView.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
             {
+                seasonPassPremiumItemView.TooltipButton.onClick.RemoveAllListeners();
                 var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemId];
                 if (seasonPassPremiumItemView.TooltipButton.onClick.GetPersistentEventCount() < 1)
                 {
@@ -202,6 +267,19 @@ namespace Nekoyume.UI
                 }
             }
         }
+
+        private void AddToolTip(BaseItemView itemView, string ticker, decimal amount)
+        {
+            if (itemView.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
+            {
+                seasonPassPremiumItemView.TooltipButton.onClick.RemoveAllListeners();
+                seasonPassPremiumItemView.TooltipButton.onClick.AddListener(() =>
+                {
+                    Find<FungibleAssetTooltip>().Show(ticker, amount.ToCurrencyNotation(), null);
+                });
+            }
+        }
+
 
         private void RefreshIcons(SeasonPassServiceClient.UserSeasonPassSchema seasonPassInfo)
         {
@@ -252,15 +330,16 @@ namespace Nekoyume.UI
 
         public void PurchaseSeasonPassPremiumButton()
         {
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            if (seasonPassManager.AvatarInfo.Value.IsPremium)
+            if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremium)
             {
                 return;
             }
 
-            var productKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
+            var productKey = GetProductKey(currentSeasonPassType, PassPremiumType.Premium);
 
-            if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
+            if (iapStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
             {
                 premiumPurchaseButtonDisabledObj.SetActive(true);
                 premiumPurchaseButtonPriceObj.SetActive(false);
@@ -271,24 +350,32 @@ namespace Nekoyume.UI
 
         public void PurchaseSeasonPassPremiumPlusButton()
         {
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            if (seasonPassManager.AvatarInfo.Value.IsPremiumPlus)
+            if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremiumPlus)
             {
                 return;
             }
 
             string productKey;
 
-            if (seasonPassManager.AvatarInfo.Value.IsPremium)
+            var premiumAllProductkey = GetProductKey(currentSeasonPassType, PassPremiumType.PremiumAll);
+            var premiumPlusProductkey = GetProductKey(currentSeasonPassType, PassPremiumType.Premiumplus);
+            // 프리미엄 상품 하나만있는경우 프리미엄 플러스 컨텐츠에 프리미엄 상품정보를 갱신시킨다.
+            if (!iapStoreManager.SeasonPassProduct.ContainsKey(premiumPlusProductkey) && !iapStoreManager.SeasonPassProduct.ContainsKey(premiumAllProductkey))
             {
-                productKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
+                productKey = GetProductKey(currentSeasonPassType, PassPremiumType.Premium);
+            }
+            else if (seasonPassManager.UserSeasonPassDatas[currentSeasonPassType].IsPremium)
+            {
+                productKey = GetProductKey(currentSeasonPassType, PassPremiumType.Premiumplus);
             }
             else
             {
-                productKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}PremiumAll";
+                productKey = GetProductKey(currentSeasonPassType,PassPremiumType.PremiumAll);
             }
 
-            if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
+            if (iapStoreManager.SeasonPassProduct.TryGetValue(productKey, out var product))
             {
                 premiumPlusPurchaseButtonDisabledObj.SetActive(true);
                 premiumPlusPurchaseButtonPriceObj.SetActive(false);
@@ -299,10 +386,30 @@ namespace Nekoyume.UI
 
         public void PurchaseButtonLoadingEnd()
         {
-            ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
-            premiumPurchaseButtonLoadingObj.SetActive(false);
-            premiumPlusPurchaseButtonLoadingObj.SetActive(false);
-            RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value);
+            ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+            {
+                premiumPurchaseButtonLoadingObj.SetActive(false);
+                premiumPlusPurchaseButtonLoadingObj.SetActive(false);
+                RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[currentSeasonPassType]);
+                if (Find<SeasonPass>().IsActive())
+                {
+                    Find<SeasonPass>().RefreshCurrentPage();
+                }
+            });
+        }
+
+        private string GetProductKey(SeasonPassServiceClient.PassType seasonPassType, PassPremiumType premiumType)
+        {
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            var seasonData = seasonPassManager.CurrentSeasonPassData[seasonPassType];
+
+            // 11월 시즌패스의경우 바뀐 상품규칙 전 규칙을 적용하여 상품 검색하도록 예외처리. 이후 다음시즌에선 해당스크립트 제거해야함
+            if (seasonPassType == SeasonPassServiceClient.PassType.CouragePass && seasonData.SeasonIndex == 12)
+            {
+                return $"SeasonPass12{premiumType}";
+            }
+
+            return $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].SeasonIndex}{premiumType}";
         }
     }
 }

@@ -10,6 +10,9 @@ namespace Nekoyume.UI
         private CapturedImage _capturedImage;
         private UIBackground _background;
 
+        public CapturedImage CapturedImage => _capturedImage;
+        public UIBackground Background => _background;
+
         protected override void Awake()
         {
             base.Awake();

@@ -20,9 +20,9 @@ namespace Nekoyume.UI
             get
             {
                 var seasonId = string.Empty;
-                if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+                if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData.TryGetValue(SeasonPassServiceClient.PassType.CouragePass, out var seasonPassSchema))
                 {
-                    seasonId = ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData.Id.ToString();
+                    seasonId = seasonPassSchema.Id.ToString();
                 }
 
                 return $"{LastReadingDayKey}{seasonId}";
@@ -40,19 +40,8 @@ namespace Nekoyume.UI
 
         public void OnSeasonPassBtnClick()
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
-            {
-                return;
-            }
-
-            if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value == null)
-            {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
-                return;
-            }
-
             base.Close();
-            Find<SeasonPass>().Show();
+            Find<SeasonPass>().Show(SeasonPassServiceClient.PassType.CouragePass);
         }
     }
 }

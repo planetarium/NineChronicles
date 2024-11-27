@@ -368,6 +368,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9394f8da5938042989eb6405a94b396f, type: 3}
   - {fileID: 21300000, guid: e28a2eda03aa14186b003b0c57fb1ec8, type: 3}
   - {fileID: 21300000, guid: 2a8733eadb06a4669846008cd2f2c280, type: 3}
+  - {fileID: 21300000, guid: d8e8f7ea6c1e793449eadda07c9ac7cf, type: 3}
   - {fileID: 21300000, guid: 568239eace6e94a52b9841fb10ac6974, type: 3}
   - {fileID: 21300000, guid: e6175eea41e27468b9e2b59b369f0c77, type: 3}
   - {fileID: 21300000, guid: 43bc28fa6e76aa6458e51c988b105fa5, type: 3}
@@ -399,6 +400,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2539b00cd57924ecdaeddcd9fc3db15d, type: 3}
   - {fileID: 21300000, guid: b202830c8a3394ca89b0ebb5931d1969, type: 3}
   - {fileID: 21300000, guid: cb638a1c9a3d04d888d6f5ba2f046f4b, type: 3}
+  - {fileID: 21300000, guid: 50fc0d2cc2d2a37419bd24f27afc9850, type: 3}
   - {fileID: 21300000, guid: 4efd123c39d164b58b80766f85847df1, type: 3}
   - {fileID: 21300000, guid: 89c63d3ccf6794965b7c63d37a4e7b5a, type: 3}
   - {fileID: 21300000, guid: 3d764b4c137f54c70b9e32487429e526, type: 3}
@@ -814,6 +816,7 @@ SpriteAtlas:
   - 8x8_rect_transparent
   - UI_icon_Mainmenu_08
   - Common_Shadow
+  - UI_bg_frame_17
   - UI_Common_Slot_Expired
   - UI_Gradiant_bg_02
   - UI_arrow_02
@@ -845,6 +848,7 @@ SpriteAtlas:
   - UI_line_03
   - icon_Inventory_02_black
   - UI_Popup_icon_09
+  - UI_icon_Button_Arrow_2
   - UI_bg_frame_16
   - UI_box_Inventory_01_small
   - UI_icon_Mainmenu_07

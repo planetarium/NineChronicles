@@ -102,7 +102,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             CloseWidget = null;
-        } 
+        }
 
         private void Start()
         {
@@ -293,14 +293,15 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(int playCount)
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            if (seasonPassManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-
-                seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureSweepCourageAmount * playCount}";
+                var expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash_sweep);
+                seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else
             {

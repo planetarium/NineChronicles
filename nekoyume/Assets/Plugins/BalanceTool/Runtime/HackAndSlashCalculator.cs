@@ -59,7 +59,7 @@ namespace BalanceTool
                     typeof(CrystalRandomBuffSheet),
                     typeof(StakeActionPointCoefficientSheet),
                     typeof(RuneListSheet),
-                    typeof(DeBuffLimitSheet),
+                    typeof(BuffLimitSheet),
                 });
 
             return await playDataList.Select(pd => ExecuteHackAndSlashAsync(
@@ -169,7 +169,7 @@ namespace BalanceTool
                     sheets.GetSheet<CollectionSheet>(),
                     sheets.GetSheet<WorldSheet>(),
                     sheets.GetSheet<WorldUnlockSheet>(),
-                    sheets.GetSheet<DeBuffLimitSheet>(),
+                    sheets.GetSheet<BuffLimitSheet>(),
                     sheets.GetSheet<BuffLinkSheet>(),
                     exp);
                 result = ApplyToPlayResult(
@@ -199,7 +199,7 @@ namespace BalanceTool
             CollectionSheet collectionSheet,
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet,
-            DeBuffLimitSheet deBuffLimitSheet,
+            BuffLimitSheet buffLimitSheet,
             BuffLinkSheet buffLinkSheet,
             int exp)
         {
@@ -224,7 +224,7 @@ namespace BalanceTool
                     stageRow,
                     materialItemSheet),
                 collectionState.GetEffects(collectionSheet),
-                deBuffLimitSheet,
+                buffLimitSheet,
                 buffLinkSheet,
                 logEvent: true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage

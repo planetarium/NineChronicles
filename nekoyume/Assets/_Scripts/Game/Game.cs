@@ -105,7 +105,16 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
-        public PlanetId? CurrentPlanetId { get; set; }
+        public PlanetId? CurrentPlanetId
+        {
+            get => _currentPlanetId;
+            set
+            {
+                NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
+                _currentPlanetId = value;
+                LiveAssetManager.instance.SetThorSchedule(value);
+            }
+        }
 
         public States States { get; private set; }
 
@@ -179,6 +188,8 @@ namespace Nekoyume.Game
         private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
         private const int TicketPushBlockCountThreshold = 300;
 
+        private PlanetId? _currentPlanetId;
+
 #region Mono & Initialization
 
 #if !UNITY_EDITOR && UNITY_IOS
@@ -215,12 +226,12 @@ namespace Nekoyume.Game
             CreateAgent();
             PostAwake();
         }
-        
+
         public void AddRequestManager()
         {
             gameObject.AddComponent<RequestManager>();
         }
-        
+
         /// <summary>
         /// Invoke On RUN_ON_MOBILE
         /// </summary>
@@ -231,8 +242,8 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator InitializeLiveAssetManager()
-        {            
-            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
+        {
+            var liveAssetManager = LiveAssetManager.instance;
             liveAssetManager.InitializeData();
 #if RUN_ON_MOBILE
             yield return liveAssetManager.InitializeApplicationCLO();
@@ -261,7 +272,7 @@ namespace Nekoyume.Game
 #endif
             NcSceneManager.Instance.LoadScene(SceneType.Login).Forget();
         }
-        
+
         /// <summary>
         /// Invoke On Window Editor
         /// </summary>
@@ -592,7 +603,7 @@ namespace Nekoyume.Game
                     L10nManager.Localize("UI_QUIT"),
                     false,
                     IconAndButtonSystem.SystemType.BlockChainError);
-                popup.SetConfirmCallbackToExit();
+                popup.SetConfirmCallbackToExit(true);
 
                 return;
             }
@@ -614,7 +625,7 @@ namespace Nekoyume.Game
 
             popup = Widget.Find<IconAndButtonSystem>();
             popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
-            popup.SetConfirmCallbackToExit();
+            popup.SetConfirmCallbackToExit(true);
         }
 
         /// <summary>
@@ -1009,7 +1020,7 @@ namespace Nekoyume.Game
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
         }
-        
+
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
@@ -1387,7 +1398,7 @@ namespace Nekoyume.Game
                 }
                 yield break;
             }
-            
+
             yield return L10nManager
                 .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
                     ? L10nManager.CurrentLanguage
@@ -1460,8 +1471,14 @@ namespace Nekoyume.Game
             // Initialize TableSheets. This should be done before initialize the Agent.
             ResourcesHelper.Initialize();
             NcDebug.Log("[Game] Start()... ResourcesHelper initialized");
-            AudioController.instance.Initialize();
+        }
+
+        public async UniTask InitializeAudioControllerAsync()
+        {
+            await AudioController.instance.InitializeAsync();
             NcDebug.Log("[Game] Start()... AudioController initialized");
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 
         public void OnAgentInitializeSucceed()
@@ -1491,7 +1508,7 @@ namespace Nekoyume.Game
         public async UniTask InitializeStage()
         {
             Stage.Initialize();
-            
+
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();

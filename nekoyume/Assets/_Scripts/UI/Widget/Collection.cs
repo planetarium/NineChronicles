@@ -60,7 +60,7 @@ namespace Nekoyume.UI
         {
             Id,
             Grade,
-            LevelOrQuantity
+            LevelOrQuantity,
         }
 
 #endregion Internal Types
@@ -704,6 +704,11 @@ namespace Nekoyume.UI
                 return false;
             }
 
+            if (!ApplyWithSkillOption(model))
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -808,6 +813,27 @@ namespace Nekoyume.UI
 
                 var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
                 hasFlag |= itemFilterOptions.ItemType.HasFlag(itemType);
+                if (hasFlag)
+                {
+                    break;
+                }
+            }
+
+            return hasFlag;
+        }
+
+        private bool ApplyWithSkillOption(CollectionModel model)
+        {
+            if (itemFilterOptions.WithSkill == ItemFilterPopupBase.WithSkill.All)
+            {
+                return true;
+            }
+
+            var hasFlag = false;
+            foreach (var material in model.Materials)
+            {
+                var withSkill = ItemFilterPopupBase.ItemSubTypeToWithSkill(material.Row.SkillContains);
+                hasFlag |= itemFilterOptions.WithSkill.HasFlag(withSkill);
                 if (hasFlag)
                 {
                     break;
