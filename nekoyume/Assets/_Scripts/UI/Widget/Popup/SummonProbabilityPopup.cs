@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
-using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
@@ -92,21 +91,7 @@ namespace Nekoyume.UI
                     if (modelDict.TryGetValue(recipeId, out var model))
                     {
                         var cellRatio = ratio / ratioSum;
-                        switch (costType)
-                        {
-                            case CostType.GoldDust:
-                                model.GoldRatio = cellRatio;
-                                break;
-                            case CostType.RubyDust:
-                                model.RubyRatio = cellRatio;
-                                break;
-                            case CostType.EmeraldDust:
-                                model.EmeraldRatio = cellRatio;
-                                break;
-                            case CostType.SilverDust:
-                                model.SilverRatio = cellRatio;
-                                break;
-                        }
+                        model.RatioByCostDict[costType] = cellRatio;
                     }
                     else
                     {
@@ -119,23 +104,11 @@ namespace Nekoyume.UI
                             RuneTicker = runeTicker,
                             RuneOptionInfo = runeOptionInfo,
                             Grade = grade,
+                            RatioByCostDict =
+                            {
+                                [costType] = cellRatio,
+                            },
                         };
-                        switch (costType)
-                        {
-                            case CostType.GoldDust:
-                                cellModel.GoldRatio = cellRatio;
-                                break;
-                            case CostType.RubyDust:
-                                cellModel.RubyRatio = cellRatio;
-                                break;
-                            case CostType.EmeraldDust:
-                                cellModel.EmeraldRatio = cellRatio;
-                                break;
-                            case CostType.SilverDust:
-                                cellModel.SilverRatio = cellRatio;
-                                break;
-                        }
-
                         modelDict.Add(recipeId, cellModel);
                     }
                 }
