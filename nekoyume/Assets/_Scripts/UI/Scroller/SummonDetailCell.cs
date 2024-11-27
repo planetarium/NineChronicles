@@ -114,9 +114,13 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
+            silverPercentText.gameObject.SetActive(Context.ContainedCost.Contains(CostType.SilverDust));
             silverPercentText.text = GetRatioString(itemData.SilverRatio);
+            goldPercentText.gameObject.SetActive(Context.ContainedCost.Contains(CostType.GoldDust));
             goldPercentText.text = GetRatioString(itemData.GoldRatio);
+            rubyPercentText.gameObject.SetActive(Context.ContainedCost.Contains(CostType.RubyDust));
             rubyPercentText.text = GetRatioString(itemData.RubyRatio);
+            emeraldPercentText.gameObject.SetActive(Context.ContainedCost.Contains(CostType.EmeraldDust));
             emeraldPercentText.text = GetRatioString(itemData.EmeraldRatio);
             if (itemData.Ratio != 0)
             {
@@ -128,12 +132,7 @@ namespace Nekoyume.UI.Scroller
 
         private static string GetRatioString(float ratio)
         {
-            if (ratio == 0)
-            {
-                return "-";
-            }
-
-            return ratio.ToString("0.####%");
+            return ratio == 0 ? "-" : ratio.ToString("0.####%");
         }
     }
 }

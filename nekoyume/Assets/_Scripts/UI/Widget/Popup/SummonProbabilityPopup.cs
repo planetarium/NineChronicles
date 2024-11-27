@@ -19,18 +19,46 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI titleText;
 
+        [SerializeField]
+        private GameObject silverDustIconObj;
+
+        [SerializeField]
+        private GameObject goldDustIconObj;
+
+        [SerializeField]
+        private GameObject rubyDustIconObj;
+
+        [SerializeField]
+        private GameObject emeraldDustIconObj;
+
         private readonly List<IDisposable> _disposables = new();
+        private readonly Dictionary<CostType, GameObject> _dustObjectDict = new();
+
+        protected override void Awake()
+        {
+            base.Awake();
+            _dustObjectDict[CostType.SilverDust] = silverDustIconObj;
+            _dustObjectDict[CostType.GoldDust] = goldDustIconObj;
+            _dustObjectDict[CostType.RubyDust] = rubyDustIconObj;
+            _dustObjectDict[CostType.EmeraldDust] = emeraldDustIconObj;
+        }
+
         public void Show(SummonResult summonResult)
         {
+            titleText.SetText(summonResult.ToString());
+            scroll.ContainedCostType.Clear();
+            foreach (var dustObj in _dustObjectDict.Values)
+            {
+                dustObj.SetActive(false);
+            }
+
             var summonRows = SummonFrontHelper.GetSummonRowsBySummonResult(summonResult);
             var tableSheets = Game.Game.instance.TableSheets;
             var equipmentItemSheet = tableSheets.EquipmentItemSheet;
             var equipmentItemRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
             var runeSheet = tableSheets.RuneSheet;
             var equipmentItemSubRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
-
             var modelDict = new Dictionary<int,SummonDetailCell.Model>();
-            titleText.SetText(summonResult.ToString());
             foreach (var row in summonRows)
             {
                 float ratioSum = row.Recipes.Sum(pair => pair.Item2);
@@ -58,10 +86,13 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    var costType = (CostType)row.CostMaterial;
+                    _dustObjectDict[costType].SetActive(true);
+                    scroll.ContainedCostType.Add(costType);
                     if (modelDict.TryGetValue(recipeId, out var model))
                     {
                         var cellRatio = ratio / ratioSum;
-                        switch ((CostType) row.CostMaterial)
+                        switch (costType)
                         {
                             case CostType.GoldDust:
                                 model.GoldRatio = cellRatio;
@@ -89,7 +120,7 @@ namespace Nekoyume.UI
                             RuneOptionInfo = runeOptionInfo,
                             Grade = grade,
                         };
-                        switch ((CostType) row.CostMaterial)
+                        switch (costType)
                         {
                             case CostType.GoldDust:
                                 cellModel.GoldRatio = cellRatio;
@@ -115,7 +146,6 @@ namespace Nekoyume.UI
             scroll.OnClickDetailButton.Subscribe(Find<SummonDetailPopup>().Show)
                 .AddTo(_disposables);
 
-            //titleText.text = rowList.FirstOrDefault().GetLocalizedName();
             base.Show();
         }
     }
