@@ -1,0 +1,234 @@
+#nullable enable
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Blockchain;
+using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Scroller;
+using TMPro;
+using UnityEngine;
+
+namespace Nekoyume.UI.Module
+{
+    using UniRx;
+
+    public class SynthesisModule : MonoBehaviour
+    {
+        // TODO: fix limit count
+        private const int LimitSynthesisMaterialCount = 10000;
+
+        [SerializeField]
+        private SynthesisMaterialScroll scroll = null!;
+
+        [SerializeField]
+        private ConditionalCostButton synthesisButton = null!;
+
+        [SerializeField]
+        private ConditionalButton removeAllButton = null!;
+
+        [Header("Texts")]
+        [SerializeField]
+        private GameObject possibleSynthesisTextObj = null!;
+
+        [SerializeField]
+        private GameObject impossibleSynthesisTextObj = null!;
+
+        [SerializeField]
+        private TMP_Text numberSynthesisText = null!;
+
+        [SerializeField]
+        private TMP_Text successRateText = null!;
+
+        private int _inventoryApStoneCount;
+
+        private IList<InventoryItem>? _selectedItemsForSynthesize;
+
+        private bool IsStrong(Equipment equipment) => equipment.level > 0;
+
+        #region MonoBehavioir
+
+        private void Awake()
+        {
+            InitSynthesisButton();
+            removeAllButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                scroll.ClearData();
+            }).AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            _selectedItemsForSynthesize = null;
+            scroll.ClearData();
+        }
+
+        #endregion MonoBehavioir
+
+        public void UpdateData(IList<InventoryItem>? equipments)
+        {
+            _selectedItemsForSynthesize = equipments;
+
+            var count = equipments?.Count ?? 0;
+            var possibleSynthesis = count > 0;
+
+            synthesisButton.Interactable = possibleSynthesis;
+            removeAllButton.Interactable = count > 1;
+
+            possibleSynthesisTextObj.SetActive(possibleSynthesis);
+            impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
+
+            if (possibleSynthesis)
+            {
+                // TODO: 연출 작업시 실제 데이터 채워놓겠습니다
+                numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", -1);
+                successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", -1);
+            }
+
+            if (equipments == null)
+            {
+                scroll.ClearData();
+                return;
+            }
+
+            scroll.UpdateData(equipments);
+            scroll.RawJumpTo(count - 1);
+        }
+
+        #region PushAction
+
+        private void ActionSynthesize(List<Equipment> equipments)
+        {
+            if (!equipments.Any() || equipments.Count > LimitSynthesisMaterialCount)
+            {
+                NcDebug.LogWarning($"Invalid selected items count. count : {equipments.Count}");
+                return;
+            }
+
+            CheckSynthesizeStringEquipment(equipments, () =>
+                CheckChargeAp(chargeAp => PushAction(equipments, chargeAp)));
+        }
+
+        private void CheckSynthesizeStringEquipment(List<Equipment> equipments, System.Action callback)
+        {
+            if (equipments.Exists(IsStrong))
+            {
+                var system = Widget.Find<IconAndButtonSystem>();
+                system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
+                system.ConfirmCallback = callback;
+            }
+            else
+            {
+                callback();
+            }
+        }
+
+        private void CheckChargeAp(Action<bool> chargeAp)
+        {
+            switch (synthesisButton.CurrentState.Value)
+            {
+                case ConditionalButton.State.Conditional:
+                {
+                    var paymentPopup = Widget.Find<PaymentPopup>();
+                    if (_inventoryApStoneCount > 0)
+                    {
+                        paymentPopup.ShowCheckPaymentApPotion(GameConfig.ActionCostAP, () => chargeAp(true));
+                    }
+                    else
+                    {
+                        paymentPopup.ShowLackApPotion(1);
+                    }
+                    break;
+                }
+                case ConditionalButton.State.Normal:
+                    chargeAp(false);
+                    break;
+                case ConditionalButton.State.Disabled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void PushAction(List<Equipment> equipments, bool chargeAp)
+        {
+            StartCoroutine(CoAnimateNPC());
+
+            ActionManager.Instance
+                         .Synthesize(equipments, chargeAp)
+                         .Subscribe(eval =>
+                         {
+                             if (eval.Exception == null)
+                             {
+                                 return;
+                             }
+
+                             NcDebug.LogException(eval.Exception.InnerException);
+                             OneLineSystem.Push(
+                                 MailType.Grinding,
+                                 L10nManager.Localize("ERROR_UNKNOWN"),
+                                 NotificationCell.NotificationType.Alert);
+                         });
+            scroll.ClearData();
+        }
+
+        #endregion PushAction
+
+        #region NPC Animation
+
+        private IEnumerator CoAnimateNPC()
+        {
+            // TODO
+            yield return null;
+        }
+
+        #endregion NPC Animation
+
+        #region Init
+
+        private void InitSynthesisButton()
+        {
+            synthesisButton.SetCost(CostType.ActionPoint, GameConfig.ActionCostAP);
+
+            synthesisButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                var message = scroll.DataCount > 0
+                    ? "UI_SYNTHESIZE_SLOT_NOTICE"
+                    : "UI_SYNTHESIZE_NOT_EQUIPPED";
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize(message),
+                    NotificationCell.NotificationType.Notification);
+            }).AddTo(gameObject);
+
+            synthesisButton.OnClickSubject.Subscribe(state =>
+            {
+                if (_selectedItemsForSynthesize == null)
+                {
+                    NcDebug.LogWarning("SelectedItemsForSynthesize is null.");
+                    return;
+                }
+
+                switch (state)
+                {
+                    case ConditionalButton.State.Normal:
+                    case ConditionalButton.State.Conditional:
+                        ActionSynthesize(_selectedItemsForSynthesize
+                                         .Select(inventoryItem =>
+                            (Equipment)inventoryItem.ItemBase).ToList());
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                }
+            }).AddTo(gameObject);
+        }
+
+        #endregion Init
+    }
+}

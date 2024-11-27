@@ -17100,12 +17100,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2619bbe85257c9e4780b80c8a8b45129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scroll: {fileID: 0}
+  scroll: {fileID: 3548798149531297779}
   synthesisButton: {fileID: 3207874609565849406}
   removeAllButton: {fileID: 6177294638856666031}
   possibleSynthesisTextObj: {fileID: 4759416887961526554}
   impossibleSynthesisTextObj: {fileID: 915706092705939146}
-  impossibleSynthesisText: {fileID: 4222044436550838581}
   numberSynthesisText: {fileID: 9195380543239296438}
   successRateText: {fileID: 9180770785161209661}
 --- !u!1 &7321097936453467419
