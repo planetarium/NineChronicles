@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Nekoyume.Model.EnumType;
 
 namespace Nekoyume.UI.Model
 {
     public class SynthesizeModel
     {
+        public Grade Grade { get; }
         public int InventoryItemCount { get; set; }
-        public int NeedItemCount { get; }
+        public int RequiredItemCount { get; }
 
-        public SynthesizeModel(int inventoryItemCount, int needItemCount)
+        public SynthesizeModel(Grade grade, int inventoryItemCount, int requiredItemCount)
         {
+            Grade = grade;
             InventoryItemCount = inventoryItemCount;
-            NeedItemCount = needItemCount;
+            RequiredItemCount = requiredItemCount;
         }
     }
 }

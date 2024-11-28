@@ -295,6 +295,10 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
         public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
 
+        public SynthesizeSheet SynthesizeSheet { get; private set; }
+
+        public SynthesizeWeightSheet SynthesizeWeightSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

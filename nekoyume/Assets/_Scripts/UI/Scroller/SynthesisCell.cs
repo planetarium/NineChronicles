@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(SynthesizeModel synthesizeModel)
         {
-            SetData(synthesizeModel.InventoryItemCount, synthesizeModel.NeedItemCount);
+            SetData(synthesizeModel.InventoryItemCount, synthesizeModel.RequiredItemCount);
         }
 
         // 모든 셀이 인벤토리 정보를 불러와서 처리하지 않도록 해당 셀 스크립트가 아닌 상위 오브젝트 스크립트에서 계산

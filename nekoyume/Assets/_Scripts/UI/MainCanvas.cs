@@ -344,6 +344,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
             _secondWidgets.Add(Widget.Create<CustomCraft>());
+            _secondWidgets.Add(Widget.Create<Synthesis>());
             yield return null;
 
             // header menu
