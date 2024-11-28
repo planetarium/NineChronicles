@@ -755,7 +755,7 @@ namespace Nekoyume.UI
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
 
-            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
             thorSeasonButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
 
             var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
@@ -780,19 +780,21 @@ namespace Nekoyume.UI
                     value.currentTickets.ToString(CultureInfo.InvariantCulture);
             }).AddTo(_disposablesAtShow);
 
-            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
-            if (thorSchedule.IsOpened)
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule?.IsOpened != true)
             {
-                Observable.Interval(TimeSpan.FromMinutes(1))
-                    .Subscribe(_ => UpdateThorScheduleText())
-                    .AddTo(_disposablesAtShow);
-                UpdateThorScheduleText();
+                return;
             }
+
+            Observable.Interval(TimeSpan.FromMinutes(1))
+                      .Subscribe(_ => UpdateThorScheduleText())
+                      .AddTo(_disposablesAtShow);
+            UpdateThorScheduleText();
         }
 
         private void UpdateThorScheduleText()
         {
-            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
             if (thorSchedule is null || !thorSchedule.IsOpened)
             {
                 return;
