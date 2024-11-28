@@ -594,7 +594,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1431685385880124869}
-  - component: {fileID: 6857233244257581513}
   m_Layer: 5
   m_Name: RewardIcon
   m_TagString: Untagged
@@ -625,19 +624,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6857233244257581513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1209213534899952167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c28d7318074f5096e65d9250eecd5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!1 &1391903770511938713
 GameObject:
   m_ObjectHideFlags: 0
@@ -1757,7 +1743,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7097555663885566938}
-  - component: {fileID: 8790798343694133313}
   m_Layer: 5
   m_Name: RewardIcon (4)
   m_TagString: Untagged
@@ -1788,19 +1773,6 @@ RectTransform:
   m_AnchoredPosition: {x: 343, y: -40}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8790798343694133313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4444806495585718253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c28d7318074f5096e65d9250eecd5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!1 &4590927421289902146
 GameObject:
   m_ObjectHideFlags: 0
@@ -1810,7 +1782,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3443138477570271600}
-  - component: {fileID: 5379643459605366974}
   m_Layer: 5
   m_Name: RewardIcon (1)
   m_TagString: Untagged
@@ -1841,19 +1812,6 @@ RectTransform:
   m_AnchoredPosition: {x: 232, y: -40}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5379643459605366974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4590927421289902146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c28d7318074f5096e65d9250eecd5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!1 &4933096707528744663
 GameObject:
   m_ObjectHideFlags: 0
@@ -2076,7 +2034,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3527514322982086618}
-  - component: {fileID: 5026261646380292068}
   m_Layer: 5
   m_Name: RewardIcon (3)
   m_TagString: Untagged
@@ -2107,19 +2064,6 @@ RectTransform:
   m_AnchoredPosition: {x: 380, y: -40}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5026261646380292068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5187880642612734082}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c28d7318074f5096e65d9250eecd5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!1 &5234409721977050067
 GameObject:
   m_ObjectHideFlags: 0
@@ -3756,7 +3700,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5287729288453286027}
-  - component: {fileID: 8898060502743773626}
   m_Layer: 5
   m_Name: RewardIcon (2)
   m_TagString: Untagged
@@ -3787,19 +3730,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8898060502743773626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7985339096014030720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c28d7318074f5096e65d9250eecd5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!1 &8038831931399814798
 GameObject:
   m_ObjectHideFlags: 0
@@ -4474,41 +4404,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rewardViews:
-  - rewardType: 0
-    cumulativeReward:
-      container: {fileID: 1209213534899952167}
-      text: {fileID: 2682524899254344907}
-    rewardPerTime:
-      container: {fileID: 0}
-      text: {fileID: 0}
-  - rewardType: 1
-    cumulativeReward:
-      container: {fileID: 4590927421289902146}
-      text: {fileID: 4136521586945934747}
-    rewardPerTime:
-      container: {fileID: 0}
-      text: {fileID: 0}
-  - rewardType: 3
-    cumulativeReward:
-      container: {fileID: 7985339096014030720}
-      text: {fileID: 3497988675902969690}
-    rewardPerTime:
-      container: {fileID: 0}
-      text: {fileID: 0}
-  - rewardType: 2
-    cumulativeReward:
-      container: {fileID: 4444806495585718253}
-      text: {fileID: 6832304334345253788}
-    rewardPerTime:
-      container: {fileID: 0}
-      text: {fileID: 0}
-  - rewardType: 4
-    cumulativeReward:
-      container: {fileID: 5187880642612734082}
-      text: {fileID: 1869896698427736263}
-    rewardPerTime:
-      container: {fileID: 0}
-      text: {fileID: 0}
+  - container: {fileID: 1209213534899952167}
+    icon: {fileID: 1287140485355801169}
+    text: {fileID: 2682524899254344907}
+  - container: {fileID: 4590927421289902146}
+    icon: {fileID: 570093309639928541}
+    text: {fileID: 4136521586945934747}
+  - container: {fileID: 7985339096014030720}
+    icon: {fileID: 2021149323388498448}
+    text: {fileID: 3497988675902969690}
+  - container: {fileID: 4444806495585718253}
+    icon: {fileID: 2500285893651271772}
+    text: {fileID: 6832304334345253788}
+  - container: {fileID: 5187880642612734082}
+    icon: {fileID: 3707114403442815488}
+    text: {fileID: 1869896698427736263}
   patrolTimeText: {fileID: 5290134457690137782}
   patrolTimeGauge: {fileID: 8568847665643317080}
   gaugeUnitText1: {fileID: 8037233247249509362}
@@ -4606,9 +4516,19 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2818504438032529636, guid: fe976a251725226468ee7636b4163cdb,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2818504438033275426, guid: fe976a251725226468ee7636b4163cdb,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2818504438033275426, guid: fe976a251725226468ee7636b4163cdb,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2818504438052313234, guid: fe976a251725226468ee7636b4163cdb,
@@ -4624,6 +4544,11 @@ PrefabInstance:
     - target: {fileID: 2883630020101652412, guid: fe976a251725226468ee7636b4163cdb,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2883630020101652412, guid: fe976a251725226468ee7636b4163cdb,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3972512583488410508, guid: fe976a251725226468ee7636b4163cdb,
@@ -4751,9 +4676,19 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4127633839017647095, guid: fe976a251725226468ee7636b4163cdb,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4128125234217790003, guid: fe976a251725226468ee7636b4163cdb,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4128125234217790003, guid: fe976a251725226468ee7636b4163cdb,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

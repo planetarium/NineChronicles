@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Libplanet.Crypto;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.Multiplanetary.Extensions;
 using UniRx;
@@ -72,6 +73,11 @@ namespace Nekoyume.Multiplanetary
             NcDebug.Log("[PlanetSelector] Initializing PlanetRegistry with" +
                 $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
             context.PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
+
+            if (clo.DefaultPlanetId != null)
+            {
+                LiveAssetManager.instance.SetThorSchedule(new PlanetId(clo.DefaultPlanetId));
+            }
 
             for (var i = 0; i < 3; i++)
             {

@@ -69,7 +69,7 @@ namespace Nekoyume.Game.LiveAsset
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
-        public Nekoyume.ApiClient.ThorSchedule ThorSchedule { get; private set; }
+        public ApiClient.ThorSchedule ThorSchedule { get; private set; }
         public EventRewardPopupData EventRewardPopupData { get; private set; }
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
@@ -191,25 +191,32 @@ namespace Nekoyume.Game.LiveAsset
             _cachedThorSchedules = JsonSerializer.Deserialize<ApiClient.ThorSchedules>(
                 response,
                 CommandLineOptions.JsonOptions);
-
-            var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
-            SetThorSchedule(planetId);
         }
 
         public void SetThorSchedule(Multiplanetary.PlanetId? planetId)
         {
             if (planetId == null)
             {
-                // PlanetId 초기화 전에는 항상 인텨널 기준으로 설정
+#if UNITY_EDITOR
+                // 에디터에서는 주로 테스트 용도로 사용하므로 PlanetID가 없으면 Others로 설정한다.
                 ThorSchedule = _cachedThorSchedules.Others;
+#else
+                // 빌드에서는 메인넷으로 설정한다.
+                ThorSchedule = _cachedThorSchedules.MainNet;
+#endif
                 // 모바일 메인넷에서 인터널 관련 정보가 보이지 않게 OnChangedThorSchedule를 호출하지 않는다.
                 return;
             }
 
             var isMainNet = Multiplanetary.PlanetId.IsMainNet(planetId.Value);
+            var previousThorSchedule = ThorSchedule;
             ThorSchedule = isMainNet ?
                 _cachedThorSchedules.MainNet :
                 _cachedThorSchedules.Others;
+            if (previousThorSchedule != ThorSchedule)
+            {
+                NcDebug.Log($"[{nameof(LiveAssetManager)}] SetThorSchedule: {planetId}, isMainNet: {isMainNet}");
+            }
 
             OnChangedThorSchedule?.Invoke(ThorSchedule);
         }

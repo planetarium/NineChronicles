@@ -104,13 +104,21 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 74d8d8e20af0c0947b17c8a0d65c1121, type: 3}
   - {fileID: 21300000, guid: 691f4c53b0a552f4d85b348c38dfe2b2, type: 3}
   - {fileID: 21300000, guid: c125fc140f2d83340840de166b9b0f5e, type: 3}
+  - {fileID: 21300000, guid: 1cf655546eb95ab468e882ef13fb0f04, type: 3}
+  - {fileID: 21300000, guid: c26cbe643a4045245957df4059471bb8, type: 3}
+  - {fileID: 21300000, guid: 3b6420c427f2f724dad8a734cada0749, type: 3}
+  - {fileID: 21300000, guid: 84e44a0580cc25a4faed4fe1007be978, type: 3}
   - {fileID: 21300000, guid: 862541a5bb5f47e43b6565afcc8fe096, type: 3}
+  - {fileID: 21300000, guid: 7f5866f5075b83a49978dc2470f6ac94, type: 3}
   - {fileID: 21300000, guid: f89d4a3664ff11e4a87f9499966fea3e, type: 3}
   - {fileID: 21300000, guid: 016a83464a5d3da498b1343ec39cadc7, type: 3}
+  - {fileID: 21300000, guid: f7446f867dc929e408e9f730dedb0662, type: 3}
   - {fileID: 21300000, guid: 3ae25aa6528f4ac4eb203b6ded95fa44, type: 3}
   - {fileID: 21300000, guid: c080b3c8c72820343932e0b25ede9806, type: 3}
   - {fileID: 21300000, guid: 8e12c9c85995a2748817f3ef7550bfda, type: 3}
   - {fileID: 21300000, guid: 2f68c0192eac9c94ebb875aa76601003, type: 3}
+  - {fileID: 21300000, guid: c16b6ed9a9ae14e43ac6a4d403803f24, type: 3}
+  - {fileID: 21300000, guid: 2396df4bfab1a1141abac97e9d3fab71, type: 3}
   - {fileID: 21300000, guid: 8ef2769b5d3cdea48b8e7e14df0ba1c3, type: 3}
   - {fileID: 21300000, guid: 8198262dac7a00e4aa17a3153de48080, type: 3}
   - {fileID: 21300000, guid: 9e1bb83daf3699342b20e2563421ae45, type: 3}
@@ -118,9 +126,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 18d6ac3d38f90cb42b0573412a16a077, type: 3}
   - {fileID: 21300000, guid: af08128de7eb75744806daba57a2bd20, type: 3}
   - {fileID: 21300000, guid: ae778f9d52429b04ab4d82cbc77b6794, type: 3}
+  - {fileID: 21300000, guid: 8e02f21e02a5b1c48b5284cf17f2b736, type: 3}
   - {fileID: 21300000, guid: 2b572a5ec038df04da42ef4355395771, type: 3}
   - {fileID: 21300000, guid: 53767fce244e24043ac464daea5d9e8f, type: 3}
   - {fileID: 21300000, guid: aa1d274f9f0cbcb47a023ab69307d927, type: 3}
+  - {fileID: 21300000, guid: 14a6489fd7e1a6a49b6ddf4828702879, type: 3}
   - {fileID: 21300000, guid: 048642eff3f2329479dc139583993b55, type: 3}
   m_PackedSpriteNamesToIndex:
   - Relationship_Bg
@@ -128,13 +138,21 @@ SpriteAtlas:
   - Dice_09
   - Relationship_Gauge
   - RandomInfo_Bg
+  - CustomCraft_Stat_Bg
+  - RandomBg
+  - Pattern_04
+  - Pattern_05
   - UI_Combination_Slot_Question2
+  - Pattern_07
   - Dice_11
   - TabButton_Pattern_Off
+  - Pattern_02
   - Dice_12
   - Dice_10
   - Dice_02
   - Icon_Random
+  - Pattern_01
+  - Pattern_06
   - Dice_04
   - Dice_06
   - Dice_07
@@ -142,9 +160,11 @@ SpriteAtlas:
   - Dice_13
   - CustomCraft_Slot_Bg
   - Dice_08
+  - Pattern_03
   - Dice_00
   - TabButton_Pattern_On
   - Dice_01
+  - RandomIcon
   - Dice_03
   m_RenderDataMap: {}
   m_Tag: Atlas_CustomCraft

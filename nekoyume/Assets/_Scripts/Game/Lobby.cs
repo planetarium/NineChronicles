@@ -129,16 +129,6 @@ namespace Nekoyume.Game
                         shopListPopup.ShowAtLobbyEntering();
                     }
 #endif
-                var avatarInfo = ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas[SeasonPassServiceClient.PassType.CouragePass];
-                if (avatarInfo != null && Widget.TryFind<SeasonPassNewPopup>(out var seasonPassNewPopup))
-                {
-                    if (seasonPassNewPopup.HasUnread &&
-                        avatarInfo!= null &&
-                        !avatarInfo.IsPremium)
-                    {
-                        seasonPassNewPopup.Show();
-                    }
-                }
 
                 if (Widget.TryFind<EventReleaseNotePopup>(out var eventReleaseNotePopup))
                 {

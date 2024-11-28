@@ -224,5 +224,14 @@ namespace Nekoyume.EnumType
 
             return ItemSubTypeFilter.Stones;
         }
+
+        public static bool IsEquipment(this ItemSubType type)
+        {
+            return type == ItemSubType.Weapon ||
+                   type == ItemSubType.Armor ||
+                   type == ItemSubType.Belt ||
+                   type == ItemSubType.Necklace ||
+                   type == ItemSubType.Ring;
+        }
     }
 }

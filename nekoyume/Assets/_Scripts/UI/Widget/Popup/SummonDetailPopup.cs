@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -11,6 +12,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Game;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI
 {
@@ -18,6 +20,7 @@ namespace Nekoyume.UI
     {
         [SerializeField] private Button closeButton;
 
+        [SerializeField] private TextMeshProUGUI combatPointText;
         [SerializeField] private TextMeshProUGUI[] mainStatTexts;
         [SerializeField] private RecipeOptionView recipeOptionView;
         [SerializeField] private TextMeshProUGUI titleText;
@@ -46,7 +49,7 @@ namespace Nekoyume.UI
 
         public void Show(SummonDetailCell.Model model)
         {
-            var showCharacterSpine = model.EquipmentRow.ItemSubType == ItemSubType.Aura;
+            var showCharacterSpine = model.EquipmentRow != null && model.EquipmentRow.ItemSubType == ItemSubType.Aura;
             spineView.SetActive(showCharacterSpine);
             iconView.SetActive(!showCharacterSpine);
 
@@ -67,20 +70,15 @@ namespace Nekoyume.UI
 
                 // OptionView
                 recipeOptionView.SetOptions(model.EquipmentOptions, false, false);
-                titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
-                foreach (var iconImage in iconImages)
-                {
-                    iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id);
-                }
 
+                var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
+                var skillSheet = TableSheets.Instance.SkillSheet;
+                var optionRows = model.EquipmentOptions.Select(info => optionSheet[info.Id]).ToList();
+
+                // SkillTooltip
                 SkillSheet.Row skillOption = null;
-                var skillOptionRow = model.EquipmentOptions
-                    .Select(info =>
-                        TableSheets.Instance.EquipmentItemOptionSheet[info.Id])
-                    .FirstOrDefault(optionRow =>
-                        TableSheets.Instance.SkillSheet.TryGetValue(optionRow.SkillId,
-                            out skillOption));
-
+                var skillOptionRow = optionRows.FirstOrDefault(optionRow =>
+                    skillSheet.TryGetValue(optionRow.SkillId, out skillOption));
                 if (skillOption != null)
                 {
                     skillTooltip.Show(skillOption, skillOptionRow);
@@ -89,11 +87,31 @@ namespace Nekoyume.UI
                 {
                     skillTooltip.gameObject.SetActive(false);
                 }
+
+                var minCp = CPHelper.GetStatCP(stat.StatType, stat.BaseValue);
+                var maxCp = minCp;
+                foreach (var optionRow in optionRows.Where(option => option.StatType != StatType.NONE))
+                {
+                    minCp += CPHelper.GetStatCP(optionRow.StatType, optionRow.StatMin);
+                    maxCp += CPHelper.GetStatCP(optionRow.StatType, optionRow.StatMax);
+                }
+
+                var skillCount = optionRows.Count(option => option.StatType == StatType.NONE);
+                minCp += CPHelper.GetSkillsMultiplier(skillCount);
+                maxCp += CPHelper.GetSkillsMultiplier(skillCount);
+
+                combatPointText.text = $"CP {(int)minCp} - {(int)maxCp}";
+
+                titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
+                foreach (var iconImage in iconImages)
+                {
+                    iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id);
+                }
             }
 
             if (!string.IsNullOrEmpty(model.RuneTicker))
             {
-                mainStatTexts[0].gameObject.SetActive(false);
+                mainStatTexts[0].text = string.Empty;
                 recipeOptionView.SetOptions(model.RuneOptionInfo);
                 if (RuneFrontHelper.TryGetRuneData(model.RuneTicker, out var data))
                 {

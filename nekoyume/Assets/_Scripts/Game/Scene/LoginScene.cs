@@ -16,7 +16,6 @@ using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Multiplanetary;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -288,11 +287,11 @@ namespace Nekoyume.Game.Scene
                     Game.QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"), "Failed to Get Tokens.");
                     yield break;
                 }
+            }
 
-                if (!planetContext.IsSelectedPlanetAccountPledged)
-                {
-                    yield return StartCoroutine(game.CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
-                }
+            if (!planetContext.IsSelectedPlanetAccountPledged)
+            {
+                yield return StartCoroutine(game.CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
             }
 #endif
 

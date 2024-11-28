@@ -308,7 +308,10 @@ namespace Nekoyume.UI.Model
         private async Task LoadEquipmentRankingInfos(NineChroniclesAPIClient apiClient, int displayCount)
         {
             var subTypes = new ItemSubType[]
-                { ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace, ItemSubType.Ring };
+            {
+                ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace,
+                ItemSubType.Ring, ItemSubType.Aura, ItemSubType.Grimoire,
+            };
             EquipmentRankingInfosMap = new Dictionary<ItemSubType, List<EquipmentRankingModel>>();
 
             foreach (var subType in subTypes)
@@ -331,7 +334,7 @@ namespace Nekoyume.UI.Model
                 var response = await apiClient.GetObjectAsync<EquipmentRankingResponse>(query);
                 if (response is null)
                 {
-                    NcDebug.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)}");
+                    NcDebug.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)} for {subType}");
                     return;
                 }
 

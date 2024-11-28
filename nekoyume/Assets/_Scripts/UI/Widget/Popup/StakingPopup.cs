@@ -186,7 +186,7 @@ namespace Nekoyume.UI
                     .StakeRegularRewardSheetValue;
             stakingStartButton.gameObject.SetActive(!hasStakeState);
             migrateButton.gameObject.SetActive(requiredMigrate);
-            ncgEditButton.gameObject.SetActive(hasStakeState && !requiredMigrate);
+            ncgEditButton.gameObject.SetActive(hasStakeState);
 
             foreach (var toggleable in _toggleGroup.Toggleables)
             {
@@ -425,7 +425,7 @@ namespace Nekoyume.UI
             var stakeStateV2 = states.StakeStateV2;
             var rewardBlockInterval = stakeStateV2.HasValue
                 ? (int)stakeStateV2.Value.Contract.RewardInterval
-                : (int)StakeState.RewardInterval;
+                : (int)LegacyStakeState.RewardInterval;
 
             TryGetWaitedBlockIndex(blockIndex, rewardBlockInterval, out var waitedBlockRange);
             var rewardCount = (int)waitedBlockRange / rewardBlockInterval;

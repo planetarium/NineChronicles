@@ -126,6 +126,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject[] objectsToEnableWhenNoSeason;
 
+        [SerializeField]
+        private TextMeshProUGUI seasonPassDescText;
+
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
         private float lastRewardCellWidth;
@@ -268,7 +271,7 @@ namespace Nekoyume.UI
                     async UniTaskVoid AwaitSeasonPassPopup()
                     {
                         await UniTask.Delay(popupViewDelay);
-                        Find<SeasonPassCouragePopup>().Show();
+                        Find<SeasonPassNewPopup>().Show();
                         PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
                     }
 
@@ -339,6 +342,7 @@ namespace Nekoyume.UI
                     }
                     courageIcon.SetActive(true);
                     expL10nKey = "UI_SEASONPASS_COURAGE_EXP";
+                    seasonPassDescText.text = L10nManager.Localize("UI_SEASONPASS_COURAGE_DESC");
                     break;
                 case SeasonPassServiceClient.PassType.WorldClearPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");
@@ -348,6 +352,7 @@ namespace Nekoyume.UI
                     }
                     courageIcon.SetActive(false);
                     expL10nKey = "UI_SEASONPASS_WORLD_CLEAR_EXP";
+                    seasonPassDescText.text = L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR_DESC");
                     break;
                 case SeasonPassServiceClient.PassType.AdventureBossPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");
@@ -357,6 +362,7 @@ namespace Nekoyume.UI
                     }
                     courageIcon.SetActive(false);
                     expL10nKey = "UI_SEASONPASS_ADVENTUREBOSS_EXP";
+                    seasonPassDescText.text = L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS_DESC");
                     break;
                 default:
                     NcDebug.LogError($"Not found SeasonPassType: {type}");

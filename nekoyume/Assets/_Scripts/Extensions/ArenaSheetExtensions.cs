@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Arena;
+using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -180,8 +181,13 @@ namespace Nekoyume
                 seasonNumber += 3;
             }
 
-            // championship 2 or more includes 2 seasons.
-            if (championshipId > 2)
+            if (TableSheets.Instance.ArenaSheet[2].Round
+                .Count(row => row.ArenaType == ArenaType.Season) == 3)
+            {
+                seasonNumber += 3;
+            }
+            // championship 3 or more includes 2 seasons.
+            else if (championshipId > 2)
             {
                 seasonNumber += (championshipId - 2) * 2;
             }
@@ -323,8 +329,13 @@ namespace Nekoyume
                 seasonStartNumber += 3;
             }
 
-            // championship 2 or more includes 2 seasons.
-            if (championshipId > 2)
+            if (TableSheets.Instance.ArenaSheet[2].Round
+                .Count(row => row.ArenaType == ArenaType.Season) == 3)
+            {
+                seasonStartNumber += 3;
+            }
+            // championship 3 or more includes 2 seasons.
+            else if (championshipId > 2)
             {
                 seasonStartNumber += (championshipId - 2) * 2;
             }

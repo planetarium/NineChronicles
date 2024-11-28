@@ -2397,7 +2397,7 @@ namespace Nekoyume.Blockchain
                     TableSheets.Instance.MaterialItemSheet,
                     Action.EventDungeonBattle.PlayCount),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLimitSheet,
                 tableSheets.BuffLinkSheet,
                 true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage);
@@ -3062,7 +3062,7 @@ namespace Nekoyume.Blockchain
                         arenaSheets,
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
                         enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
-                        tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLimitSheet,
                         tableSheets.BuffLinkSheet,
                         true);
 
@@ -3252,7 +3252,7 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
-                TableSheets.Instance.DeBuffLimitSheet,
+                TableSheets.Instance.BuffLimitSheet,
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
@@ -4197,7 +4197,7 @@ namespace Nekoyume.Blockchain
                         tableSheets.CostumeStatSheet,
                         rewards,
                         States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                        tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLimitSheet,
                         tableSheets.BuffLinkSheet,
                         true,
                         States.Instance.GameConfigState.ShatterStrikeMaxDamage);
