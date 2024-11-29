@@ -38,7 +38,7 @@ Texture2D:
     m_WrapV: 0
     m_WrapW: 0
   m_LightmapFormat: 0
-  m_ColorSpace: 1
+  m_ColorSpace: 0
   m_PlatformBlob: 
   image data: 0
   _typelessdata: 
@@ -59,9 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSans-Regular SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: 291966771
   material: {fileID: 5894901350801307592}
-  materialHashCode: 0
+  materialHashCode: 488101171
   m_Version: 1.1.0
   m_SourceFontFileGUID: 31cb0079383aa414fb9fe57b553fa479
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 31cb0079383aa414fb9fe57b553fa479,
@@ -95,8 +95,8 @@ MonoBehaviour:
   m_AtlasTextures:
   - {fileID: -8108498374764397622}
   m_AtlasTextureIndex: 0
-  m_IsMultiAtlasTexturesEnabled: 0
-  m_ClearDynamicDataOnBuild: 0
+  m_IsMultiAtlasTexturesEnabled: 1
+  m_ClearDynamicDataOnBuild: 1
   m_UsedGlyphRects: []
   m_FreeGlyphRects:
   - m_X: 0
