@@ -1,0 +1,24 @@
+{
+  "GenesisBlockPath": "https://planets.nine-chronicles.com/planets/0x000000000001/genesis",
+  "PlanetRegistryUrl": "https://planets.nine-chronicles.com/planets/",
+  "SelectedPlanetId":"0x000000000001",
+
+  "NoMiner": true,
+  "RpcClient": true,
+  "RpcServerHosts": [
+    "heimdall-rpc-1.nine-chronicles.com",
+    "heimdall-rpc-2.nine-chronicles.com"
+  ],
+  "RpcServerPort": 31238,
+
+  "ApiServerHost": "http://heimdall-dp.9c.gg/graphql",
+  "DataProviderUrl": "http://heimdall-dp.9c.gg/graphql",
+  "MarketServiceHost": "http://heimdall-market.9c.gg",
+  "OnboardingPortalUrl": "http://heimdall-world-boss.9c.gg",
+  "PatrolRewardServiceHost": "https://heimdall-patrol.9c.gg/graphql",
+  "ArenaServiceHost": "https://heimdall-arena.9c.gg/graphql",
+
+  "MeadPledgePortalUrl": "https://nine-chronicles.com",
+  "IAPServiceHost": "https://hr6vfhdasc.execute-api.us-east-2.amazonaws.com/mainnet",
+  "SeasonPassServiceHost": "https://vzt9225g1h.execute-api.us-east-2.amazonaws.com/mainnet"
+}
