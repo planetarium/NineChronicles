@@ -1,0 +1,24 @@
+{
+  "GenesisBlockPath": "https://planets.nine-chronicles.com/planets/0x000000000000/genesis",
+  "PlanetRegistryUrl": "https://planets.nine-chronicles.com/planets/",
+  "SelectedPlanetId":"0x000000000000",
+
+  "NoMiner": true,
+  "RpcClient": true,
+  "RpcServerHosts": [
+    "odin-rpc-1.nine-chronicles.com",
+    "odin-rpc-2.nine-chronicles.com"
+  ],
+  "RpcServerPort": 31238,
+
+  "ApiServerHost": "http://odin-dp.9c.gg/graphql",
+  "DataProviderUrl": "http://odin-dp.9c.gg/graphql",
+  "MarketServiceHost": "https://odin-market.9c.gg",
+  "OnboardingPortalUrl": "https://odin-world-boss.9c.gg",
+  "PatrolRewardServiceHost": "https://odin-patrol.9c.gg/graphql",
+  "ArenaServiceHost": "https://odin-arena.9c.gg/graphql",
+
+  "MeadPledgePortalUrl": "https://nine-chronicles.com",
+  "IAPServiceHost": "https://hr6vfhdasc.execute-api.us-east-2.amazonaws.com/mainnet",
+  "SeasonPassServiceHost": "https://vzt9225g1h.execute-api.us-east-2.amazonaws.com/mainnet"
+}
