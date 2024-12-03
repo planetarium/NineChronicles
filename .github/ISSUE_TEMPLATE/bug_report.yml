@@ -34,8 +34,10 @@ body:
         - Windows
         - macOS
         - linux
-        - Android
-        - iOS
+        - Android (9c M)
+        - iOS (9c M)
+        - Android (9c K)
+        - iOS (9c K)
       default: 0
     validations:
       required: true
@@ -47,6 +49,19 @@ body:
       placeholder: ex. Windows10, Android14
     validations:
       required: false
+  - type: dropdown
+    id: planet
+    attributes:
+      label: Planet
+      description: Which planet do you running?
+      multiple: false
+      options:
+        - Odin
+        - Heimdall
+        - Idun
+        - Thor
+    validations:
+      required: true
   - type: input
     id: account-address-info
     attributes:

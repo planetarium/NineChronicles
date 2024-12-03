@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -869,32 +870,44 @@ namespace Nekoyume.Blockchain
         private void ResponseCreateAvatar(
             ActionEvaluation<CreateAvatar> eval)
         {
-            UniTask.Run(async () =>
+            UniTask.RunOnThreadPool(async () =>
             {
-                // sloth업데이트 이후 액션에서 지정한 블록보다 클라이언트의 블록이 높아지는 순간 아래 액션을 수행합니다.
-                // 타임아웃은 10초로, 일반적인 블록딜레이인 8초보다 조금 크게 설정하였습니다.
-                await UniTask.WaitUntil(() => Game.Game.instance.Agent.BlockIndex > eval.BlockIndex).TimeoutWithoutException(TimeSpan.FromSeconds(10));
-
-                await UniTask.SwitchToThreadPool();
                 await UpdateAgentStateAsync(eval);
                 await UpdateAvatarState(eval, eval.Action.index);
                 // 아바타 생성시 States초기화를 위해 forceNewSelection을 true로 설정합니다.
                 await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState, true);
 
+                // need AgentAddress check 'ValidateEvaluationForCurrentAgent'
+                var agentAddress = eval.Signer;
+                var avatarAddress = agentAddress.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "avatar-state-{0}",
+                        eval.Action.index
+                    )
+                );
+
                 await UniTask.SwitchToMainThread();
 
-                var avatarState = States.Instance.AvatarStates[eval.Action.index];
-                RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
-
-                var agentAddr = States.Instance.AgentState.address;
-                var avatarAddr = Addresses.GetAvatarAddress(agentAddr, eval.Action.index);
-                DialogPopup.DeleteDialogPlayerPrefs(avatarAddr);
-                // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
-                ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
-                var loginDetail = Widget.Find<LoginDetail>();
-                if (loginDetail && loginDetail.IsActive())
+                if (StateGetter.TryGetAvatarState(
+                    eval.OutputState,
+                    agentAddress,
+                    avatarAddress,
+                    out var avatarState))
                 {
-                    loginDetail.OnRenderCreateAvatar();
+                    RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
+                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
+                    // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+                    ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+                    var loginDetail = Widget.Find<LoginDetail>();
+                    if (loginDetail && loginDetail.IsActive())
+                    {
+                        loginDetail.OnRenderCreateAvatar();
+                    }
+                }
+                else
+                {
+                    NcDebug.LogError("Failed to get avatar state.");
                 }
             }).Forget();
         }

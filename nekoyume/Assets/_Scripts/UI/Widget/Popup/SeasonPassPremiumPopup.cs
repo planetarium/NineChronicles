@@ -404,9 +404,9 @@ namespace Nekoyume.UI
             var seasonData = seasonPassManager.CurrentSeasonPassData[seasonPassType];
 
             // 11월 시즌패스의경우 바뀐 상품규칙 전 규칙을 적용하여 상품 검색하도록 예외처리. 이후 다음시즌에선 해당스크립트 제거해야함
-            if (seasonPassType == SeasonPassServiceClient.PassType.CouragePass && seasonData.SeasonIndex == 11)
+            if (seasonPassType == SeasonPassServiceClient.PassType.CouragePass && seasonData.SeasonIndex == 12)
             {
-                return $"SeasonPass11{premiumType}";
+                return $"SeasonPass12{premiumType}";
             }
 
             return $"{seasonPassType.ToString().ToUpper()}{seasonPassManager.CurrentSeasonPassData[seasonPassType].SeasonIndex}{premiumType}";
