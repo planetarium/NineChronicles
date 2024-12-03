@@ -60,7 +60,7 @@ namespace Nekoyume.UI
 
         #endregion Field
 
-        #region
+        #region Properties
 
         private ItemSubType CurrentItemSubType
         {
@@ -91,6 +91,12 @@ namespace Nekoyume.UI
                 Close(true);
                 Find<CombinationMain>().Show();
             });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            };
 
             foreach (var tapGroup in synthesisTapGroup)
             {
