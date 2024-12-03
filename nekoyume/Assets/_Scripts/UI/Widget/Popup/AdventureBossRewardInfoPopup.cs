@@ -10,6 +10,7 @@ namespace Nekoyume.UI
     using System.Linq;
     using TMPro;
     using UniRx;
+    using Unity.Mathematics;
     using UnityEngine.UI;
 
     public class AdventureBossRewardInfoPopup : PopupWidget
@@ -32,6 +33,7 @@ namespace Nekoyume.UI
 
         [Header("Floor Contents")]
         [SerializeField] private FloorRewardCell[] floorRewardCells;
+        [SerializeField] private Scrollbar floorRewardScrollbar;
 
         [Header("Operational Contents")]
         [SerializeField] private Transform bossImgRoot;
@@ -108,12 +110,7 @@ namespace Nekoyume.UI
                 }
 
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row =>
-                    row.AdventureBossId == bossRow.Id
-                    && (row.Floor == 6
-                        || row.Floor == 11
-                        || row.Floor == 16
-                        || row.Floor == 20
-                    ));
+                    row.AdventureBossId == bossRow.Id);
                 var floorRewardDatas = TableSheets.Instance.AdventureBossFloorFirstRewardSheet.Values.Join(floorRows,
                     rewardRow => rewardRow.FloorId,
                     floorRow => floorRow.Id,
@@ -134,6 +131,13 @@ namespace Nekoyume.UI
 
                     floorRewardCells[i].gameObject.SetActive(true);
                     floorRewardCells[i].SetData(floorRewardDatas[i].Floor, floorRewardDatas[i].Rewards);
+                }   
+                var exploreInfo = Game.instance.AdventureBossData.ExploreInfo.Value;
+                if (exploreInfo != null)
+                {
+                    // 스크롤러에 보이는 셀 개수만큼 제거하여 위치 조정
+                    float scrollPos = math.max(exploreInfo.Floor - 1, 0) / ((float)floorRewardDatas.Count - 4);
+                    floorRewardScrollbar.value = scrollPos;
                 }
             });
             toggleOperational.onValueChanged.AddListener((isOn) =>
