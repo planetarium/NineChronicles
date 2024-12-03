@@ -139,7 +139,7 @@ namespace Nekoyume.UI
 
         public void OnClickGradeItem(Grade grade, ItemSubType itemSubType)
         {
-
+            // TODO: Open SynthesisPopup
         }
 
         #region PrivateUtils
