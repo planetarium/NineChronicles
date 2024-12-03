@@ -19,7 +19,16 @@ namespace Nekoyume.Game
 {
     public class TableSheets
     {
-        public static TableSheets Instance => Game.instance.TableSheets;
+        public static TableSheets Instance
+        {
+            get
+            {
+#if TEST_SCENE
+                return SimulationTest.TestArena.Instance.TableSheets;
+#endif
+                return Game.instance.TableSheets;
+            }
+        }
 
         private TableSheets()
         {
