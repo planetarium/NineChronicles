@@ -143,9 +143,21 @@ namespace Nekoyume.UI
 
         #endregion Widget
 
-        public void OnClickGradeItem(Grade grade, ItemSubType itemSubType)
+        public void OnClickGradeItem(SynthesizeModel? model)
         {
-            // TODO: Open SynthesisPopup
+            if (model == null)
+            {
+                NcDebug.LogError("model is null.");
+                return;
+            }
+
+            var registrationPopup = Find<SynthesisRegistrationPopup>();
+            registrationPopup.Show(model, RegisterItems);
+        }
+
+        private void RegisterItems(IList<InventoryItem> items)
+        {
+            synthesisModule.UpdateData(items, CurrentItemSubType);
         }
 
         #region PrivateUtils

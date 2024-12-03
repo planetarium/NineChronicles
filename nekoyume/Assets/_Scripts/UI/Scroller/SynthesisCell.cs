@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(_ =>
                 {
                     var synthesisWidget = Widget.Find<Synthesis>();
-                    synthesisWidget.OnClickGradeItem(_grade, SynthesizeModel?.ItemSubType ?? ItemSubType.Aura);
+                    synthesisWidget.OnClickGradeItem(SynthesizeModel);
                 })
                 .AddTo(gameObject);
         }
@@ -53,11 +53,11 @@ namespace Nekoyume.UI.Scroller
         }
 
         // 모든 셀이 인벤토리 정보를 불러와서 처리하지 않도록 해당 셀 스크립트가 아닌 상위 오브젝트 스크립트에서 계산
-        private void SetData(int inventoryItemCount, int needItemCount)
+        private void SetData(int inventoryItemCount, int requiredItemCount)
         {
             var header = L10nManager.Localize("UI_SYNTHESIZE_HOLDS")!;
-            var outputItemCount = inventoryItemCount / needItemCount;
-            holdText.text = $"{header}: {inventoryItemCount}/{needItemCount} ({outputItemCount})";
+            var outputItemCount = inventoryItemCount / requiredItemCount;
+            holdText.text = $"{header}: {inventoryItemCount}/{requiredItemCount} ({outputItemCount})";
 
             if (outputItemCount > 0)
             {

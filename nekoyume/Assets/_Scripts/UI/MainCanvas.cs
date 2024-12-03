@@ -455,6 +455,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SynthesisRegistrationPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<AddHammerPopup>());

@@ -21,13 +21,15 @@ namespace Nekoyume.UI.Module
         [SerializeField] private InventoryScroll scroll = null!;
         [SerializeField] private Transform cellContainer = null!;
 
-        private SynthesisMaterial _requiredItem;
+        private SynthesizeModel? _selectedModel;
         private Action<InventoryItem>? _onClickItem;
-        private CollectionMaterial[]? _requiredItems;
 
+        private readonly List<IDisposable> _disposables = new();
         private readonly List<InventoryItem> _items = new();
 
-        public InventoryItem? SelectedItem { get; private set; }
+        private List<InventoryItem>? _cachedInventoryItems;
+
+        public ReactiveCollection<InventoryItem> SelectedItems { get; } = new();
 
         private void Awake()
         {
@@ -35,41 +37,117 @@ namespace Nekoyume.UI.Module
             {
                 Destroy(sampleChild);
             }
+
+            SelectedItems.ObserveAdd().Subscribe(item =>
+            {
+                item.Value.SelectCountEnabled.SetValueAndForceNotify(true);
+            }).AddTo(gameObject);
+
+            SelectedItems.ObserveRemove()
+                .Subscribe(item => item.Value.SelectCountEnabled.SetValueAndForceNotify(false))
+                .AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            ReactiveAvatarState.Inventory
+                .Subscribe(UpdateInventory)
+                .AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+
+        public void Show(SynthesizeModel requiredItem)
+        {
+            ClearSelectedItems();
+            _selectedModel = requiredItem;
+            _cachedInventoryItems = GetModels(requiredItem);
+            scroll.UpdateData(_cachedInventoryItems, true);
         }
 
         public void SetInventory(Action<InventoryItem> onClickItem)
         {
             _onClickItem = onClickItem;
-
-            ReactiveAvatarState.Inventory
-                .Subscribe(UpdateInventory)
-                .AddTo(gameObject);
-
             scroll.OnClick.Subscribe(SelectItem).AddTo(gameObject);
         }
 
-        public void SetRequiredItem(SynthesisMaterial requiredItem)
+        private void SetRequiredItem(SynthesizeModel requiredModel)
         {
-            _requiredItem = requiredItem;
-
-            var models = GetModels(_requiredItem);
-            var model = models.FirstOrDefault();
+            _cachedInventoryItems = GetModels(requiredModel);
+            var model = _cachedInventoryItems.FirstOrDefault();
             if (model == null)
             {
                 NcDebug.LogError("model is null.");
                 return;
             }
 
-            scroll.UpdateData(models, true);
+            scroll.UpdateData(_cachedInventoryItems, true);
             SelectItem(model);
         }
 
-        private List<InventoryItem> GetModels(SynthesisMaterial requiredItem)
+        public bool SelectAutoSelectItems(SynthesizeModel model)
+        {
+            _cachedInventoryItems ??= GetModels(model);
+
+            var itemCount = _cachedInventoryItems.Count();
+            var selectedCount = SelectedItems.Count;
+            if (itemCount - selectedCount < model.RequiredItemCount)
+            {
+                // 이미 선택된 아이템을 제외하고 필요 수량만큼 선택할 여분이 없으면 아이템 추가 선택 안함
+                return false;
+            }
+
+            var selectCount = model.RequiredItemCount;
+            var i = 0;
+
+            foreach (var cachedItem in _cachedInventoryItems)
+            {
+                if (cachedItem.SelectCountEnabled.Value)
+                {
+                    continue;
+                }
+
+                SelectItem(cachedItem);
+                i++;
+
+                if (i >= selectCount)
+                {
+                    break;
+                }
+            }
+
+            return i >= selectCount;
+        }
+
+        public bool SelectAutoSelectAllItems(SynthesizeModel model)
+        {
+            ClearSelectedItems();
+            _cachedInventoryItems ??= GetModels(model);
+
+            var itemCount = _cachedInventoryItems.Count();
+            if (itemCount < model.RequiredItemCount)
+            {
+                return false;
+            }
+
+            var selectCount = itemCount - (itemCount % model.RequiredItemCount);
+            for (var i = 0; i < selectCount; ++i)
+            {
+                SelectItem(_cachedInventoryItems[i]);
+            }
+
+            return true;
+        }
+
+        private List<InventoryItem> GetModels(SynthesizeModel requiredItem)
         {
             // get from _items by required item's condition
             var items = _items.Where(item =>
                 (Grade)item.ItemBase.Grade == requiredItem.Grade &&
-                item.ItemBase.ItemType == requiredItem.ItemType &&
+                item.ItemBase.ItemSubType == requiredItem.ItemSubType &&
                 item.ItemBase is INonFungibleItem).ToList();
             if (!items.Any())
             {
@@ -91,12 +169,27 @@ namespace Nekoyume.UI.Module
             return items;
         }
 
+        public void ClearSelectedItems()
+        {
+            foreach (var selectedItem in SelectedItems)
+            {
+                selectedItem.SelectCountEnabled.SetValueAndForceNotify(false);
+            }
+
+            SelectedItems.Clear();
+        }
+
         private void SelectItem(InventoryItem item)
         {
-            SelectedItem?.CollectionSelected.SetValueAndForceNotify(false);
-            SelectedItem = item;
-            SelectedItem.CollectionSelected.SetValueAndForceNotify(true);
-            _onClickItem?.Invoke(SelectedItem);
+            _onClickItem?.Invoke(item);
+
+            if (SelectedItems.Contains(item))
+            {
+                SelectedItems.Remove(item);
+                return;
+            }
+
+            SelectedItems.Add(item);
         }
 
         private static void UpdateEquipmentEquipped(List<InventoryItem> equipments)
@@ -136,7 +229,7 @@ namespace Nekoyume.UI.Module
         private void UpdateInventory(Nekoyume.Model.Item.Inventory? inventory)
         {
             _items.Clear();
-            if (inventory == null)
+            if (inventory == null || _selectedModel == null)
             {
                 return;
             }
@@ -151,11 +244,16 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            SetRequiredItem(_requiredItem);
+            SetRequiredItem(_selectedModel);
         }
 
         private void AddItem(ItemBase itemBase, int count = 1)
         {
+            if (_selectedModel == null)
+            {
+                return;
+            }
+
             if (itemBase is ITradableItem tradableItem)
             {
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
@@ -165,20 +263,22 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            switch (itemBase.ItemType)
+            if (_selectedModel.ItemSubType != itemBase.ItemSubType)
             {
-                case ItemType.Costume:
-                case ItemType.Equipment:
-                    var inventoryItem = new InventoryItem(
-                        itemBase,
-                        count,
-                        !Util.IsUsableItem(itemBase),
-                        false);
-                    _items.Add(inventoryItem);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                return;
             }
+
+            if (_selectedModel.Grade != (Grade)itemBase.Grade)
+            {
+                return;
+            }
+
+            var inventoryItem = new InventoryItem(
+                itemBase,
+                count,
+                !Util.IsUsableItem(itemBase),
+                false);
+            _items.Add(inventoryItem);
         }
 
 #endregion

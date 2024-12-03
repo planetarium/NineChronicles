@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -46,9 +47,19 @@ namespace Nekoyume.UI.Module
 
         private int _inventoryApStoneCount;
 
-        private List<InventoryItem> _selectedItemsForSynthesize = new();
+        private ItemSubType _itemSubType;
 
-        private bool IsStrong(Equipment equipment) => equipment.level > 0;
+        private IList<InventoryItem> _selectedItemsForSynthesize = new List<InventoryItem>();
+
+        private bool IsStrong(ItemBase itemBase)
+        {
+            if (itemBase is Equipment equipment)
+            {
+                return equipment.level > 0;
+            }
+
+            return false;
+        }
 
         #region MonoBehavioir
 
@@ -69,11 +80,12 @@ namespace Nekoyume.UI.Module
 
         #endregion MonoBehavioir
 
-        public void UpdateData(List<InventoryItem> equipments)
+        public void UpdateData(IList<InventoryItem> inventoryItems, ItemSubType itemSubType)
         {
-            _selectedItemsForSynthesize = equipments;
+            _itemSubType = itemSubType;
+            _selectedItemsForSynthesize = inventoryItems;
 
-            var count = equipments?.Count ?? 0;
+            var count = inventoryItems.Count;
             var possibleSynthesis = count > 0;
 
             synthesisButton.Interactable = possibleSynthesis;
@@ -89,19 +101,13 @@ namespace Nekoyume.UI.Module
                 successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", -1);
             }
 
-            if (equipments == null)
-            {
-                scroll.ClearData();
-                return;
-            }
-
-            scroll.UpdateData(equipments);
+            scroll.UpdateData(inventoryItems);
             scroll.RawJumpTo(count - 1);
         }
 
         #region PushAction
 
-        private void ActionSynthesize(List<Equipment> equipments)
+        private void ActionSynthesize(List<ItemBase> equipments)
         {
             if (!equipments.Any() || equipments.Count > LimitSynthesisMaterialCount)
             {
@@ -110,12 +116,12 @@ namespace Nekoyume.UI.Module
             }
 
             CheckSynthesizeStringEquipment(equipments, () =>
-                CheckChargeAp(chargeAp => PushAction(equipments, chargeAp)));
+                CheckChargeAp(chargeAp => PushAction(equipments, _itemSubType, chargeAp)));
         }
 
-        private void CheckSynthesizeStringEquipment(List<Equipment> equipments, System.Action callback)
+        private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
         {
-            if (equipments.Exists(IsStrong))
+            if (itemBaseList.Exists(IsStrong))
             {
                 var system = Widget.Find<IconAndButtonSystem>();
                 system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
@@ -154,12 +160,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void PushAction(List<Equipment> equipments, bool chargeAp)
+        private void PushAction(List<ItemBase> itemBaseList, ItemSubType itemSubType, bool chargeAp)
         {
             StartCoroutine(CoAnimateNPC());
 
             ActionManager.Instance
-                         .Synthesize(equipments, chargeAp)
+                         .Synthesize(itemBaseList, itemSubType, chargeAp)
                          .Subscribe(eval =>
                          {
                              if (eval.Exception == null)
@@ -174,6 +180,7 @@ namespace Nekoyume.UI.Module
                                  NotificationCell.NotificationType.Alert);
                          });
             scroll.ClearData();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
         }
 
         #endregion PushAction
@@ -212,8 +219,7 @@ namespace Nekoyume.UI.Module
                     case ConditionalButton.State.Normal:
                     case ConditionalButton.State.Conditional:
                         ActionSynthesize(_selectedItemsForSynthesize
-                                         .Select(inventoryItem =>
-                            (Equipment)inventoryItem.ItemBase).ToList());
+                                         .Select(inventoryItem => inventoryItem.ItemBase).ToList());
                         break;
                     case ConditionalButton.State.Disabled:
                         break;
