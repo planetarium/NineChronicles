@@ -1,34 +1,72 @@
+#nullable enable
+
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Model;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class SynthesisScroll : RectScroll<SynthesizeModel, SynthesisScroll.ContextModel> // RectScrollDefaultContext
+    public class SynthesisScroll : MonoBehaviour
     {
-        public class ContextModel : RectScrollDefaultContext
-        {
-            public readonly Subject<Grade> OnClickSelectButton = new();
+        [SerializeField]
+        private Transform cellContainer = null!;
 
-            public override void Dispose()
-            {
-                OnClickSelectButton?.Dispose();
-                base.Dispose();
-            }
-        }
+        [SerializeField]
+        private GameObject cellTemplate = null!;
+
+        private Dictionary<Grade, SynthesisCell> _cells = new();
 
         private void Awake()
         {
-            ClearContents();
+            ClearSamples();
+            InitCells();
         }
 
-        private void ClearContents()
+        public void UpdateData(List<SynthesizeModel> synthesizeModels)
         {
-            foreach (Transform child in cellContainer.transform)
+            foreach (var kvp in _cells)
+            {
+                var cell = kvp.Value;
+                cell.gameObject.SetActive(false);
+            }
+
+            foreach (var synthesizeModel in synthesizeModels)
+            {
+                if (!_cells.TryGetValue(synthesizeModel.Grade, out var cell))
+                {
+                    NcDebug.LogError($"Failed to get SynthesisCell for {synthesizeModel.Grade}.", this);
+                    continue;
+                }
+
+                cell.gameObject.SetActive(true);
+                cell.UpdateContent(synthesizeModel);
+            }
+        }
+
+        private void ClearSamples()
+        {
+            foreach (Transform child in cellContainer)
             {
                 Destroy(child.gameObject);
+            }
+        }
+
+        private void InitCells()
+        {
+            _cells.Clear();
+            foreach (Grade grade in Enum.GetValues(typeof(Grade)))
+            {
+                var cell = Instantiate(cellTemplate, cellContainer);
+                if (!cell.TryGetComponent<SynthesisCell>(out var synthesisCell))
+                {
+                    NcDebug.LogError("Failed to get SynthesisCell component.", this);
+                    throw new InvalidDataException();
+                }
+                synthesisCell.Initialize(grade);
+                _cells.Add(grade, synthesisCell);
             }
         }
     }

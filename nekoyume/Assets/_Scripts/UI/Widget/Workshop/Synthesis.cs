@@ -12,7 +12,9 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using UnityEngine.UI;
 using Inventory = Nekoyume.Model.Item.Inventory;
+using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
 {
@@ -43,6 +45,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SynthesizeTapGroup[] synthesisTapGroup = null!;
 
+        [SerializeField]
+        private Button closeButton = null!;
+
         #endregion SerializeField
 
         #region Field
@@ -68,7 +73,7 @@ namespace Nekoyume.UI
                 }
 
                 _currentItemSubType = value;
-                UpdateItems();
+                UpdateGradeItems();
             }
         }
 
@@ -80,6 +85,12 @@ namespace Nekoyume.UI
         {
             CheckNull();
             base.Awake();
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            });
 
             foreach (var tapGroup in synthesisTapGroup)
             {
@@ -114,10 +125,22 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+
+            if (CurrentItemSubType == DefaultItemSubType)
+            {
+                // Show메서드 호출 시 DefaultItemSubType인 경우 UpdateItems가 호출되지 않아 강제로 호출
+                UpdateGradeItems();
+            }
+
             CurrentItemSubType = DefaultItemSubType;
         }
 
         #endregion Widget
+
+        public void OnClickGradeItem(Grade grade, ItemSubType itemSubType)
+        {
+
+        }
 
         #region PrivateUtils
 
@@ -132,19 +155,24 @@ namespace Nekoyume.UI
         private void UpdateInventory(Inventory inventory)
         {
             _cachedInventory = inventory;
-            UpdateItems();
+            UpdateGradeItems();
         }
 
         private readonly Dictionary<Grade, int> _gradeItemCountDict = new ();
         /// <summary>
         /// When updating the items, inventory should be updated or change the item sub type.
         /// </summary>
-        private void UpdateItems()
+        private void UpdateGradeItems()
         {
             if (_cachedInventory == null)
             {
-                NcDebug.LogWarning($"[{nameof(Synthesis)} inventory is null");
-                return;
+                _cachedInventory = States.Instance.CurrentAvatarState.inventory;
+
+                if (_cachedInventory == null)
+                {
+                    NcDebug.LogWarning($"[{nameof(Synthesis)} inventory is null");
+                    return;
+                }
             }
 
             var itemList = _cachedInventory.Items.Where(CheckInventoryItemSubType)
@@ -167,9 +195,11 @@ namespace Nekoyume.UI
                 }
 
                 var requiredItemCount = row.RequiredCount;
-                var model = new SynthesizeModel(grade, inventoryItemCount, requiredItemCount);
+                var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
             }
+
+            synthesisScroll.UpdateData(_gradeItems);
         }
 
         private bool CheckInventoryItemSubType(Inventory.Item item) => item.item.ItemSubType == CurrentItemSubType;

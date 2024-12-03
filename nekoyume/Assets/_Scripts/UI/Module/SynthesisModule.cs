@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Module
 
         private int _inventoryApStoneCount;
 
-        private IList<InventoryItem>? _selectedItemsForSynthesize;
+        private List<InventoryItem> _selectedItemsForSynthesize = new();
 
         private bool IsStrong(Equipment equipment) => equipment.level > 0;
 
@@ -63,13 +63,13 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            _selectedItemsForSynthesize = null;
-            scroll.ClearData();
+            _selectedItemsForSynthesize.Clear();
+            scroll.UpdateData(_selectedItemsForSynthesize);
         }
 
         #endregion MonoBehavioir
 
-        public void UpdateData(IList<InventoryItem>? equipments)
+        public void UpdateData(List<InventoryItem> equipments)
         {
             _selectedItemsForSynthesize = equipments;
 
@@ -207,12 +207,6 @@ namespace Nekoyume.UI.Module
 
             synthesisButton.OnClickSubject.Subscribe(state =>
             {
-                if (_selectedItemsForSynthesize == null)
-                {
-                    NcDebug.LogWarning("SelectedItemsForSynthesize is null.");
-                    return;
-                }
-
                 switch (state)
                 {
                     case ConditionalButton.State.Normal:

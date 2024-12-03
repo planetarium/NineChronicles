@@ -33,13 +33,9 @@ namespace Nekoyume.UI.Scroller
 
         protected override FancyCell<InventoryItem, ContextModel> CellTemplate => cellTemplate;
 
-        private void Awake()
-        {
-            ClearContents();
-        }
-
         protected override void Initialize()
         {
+            // ClearContents();
             base.Initialize();
             startAxisCellCount = Util.GetGridItemCount(
                 cellSize.x, spacing,

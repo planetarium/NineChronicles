@@ -189,7 +189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c6024cb7b9cbb4895987896f0b7316, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grade: 1
   activeBackgroundObject: {fileID: 5557109150431056560}
   inactiveBackgroundObject: {fileID: 266779845059920082}
   nameText: {fileID: 6003320834626752819}
@@ -733,6 +732,11 @@ PrefabInstance:
       propertyPath: m_fontSizeMax
       value: 16
       objectReference: {fileID: 0}
+    - target: {fileID: 1272057971037573171, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2418683638863790235, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_Pivot.x
@@ -873,6 +877,11 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_SELECT
       objectReference: {fileID: 0}
+    - target: {fileID: 7545097809271751591, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8393857624628101227, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_Name
@@ -897,6 +906,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSizeMax
       value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 8928001901855831812, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 543ea58faa96c47bea69a87c29ba0ce7, type: 3}
