@@ -35795,10 +35795,15 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -5.9999695
       objectReference: {fileID: 0}
+    - target: {fileID: 315063171458299508, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 542255339572160388, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 29
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 1136719347359182225, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
@@ -35823,7 +35828,7 @@ PrefabInstance:
     - target: {fileID: 1648826897586485520, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 24
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 1751504261396965669, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
@@ -36409,7 +36414,7 @@ PrefabInstance:
     - target: {fileID: 6749986500634204136, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 30
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 6788024884516102431, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
@@ -36450,6 +36455,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7328223330839043870, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 7641597591855393191, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
@@ -36504,7 +36514,7 @@ PrefabInstance:
     - target: {fileID: 8923818791108868398, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 23
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 9021690088508629268, guid: 8ba5987fae9f2ea49b863ee874b9f30a,
         type: 3}
