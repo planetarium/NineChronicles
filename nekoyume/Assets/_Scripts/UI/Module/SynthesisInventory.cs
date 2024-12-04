@@ -94,14 +94,16 @@ namespace Nekoyume.UI.Module
 
             var itemCount = _cachedInventoryItems.Count();
             var selectedCount = SelectedItems.Count;
-            if (itemCount - selectedCount < model.RequiredItemCount)
+            var remainder = selectedCount % model.RequiredItemCount;
+            if (itemCount - (selectedCount - remainder) < model.RequiredItemCount)
             {
                 // 이미 선택된 아이템을 제외하고 필요 수량만큼 선택할 여분이 없으면 아이템 추가 선택 안함
                 return false;
             }
 
             var selectCount = model.RequiredItemCount;
-            var i = 0;
+            // 이미 선택된 아이템이 있으면 그 아이템 포함하여 지정된 갯수가 되도록 셋팅
+            var i = selectedCount % model.RequiredItemCount;
 
             foreach (var cachedItem in _cachedInventoryItems)
             {

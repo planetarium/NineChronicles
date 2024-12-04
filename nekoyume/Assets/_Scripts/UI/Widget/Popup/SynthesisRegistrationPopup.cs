@@ -2,10 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,7 +38,7 @@ namespace Nekoyume.UI
 
 #endregion SerializeField
 
-        private Action<IList<InventoryItem>>? _registerMaterials;
+        private Action<IList<InventoryItem>, SynthesizeModel>? _registerMaterials;
 
         private SynthesizeModel? _synthesizeModel;
 
@@ -66,7 +69,29 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnClickRegisterButton())
                 .AddTo(gameObject);
 
+            registrationButton.OnClickDisabledSubject
+                .Subscribe(_ => NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SYNTHESIZE_COUNT_CHECK", _synthesizeModel?.RequiredItemCount ?? -1),
+                    NotificationCell.NotificationType.Alert))
+                .AddTo(gameObject);
+
             synthesisInventory.SetInventory(OnClickInventoryItem);
+
+            synthesisInventory.SelectedItems.ObserveCountChanged()
+                .Subscribe(count =>
+                {
+                    if (_synthesizeModel == null)
+                    {
+                        return;
+                    }
+
+                    var remainder = count % _synthesizeModel.RequiredItemCount;
+                    registrationButton.Interactable = remainder == 0;
+                    registrationButton.UpdateObjects();
+                    numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", count / _synthesizeModel.RequiredItemCount);
+                })
+                .AddTo(gameObject);
         }
 
 #endregion MonoBehaviour
@@ -105,6 +130,19 @@ namespace Nekoyume.UI
 
         private void OnClickRegisterButton()
         {
+            if (_synthesizeModel == null)
+            {
+                NcDebug.LogWarning("_synthesizeModel is null.");
+                return;
+            }
+
+            var selectedCount = synthesisInventory.SelectedItems.Count;
+            if (selectedCount % _synthesizeModel.RequiredItemCount != 0)
+            {
+                NcDebug.LogWarning("Selected items are not enough.");
+                return;
+            }
+
             foreach (var selectedItem in synthesisInventory.SelectedItems)
             {
                 if (!selectedItem.Equipped.Value)
@@ -134,7 +172,7 @@ namespace Nekoyume.UI
 
         public void Show(
             SynthesizeModel model,
-            Action<IList<InventoryItem>> registerAction,
+            Action<IList<InventoryItem>, SynthesizeModel> registerAction,
             bool ignoreShowAnimation = false)
         {
             _synthesizeModel = model;
@@ -183,7 +221,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _registerMaterials.Invoke(items);
+            if (_synthesizeModel == null)
+            {
+                NcDebug.LogError("_synthesizeModel is null.");
+                return;
+            }
+
+            _registerMaterials.Invoke(items, _synthesizeModel);
 
             // TODO: 강화된 아이템 체크
             CloseWidget.Invoke();

@@ -68,55 +68,69 @@ namespace Nekoyume.UI.Module
             InitSynthesisButton();
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
-                scroll.ClearData();
+                ClearScrollData();
             }).AddTo(gameObject);
         }
 
         private void OnEnable()
         {
-            _selectedItemsForSynthesize.Clear();
-            scroll.UpdateData(_selectedItemsForSynthesize);
+            ClearScrollData();
         }
 
         #endregion MonoBehavioir
 
-        public void UpdateData(IList<InventoryItem> inventoryItems, ItemSubType itemSubType)
+        public void UpdateData(IList<InventoryItem> registrationItems, SynthesizeModel model)
         {
-            _itemSubType = itemSubType;
-            _selectedItemsForSynthesize = inventoryItems;
+            _itemSubType = model.ItemSubType;
+            _selectedItemsForSynthesize = registrationItems;
 
-            var count = inventoryItems.Count;
-            var possibleSynthesis = count > 0;
+            var synthesisCount = registrationItems.Count / model.RequiredItemCount;
+            var possibleSynthesis = synthesisCount > 0;
 
             synthesisButton.Interactable = possibleSynthesis;
-            removeAllButton.Interactable = count > 1;
+            removeAllButton.Interactable = synthesisCount > 1;
 
             possibleSynthesisTextObj.SetActive(possibleSynthesis);
             impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
 
-            if (possibleSynthesis)
-            {
-                // TODO: 연출 작업시 실제 데이터 채워놓겠습니다
-                numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", -1);
-                successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", -1);
-            }
+            numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", possibleSynthesis ? synthesisCount : 0);
 
-            scroll.UpdateData(inventoryItems);
-            scroll.RawJumpTo(count - 1);
+            var sheet = Game.Game.instance.TableSheets.SynthesizeSheet;
+            var row = sheet.Values.FirstOrDefault(row => row.GradeId == (int)model.Grade);
+            var succeedRateInt = row?.SucceedRate ?? 0;
+            successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", possibleSynthesis ? succeedRateInt * 0.01f : 0);
+
+            scroll.UpdateData(registrationItems);
+            scroll.RawJumpTo(registrationItems.Count - 1);
+        }
+
+        private void ClearScrollData()
+        {
+            _selectedItemsForSynthesize.Clear();
+            scroll.UpdateData(_selectedItemsForSynthesize);
+
+            synthesisButton.Interactable = false;
+            removeAllButton.Interactable = false;
+
+            possibleSynthesisTextObj.SetActive(false);
+            impossibleSynthesisTextObj.SetActive(true);
+
+            numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", 0);
+            successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", 0);
         }
 
         #region PushAction
 
-        private void ActionSynthesize(List<ItemBase> equipments)
+        private void ActionSynthesize(List<ItemBase> itemBaseList)
         {
-            if (!equipments.Any() || equipments.Count > LimitSynthesisMaterialCount)
+            if (!itemBaseList.Any() || itemBaseList.Count > LimitSynthesisMaterialCount)
             {
-                NcDebug.LogWarning($"Invalid selected items count. count : {equipments.Count}");
+                NcDebug.LogWarning($"Invalid selected items count. count : {itemBaseList.Count}");
                 return;
             }
 
-            CheckSynthesizeStringEquipment(equipments, () =>
-                CheckChargeAp(chargeAp => PushAction(equipments, _itemSubType, chargeAp)));
+            CheckSynthesizeStringEquipment(itemBaseList, () =>
+                CheckChargeAp(chargeAp => PushAction(itemBaseList, _itemSubType, chargeAp)));
         }
 
         private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
@@ -179,7 +193,7 @@ namespace Nekoyume.UI.Module
                                  L10nManager.Localize("ERROR_UNKNOWN"),
                                  NotificationCell.NotificationType.Alert);
                          });
-            scroll.ClearData();
+            ClearScrollData();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
         }
 

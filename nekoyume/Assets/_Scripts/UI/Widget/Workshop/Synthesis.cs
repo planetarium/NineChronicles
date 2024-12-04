@@ -155,9 +155,9 @@ namespace Nekoyume.UI
             registrationPopup.Show(model, RegisterItems);
         }
 
-        private void RegisterItems(IList<InventoryItem> items)
+        private void RegisterItems(IList<InventoryItem> items, SynthesizeModel model)
         {
-            synthesisModule.UpdateData(items, CurrentItemSubType);
+            synthesisModule.UpdateData(items, model);
         }
 
         #region PrivateUtils
