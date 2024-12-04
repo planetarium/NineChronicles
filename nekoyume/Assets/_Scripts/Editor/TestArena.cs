@@ -49,6 +49,8 @@ namespace SimulationTest
         // Only Changed on Thread Pool
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int TurnNumber => _turnNumber;
+        public TestArenaCharacter Me => me;
+        public TestArenaCharacter Enemy => enemy;
 
         public static TestArena Instance;
         public TableSheets TableSheets { get; set; }
@@ -284,7 +286,7 @@ namespace SimulationTest
             foreach (var info in skillInfos)
             {
                 yield return new WaitWhile(() => target.HasAction());
-                yield return StartCoroutine(target.CoProcessDamage(info, true));
+                yield return StartCoroutine(target.CoProcessDamage(info, true, target.Id));
                 yield return new WaitForSeconds(SkillDelay);
             }
         }
@@ -293,7 +295,7 @@ namespace SimulationTest
         {
             var target = caster.Id == me.Id ? me : enemy;
             NcDebug.Log(
-                $@"[CoRemoveBuffs] target: {target.Id}, buffs: {target.CharacterModel.Buffs.Select(pair =>
+                $@"[CoRemoveBuffs] Caster: {(Me.Id == caster.Id ? "me" : "enemy")}, target: {(Me.Id == target.Id ? "me" : "enemy")}, buffs: {target.CharacterModel.Buffs.Select(pair =>
                     $"buff: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
                 ).Aggregate((a,b) => $"{a}\n{b}")}",
                 "BattleSimulation");
@@ -315,12 +317,12 @@ namespace SimulationTest
             yield return new WaitWhile(() => enemy.HasAction());
             _turnNumber = turnNumber + 1;
             NcDebug.Log(
-                $@"[CoTurnEnd({_turnNumber})] target: {me.Id}, buffs: [{(me.CharacterModel.Buffs?.Any() ?? false ? me.CharacterModel.Buffs.Select(pair =>
+                $@"[CoTurnEnd({_turnNumber})] {me.name}, buffs: [{(me.CharacterModel.Buffs?.Any() ?? false ? me.CharacterModel.Buffs.Select(pair =>
                     $"buff: {pair.Value.BuffInfo.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
                 ).Aggregate((a,b) => $"{a}\n{b}") : "null")}]",
                 "BattleSimulation");
             NcDebug.Log(
-                $@"[CoTurnEnd({_turnNumber})] target: {enemy.Id}, buffs: [{(enemy.CharacterModel.Buffs?.Any() ?? false ? enemy.CharacterModel.Buffs.Select(pair =>
+                $@"[CoTurnEnd({_turnNumber})] {enemy.name}, buffs: [{(enemy.CharacterModel.Buffs?.Any() ?? false ? enemy.CharacterModel.Buffs.Select(pair =>
                     $"buff: {pair.Value.BuffInfo.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
                 ).Aggregate((a,b) => $"{a}; {b}") : "null")}]",
                 "BattleSimulation");

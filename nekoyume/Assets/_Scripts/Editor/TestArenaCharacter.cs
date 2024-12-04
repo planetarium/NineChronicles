@@ -289,25 +289,25 @@ namespace Nekoyume.Editor
         {
             ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
             NcDebug.Log(
-                $"[ProcessAttack] Target: {target.Id}, ElementalType: {skill.ElementalType}, SkillCategory: {skill.SkillCategory}",
+                $"[ProcessAttack] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == target.Id ? "me" : "enemy")}, ElementalType: {skill.ElementalType}, SkillCategory: {skill.SkillCategory}",
                 "BattleSimulation");
-            StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType));
+            StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType, Id));
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        public IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
+        public IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType, Guid casterId)
         {
             CharacterModel = info.Target;
             var dmg = info.Effect;
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
-            NcDebug.Log($"[CoProcessDamage] Target: {CharacterModel.Id}, dmg: {dmg}, pre-HP: {CharacterModel.HP}", "BattleSimulation");
+            NcDebug.Log($"[CoProcessDamage] Caster: {(TestArena.Instance.Me.Id == casterId ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, dmg: {dmg}, pre-HP: {CharacterModel.HP}", "BattleSimulation");
             if (dmg <= 0)
             {
                 var index = CharacterModel.IsEnemy ? 1 : 0;
                 MissText.Show(ActionCamera.instance.Cam, position, force, index);
-                NcDebug.Log($"[CoProcessDamage] Target: {CharacterModel.Id}, MISS", "BattleSimulation");
+                NcDebug.Log($"[CoProcessDamage] Caster: {(TestArena.Instance.Me.Id == casterId ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, MISS", "BattleSimulation");
                 yield break;
             }
 
@@ -316,37 +316,37 @@ namespace Nekoyume.Editor
 
             UpdateStatusUI();
             PopUpDmg(position, force, info, isConsiderElementalType);
-            NcDebug.Log($"[CoProcessDamage] Target: {CharacterModel.Id}, dmg: {dmg}, processed-HP: {_currentHp}", "BattleSimulation");
+            NcDebug.Log($"[CoProcessDamage] Caster: {(TestArena.Instance.Me.Id == casterId ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, dmg: {dmg}, processed-HP: {_currentHp}", "BattleSimulation");
         }
 
         private void ProcessHeal(ArenaSkill.ArenaSkillInfo info)
         {
             if (IsDead)
             {
-                NcDebug.Log($"[ProcessHeal] Target: {CharacterModel.Id}, effect: {info.Effect}, IsDead", "BattleSimulation");
+                NcDebug.Log($"[ProcessHeal] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, effect: {info.Effect}, IsDead", "BattleSimulation");
                 return;
             }
 
-            NcDebug.Log($"[ProcessHeal] Target: {CharacterModel.Id}, effect: {info.Effect}, pre-HP: {CharacterModel.HP}", "BattleSimulation");
+            NcDebug.Log($"[ProcessHeal] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, effect: {info.Effect}, pre-HP: {CharacterModel.HP}", "BattleSimulation");
             _currentHp = Math.Min(_currentHp + info.Effect, CharacterModel.HP);
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
             var txt = info.Effect.ToString();
             DamageText.Show(ActionCamera.instance.Cam, position, force, txt, DamageText.TextGroupState.Heal);
-            NcDebug.Log($"[ProcessHeal] Target: {CharacterModel.Id}, effect: {info.Effect}, processed-HP: {_currentHp}", "BattleSimulation");
+            NcDebug.Log($"[ProcessHeal] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, effect: {info.Effect}, processed-HP: {_currentHp}", "BattleSimulation");
         }
 
         private void ProcessBuff(TestArenaCharacter target, ArenaSkill.ArenaSkillInfo info)
         {
             if (IsDead)
             {
-                NcDebug.Log($"[ProcessBuff] Target: {info.Target.Id}, buff: {info.Buff}, IsDead", "BattleSimulation");
+                NcDebug.Log($"[ProcessBuff] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == info.Target.Id ? "me" : "enemy")}, buff: {info.Buff}, IsDead", "BattleSimulation");
                 return;
             }
 
             NcDebug.Log(
-                $"[ProcessBuff] Target: {info.Target.Id}, buff: {info.Buff}, skillTarget: {info.Buff.BuffInfo.SkillTargetType}, buffGroupId: {info.Buff.BuffInfo.GroupId}, buffId: {info.Buff.BuffInfo.Id}",
+                $"[ProcessBuff] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == info.Target.Id ? "me" : "enemy")}, buff: {info.Buff}, skillTarget: {info.Buff.BuffInfo.SkillTargetType}, buffGroupId: {info.Buff.BuffInfo.GroupId}, buffId: {info.Buff.BuffInfo.Id}",
                 "BattleSimulation");
             var buff = info.Buff;
             OnBuff?.Invoke(buff.BuffInfo.GroupId);
