@@ -138,6 +138,7 @@ namespace Nekoyume.UI
                 UpdateGradeItems();
             }
 
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Synthesis);
             CurrentItemSubType = DefaultItemSubType;
         }
 
