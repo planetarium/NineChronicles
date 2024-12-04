@@ -86,17 +86,8 @@ namespace Nekoyume.UI
             CheckNull();
             base.Awake();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            });
-
-            CloseWidget = () =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            };
+            closeButton.onClick.AddListener(OnCloseWidget);
+            CloseWidget = OnCloseWidget;
 
             foreach (var tapGroup in synthesisTapGroup)
             {
@@ -107,6 +98,13 @@ namespace Nekoyume.UI
                     CurrentItemSubType = tapGroup.iemSubType;
                 }).AddTo(gameObject);
             }
+        }
+
+        private void OnCloseWidget()
+        {
+            Close(true);
+            Find<CombinationMain>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
         protected override void OnEnable()
