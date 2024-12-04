@@ -212,7 +212,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var requiredItemCount = row.RequiredCount;
+                var requiredItemCount = row.RequiredCountDict[_currentItemSubType].RequiredCount;
                 var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
             }

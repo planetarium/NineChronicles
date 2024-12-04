@@ -2731,6 +2731,10 @@ namespace Nekoyume.Blockchain
                 SynthesizeWeightSheet = sheets.SynthesizeWeightSheet,
                 CostumeItemSheet = sheets.CostumeItemSheet,
                 EquipmentItemSheet = sheets.EquipmentItemSheet,
+                EquipmentItemRecipeSheet = sheets.EquipmentItemRecipeSheet,
+                EquipmentItemSubRecipeSheetV2 = sheets.EquipmentItemSubRecipeSheetV2,
+                EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
+                SkillSheet = sheets.SkillSheet,
                 RandomObject = new LocalRandom(prepared.eval.RandomSeed),
                 GradeDict = gradeDict,
             };

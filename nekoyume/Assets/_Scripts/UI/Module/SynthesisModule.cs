@@ -97,7 +97,7 @@ namespace Nekoyume.UI.Module
 
             var sheet = Game.Game.instance.TableSheets.SynthesizeSheet;
             var row = sheet.Values.FirstOrDefault(row => row.GradeId == (int)model.Grade);
-            var succeedRateInt = row?.SucceedRate ?? 0;
+            var succeedRateInt = row?.RequiredCountDict[_itemSubType].SucceedRate ?? 0;
             successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", possibleSynthesis ? succeedRateInt * 0.01f : 0);
 
             scroll.UpdateData(registrationItems);
