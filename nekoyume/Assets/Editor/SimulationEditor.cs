@@ -24,6 +24,8 @@ namespace Editor
     {
         private static string _avatarByteString;
         private static string _inventoryByteString;
+        private static string _allRuneByteString;
+        private static string _arenaRuneSlotByteString;
 
         [MenuItem("Tools/Show Simulation Editor")]
         private static void Init()
@@ -38,13 +40,20 @@ namespace Editor
             GUILayout.Label("my avatar state byte string");
             _avatarByteString = EditorGUILayout.TextField("avatar byte: ", _avatarByteString);
             _inventoryByteString = EditorGUILayout.TextField("inventory byte: ", _inventoryByteString);
+            _allRuneByteString = EditorGUILayout.TextField("allRune byte: ", _allRuneByteString);
+            _arenaRuneSlotByteString = EditorGUILayout.TextField("runeSlot byte: ", _arenaRuneSlotByteString);
             if (GUILayout.Button("try serialize"))
             {
                 Debug.Log("Trying to serialize...");
 
                 var binary = Binary.FromHex(_avatarByteString);
                 var inventoryBinary = Binary.FromHex(_inventoryByteString);
+                var allRuneBinary = Binary.FromHex(_allRuneByteString);
+                var runeSlotBinary = Binary.FromHex(_arenaRuneSlotByteString);
                 var inventory = new Inventory((List)new Codec().Decode(inventoryBinary.ToByteArray()));
+                var allRuneState = new AllRuneState((List) new Codec().Decode(allRuneBinary.ToByteArray()));
+                var runeSlotState =
+                    new RuneSlotState((List) new Codec().Decode(runeSlotBinary.ToByteArray()));
                 var avatar = new AvatarState((List) new Codec().Decode(binary.ToByteArray()))
                 {
                     inventory = inventory,
@@ -56,11 +65,11 @@ namespace Editor
                 };
                 var simulator = new ArenaSimulator(new Cheat.DebugRandom());
                 var challArena = new ArenaPlayerDigest(avatar, new List<Costume>(),
-                    inventory.Equipments.Where(eq => eq.equipped).ToList(), new AllRuneState(0),
-                    new RuneSlotState(BattleType.Arena));
+                    inventory.Equipments.Where(eq => eq.equipped).ToList(), allRuneState,
+                    runeSlotState);
                 var secondArena = new ArenaPlayerDigest(secondAvatar, new List<Costume>(),
-                    inventory.Equipments.Where(eq => eq.equipped).ToList(), new AllRuneState(0),
-                    new RuneSlotState(BattleType.Arena));
+                    inventory.Equipments.Where(eq => eq.equipped).ToList(), allRuneState,
+                    runeSlotState);
                 var sheets = TableSheetsHelper.MakeTableSheets();
                 var log = simulator.Simulate(challArena, secondArena, sheets.GetArenaSimulatorSheets(),
                     new List<StatModifier>(), new List<StatModifier>(), sheets.BuffLimitSheet,
