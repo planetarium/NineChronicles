@@ -26,6 +26,7 @@ namespace Editor
         private static string _inventoryByteString;
         private static string _allRuneByteString;
         private static string _arenaRuneSlotByteString;
+        private static string _collectionIdsString;
 
         [MenuItem("Tools/Show Simulation Editor")]
         private static void Init()
@@ -42,6 +43,7 @@ namespace Editor
             _inventoryByteString = EditorGUILayout.TextField("inventory byte: ", _inventoryByteString);
             _allRuneByteString = EditorGUILayout.TextField("allRune byte: ", _allRuneByteString);
             _arenaRuneSlotByteString = EditorGUILayout.TextField("runeSlot byte: ", _arenaRuneSlotByteString);
+            _collectionIdsString = EditorGUILayout.TextField("collection ids: ", _collectionIdsString);
             if (GUILayout.Button("try serialize"))
             {
                 Debug.Log("Trying to serialize...");
@@ -50,6 +52,12 @@ namespace Editor
                 var inventoryBinary = Binary.FromHex(_inventoryByteString);
                 var allRuneBinary = Binary.FromHex(_allRuneByteString);
                 var runeSlotBinary = Binary.FromHex(_arenaRuneSlotByteString);
+                var collectionState = new CollectionState();
+                foreach (var id in _collectionIdsString.Trim().Split(",").Select(int.Parse))
+                {
+                    collectionState.Ids.Add(id);
+                }
+
                 var inventory = new Inventory((List)new Codec().Decode(inventoryBinary.ToByteArray()));
                 var allRuneState = new AllRuneState((List) new Codec().Decode(allRuneBinary.ToByteArray()));
                 var runeSlotState =
@@ -74,8 +82,8 @@ namespace Editor
                 var log = simulator.Simulate(challArena,
                     secondArena,
                     sheets.GetArenaSimulatorSheets(),
-                    new List<StatModifier>(),
-                    new List<StatModifier>(),
+                    collectionState.GetModifiers(sheets.CollectionSheet),
+                    collectionState.GetModifiers(sheets.CollectionSheet),
                     sheets.BuffLimitSheet,
                     sheets.BuffLinkSheet);
                 SimulationTest.TestArena.Instance.TableSheets = sheets;
