@@ -64,15 +64,19 @@ namespace Editor
                     address = new PrivateKey().Address,
                 };
                 var simulator = new ArenaSimulator(new Cheat.DebugRandom());
-                var challArena = new ArenaPlayerDigest(avatar, new List<Costume>(),
+                var challArena = new ArenaPlayerDigest(avatar, inventory.Costumes.Where(eq => eq.equipped).ToList(),
                     inventory.Equipments.Where(eq => eq.equipped).ToList(), allRuneState,
                     runeSlotState);
-                var secondArena = new ArenaPlayerDigest(secondAvatar, new List<Costume>(),
+                var secondArena = new ArenaPlayerDigest(secondAvatar, inventory.Costumes.Where(eq => eq.equipped).ToList(),
                     inventory.Equipments.Where(eq => eq.equipped).ToList(), allRuneState,
                     runeSlotState);
                 var sheets = TableSheetsHelper.MakeTableSheets();
-                var log = simulator.Simulate(challArena, secondArena, sheets.GetArenaSimulatorSheets(),
-                    new List<StatModifier>(), new List<StatModifier>(), sheets.BuffLimitSheet,
+                var log = simulator.Simulate(challArena,
+                    secondArena,
+                    sheets.GetArenaSimulatorSheets(),
+                    new List<StatModifier>(),
+                    new List<StatModifier>(),
+                    sheets.BuffLimitSheet,
                     sheets.BuffLinkSheet);
                 SimulationTest.TestArena.Instance.TableSheets = sheets;
                 SimulationTest.TestArena.Instance.Enter(log, new List<ItemBase>(), challArena,secondArena,avatar.address, secondAvatar.address);
