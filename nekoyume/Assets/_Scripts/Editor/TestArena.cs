@@ -37,6 +37,8 @@ namespace SimulationTest
         [SerializeField]
         private TestArenaCharacter enemy;
 
+        [SerializeField]
+        private bool logCoExecute;
         public IObservable<Arena> OnArenaEnd => _onArenaEnd;
         private readonly ISubject<Arena> _onArenaEnd = new Subject<Arena>();
         private const float SkillDelay = 0.1f;
@@ -122,14 +124,24 @@ namespace SimulationTest
             Address enemyAvatarAddress,
             (int, int)? winDefeatCount = null)
         {
+            NcDebug.Log(
+                $"[CoEnter] avatar1: {myDigest.NameWithHash.Split("<").First()}, avatar2: {enemyDigest.NameWithHash.Split("<").First()}",
+                "BattleSimulation");
             yield return StartCoroutine(CoStart(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress));
 
             foreach (var e in log)
             {
+                if (logCoExecute)
+                {
+                    NcDebug.Log(
+                        $"[CoExecute] event: {e.GetType()}, turn: {_turnNumber}, character: {e.Character.Id}",
+                        "BattleSimulation");
+                }
+
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
-            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
+            yield return StartCoroutine(CoEnd(log));
         }
 
         private IEnumerator CoStart(
@@ -148,12 +160,8 @@ namespace SimulationTest
         }
 
         private IEnumerator CoEnd(
-            ArenaLog log,
-            IReadOnlyList<ItemBase> rewards,
-            (int, int)? winDefeatCount = null)
+            ArenaLog log)
         {
-            IsAvatarStateUpdatedAfterBattle = false;
-
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             yield return new WaitWhile(() => me.HasAction());
             yield return new WaitWhile(() => enemy.HasAction());
@@ -162,6 +170,9 @@ namespace SimulationTest
             var arenaCharacter = log.Result == ArenaLog.ArenaResult.Win ? me : enemy;
             arenaCharacter.Animator.Win();
             arenaCharacter.ShowSpeech("PLAYER_WIN");
+            NcDebug.Log(
+                $"[CoEnd] result: {log.Result}, turn: {_turnNumber}",
+                "BattleSimulation");
             yield return null;
         }
 
@@ -281,6 +292,11 @@ namespace SimulationTest
         public IEnumerator CoRemoveBuffs(ArenaCharacter caster)
         {
             var target = caster.Id == me.Id ? me : enemy;
+            NcDebug.Log(
+                $@"[CoRemoveBuffs] target: {target.Id}, buffs: {target.CharacterModel.Buffs.Select(pair =>
+                    $"buff: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
+                ).Aggregate((a,b) => $"{a}\n{b}")}",
+                "BattleSimulation");
             target.UpdateStatusUI();
             yield break;
         }
@@ -298,6 +314,16 @@ namespace SimulationTest
             yield return new WaitWhile(() => me.HasAction());
             yield return new WaitWhile(() => enemy.HasAction());
             _turnNumber = turnNumber + 1;
+            NcDebug.Log(
+                $@"[CoTurnEnd({_turnNumber})] target: {me.Id}, buffs: [{(me.CharacterModel.Buffs?.Any() ?? false ? me.CharacterModel.Buffs.Select(pair =>
+                    $"buff: {pair.Value.BuffInfo.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
+                ).Aggregate((a,b) => $"{a}\n{b}") : "null")}]",
+                "BattleSimulation");
+            NcDebug.Log(
+                $@"[CoTurnEnd({_turnNumber})] target: {enemy.Id}, buffs: [{(enemy.CharacterModel.Buffs?.Any() ?? false ? enemy.CharacterModel.Buffs.Select(pair =>
+                    $"buff: {pair.Value.BuffInfo.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
+                ).Aggregate((a,b) => $"{a}; {b}") : "null")}]",
+                "BattleSimulation");
             yield return null;
         }
 
