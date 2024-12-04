@@ -64,11 +64,11 @@ namespace Editor
                     new RuneSlotState((List) new Codec().Decode(runeSlotBinary.ToByteArray()));
                 var avatar = new AvatarState((List) new Codec().Decode(binary.ToByteArray()))
                 {
-                    inventory = inventory,
+                    //inventory = inventory,
                 };
                 var secondAvatar = new AvatarState((List) new Codec().Decode(binary.ToByteArray()))
                 {
-                    inventory = inventory,
+                    //inventory = inventory,
                     address = new PrivateKey().Address,
                 };
                 var simulator = new ArenaSimulator(new Cheat.DebugRandom());
@@ -88,11 +88,6 @@ namespace Editor
                     sheets.BuffLinkSheet);
                 SimulationTest.TestArena.Instance.TableSheets = sheets;
                 SimulationTest.TestArena.Instance.Enter(log, new List<ItemBase>(), challArena,secondArena,avatar.address, secondAvatar.address);
-                // foreach (var eventBase in log)
-                // {
-                //
-                //     NcDebug.Log($"{eventBase.Character.Id}, {eventBase.GetType()}, {eventBase.Character.usedSkill}, {eventBase.Character.Buffs}", "BattleSimulation");
-                // }
             }
         }
     }
