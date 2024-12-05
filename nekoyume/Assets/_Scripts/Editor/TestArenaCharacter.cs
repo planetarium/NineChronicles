@@ -302,7 +302,7 @@ namespace Nekoyume.Editor
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
-            NcDebug.Log($"[CoProcessDamage] Caster: {(TestArena.Instance.Me.Id == casterId ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, dmg: {dmg}, pre-HP: {CharacterModel.HP}", "BattleSimulation");
+            NcDebug.Log($"[CoProcessDamage] Caster: {(TestArena.Instance.Me.Id == casterId ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, dmg: {dmg}, pre-HP: {CharacterModel.CurrentHP}", "BattleSimulation");
             if (dmg <= 0)
             {
                 var index = CharacterModel.IsEnemy ? 1 : 0;
@@ -327,7 +327,7 @@ namespace Nekoyume.Editor
                 return;
             }
 
-            NcDebug.Log($"[ProcessHeal] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, effect: {info.Effect}, pre-HP: {CharacterModel.HP}", "BattleSimulation");
+            NcDebug.Log($"[ProcessHeal] Caster: {(TestArena.Instance.Me.Id == Id ? "me" : "enemy")}, Target: {(TestArena.Instance.Me.Id == CharacterModel.Id ? "me" : "enemy")}, effect: {info.Effect}, pre-HP: {CharacterModel.CurrentHP}", "BattleSimulation");
             _currentHp = Math.Min(_currentHp + info.Effect, CharacterModel.HP);
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);

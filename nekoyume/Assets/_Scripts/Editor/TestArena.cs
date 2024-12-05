@@ -317,13 +317,13 @@ namespace SimulationTest
             yield return new WaitWhile(() => enemy.HasAction());
             _turnNumber = turnNumber + 1;
             NcDebug.Log(
-                $@"[CoTurnEnd({_turnNumber})] {me.name}, buffs: [{(me.CharacterModel.Buffs?.Any() ?? false ? me.CharacterModel.Buffs.Select(pair =>
-                    $"buff: {pair.Value.BuffInfo.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
+                $@"[CoTurnEnd({_turnNumber})] {me.name}, stat: {TestArenaSimulationUI.StatStringFromArenaCharacter(me.CharacterModel)}, buffs: [{(me.CharacterModel.Buffs?.Any() ?? false ? me.CharacterModel.Buffs.Select(pair =>
+                    $"buff: {pair.Value.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
                 ).Aggregate((a,b) => $"{a}\n{b}") : "null")}]",
                 "BattleSimulation");
             NcDebug.Log(
-                $@"[CoTurnEnd({_turnNumber})] {enemy.name}, buffs: [{(enemy.CharacterModel.Buffs?.Any() ?? false ? enemy.CharacterModel.Buffs.Select(pair =>
-                    $"buff: {pair.Value.BuffInfo.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
+                $@"[CoTurnEnd({_turnNumber})] {enemy.name}, stat: {TestArenaSimulationUI.StatStringFromArenaCharacter(enemy.CharacterModel)} buffs: [{(enemy.CharacterModel.Buffs?.Any() ?? false ? enemy.CharacterModel.Buffs.Select(pair =>
+                    $"buff: {pair.Value.GetType()}, id: {pair.Value.BuffInfo.Id}, duration: {pair.Value.RemainedDuration}/{pair.Value.OriginalDuration}"
                 ).Aggregate((a,b) => $"{a}; {b}") : "null")}]",
                 "BattleSimulation");
             yield return null;
