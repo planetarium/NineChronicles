@@ -1276,7 +1276,6 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<Synthesize>> Synthesize(
             List<ItemBase> itemBaseList,
-            ItemSubType subType,
             bool chargeAp)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -1326,7 +1325,7 @@ namespace Nekoyume.Blockchain
                     {
                         Equipment equipment => equipment.ItemId,
                         Costume costume => costume.ItemId,
-                        _ => Guid.Empty,
+                        _ => throw new InvalidCastException(),
                     };
                 }).ToList(),
                 ChargeAp = chargeAp,

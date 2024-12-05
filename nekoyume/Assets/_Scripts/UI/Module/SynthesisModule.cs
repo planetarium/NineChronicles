@@ -130,7 +130,7 @@ namespace Nekoyume.UI.Module
             }
 
             CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, _itemSubType, chargeAp)));
+                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp)));
         }
 
         private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
@@ -174,12 +174,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void PushAction(List<ItemBase> itemBaseList, ItemSubType itemSubType, bool chargeAp)
+        private void PushAction(List<ItemBase> itemBaseList, bool chargeAp)
         {
             StartCoroutine(CoAnimateNPC());
 
             ActionManager.Instance
-                         .Synthesize(itemBaseList, itemSubType, chargeAp)
+                         .Synthesize(itemBaseList, chargeAp)
                          .Subscribe(eval =>
                          {
                              if (eval.Exception == null)
