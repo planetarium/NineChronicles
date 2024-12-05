@@ -3,7 +3,6 @@
 using System;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -55,6 +54,11 @@ namespace Nekoyume.UI.Scroller
         // 모든 셀이 인벤토리 정보를 불러와서 처리하지 않도록 해당 셀 스크립트가 아닌 상위 오브젝트 스크립트에서 계산
         private void SetData(int inventoryItemCount, int requiredItemCount)
         {
+            if (requiredItemCount == 0)
+            {
+                throw new ArgumentException("requiredItemCount is 0");
+            }
+
             var header = L10nManager.Localize("UI_SYNTHESIZE_HOLDS")!;
             var outputItemCount = inventoryItemCount / requiredItemCount;
             holdText.text = $"{header}: {inventoryItemCount}/{requiredItemCount} ({outputItemCount})";
