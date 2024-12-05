@@ -17,7 +17,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -45,7 +44,13 @@ namespace Nekoyume.UI.Module
         private Image pendantItemIcon = null!;
 
         [SerializeField]
+        private Image itemBackground = null!;
+
+        [SerializeField]
         private float itemIconAnimInterval = 0.7f;
+
+        [SerializeField]
+        private GameObject actionLoadingIndicator = null!;
 
         [Header("Texts")]
         [SerializeField]
@@ -159,9 +164,10 @@ namespace Nekoyume.UI.Module
 
             while (!cts.IsCancellationRequested)
             {
-                foreach (var itemId in pool)
+                foreach (var poolItem in pool)
                 {
-                    pendantItemIcon.sprite = SpriteHelper.GetItemIcon(itemId);
+                    pendantItemIcon.sprite = SpriteHelper.GetItemIcon(poolItem.Item1);
+                    itemBackground.sprite = SpriteHelper.GetItemBackground((int)poolItem.Item2);
                     var isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(itemIconAnimInterval), cancellationToken: cts.Token).SuppressCancellationThrow();
                     if (isCancelled)
                     {
@@ -254,6 +260,14 @@ namespace Nekoyume.UI.Module
                          });
             ClearScrollData();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
+            SetActionLoadingIndicator(true);
+            // TODO: 뚱땅창
+            // TODO: 합성중일 때 버튼 상태
+        }
+
+        public void SetActionLoadingIndicator(bool active)
+        {
+            actionLoadingIndicator.SetActive(active);
         }
 
         #endregion PushAction

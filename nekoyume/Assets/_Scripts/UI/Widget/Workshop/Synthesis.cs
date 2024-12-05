@@ -81,6 +81,8 @@ namespace Nekoyume.UI
             }
         }
 
+        public SynthesisModule SynthesisModule => synthesisModule;
+
         #endregion Properties
 
         #region MonoBehaviour
@@ -245,7 +247,7 @@ namespace Nekoyume.UI
 
         #region Utils
 
-        public static HashSet<int>? GetSynthesizeResultPool(Grade grade, ItemSubType itemSubType)
+        public static HashSet<(int, Grade)>? GetSynthesizeResultPool(Grade grade, ItemSubType itemSubType)
         {
             var gradeSet = new HashSet<Grade>
             {

@@ -2742,6 +2742,11 @@ namespace Nekoyume.Blockchain
             var result = SynthesizeSimulator.Simulate(inputData);
             var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
             synthesisResultScreen.Show(result);
+
+            var synthesis = Widget.Find<Synthesis>();
+            synthesis.SynthesisModule.SetActionLoadingIndicator(false);
+
+            // TODO: 에러처리 -> 인디케이터 끄기
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
