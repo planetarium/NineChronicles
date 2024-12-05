@@ -20,6 +20,8 @@ namespace Nekoyume.UI.Module
 
     public class SynthesisModule : MonoBehaviour
     {
+        private readonly int isActiveAnimHash = Animator.StringToHash("IsActive");
+
         [SerializeField]
         private SynthesisMaterialScroll scroll = null!;
 
@@ -28,6 +30,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private ConditionalButton removeAllButton = null!;
+
+        [SerializeField]
+        private Animator PendantAnimator = null!;
 
         [Header("Texts")]
         [SerializeField]
@@ -83,11 +88,7 @@ namespace Nekoyume.UI.Module
             var synthesisCount = registrationItems.Count / model.RequiredItemCount;
             var possibleSynthesis = synthesisCount > 0;
 
-            synthesisButton.Interactable = possibleSynthesis;
-            removeAllButton.Interactable = synthesisCount >= 1;
-
-            possibleSynthesisTextObj.SetActive(possibleSynthesis);
-            impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
+            SetSynthesisButtonState(possibleSynthesis);
 
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", possibleSynthesis ? synthesisCount : 0);
 
@@ -104,15 +105,20 @@ namespace Nekoyume.UI.Module
         {
             _selectedItemsForSynthesize.Clear();
             scroll.UpdateData(_selectedItemsForSynthesize);
-
-            synthesisButton.Interactable = false;
-            removeAllButton.Interactable = false;
-
-            possibleSynthesisTextObj.SetActive(false);
-            impossibleSynthesisTextObj.SetActive(true);
+            SetSynthesisButtonState(false);
 
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", 0);
             successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", 0);
+        }
+
+        private void SetSynthesisButtonState(bool possibleSynthesis)
+        {
+            synthesisButton.Interactable = possibleSynthesis;
+            removeAllButton.Interactable = possibleSynthesis;
+            PendantAnimator.SetBool(isActiveAnimHash, possibleSynthesis);
+
+            possibleSynthesisTextObj.SetActive(possibleSynthesis);
+            impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
         }
 
         #region PushAction
