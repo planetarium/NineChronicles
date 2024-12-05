@@ -266,6 +266,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ClaimGiftsResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SynthesisResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());

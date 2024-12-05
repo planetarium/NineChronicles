@@ -916,7 +916,7 @@ namespace Nekoyume.Blockchain
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
-                        loginDetail.OnRenderCreateAvatar();
+                        loginDetail.OnRenderCreateAvatar(avatarState);
                     }
                 }
                 else
@@ -2739,14 +2739,9 @@ namespace Nekoyume.Blockchain
                 GradeDict = gradeDict,
             };
 
-            // TODO: 결과 스크린으로 출력
             var result = SynthesizeSimulator.Simulate(inputData);
-            NcDebug.LogError("------");
-            NcDebug.LogError(result.Count);
-            foreach (var resultItem in result)
-            {
-                NcDebug.LogError(resultItem.ItemBase.ItemSubType);
-            }
+            var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
+            synthesisResultScreen.Show(result);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
