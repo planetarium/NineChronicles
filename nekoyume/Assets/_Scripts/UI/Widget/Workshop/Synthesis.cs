@@ -247,16 +247,22 @@ namespace Nekoyume.UI
 
         public static HashSet<int>? GetSynthesizeResultPool(Grade grade, ItemSubType itemSubType)
         {
+            var gradeSet = new HashSet<Grade>
+            {
+                grade,
+                SynthesizeSimulator.GetTargetGrade(grade),
+            };
+
             switch (itemSubType)
             {
                 case ItemSubType.Aura:
                 case ItemSubType.Grimoire:
                     var equipmentItem = TableSheets.Instance.EquipmentItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(grade, itemSubType, equipmentItem);
+                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, equipmentItem);
                 case ItemSubType.FullCostume:
                 case ItemSubType.Title:
                     var costumeItem = TableSheets.Instance.CostumeItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(grade, itemSubType, costumeItem);
+                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, costumeItem);
             }
 
             return null;

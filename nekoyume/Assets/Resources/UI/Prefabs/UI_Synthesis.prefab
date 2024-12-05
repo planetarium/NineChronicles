@@ -16768,7 +16768,8 @@ MonoBehaviour:
   scroll: {fileID: 3548798149531297779}
   synthesisButton: {fileID: 3207874609565849406}
   removeAllButton: {fileID: 6177294638856666031}
-  PendantAnimator: {fileID: 8949990907010382268}
+  pendantAnimator: {fileID: 8949990907010382268}
+  pendantItemIcon: {fileID: 3333155469645008735}
   possibleSynthesisTextObj: {fileID: 4759416887961526554}
   impossibleSynthesisTextObj: {fileID: 915706092705939146}
   numberSynthesisText: {fileID: 9195380543239296438}
@@ -16889,6 +16890,7 @@ GameObject:
   - component: {fileID: 6121549931244009474}
   - component: {fileID: 8086142067927442575}
   - component: {fileID: 3333155469645008735}
+  - component: {fileID: 1883948618454380198}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -16954,6 +16956,55 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1883948618454380198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7604309692121106599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fcf8383091bc5408284e882ab64823, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  container: {fileID: 0}
+  emptyObject: {fileID: 0}
+  itemViewData: {fileID: 0}
+  touchHandler: {fileID: 0}
+  minusTouchHandler: {fileID: 0}
+  gradeImage: {fileID: 0}
+  gradeHsv: {fileID: 0}
+  enoughObject: {fileID: 0}
+  itemImage: {fileID: 0}
+  spineItemImage: {fileID: 0}
+  enhancementImage: {fileID: 0}
+  enhancementText: {fileID: 0}
+  countText: {fileID: 0}
+  priceText: {fileID: 0}
+  optionTag: {fileID: 0}
+  notificationObject: {fileID: 0}
+  equippedObject: {fileID: 0}
+  minusObject: {fileID: 0}
+  focusObject: {fileID: 0}
+  expiredObject: {fileID: 0}
+  tradableObject: {fileID: 0}
+  dimObject: {fileID: 0}
+  levelLimitObject: {fileID: 0}
+  selectObject: {fileID: 0}
+  selectBaseItemObject: {fileID: 0}
+  selectMaterialItemObject: {fileID: 0}
+  lockObject: {fileID: 0}
+  shadowObject: {fileID: 0}
+  loadingObject: {fileID: 0}
+  itemGradeParticle: {fileID: 0}
+  selectCountObject: {fileID: 0}
+  runeNotificationObj: {fileID: 0}
+  runeSelectMove: {fileID: 0}
+  selectCollectionObject: {fileID: 0}
+  selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &7703767099470566215
 GameObject:
   m_ObjectHideFlags: 0

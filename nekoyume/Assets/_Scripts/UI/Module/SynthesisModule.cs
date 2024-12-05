@@ -4,15 +4,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -31,8 +37,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private ConditionalButton removeAllButton = null!;
 
+        [Header("Animation")]
         [SerializeField]
-        private Animator PendantAnimator = null!;
+        private Animator pendantAnimator = null!;
+
+        [SerializeField]
+        private Image pendantItemIcon = null!;
+
+        [SerializeField]
+        private float itemIconAnimInterval = 0.7f;
 
         [Header("Texts")]
         [SerializeField]
@@ -51,6 +64,8 @@ namespace Nekoyume.UI.Module
 
         private int _inventoryApStoneCount;
         private ItemSubType _itemSubType;
+
+        private CancellationTokenSource? _expectationsItemIconCts;
 
         private bool IsStrong(ItemBase itemBase)
         {
@@ -99,6 +114,10 @@ namespace Nekoyume.UI.Module
 
             scroll.UpdateData(registrationItems);
             scroll.RawJumpTo(registrationItems.Count - 1);
+
+            ClearExpectationsItemIconCts();
+            _expectationsItemIconCts = new CancellationTokenSource();
+            ShowExpectationsItemIcon(model.Grade, model.ItemSubType, _expectationsItemIconCts).Forget();
         }
 
         private void ClearScrollData()
@@ -106,6 +125,8 @@ namespace Nekoyume.UI.Module
             _selectedItemsForSynthesize.Clear();
             scroll.UpdateData(_selectedItemsForSynthesize);
             SetSynthesisButtonState(false);
+
+            ClearExpectationsItemIconCts();
 
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", 0);
             successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", 0);
@@ -115,10 +136,46 @@ namespace Nekoyume.UI.Module
         {
             synthesisButton.Interactable = possibleSynthesis;
             removeAllButton.Interactable = possibleSynthesis;
-            PendantAnimator.SetBool(isActiveAnimHash, possibleSynthesis);
+            pendantAnimator.SetBool(isActiveAnimHash, possibleSynthesis);
 
             possibleSynthesisTextObj.SetActive(possibleSynthesis);
             impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
+        }
+
+        private async UniTask ShowExpectationsItemIcon(Grade grade, ItemSubType itemSubType, CancellationTokenSource cts)
+        {
+            var pool = Synthesis.GetSynthesizeResultPool(grade, itemSubType);
+            if (pool == null || pool.Count == 0)
+            {
+                NcDebug.LogError($"[{nameof(SynthesisModule)}] pool is empty.");
+                return;
+            }
+
+            if (cts.IsCancellationRequested)
+            {
+                NcDebug.LogWarning($"[{nameof(SynthesisModule)}] cts is canceled.");
+                return;
+            }
+
+            while (!cts.IsCancellationRequested)
+            {
+                foreach (var itemId in pool)
+                {
+                    pendantItemIcon.sprite = SpriteHelper.GetItemIcon(itemId);
+                    var isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(itemIconAnimInterval), cancellationToken: cts.Token).SuppressCancellationThrow();
+                    if (isCancelled)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void ClearExpectationsItemIconCts()
+        {
+            _expectationsItemIconCts?.Cancel();
+            _expectationsItemIconCts?.Dispose();
+            _expectationsItemIconCts = null;
         }
 
         #region PushAction
