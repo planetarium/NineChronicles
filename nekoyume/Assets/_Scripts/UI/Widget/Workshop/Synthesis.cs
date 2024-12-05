@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -22,6 +24,8 @@ namespace Nekoyume.UI
 
     public class Synthesis : Widget
     {
+        public const int MaxSynthesisCount = 12;
+
         private const ItemSubType DefaultItemSubType = ItemSubType.Aura;
 
         private readonly List<IDisposable> _activeDisposables = new();
@@ -86,17 +90,8 @@ namespace Nekoyume.UI
             CheckNull();
             base.Awake();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            });
-
-            CloseWidget = () =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            };
+            closeButton.onClick.AddListener(OnCloseWidget);
+            CloseWidget = OnCloseWidget;
 
             foreach (var tapGroup in synthesisTapGroup)
             {
@@ -107,6 +102,13 @@ namespace Nekoyume.UI
                     CurrentItemSubType = tapGroup.iemSubType;
                 }).AddTo(gameObject);
             }
+        }
+
+        private void OnCloseWidget()
+        {
+            Close(true);
+            Find<CombinationMain>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
         protected override void OnEnable()
@@ -138,14 +140,27 @@ namespace Nekoyume.UI
                 UpdateGradeItems();
             }
 
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Synthesis);
             CurrentItemSubType = DefaultItemSubType;
         }
 
         #endregion Widget
 
-        public void OnClickGradeItem(Grade grade, ItemSubType itemSubType)
+        public void OnClickGradeItem(SynthesizeModel? model)
         {
-            // TODO: Open SynthesisPopup
+            if (model == null)
+            {
+                NcDebug.LogError("model is null.");
+                return;
+            }
+
+            var registrationPopup = Find<SynthesisRegistrationPopup>();
+            registrationPopup.Show(model, RegisterItems);
+        }
+
+        private void RegisterItems(IList<InventoryItem> items, SynthesizeModel model)
+        {
+            synthesisModule.UpdateData(items, model);
         }
 
         #region PrivateUtils
@@ -200,7 +215,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var requiredItemCount = row.RequiredCount;
+                var requiredItemCount = row.RequiredCountDict[_currentItemSubType].RequiredCount;
                 var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
             }
@@ -245,6 +260,18 @@ namespace Nekoyume.UI
             }
 
             return null;
+        }
+
+        public static void NotificationMaxSynthesisCount(int requiredItemCount)
+        {
+            var maxRequiredCount = requiredItemCount * MaxSynthesisCount;
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize(
+                    "UI_SYNTHESIZE_MAX_COUNT_CHECK",
+                    maxRequiredCount,
+                    MaxSynthesisCount),
+                NotificationCell.NotificationType.Alert);
         }
 
         #endregion Utils

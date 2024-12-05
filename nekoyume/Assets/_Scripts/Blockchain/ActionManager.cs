@@ -1275,25 +1275,37 @@ namespace Nekoyume.Blockchain
         }
 
         public IObservable<ActionEvaluation<Synthesize>> Synthesize(
-            List<Equipment> equipmentList,
+            List<ItemBase> itemBaseList,
+            ItemSubType subType,
             bool chargeAp)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            equipmentList.ForEach(equipment =>
+            itemBaseList.ForEach(itemBase =>
             {
-                if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
+                if (itemBase is Equipment equipment)
                 {
-                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
-                    LocalLayerModifier.RemoveNonFungibleItem(
-                        avatarAddress,
-                        equipment.ItemId);
+                    if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
+                    {
+                        // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
+                        LocalLayerModifier.RemoveNonFungibleItem(
+                            avatarAddress,
+                            equipment.ItemId);
+                    }
+                    else
+                    {
+                        LocalLayerModifier.RemoveItem(
+                            avatarAddress,
+                            equipment.ItemId,
+                            equipment.RequiredBlockIndex,
+                            1);
+                    }
                 }
-                else
+                else if (itemBase is Costume costume)
                 {
                     LocalLayerModifier.RemoveItem(
                         avatarAddress,
-                        equipment.ItemId,
-                        equipment.RequiredBlockIndex,
+                        costume.ItemId,
+                        costume.RequiredBlockIndex,
                         1);
                 }
             });
@@ -1308,7 +1320,15 @@ namespace Nekoyume.Blockchain
             var action = new Synthesize
             {
                 AvatarAddress = avatarAddress,
-                MaterialIds = equipmentList.Select(i => i.ItemId).ToList(),
+                MaterialIds = itemBaseList.Select(i =>
+                {
+                    return i switch
+                    {
+                        Equipment equipment => equipment.ItemId,
+                        Costume costume => costume.ItemId,
+                        _ => Guid.Empty,
+                    };
+                }).ToList(),
                 ChargeAp = chargeAp,
             };
             ProcessAction(action);

@@ -916,7 +916,7 @@ namespace Nekoyume.Blockchain
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
-                        loginDetail.OnRenderCreateAvatar();
+                        loginDetail.OnRenderCreateAvatar(avatarState);
                     }
                 }
                 else
@@ -2695,7 +2695,7 @@ namespace Nekoyume.Blockchain
                 {
                     NcDebug.LogError($"Synthesize action failed to remove equipment {itemId}");
                     OneLineSystem.Push(
-                        MailType.Grinding,
+                        MailType.Workshop,
                         L10nManager.Localize("ERROR_UNKNOWN"),
                         NotificationCell.NotificationType.Alert);
                     return (eval, new List<INonFungibleItem>());
@@ -2709,7 +2709,39 @@ namespace Nekoyume.Blockchain
 
         private void ResponseSynthesize((ActionEvaluation<Synthesize> eval, List<INonFungibleItem> materialItemList) prepared)
         {
-            // TODO: Apply Simulator
+            var sheets = TableSheets.Instance;
+            var eval = prepared.eval;
+            var materialItemList = prepared.eval.Action.MaterialIds;
+            var avatarState = StateGetter.GetAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
+            var blockIndex = eval.BlockIndex;
+            var addressHex = eval.Action.AvatarAddress.ToHex();
+
+            var gradeDict = SynthesizeSimulator.GetGradeDict(
+                materialItemList,
+                avatarState,
+                blockIndex,
+                addressHex,
+                out var materialEquipments,
+                out var materialCostumes
+                );
+
+            var inputData = new SynthesizeSimulator.InputData()
+            {
+                SynthesizeSheet = sheets.SynthesizeSheet,
+                SynthesizeWeightSheet = sheets.SynthesizeWeightSheet,
+                CostumeItemSheet = sheets.CostumeItemSheet,
+                EquipmentItemSheet = sheets.EquipmentItemSheet,
+                EquipmentItemRecipeSheet = sheets.EquipmentItemRecipeSheet,
+                EquipmentItemSubRecipeSheetV2 = sheets.EquipmentItemSubRecipeSheetV2,
+                EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
+                SkillSheet = sheets.SkillSheet,
+                RandomObject = new LocalRandom(prepared.eval.RandomSeed),
+                GradeDict = gradeDict,
+            };
+
+            var result = SynthesizeSimulator.Simulate(inputData);
+            var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
+            synthesisResultScreen.Show(result);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(

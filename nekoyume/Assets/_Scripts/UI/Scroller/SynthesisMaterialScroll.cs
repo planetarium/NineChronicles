@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Scroller
 
         protected override void Initialize()
         {
-            // ClearContents();
+            ClearContents();
             base.Initialize();
             startAxisCellCount = Util.GetGridItemCount(
                 cellSize.x, spacing,
