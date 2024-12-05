@@ -143,6 +143,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var synthesisCount = selectedCount / _synthesizeModel.RequiredItemCount;
+            if (synthesisCount > Synthesis.MaxSynthesisCount)
+            {
+                Synthesis.NotificationMaxSynthesisCount(_synthesizeModel.RequiredItemCount);
+                return;
+            }
+
             foreach (var selectedItem in synthesisInventory.SelectedItems)
             {
                 if (!selectedItem.Equipped.Value)

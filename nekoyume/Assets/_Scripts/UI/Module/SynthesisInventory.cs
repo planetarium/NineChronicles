@@ -105,6 +105,13 @@ namespace Nekoyume.UI.Module
             // 이미 선택된 아이템이 있으면 그 아이템 포함하여 지정된 갯수가 되도록 셋팅
             var i = selectedCount % model.RequiredItemCount;
 
+            var synthesisCount = selectedCount / selectCount;
+            if (synthesisCount >= Synthesis.MaxSynthesisCount)
+            {
+                Synthesis.NotificationMaxSynthesisCount(model.RequiredItemCount);
+                return false;
+            }
+
             foreach (var cachedItem in _cachedInventoryItems)
             {
                 if (cachedItem.SelectCountEnabled.Value)
@@ -136,6 +143,7 @@ namespace Nekoyume.UI.Module
             }
 
             var selectCount = itemCount - (itemCount % model.RequiredItemCount);
+            selectCount = Math.Min(selectCount, Synthesis.MaxSynthesisCount * model.RequiredItemCount);
             for (var i = 0; i < selectCount; ++i)
             {
                 SelectItem(_cachedInventoryItems[i]);
@@ -188,6 +196,12 @@ namespace Nekoyume.UI.Module
             if (SelectedItems.Contains(item))
             {
                 SelectedItems.Remove(item);
+                return;
+            }
+
+            if (SelectedItems.Count >= Synthesis.MaxSynthesisCount * _selectedModel!.RequiredItemCount)
+            {
+                Synthesis.NotificationMaxSynthesisCount(_selectedModel.RequiredItemCount);
                 return;
             }
 

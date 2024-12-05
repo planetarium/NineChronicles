@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -22,6 +24,8 @@ namespace Nekoyume.UI
 
     public class Synthesis : Widget
     {
+        public const int MaxSynthesisCount = 12;
+
         private const ItemSubType DefaultItemSubType = ItemSubType.Aura;
 
         private readonly List<IDisposable> _activeDisposables = new();
@@ -256,6 +260,18 @@ namespace Nekoyume.UI
             }
 
             return null;
+        }
+
+        public static void NotificationMaxSynthesisCount(int requiredItemCount)
+        {
+            var maxRequiredCount = requiredItemCount * MaxSynthesisCount;
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize(
+                    "UI_SYNTHESIZE_MAX_COUNT_CHECK",
+                    maxRequiredCount,
+                    MaxSynthesisCount),
+                NotificationCell.NotificationType.Alert);
         }
 
         #endregion Utils
