@@ -165,6 +165,7 @@ namespace Nekoyume.Blockchain
             ItemEnhancement();
             RapidCombination();
             Grinding();
+            Synthesize();
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
             AuraSummon();
@@ -420,6 +421,19 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareGrinding)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
+                .AddTo(_disposables);
+        }
+
+        private void Synthesize()
+        {
+            _actionRenderer
+                .EveryRender<Synthesize>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareSynthesize)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseSynthesize)
                 .AddTo(_disposables);
         }
 
@@ -902,7 +916,7 @@ namespace Nekoyume.Blockchain
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
-                        loginDetail.OnRenderCreateAvatar();
+                        loginDetail.OnRenderCreateAvatar(avatarState);
                     }
                 }
                 else
@@ -2397,7 +2411,7 @@ namespace Nekoyume.Blockchain
                     TableSheets.Instance.MaterialItemSheet,
                     Action.EventDungeonBattle.PlayCount),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLimitSheet,
                 tableSheets.BuffLinkSheet,
                 true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage);
@@ -2606,18 +2620,9 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<Grinding> eval, List<Equipment> equipmentList)
             PrepareGrinding(ActionEvaluation<Grinding> eval)
         {
-            var avatarAddress = eval.Action.AvatarAddress;
             if (eval.Action.ChargeAp)
             {
-                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
-                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1, false);
-
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.AvatarAddress);
-                }
+                ChargeAp(eval.Action.AvatarAddress);
             }
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -2632,7 +2637,7 @@ namespace Nekoyume.Blockchain
                     equipment.RequiredBlockIndex > eval.BlockIndex ||
                     !inventory.RemoveNonFungibleItem(equipmentId))
                 {
-                    Debug.LogError($"Grinding action failed to remove equipment {equipmentId}");
+                    NcDebug.LogError($"Grinding action failed to remove equipment {equipmentId}");
                     OneLineSystem.Push(
                         MailType.Grinding,
                         L10nManager.Localize("ERROR_UNKNOWN"),
@@ -2667,6 +2672,76 @@ namespace Nekoyume.Blockchain
             mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
 
             Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
+        }
+
+        private (ActionEvaluation<Synthesize> eval, List<INonFungibleItem> equipmentList)
+            PrepareSynthesize(ActionEvaluation<Synthesize> eval)
+        {
+            if (eval.Action.ChargeAp)
+            {
+                ChargeAp(eval.Action.AvatarAddress);
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
+
+            var inventory = StateGetter.GetInventory(eval.PreviousState, eval.Action.AvatarAddress);
+            var itemList = new List<INonFungibleItem>();
+            foreach (var itemId in eval.Action.MaterialIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem item) ||
+                    !inventory.RemoveNonFungibleItem(itemId))
+                {
+                    NcDebug.LogError($"Synthesize action failed to remove equipment {itemId}");
+                    OneLineSystem.Push(
+                        MailType.Workshop,
+                        L10nManager.Localize("ERROR_UNKNOWN"),
+                        NotificationCell.NotificationType.Alert);
+                    return (eval, new List<INonFungibleItem>());
+                }
+
+                itemList.Add(item);
+            }
+
+            return (eval, itemList);
+        }
+
+        private void ResponseSynthesize((ActionEvaluation<Synthesize> eval, List<INonFungibleItem> materialItemList) prepared)
+        {
+            var sheets = TableSheets.Instance;
+            var eval = prepared.eval;
+            var materialItemList = prepared.eval.Action.MaterialIds;
+            var avatarState = StateGetter.GetAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
+            var blockIndex = eval.BlockIndex;
+            var addressHex = eval.Action.AvatarAddress.ToHex();
+
+            var gradeDict = SynthesizeSimulator.GetGradeDict(
+                materialItemList,
+                avatarState,
+                blockIndex,
+                addressHex,
+                out _,
+                out _
+                );
+
+            var inputData = new SynthesizeSimulator.InputData()
+            {
+                SynthesizeSheet = sheets.SynthesizeSheet,
+                SynthesizeWeightSheet = sheets.SynthesizeWeightSheet,
+                CostumeItemSheet = sheets.CostumeItemSheet,
+                EquipmentItemSheet = sheets.EquipmentItemSheet,
+                EquipmentItemRecipeSheet = sheets.EquipmentItemRecipeSheet,
+                EquipmentItemSubRecipeSheetV2 = sheets.EquipmentItemSubRecipeSheetV2,
+                EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
+                SkillSheet = sheets.SkillSheet,
+                RandomObject = new LocalRandom(prepared.eval.RandomSeed),
+                GradeDict = gradeDict,
+            };
+
+            var result = SynthesizeSimulator.Simulate(inputData);
+            var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
+            synthesisResultScreen.Show(result);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -3062,7 +3137,7 @@ namespace Nekoyume.Blockchain
                         arenaSheets,
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
                         enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
-                        tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLimitSheet,
                         tableSheets.BuffLinkSheet,
                         true);
 
@@ -3252,7 +3327,7 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
-                TableSheets.Instance.DeBuffLimitSheet,
+                TableSheets.Instance.BuffLimitSheet,
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
@@ -4197,7 +4272,7 @@ namespace Nekoyume.Blockchain
                         tableSheets.CostumeStatSheet,
                         rewards,
                         States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                        tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLimitSheet,
                         tableSheets.BuffLinkSheet,
                         true,
                         States.Instance.GameConfigState.ShatterStrikeMaxDamage);

@@ -56,16 +56,16 @@ namespace Nekoyume.Blockchain
             return avatarState.agentAddress == agentAddress;
         }
 
-        public static bool TryGetStakeStateV2(
+        public static bool TryGetStakeState(
             HashDigest<SHA256> hash,
             Address address,
-            out StakeStateV2 stakeStateV2)
+            out StakeState stakeState)
         {
             try
             {
-                if (GetStakeStateV2(hash, address) is { } state)
+                if (GetStakeState(hash, address) is { } state)
                 {
-                    stakeStateV2 = state;
+                    stakeState = state;
                     return true;
                 }
             }
@@ -74,7 +74,7 @@ namespace Nekoyume.Blockchain
                 // ignored
             }
 
-            stakeStateV2 = default;
+            stakeState = default;
             return false;
         }
 

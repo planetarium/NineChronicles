@@ -292,7 +292,7 @@ namespace Nekoyume.UI.Module
             base.UpdatePage(page);
         }
 
-        private (int[], bool) GetFilteredItemIds(ItemSubTypeFilter filter)
+        private (int[], bool) GetFilteredIds(ItemSubTypeFilter filter)
         {
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
@@ -312,6 +312,11 @@ namespace Nekoyume.UI.Module
             if (_useSearch.Value)
             {
                 validItemIds = validItemIds.Where(IsMatchWithItemId).ToList();
+            }
+
+            if (!filter.ToItemSubType().IsEquipment())
+            {
+                return (validItemIds.ToArray(), false);
             }
 
             var validIconIds = new List<int>(_customIconIds);
@@ -396,9 +401,9 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                var (filteredIconIds, isCustom) = GetFilteredItemIds(filter);
+                var (filteredIds, isCustom) = GetFilteredIds(filter);
                 await ReactiveShopState.RequestBuyProductsAsync(
-                    filter, orderType, limit * 15, reset, filteredIconIds, isCustom);
+                    filter, orderType, limit * 15, reset, filteredIds, isCustom);
             }
 
             _loadingCount--;

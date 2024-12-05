@@ -30,6 +30,9 @@ namespace Nekoyume.UI
         private Button customCraftButton;
 
         [SerializeField]
+        private Button synthesisButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -105,6 +108,13 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
+            synthesisButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<Synthesis>().Show();
+                AudioController.PlayClick();
+            });
+
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
@@ -172,7 +182,7 @@ namespace Nekoyume.UI
             }
 
             // summon
-            // summonNotificationImage.enabled = Summon.HasNotification;
+            summonNotificationImage.enabled = Summon.HasNotification;
 
             // custom craft
             customCraftNotificationImage.enabled = CustomCraft.HasNotification;

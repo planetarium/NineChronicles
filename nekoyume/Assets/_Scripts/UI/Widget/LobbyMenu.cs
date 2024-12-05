@@ -195,6 +195,11 @@ namespace Nekoyume.UI
 
             thorSeasonButton.onClick.AddListener((() =>
             {
+                if (!btnEventReward.IsUnlocked)
+                {
+                    return;
+                }
+
                 Find<EventRewardPopup>().ShowAsThorChain();
             }));
         }
@@ -750,7 +755,7 @@ namespace Nekoyume.UI
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
 
-            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
             thorSeasonButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
 
             var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
@@ -775,26 +780,28 @@ namespace Nekoyume.UI
                     value.currentTickets.ToString(CultureInfo.InvariantCulture);
             }).AddTo(_disposablesAtShow);
 
-            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
-            if (thorSchedule.IsOpened)
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule?.IsOpened != true)
             {
-                Observable.Interval(TimeSpan.FromMinutes(1))
-                    .Subscribe(_ => UpdateThorScheduleText())
-                    .AddTo(_disposablesAtShow);
-                UpdateThorScheduleText();
+                return;
             }
+
+            Observable.Interval(TimeSpan.FromMinutes(1))
+                      .Subscribe(_ => UpdateThorScheduleText())
+                      .AddTo(_disposablesAtShow);
+            UpdateThorScheduleText();
         }
 
         private void UpdateThorScheduleText()
         {
-            var thorSchedule = Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            var thorSchedule = LiveAssetManager.instance.ThorSchedule;
             if (thorSchedule is null || !thorSchedule.IsOpened)
             {
                 return;
             }
 
             var timeSpan = thorSchedule.DiffFromEndTimeSpan;
-            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()})";
+            thorScheduleText.text = $"<style=Clock>{timeSpan.TimespanToString()}";
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -923,6 +930,12 @@ namespace Nekoyume.UI
         public void TutorialActionClickPatrolRewardMenu()
         {
             PatrolRewardClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickEventRewardMenu()
+        {
+            Find<EventRewardPopup>().ShowAsPatrolReward();
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

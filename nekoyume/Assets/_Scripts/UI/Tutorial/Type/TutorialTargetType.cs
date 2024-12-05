@@ -37,6 +37,9 @@ namespace Nekoyume.UI
         PatrolRewardMenu = 100000,
         PatrolTimeText,
         ClaimPatrolRewardButton,
+        EventRewardMenu = 101000,
+        PatrolTimeTextInEvent,
+        ClaimPatrolRewardButtonInEvent,
 
         // TutorialScenario 편집을 json에서 SO로 바꿨기 때문에 Enum 값에 가독성이 필요없어짐
         // Arena - 15

@@ -57,7 +57,8 @@ namespace Nekoyume.UI.Module
             RuneStone,
             Mileage,
             Summon,
-            AdventureBoss
+            AdventureBoss,
+            Synthesis,
         }
 
         [Serializable]
@@ -504,14 +505,7 @@ namespace Nekoyume.UI.Module
                     break;
                 case AssetVisibleState.Shop:
 #if UNITY_IOS || UNITY_ANDROID
-                    if (Game.instance.IAPStoreManager.CheckCategoryName("Mileage"))
-                    {
-                        SetActiveAssets(true, false, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
-                    }
-                    else
-                    {
-                        SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
-                    }
+                    SetActiveAssets(true, false, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
 #else
                     SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
 #endif
@@ -542,6 +536,9 @@ namespace Nekoyume.UI.Module
                     break;
                 case AssetVisibleState.AdventureBoss:
                     SetActiveAssets(true, enabledMaterials: new[] { CostType.GoldDust }, isApPotionActive: true);
+                    break;
+                case AssetVisibleState.Synthesis:
+                    SetActiveAssets(true, isApPotionActive: true, isActionPointActive: true);
                     break;
             }
         }

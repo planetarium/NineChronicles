@@ -40,17 +40,6 @@ namespace Nekoyume.UI
 
         public void OnSeasonPassBtnClick()
         {
-            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
-            {
-                return;
-            }
-
-            if (!ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas.TryGetValue(SeasonPassServiceClient.PassType.CouragePass, out var userSeasonPassSchema))
-            {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
-                return;
-            }
-
             base.Close();
             Find<SeasonPass>().Show(SeasonPassServiceClient.PassType.CouragePass);
         }

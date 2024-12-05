@@ -250,7 +250,7 @@ namespace StateViewer.Editor.Features
 
                 var prevBlockHash = BlockHash.FromString(sourceCsvRow.PrevBlockHash);
                 var signerAddr = new Address(sourceCsvRow.SignerAddr);
-                var stakeAddr = StakeState.DeriveAddress(signerAddr);
+                var stakeAddr = LegacyStakeState.DeriveAddress(signerAddr);
                 try
                 {
                     var (_, stakeBalance) = stateProxy is null
@@ -309,7 +309,7 @@ namespace StateViewer.Editor.Features
                 };
             }
 
-            var stakeState = new StakeState(dict);
+            var stakeState = new LegacyStakeState(dict);
 #pragma warning disable CS0618
             stakeState.CalculateAccumulatedItemRewardsV2(
                 sourceCsvRow.BlockIndex,

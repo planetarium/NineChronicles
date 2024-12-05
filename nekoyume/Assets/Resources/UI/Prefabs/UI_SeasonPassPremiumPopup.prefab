@@ -16592,7 +16592,6 @@ GameObject:
   - component: {fileID: 5497401224495024572}
   - component: {fileID: 4453150326627047732}
   - component: {fileID: 4521028785120418122}
-  - component: {fileID: 205342352718190605}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -16717,37 +16716,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &205342352718190605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6225077092968788055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 1
-  fixedFontSizeOffset: 1
-  fixedSpacingOption: 1
-  fixedMarginOption: 1
-  fontMaterialType: 26
-  l10nKey: UI_SEASONPASS_PREMIUM_PLUS
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &6438265911121555024
 GameObject:
   m_ObjectHideFlags: 0
@@ -16759,7 +16727,6 @@ GameObject:
   - component: {fileID: 1393311513785036596}
   - component: {fileID: 8264317339485907407}
   - component: {fileID: 5870438459724373450}
-  - component: {fileID: 1525175042152985117}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -16884,37 +16851,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &1525175042152985117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6438265911121555024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 1
-  fixedFontSizeOffset: 1
-  fixedSpacingOption: 1
-  fixedMarginOption: 1
-  fontMaterialType: 26
-  l10nKey: UI_SEASONPASS_PREMIUM
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &6535306193184375575
 GameObject:
   m_ObjectHideFlags: 0
@@ -19952,7 +19888,9 @@ MonoBehaviour:
     type: 3}
   premiumPlusIconAdventureBoss: {fileID: 21300000, guid: ff92aea1792bc544db72411515eb6eb9,
     type: 3}
-  premiumPlusContents: {fileID: 1364886787294220972}
+  premiumContents: {fileID: 3844186071959060203}
+  premiumContentsTitle: {fileID: 5870438459724373450}
+  premiumPlusContentsTitle: {fileID: 4521028785120418122}
 --- !u!1 &9024584144462848521
 GameObject:
   m_ObjectHideFlags: 0

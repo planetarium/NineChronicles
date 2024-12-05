@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Nekoyume.TableData;
 using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.TableData.Crystal;
@@ -266,7 +267,7 @@ namespace Nekoyume.Game
 
         public CollectionSheet CollectionSheet { get; private set; }
 
-        public DeBuffLimitSheet DeBuffLimitSheet { get; private set; }
+        public BuffLimitSheet BuffLimitSheet { get; private set; }
 
         public BuffLinkSheet BuffLinkSheet { get; private set; }
 
@@ -294,6 +295,12 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftRecipeSheet CustomEquipmentCraftRecipeSheet { get; private set; }
         public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
         public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
+
+        [UsedImplicitly]
+        public SynthesizeSheet SynthesizeSheet { get; private set; }
+
+        [UsedImplicitly]
+        public SynthesizeWeightSheet SynthesizeWeightSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

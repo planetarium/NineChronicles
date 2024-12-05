@@ -300,7 +300,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
-                var expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.sweep_adventure_boss);
+                var expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash_sweep);
                 seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else

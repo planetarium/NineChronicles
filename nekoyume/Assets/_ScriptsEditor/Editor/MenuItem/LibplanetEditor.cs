@@ -12,12 +12,12 @@ namespace NekoyumeEditor
 {
     public static class LibplanetEditor
     {
-        private static PublicKey GetOrCreateInitialValidator()
+        private static PrivateKey GetOrCreateInitialValidator()
         {
             var pk = Agent.ProposerKey;
             NcDebug.Log($"Private Key of initialValidator: {pk.ToHexWithZeroPaddings()}");
             NcDebug.Log($"Public Key of initialValidator: {pk.PublicKey}");
-            return pk.PublicKey;
+            return pk;
         }
 
         [MenuItem("Tools/Libplanet/Delete All(Editor) - Make Genesis Block For Dev To StreamingAssets Folder")]
@@ -60,7 +60,7 @@ namespace NekoyumeEditor
             }
         }
 
-        private static void MakeGenesisBlock(string path, PublicKey proposer = null)
+        private static void MakeGenesisBlock(string path, PrivateKey proposer = null)
         {
             CreateActivationKey(
                 out var pendingActivationStates,
@@ -70,7 +70,7 @@ namespace NekoyumeEditor
 
             var block = BlockManager.ProposeGenesisBlock(
                 pendingActivationStates.ToArray(),
-                proposer ?? Agent.ProposerKey.PublicKey);
+                proposer ?? Agent.ProposerKey);
             BlockManager.ExportBlock(block, path);
         }
 
