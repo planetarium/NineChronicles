@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Module
             var possibleSynthesis = synthesisCount > 0;
 
             synthesisButton.Interactable = possibleSynthesis;
-            removeAllButton.Interactable = synthesisCount > 1;
+            removeAllButton.Interactable = synthesisCount >= 1;
 
             possibleSynthesisTextObj.SetActive(possibleSynthesis);
             impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
