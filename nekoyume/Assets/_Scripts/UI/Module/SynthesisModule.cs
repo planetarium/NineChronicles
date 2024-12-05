@@ -20,9 +20,6 @@ namespace Nekoyume.UI.Module
 
     public class SynthesisModule : MonoBehaviour
     {
-        // TODO: fix limit count
-        private const int LimitSynthesisMaterialCount = 10000;
-
         [SerializeField]
         private SynthesisMaterialScroll scroll = null!;
 
@@ -45,11 +42,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TMP_Text successRateText = null!;
 
-        private int _inventoryApStoneCount;
-
-        private ItemSubType _itemSubType;
-
         private IList<InventoryItem> _selectedItemsForSynthesize = new List<InventoryItem>();
+
+        private int _inventoryApStoneCount;
+        private ItemSubType _itemSubType;
 
         private bool IsStrong(ItemBase itemBase)
         {
@@ -123,14 +119,14 @@ namespace Nekoyume.UI.Module
 
         private void ActionSynthesize(List<ItemBase> itemBaseList)
         {
-            if (!itemBaseList.Any() || itemBaseList.Count > LimitSynthesisMaterialCount)
+            if (!itemBaseList.Any())
             {
-                NcDebug.LogWarning($"Invalid selected items count. count : {itemBaseList.Count}");
+                NcDebug.LogWarning($"[{nameof(SynthesisModule)}] itemBaseList is empty.");
                 return;
             }
 
             CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, _itemSubType, chargeAp)));
+                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp)));
         }
 
         private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
@@ -174,12 +170,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void PushAction(List<ItemBase> itemBaseList, ItemSubType itemSubType, bool chargeAp)
+        private void PushAction(List<ItemBase> itemBaseList, bool chargeAp)
         {
             StartCoroutine(CoAnimateNPC());
 
             ActionManager.Instance
-                         .Synthesize(itemBaseList, itemSubType, chargeAp)
+                         .Synthesize(itemBaseList, chargeAp)
                          .Subscribe(eval =>
                          {
                              if (eval.Exception == null)

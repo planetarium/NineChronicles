@@ -2721,8 +2721,8 @@ namespace Nekoyume.Blockchain
                 avatarState,
                 blockIndex,
                 addressHex,
-                out var materialEquipments,
-                out var materialCostumes
+                out _,
+                out _
                 );
 
             var inputData = new SynthesizeSimulator.InputData()

@@ -108,7 +108,7 @@ namespace Nekoyume.UI
         {
             Close(true);
             Find<CombinationMain>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            Find<HeaderMenuStatic>()?.UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
         protected override void OnEnable()
