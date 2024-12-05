@@ -111,9 +111,8 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        public void OnRenderCreateAvatar()
+        public void OnRenderCreateAvatar(AvatarState avatarState)
         {
-            var avatarState = States.Instance.CurrentAvatarState;
             StartCoroutine(CreateAndLoginAnimation(avatarState));
         }
 
