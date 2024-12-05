@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
                 baseItemView.EmptyObject.SetActive(true);
                 return;
             }
-            
+
             baseItemView.ClearItem();
 
             if (model.ItemBase != null)
@@ -109,8 +109,8 @@ namespace Nekoyume.UI.Module
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(Disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b))
                 .AddTo(Disposables);
-            model.GrindingCountEnabled
-                .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
+            model.SelectCountEnabled
+                .Subscribe(b => baseItemView.SelectCountObject.SetActive(b))
                 .AddTo(Disposables);
             model.CollectionSelected
                 .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))

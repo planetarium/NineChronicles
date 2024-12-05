@@ -20,6 +20,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 
@@ -467,6 +468,19 @@ namespace Nekoyume.Blockchain
                         evaluation.OutputState,
                         avatarAddress,
                         RuneHelper.ToCurrency(row)));
+            }
+        }
+
+        protected void ChargeAp(Address avatarAddress)
+        {
+            // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+            var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1, false);
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(avatarAddress);
             }
         }
     }
