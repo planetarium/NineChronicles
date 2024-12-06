@@ -28,8 +28,10 @@ namespace Nekoyume.UI
             if (isAdded &&
                 enabled)
             {
+#if !TEST_SCENE
                 VFXController.instance
                     .CreateAndChaseRectTransform<DropItemInventoryVFX>(image.rectTransform);
+#endif
             }
         }
 

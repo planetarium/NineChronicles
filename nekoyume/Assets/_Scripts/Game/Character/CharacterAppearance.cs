@@ -184,7 +184,7 @@ namespace Nekoyume.Game.Character
                 UpdateAcEye(dccParts[DccPartsType.ac_eye], true);
                 UpdateAcHead(dccParts[DccPartsType.ac_head], true);
 
-                if (!isFriendCharacter)
+                if (!isFriendCharacter && pet)
                 {
                     pet.SetPosition(SpineController.GetBodySkeletonAnimation(), false);
                 }
@@ -213,7 +213,7 @@ namespace Nekoyume.Game.Character
                     UpdateAura(aura);
                 }
 
-                if (!isFriendCharacter)
+                if (!isFriendCharacter && pet)
                 {
                     pet.SetPosition(SpineController.GetBodySkeletonAnimation(), fullCostume is not null);
                 }
@@ -280,7 +280,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEar(int index, bool isDcc)
         {
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateEar(id, isDcc);
@@ -288,7 +288,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateFace(int index, bool isDcc)
         {
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateFace(id, isDcc);
@@ -296,7 +296,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateHair(int index, bool isDcc)
         {
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateHair(id, isDcc);
@@ -304,7 +304,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTail(int index, bool isDcc)
         {
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateTail(id, isDcc);
