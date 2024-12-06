@@ -61,6 +61,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject dimObj;
 
+        [SerializeField]
+        private IAPRewardView[] rewardViews;
+        [SerializeField]
+        private GameObject rewardLayout;
+        [SerializeField]
+        private GameObject mileageObj;
+        [SerializeField]
+        private TextMeshProUGUI mileageText;
+
         private RectTransform _rect;
         private InAppPurchaseServiceClient.ProductSchema _data;
         private UnityEngine.Purchasing.Product _purchasingData;
@@ -155,15 +164,50 @@ namespace Nekoyume.UI.Module
             switch (_data.Size)
             {
                 case InAppPurchaseServiceClient.ProductAssetUISize._1x1:
-                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 230);
+                    _rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 230);
                     bottomButtonLayoutElement.minHeight = 65;
                     bottomLayout.spacing = 0;
+                    rewardLayout.SetActive(false);
                     break;
                 case InAppPurchaseServiceClient.ProductAssetUISize._1x2:
-                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467); // add spacing size
+                    _rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 467);
                     bottomButtonLayoutElement.minHeight = 75;
                     bottomLayout.spacing = 3;
+                    rewardLayout.SetActive(true);
+
+                    var iapRewardIndex = 0;
+                    foreach (var item in _data.FavList)
+                    {
+                        if (iapRewardIndex < rewardViews.Length)
+                        {
+                            rewardViews[iapRewardIndex].SetFavItem(item);
+                            iapRewardIndex++;
+                        }
+                    }
+                    foreach (var item in _data.FungibleItemList)
+                    {
+                        if (iapRewardIndex < rewardViews.Length)
+                        {
+                            rewardViews[iapRewardIndex].SetItemBase(item);
+                            iapRewardIndex++;
+                        }
+                    }
+                    for (; iapRewardIndex < rewardViews.Length; iapRewardIndex++)
+                    {
+                        rewardViews[iapRewardIndex].gameObject.SetActive(false);
+                    }
+
                     break;
+            }
+
+            if (_data.Mileage > 0)
+            {
+                mileageObj.SetActive(true);
+                mileageText.text = _data.Mileage.ToString("N0");
+            }
+            else
+            {
+                mileageObj.SetActive(false);
             }
 
             tagObj.SetActive(false);

@@ -65,6 +65,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI[] priceTexts;
 
+        [SerializeField]
+        private GameObject mileageObject;
+        [SerializeField]
+        private TextMeshProUGUI mileageText;
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+
         private InAppPurchaseServiceClient.ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
         private bool _isInLobby;
@@ -224,6 +231,16 @@ namespace Nekoyume.UI
                     break;
             }
 
+            if(_data.Mileage > 0)
+            {
+                mileageObject.SetActive(true);
+                mileageText.text = _data.Mileage.ToString("N0");
+            }
+            else
+            {
+                mileageObject.SetActive(false);
+            }
+
             // Initialize IAP Reward
 
             var iapRewardIndex = 0;
@@ -231,10 +248,6 @@ namespace Nekoyume.UI
             {
                 if (iapRewardIndex < iapRewards.Length)
                 {
-                    iapRewards[iapRewardIndex].gameObject.SetActive(true);
-                    iapRewards[iapRewardIndex].RewardImage.sprite = SpriteHelper.GetFavIcon(item.Ticker);
-                    iapRewards[iapRewardIndex].RewardCount.text = ((BigInteger)item.Amount).ToCurrencyNotation();
-                    iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(item.Ticker));
                     iapRewards[iapRewardIndex].SetFavItem(item);
                     iapRewardIndex++;
                 }
@@ -244,21 +257,7 @@ namespace Nekoyume.UI
             {
                 if (iapRewardIndex < iapRewards.Length)
                 {
-                    iapRewards[iapRewardIndex].gameObject.SetActive(true);
-                    iapRewards[iapRewardIndex].RewardImage.sprite = SpriteHelper.GetItemIcon(item.SheetItemId);
-                    iapRewards[iapRewardIndex].RewardCount.text = $"x{item.Amount}";
-                    try
-                    {
-                        var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[item.SheetItemId];
-                        iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
-                        var dummyItem = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
-                        iapRewards[iapRewardIndex].SetItemBase(dummyItem);
-                    }
-                    catch
-                    {
-                        NcDebug.LogError($"Can't Find Item ID {item.SheetItemId} in ItemSheet");
-                    }
-
+                    iapRewards[iapRewardIndex].SetItemBase(item);
                     iapRewardIndex++;
                 }
             }
