@@ -25574,9 +25574,9 @@ GameObject:
   - component: {fileID: 5218555744927940610}
   - component: {fileID: 5217106435652238170}
   - component: {fileID: 6463028825157753028}
-  - component: {fileID: 2564646805209053168}
+  - component: {fileID: 5309464708947522223}
   m_Layer: 5
-  m_Name: UI_GrindingLoadingScreen
+  m_Name: UI_SynthesizeLoadingScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25647,7 +25647,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2564646805209053168
+--- !u!114 &5309464708947522223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25656,7 +25656,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5437176615005064908}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f88e5e5533f4a858d5359139f7bb30d, type: 3}
+  m_Script: {fileID: 11500000, guid: bc2cea379af3c41419364c832bbb46bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
@@ -25670,8 +25670,6 @@ MonoBehaviour:
   speechBubble: {fileID: 8381221411227790039}
   npcSkeletonGraphic: {fileID: 2844869084947429269}
   npcCloseColor: {r: 0, g: 0, b: 0, a: 0}
-  crystalAnimationStartRect: {fileID: 3950499329594492948}
-  crystalAnimationTargetRect: {fileID: 0}
 --- !u!1 &5704916783573856934
 GameObject:
   m_ObjectHideFlags: 0

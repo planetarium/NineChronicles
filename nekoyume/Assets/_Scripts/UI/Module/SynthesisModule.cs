@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -244,7 +243,18 @@ namespace Nekoyume.UI.Module
 
         private void PushAction(List<ItemBase> itemBaseList, bool chargeAp)
         {
-            StartCoroutine(CoAnimateNPC());
+            if (itemBaseList.Count == 0)
+            {
+                NcDebug.LogWarning($"[{nameof(SynthesisModule)}] itemBaseList is empty.");
+                return;
+            }
+
+            var loadingScreen = Widget.Find<SynthesizeLoadingScreen>();
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+
+            var pool = Synthesis.GetSynthesizeResultPool((Grade)itemBaseList[0].Grade, itemBaseList[0].ItemSubType);
+            loadingScreen.AnimateNpc(pool);
 
             ActionManager.Instance
                          .Synthesize(itemBaseList, chargeAp)
@@ -274,16 +284,6 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion PushAction
-
-        #region NPC Animation
-
-        private IEnumerator CoAnimateNPC()
-        {
-            // TODO
-            yield return null;
-        }
-
-        #endregion NPC Animation
 
         #region Init
 
