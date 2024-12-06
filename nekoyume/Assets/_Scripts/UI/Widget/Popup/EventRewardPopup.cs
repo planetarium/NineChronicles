@@ -138,7 +138,7 @@ namespace Nekoyume.UI
         {
             var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
             int index;
-            if (TryGetClaimableGifts(out _))
+            if (TryGetClaimableGift(out _))
             {
                 var claimGifts = eventRewards.FirstOrDefault(reward =>
                     reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ClaimGift);
@@ -236,7 +236,7 @@ namespace Nekoyume.UI
                     ? string.Empty
                     : L10nManager.Localize("UI_GET_REWARD");
                 receiveButtonIndicator.SetActive(value);
-                receiveButton.Interactable = TryGetClaimableGifts(out _) && !value;
+                receiveButton.Interactable = TryGetClaimableGift(out _) && !value;
             }).AddTo(_disposables);
         }
 
@@ -335,9 +335,9 @@ namespace Nekoyume.UI
 
         private void ClaimGifts()
         {
-            if (!TryGetClaimableGifts(out var row))
+            if (!TryGetClaimableGift(out var row))
             {
-                NcDebug.LogError("No claimable gifts.");
+                NcDebug.LogError("No claimable gift.");
                 return;
             }
 
@@ -369,14 +369,16 @@ namespace Nekoyume.UI
             receiveButtonIndicator.SetActive(false);
         }
 
-        private static bool TryGetClaimableGifts(out ClaimableGiftsSheet.Row row)
+        private static bool TryGetClaimableGift(out ClaimableGiftsSheet.Row row)
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var sheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
             var claimedGiftIds = Game.Game.instance.States.ClaimedGiftIds;
             if (claimedGiftIds != null)
             {
-                return sheet.TryFindRowByBlockIndex(blockIndex, out row) && !claimedGiftIds.Contains(row.Id);
+                row = sheet.OrderedList.FirstOrDefault(r =>
+                    r.Validate(blockIndex) && !claimedGiftIds.Contains(r.Id));
+                return row != null;
             }
 
             row = null;
