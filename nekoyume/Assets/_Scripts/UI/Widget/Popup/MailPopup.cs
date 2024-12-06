@@ -393,7 +393,7 @@ namespace Nekoyume.UI
                 return state switch
                 {
                     MailTabState.All => true,
-                    MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
+                    MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop or MailType.CustomCraft,
                     _ => mail.MailType == (MailType)state
                 };
             }
