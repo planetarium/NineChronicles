@@ -36,6 +36,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private ConditionalButton removeAllButton = null!;
 
+        [SerializeField]
+        private GameObject buttonBlockerOnSynthesis = null!;
+
         [Header("Animation")]
         [SerializeField]
         private Animator pendantAnimator = null!;
@@ -260,14 +263,14 @@ namespace Nekoyume.UI.Module
                          });
             ClearScrollData();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
-            SetActionLoadingIndicator(true);
+            SetOnActionState(true);
             // TODO: 뚱땅창
-            // TODO: 합성중일 때 버튼 상태
         }
 
-        public void SetActionLoadingIndicator(bool active)
+        public void SetOnActionState(bool active)
         {
             actionLoadingIndicator.SetActive(active);
+            buttonBlockerOnSynthesis.SetActive(active);
         }
 
         #endregion PushAction

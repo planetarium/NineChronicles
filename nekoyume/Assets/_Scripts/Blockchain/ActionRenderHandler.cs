@@ -435,6 +435,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSynthesize)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Synthesize>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionSynthesize)
+                .AddTo(_disposables);
         }
 
         private void UnlockEquipmentRecipe()
@@ -2744,9 +2752,13 @@ namespace Nekoyume.Blockchain
             synthesisResultScreen.Show(result);
 
             var synthesis = Widget.Find<Synthesis>();
-            synthesis.SynthesisModule.SetActionLoadingIndicator(false);
+            synthesis.SynthesisModule.SetOnActionState(false);
+        }
 
-            // TODO: 에러처리 -> 인디케이터 끄기
+        private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
+        {
+            var synthesis = Widget.Find<Synthesis>();
+            synthesis.SynthesisModule.SetOnActionState(false);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
