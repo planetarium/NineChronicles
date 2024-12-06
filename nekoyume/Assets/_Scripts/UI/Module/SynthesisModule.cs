@@ -196,8 +196,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var grade = itemBaseList[0] switch
+            {
+                Equipment equipment => (Grade)equipment.Grade,
+                Costume costume => (Grade)costume.Grade,
+                _ => throw new ArgumentException($"Invalid item type: {itemBaseList[0].GetType()}"),
+            };
+
             CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp)));
+                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType)));
         }
 
         private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
@@ -241,7 +248,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void PushAction(List<ItemBase> itemBaseList, bool chargeAp)
+        private void PushAction(List<ItemBase> itemBaseList, bool chargeAp, Grade grade, ItemSubType itemSubType)
         {
             if (itemBaseList.Count == 0)
             {
@@ -257,7 +264,7 @@ namespace Nekoyume.UI.Module
             loadingScreen.AnimateNpc(pool);
 
             ActionManager.Instance
-                         .Synthesize(itemBaseList, chargeAp)
+                         .Synthesize(itemBaseList, chargeAp, grade, itemSubType)
                          .Subscribe(eval =>
                          {
                              if (eval.Exception == null)
@@ -274,7 +281,6 @@ namespace Nekoyume.UI.Module
             ClearScrollData();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
             SetOnActionState(true);
-            // TODO: 뚱땅창
         }
 
         public void SetOnActionState(bool active)
