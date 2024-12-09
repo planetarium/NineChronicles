@@ -197,7 +197,7 @@ namespace Nekoyume.Blockchain
             UpdateCrystalBalance(evaluation);
         }
 
-        protected static async UniTask UpdateAvatarState<T>(
+        protected static async UniTask<AvatarState> UpdateAvatarState<T>(
             ActionEvaluation<T> evaluation,
             int index)
             where T : ActionBase
@@ -205,16 +205,17 @@ namespace Nekoyume.Blockchain
             if (!States.Instance.AgentState.avatarAddresses.ContainsKey(index))
             {
                 States.Instance.RemoveAvatarState(index);
-                return;
+                return null;
             }
 
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
             var state =
                 Game.Game.instance.Agent.GetAvatarStatesAsync(
                     evaluation.OutputState,
-                    new[] { avatarAddress }).Result[avatarAddress];
+                    new[] { avatarAddress, }).Result[avatarAddress];
 
             await UpdateAvatarState(state, index);
+            return state;
         }
 
         protected async UniTask UpdateCurrentAvatarStateAsync<T>(ActionEvaluation<T> evaluation)

@@ -836,7 +836,7 @@ namespace Nekoyume.Blockchain
             );
             NcDebug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
-            yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
+            yield return States.Instance.SelectAvatarAsync(avatarIndex, Game.Game.instance.Agent.BlockTipStateRootHash).ToCoroutine();
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
 
             while (true)

@@ -886,11 +886,6 @@ namespace Nekoyume.Blockchain
         {
             UniTask.RunOnThreadPool(async () =>
             {
-                await UpdateAgentStateAsync(eval);
-                await UpdateAvatarState(eval, eval.Action.index);
-                // 아바타 생성시 States초기화를 위해 forceNewSelection을 true로 설정합니다.
-                await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState, true);
-
                 // need AgentAddress check 'ValidateEvaluationForCurrentAgent'
                 var agentAddress = eval.Signer;
                 var avatarAddress = agentAddress.Derive(
@@ -901,27 +896,21 @@ namespace Nekoyume.Blockchain
                     )
                 );
 
+                await UpdateAgentStateAsync(eval);
+                var avatarState = await UpdateAvatarState(eval, eval.Action.index);
+                // 아바타 생성시 States초기화를 위해 forceNewSelection을 true로 설정합니다.
+                await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState, avatarState, true);
+
                 await UniTask.SwitchToMainThread();
 
-                if (StateGetter.TryGetAvatarState(
-                    eval.OutputState,
-                    agentAddress,
-                    avatarAddress,
-                    out var avatarState))
+                RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
+                DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
+                // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+                ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+                var loginDetail = Widget.Find<LoginDetail>();
+                if (loginDetail && loginDetail.IsActive())
                 {
-                    RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
-                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
-                    // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
-                    ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
-                    var loginDetail = Widget.Find<LoginDetail>();
-                    if (loginDetail && loginDetail.IsActive())
-                    {
-                        loginDetail.OnRenderCreateAvatar();
-                    }
-                }
-                else
-                {
-                    NcDebug.LogError("Failed to get avatar state.");
+                    loginDetail.OnRenderCreateAvatar();
                 }
             }).Forget();
         }

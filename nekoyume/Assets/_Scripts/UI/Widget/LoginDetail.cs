@@ -167,7 +167,7 @@ namespace Nekoyume.UI
                 loadingScreen.Show(
                     LoadingScreen.LoadingType.JustModule,
                     L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
-                await States.Instance.SelectAvatarAsync(_selectedIndex);
+                await States.Instance.SelectAvatarAsync(_selectedIndex, Game.Game.instance.Agent.BlockTipStateRootHash);
                 Game.Event.OnUpdateAddresses.Invoke();
                 loadingScreen.Close();
                 player = new Player(

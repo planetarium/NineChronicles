@@ -60,12 +60,12 @@ namespace Nekoyume
 
             return (itemSlotStates, runeSlotStates);
         }
-        
+
         public static async Task<AllCombinationSlotState> GetAllCombinationSlotStateAsync(
             this IAgent agent, Address avatarAddress)
         {
             AllCombinationSlotState allCombinationSlotState;
-            
+
             var value = await agent.GetStateAsync(Addresses.CombinationSlot, avatarAddress);
             if (value is List list)
             {
@@ -80,7 +80,7 @@ namespace Nekoyume
                 }
                 var bulkStates = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, combinationSlotAddresses);
                 allCombinationSlotState = new AllCombinationSlotState();
-                
+
                 for (var i = 0; i < AvatarState.DefaultCombinationSlotCount; i++)
                 {
                     var bulkState = bulkStates[combinationSlotAddresses[i]];
