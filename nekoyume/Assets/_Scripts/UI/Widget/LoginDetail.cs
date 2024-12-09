@@ -111,12 +111,12 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        public void OnRenderCreateAvatar(AvatarState avatarState)
+        public void OnRenderCreateAvatar()
         {
-            StartCoroutine(CreateAndLoginAnimation(avatarState));
+            StartCoroutine(CreateAndLoginAnimation());
         }
 
-        private IEnumerator CreateAndLoginAnimation(AvatarState state)
+        private IEnumerator CreateAndLoginAnimation()
         {
             var loadingScreen = Find<LoadingScreen>();
             if (loadingScreen is null)
@@ -126,7 +126,7 @@ namespace Nekoyume.UI
 
             loadingScreen.Close();
             yield return new WaitUntil(() => loadingScreen.IsCloseAnimationCompleted);
-            OnDidAvatarStateLoaded(state);
+            OnDidAvatarStateLoaded();
         }
 
         public async void LoginClick()
@@ -138,7 +138,7 @@ namespace Nekoyume.UI
                 LoadingScreen.LoadingType.Entering, L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
             await RxProps.SelectAvatarAsync(_selectedIndex, Game.Game.instance.Agent.BlockTipStateRootHash);
             loadingScreen.Close();
-            OnDidAvatarStateLoaded(States.Instance.CurrentAvatarState);
+            OnDidAvatarStateLoaded();
         }
 
         public void BackToLogin()
@@ -264,7 +264,7 @@ namespace Nekoyume.UI
             BackToLogin();
         }
 
-        private void OnDidAvatarStateLoaded(AvatarState avatarState)
+        private void OnDidAvatarStateLoaded()
         {
             Util.SaveAvatarSlotIndex(_selectedIndex);
             if (_isCreateMode)

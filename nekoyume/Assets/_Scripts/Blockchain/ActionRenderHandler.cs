@@ -916,7 +916,7 @@ namespace Nekoyume.Blockchain
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
-                        loginDetail.OnRenderCreateAvatar(avatarState);
+                        loginDetail.OnRenderCreateAvatar();
                     }
                 }
                 else
