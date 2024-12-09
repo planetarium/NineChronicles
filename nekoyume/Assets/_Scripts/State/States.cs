@@ -828,6 +828,11 @@ namespace Nekoyume.State
                 {
                     runeStates.Add(runeState);
                 }
+                else
+                {
+                    NcDebug.LogError($"[{nameof(States)}.{nameof(GetEquippedRuneStates)}] Not found RuneState. {slot.RuneId}");
+                    slot.Unequip();
+                }
             }
 
             return runeStates;
