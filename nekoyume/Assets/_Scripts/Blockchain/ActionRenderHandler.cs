@@ -886,16 +886,6 @@ namespace Nekoyume.Blockchain
         {
             UniTask.RunOnThreadPool(async () =>
             {
-                // need AgentAddress check 'ValidateEvaluationForCurrentAgent'
-                var agentAddress = eval.Signer;
-                var avatarAddress = agentAddress.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "avatar-state-{0}",
-                        eval.Action.index
-                    )
-                );
-
                 await UpdateAgentStateAsync(eval);
                 var avatarState = await UpdateAvatarState(eval, eval.Action.index);
                 // 아바타 생성시 States초기화를 위해 forceNewSelection을 true로 설정합니다.
@@ -904,7 +894,7 @@ namespace Nekoyume.Blockchain
                 await UniTask.SwitchToMainThread();
 
                 RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
-                DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
+                DialogPopup.DeleteDialogPlayerPrefs(avatarState.address);
                 // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
                 ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
                 var loginDetail = Widget.Find<LoginDetail>();
