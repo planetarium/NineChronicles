@@ -251,7 +251,7 @@ namespace Nekoyume.UI
         {
             var gradeSet = new HashSet<Grade>
             {
-                grade,
+                //grade,
                 SynthesizeSimulator.GetTargetGrade(grade),
             };
 
