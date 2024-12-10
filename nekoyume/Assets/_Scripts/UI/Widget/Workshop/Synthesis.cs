@@ -217,6 +217,12 @@ namespace Nekoyume.UI
                     continue;
                 }
 
+                if (!row.RequiredCountDict.ContainsKey(_currentItemSubType))
+                {
+                    // 특정 subType에 대한 value가 없을 수 있음
+                    continue;
+                }
+
                 var requiredItemCount = row.RequiredCountDict[_currentItemSubType].RequiredCount;
                 var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
