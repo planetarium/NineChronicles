@@ -266,6 +266,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ClaimGiftsResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SynthesisResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());
@@ -344,6 +346,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
             _secondWidgets.Add(Widget.Create<CustomCraft>());
+            _secondWidgets.Add(Widget.Create<Synthesis>());
             yield return null;
 
             // header menu
@@ -453,6 +456,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<StatsBonusPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SynthesisRegistrationPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;

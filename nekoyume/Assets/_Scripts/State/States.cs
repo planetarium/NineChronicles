@@ -477,7 +477,7 @@ namespace Nekoyume.State
         {
             var avatarState =
                 (await Game.Game.instance.Agent.GetAvatarStatesAsync(
-                    new[] { avatarAddress }))[avatarAddress];
+                    new[] { avatarAddress, }))[avatarAddress];
             if (avatarState is not null)
             {
                 await AddOrReplaceAvatarStateAsync(avatarState, index, initializeReactiveState);
@@ -518,7 +518,7 @@ namespace Nekoyume.State
             if (index == CurrentAvatarKey)
             {
                 return await UniTask.RunOnThreadPool(async () =>
-                    await SelectAvatarAsync(index, initializeReactiveState), false);
+                    await SelectAvatarAsync(index, Game.Game.instance.Agent.BlockTipStateRootHash, initializeReactiveState), false);
             }
 
             return state;
@@ -550,6 +550,7 @@ namespace Nekoyume.State
         /// <exception cref="KeyNotFoundException"></exception>
         public async UniTask<AvatarState> SelectAvatarAsync(
             int index,
+            HashDigest<SHA256> stateRootHash,
             bool initializeReactiveState = true,
             bool forceNewSelection = false)
         {
@@ -557,11 +558,24 @@ namespace Nekoyume.State
             {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
+            var avatarState = _avatarStates[index];
+            return await SelectAvatarAsync(index, stateRootHash, avatarState, initializeReactiveState, forceNewSelection);
+        }
 
+        /// <summary>
+        /// 인자로 받은 인덱스의 아바타 상태를 선택한다.
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public async UniTask<AvatarState> SelectAvatarAsync(
+            int index,
+            HashDigest<SHA256> stateRootHash,
+            AvatarState avatarState,
+            bool initializeReactiveState = true,
+            bool forceNewSelection = false)
+        {
             var isNewlySelected = forceNewSelection || CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
-            var avatarState = _avatarStates[CurrentAvatarKey];
             LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
             var agent = Game.Game.instance.Agent;
@@ -573,41 +587,39 @@ namespace Nekoyume.State
                 : new List<int>
                 {
                     1,
-                    GameConfig.MimisbrunnrWorldId
+                    GameConfig.MimisbrunnrWorldId,
                 };
             Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
-            if (isNewlySelected)
+            if (!isNewlySelected)
             {
-                _hammerPointStates = null;
-                await UniTask.RunOnThreadPool(async () => { await InitializeAvatarAndRelatedStates(agent, avatarState.address); });
-
-                PatrolReward.InitializeInformation(avatarState.address.ToHex(),
-                    AgentState.address.ToHex(), avatarState.level).AsUniTask().Forget();
-                ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
-                Widget.Find<CombinationSlotsPopup>().ClearSlots();
+                return CurrentAvatarState;
             }
+
+            _hammerPointStates = null;
+            await UniTask.RunOnThreadPool(async () =>
+            {
+                await InitializeAvatarAndRelatedStates(agent, stateRootHash, avatarState, avatarState.address);
+            });
+
+            PatrolReward.InitializeInformation(avatarState.address.ToHex(),
+                AgentState.address.ToHex(), avatarState.level).AsUniTask().Forget();
+            ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+            Widget.Find<CombinationSlotsPopup>().ClearSlots();
 
             return CurrentAvatarState;
         }
 
-        private async UniTask InitializeAvatarAndRelatedStates(IAgent agent, Address avatarAddr)
+        private async UniTask InitializeAvatarAndRelatedStates(IAgent agent, HashDigest<SHA256> stateRootHash, AvatarState curAvatarState, Address avatarAddr)
         {
-            var curAvatarState = (await agent.GetAvatarStatesAsync(
-                new[] { avatarAddr }))[avatarAddr];
-            // AvatarState를 체인에서 가져오지 못했을때
-            if (curAvatarState is null)
-            {
-                return;
-            }
-
             var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddr);
 
             var petIds = TableSheets.Instance.PetSheet.Values
                 .Select(row => (row.Id, PetState.DeriveAddress(avatarAddr, row.Id)))
                 .ToList();
-            var petBulkState = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, petIds.Select(pair => pair.Item2));
-            
+            var petBulkState = await agent.GetStateBulkAsync(stateRootHash, ReservedAddresses.LegacyAccount,
+                petIds.Select(pair => pair.Item2));
+
             await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
             SetPetStates(petIds.ToDictionary(pair => pair.Id, pair => petBulkState[pair.Item2]));
 
@@ -618,12 +630,12 @@ namespace Nekoyume.State
             // [4]: Relationship
             // [5]: ClaimedGiftIds
             var listStates = await Task.WhenAll(
-                agent.GetStateAsync(ReservedAddresses.LegacyAccount, skillStateAddress),
-                agent.GetStateAsync(Addresses.Collection, avatarAddr),
-                agent.GetStateAsync(Addresses.ActionPoint, avatarAddr),
-                agent.GetStateAsync(Addresses.DailyReward, avatarAddr),
-                agent.GetStateAsync(Addresses.Relationship, avatarAddr),
-                agent.GetStateAsync(Addresses.ClaimedGiftIds, avatarAddr));
+                agent.GetStateAsync(stateRootHash, ReservedAddresses.LegacyAccount, skillStateAddress),
+                agent.GetStateAsync(stateRootHash, Addresses.Collection, avatarAddr),
+                agent.GetStateAsync(stateRootHash, Addresses.ActionPoint, avatarAddr),
+                agent.GetStateAsync(stateRootHash, Addresses.DailyReward, avatarAddr),
+                agent.GetStateAsync(stateRootHash, Addresses.Relationship, avatarAddr),
+                agent.GetStateAsync(stateRootHash, Addresses.ClaimedGiftIds, avatarAddr));
             SetCrystalRandomSkillState(listStates[0] is List serialized
                 ? new CrystalRandomSkillState(skillStateAddress, serialized)
                 : null);
@@ -643,9 +655,9 @@ namespace Nekoyume.State
                 ? rawIds.ToList(serialized => (int)(Integer)serialized)
                 : new List<int>());
 
-            var allCombinationSlotState = await agent.GetAllCombinationSlotStateAsync(curAvatarState.address);
+            var allCombinationSlotState = GetStateExtensions.GetAllCombinationSlotState(stateRootHash, curAvatarState.address);
             SetAllCombinationSlotState(avatarAddr, allCombinationSlotState);
-            SetAllRuneState(await agent.GetAllRuneStateAsync(curAvatarState.address));
+            SetAllRuneState(GetStateExtensions.GetAllRuneState(stateRootHash, curAvatarState.address));
 
             await InitRuneSlotStates();
         }
