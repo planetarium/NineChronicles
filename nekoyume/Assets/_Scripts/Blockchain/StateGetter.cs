@@ -66,7 +66,7 @@ namespace Nekoyume.Blockchain
         public static AvatarState GetAvatarState(HashDigest<SHA256> hash, Address avatarAddress)
         {
             var result = Game.Game.instance.Agent
-                .GetAvatarStatesAsync(hash, new[] { avatarAddress }).Result;
+                .GetAvatarStatesAsync(hash, new[] { avatarAddress, }).Result;
 
             if (result.TryGetValue(avatarAddress, out var value))
             {
