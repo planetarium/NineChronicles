@@ -194,7 +194,7 @@ namespace Nekoyume.UI
 
         private async UniTask DownloadTexture()
         {
-            productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(_data.PopupPathKey)}");
+            productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.GetDetailImagePath()}");
         }
 
         public async UniTask Show(InAppPurchaseServiceClient.ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
@@ -231,7 +231,9 @@ namespace Nekoyume.UI
                     break;
             }
 
-            if(_data.Mileage > 0)
+            titleText.text = _data.GetPopupTitleText().Replace("\\n", "\n");
+
+            if (_data.Mileage > 0)
             {
                 mileageObject.SetActive(true);
                 mileageText.text = _data.Mileage.ToString("N0");
@@ -242,7 +244,6 @@ namespace Nekoyume.UI
             }
 
             // Initialize IAP Reward
-
             var iapRewardIndex = 0;
             foreach (var item in _data.FavList)
             {
