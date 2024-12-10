@@ -393,6 +393,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CustomCraftLoadingScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SynthesizeLoadingScreen>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CelebratesPopup>());

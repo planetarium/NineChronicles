@@ -1,18 +1,22 @@
 #nullable enable
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -20,6 +24,8 @@ namespace Nekoyume.UI.Module
 
     public class SynthesisModule : MonoBehaviour
     {
+        private readonly int isActiveAnimHash = Animator.StringToHash("IsActive");
+
         [SerializeField]
         private SynthesisMaterialScroll scroll = null!;
 
@@ -28,6 +34,25 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private ConditionalButton removeAllButton = null!;
+
+        [SerializeField]
+        private GameObject buttonBlockerOnSynthesis = null!;
+
+        [Header("Animation")]
+        [SerializeField]
+        private Animator pendantAnimator = null!;
+
+        [SerializeField]
+        private Image pendantItemIcon = null!;
+
+        [SerializeField]
+        private Image itemBackground = null!;
+
+        [SerializeField]
+        private float itemIconAnimInterval = 0.7f;
+
+        [SerializeField]
+        private GameObject actionLoadingIndicator = null!;
 
         [Header("Texts")]
         [SerializeField]
@@ -46,6 +71,8 @@ namespace Nekoyume.UI.Module
 
         private int _inventoryApStoneCount;
         private ItemSubType _itemSubType;
+
+        private CancellationTokenSource? _expectationsItemIconCts;
 
         private bool IsStrong(ItemBase itemBase)
         {
@@ -83,11 +110,7 @@ namespace Nekoyume.UI.Module
             var synthesisCount = registrationItems.Count / model.RequiredItemCount;
             var possibleSynthesis = synthesisCount > 0;
 
-            synthesisButton.Interactable = possibleSynthesis;
-            removeAllButton.Interactable = synthesisCount >= 1;
-
-            possibleSynthesisTextObj.SetActive(possibleSynthesis);
-            impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
+            SetSynthesisButtonState(possibleSynthesis);
 
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", possibleSynthesis ? synthesisCount : 0);
 
@@ -98,21 +121,69 @@ namespace Nekoyume.UI.Module
 
             scroll.UpdateData(registrationItems);
             scroll.RawJumpTo(registrationItems.Count - 1);
+
+            ClearExpectationsItemIconCts();
+            _expectationsItemIconCts = new CancellationTokenSource();
+            ShowExpectationsItemIcon(model.Grade, model.ItemSubType, _expectationsItemIconCts).Forget();
         }
 
         private void ClearScrollData()
         {
             _selectedItemsForSynthesize.Clear();
             scroll.UpdateData(_selectedItemsForSynthesize);
+            SetSynthesisButtonState(false);
 
-            synthesisButton.Interactable = false;
-            removeAllButton.Interactable = false;
-
-            possibleSynthesisTextObj.SetActive(false);
-            impossibleSynthesisTextObj.SetActive(true);
+            ClearExpectationsItemIconCts();
 
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", 0);
             successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", 0);
+        }
+
+        private void SetSynthesisButtonState(bool possibleSynthesis)
+        {
+            synthesisButton.Interactable = possibleSynthesis;
+            removeAllButton.Interactable = possibleSynthesis;
+            pendantAnimator.SetBool(isActiveAnimHash, possibleSynthesis);
+
+            possibleSynthesisTextObj.SetActive(possibleSynthesis);
+            impossibleSynthesisTextObj.SetActive(!possibleSynthesis);
+        }
+
+        private async UniTask ShowExpectationsItemIcon(Grade grade, ItemSubType itemSubType, CancellationTokenSource cts)
+        {
+            var pool = Synthesis.GetSynthesizeResultPool(grade, itemSubType);
+            if (pool == null || pool.Count == 0)
+            {
+                NcDebug.LogError($"[{nameof(SynthesisModule)}] pool is empty.");
+                return;
+            }
+
+            if (cts.IsCancellationRequested)
+            {
+                NcDebug.LogWarning($"[{nameof(SynthesisModule)}] cts is canceled.");
+                return;
+            }
+
+            while (!cts.IsCancellationRequested)
+            {
+                foreach (var poolItem in pool)
+                {
+                    pendantItemIcon.sprite = SpriteHelper.GetItemIcon(poolItem.Item1);
+                    itemBackground.sprite = SpriteHelper.GetItemBackground((int)poolItem.Item2);
+                    var isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(itemIconAnimInterval), cancellationToken: cts.Token).SuppressCancellationThrow();
+                    if (isCancelled)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void ClearExpectationsItemIconCts()
+        {
+            _expectationsItemIconCts?.Cancel();
+            _expectationsItemIconCts?.Dispose();
+            _expectationsItemIconCts = null;
         }
 
         #region PushAction
@@ -125,8 +196,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var grade = itemBaseList[0] switch
+            {
+                Equipment equipment => (Grade)equipment.Grade,
+                Costume costume => (Grade)costume.Grade,
+                _ => throw new ArgumentException($"Invalid item type: {itemBaseList[0].GetType()}"),
+            };
+
             CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp)));
+                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType)));
         }
 
         private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
@@ -170,12 +248,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void PushAction(List<ItemBase> itemBaseList, bool chargeAp)
+        private void PushAction(List<ItemBase> itemBaseList, bool chargeAp, Grade grade, ItemSubType itemSubType)
         {
-            StartCoroutine(CoAnimateNPC());
+            if (itemBaseList.Count == 0)
+            {
+                NcDebug.LogWarning($"[{nameof(SynthesisModule)}] itemBaseList is empty.");
+                return;
+            }
+
+            var loadingScreen = Widget.Find<SynthesizeLoadingScreen>();
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+
+            var pool = Synthesis.GetSynthesizeResultPool((Grade)itemBaseList[0].Grade, itemBaseList[0].ItemSubType);
+            loadingScreen.AnimateNpc(pool);
 
             ActionManager.Instance
-                         .Synthesize(itemBaseList, chargeAp)
+                         .Synthesize(itemBaseList, chargeAp, grade, itemSubType)
                          .Subscribe(eval =>
                          {
                              if (eval.Exception == null)
@@ -191,19 +280,16 @@ namespace Nekoyume.UI.Module
                          });
             ClearScrollData();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
+            SetOnActionState(true);
+        }
+
+        public void SetOnActionState(bool active)
+        {
+            actionLoadingIndicator.SetActive(active);
+            buttonBlockerOnSynthesis.SetActive(active);
         }
 
         #endregion PushAction
-
-        #region NPC Animation
-
-        private IEnumerator CoAnimateNPC()
-        {
-            // TODO
-            yield return null;
-        }
-
-        #endregion NPC Animation
 
         #region Init
 
