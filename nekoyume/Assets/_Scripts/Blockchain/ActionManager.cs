@@ -23,11 +23,10 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
-using UnityEngine;
-using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
+using Nekoyume.Model.EnumType;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1241,18 +1240,7 @@ namespace Nekoyume.Blockchain
 
             if (chargeAp)
             {
-                var row = TableSheets.Instance.MaterialItemSheet
-                    .OrderedList
-                    .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-
-                var address = States.Instance.CurrentAvatarState.address;
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(address);
-                }
-
-                GameConfigStateSubject.ActionPointState.Add(address, true);
+                ChargeAP(avatarAddress);
             }
 
             var sentryTrace = Analyzer.Instance.Track("Unity/Grinding", new Dictionary<string, Value>()
@@ -1285,6 +1273,77 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .DoOnError(e => HandleException(action.Id, e))
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
+
+        public IObservable<ActionEvaluation<Synthesize>> Synthesize(
+            List<ItemBase> itemBaseList,
+            bool chargeAp,
+            Grade grade,
+            ItemSubType itemSubType)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            itemBaseList.ForEach(itemBase =>
+            {
+                if (itemBase is Equipment equipment)
+                {
+                    if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
+                    {
+                        // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
+                        LocalLayerModifier.RemoveNonFungibleItem(
+                            avatarAddress,
+                            equipment.ItemId);
+                    }
+                    else
+                    {
+                        LocalLayerModifier.RemoveItem(
+                            avatarAddress,
+                            equipment.ItemId,
+                            equipment.RequiredBlockIndex,
+                            1);
+                    }
+                }
+                else if (itemBase is Costume costume)
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        costume.ItemId,
+                        costume.RequiredBlockIndex,
+                        1);
+                }
+            });
+
+            if (chargeAp)
+            {
+                ChargeAP(avatarAddress);
+            }
+
+            // TODO: If need sentry or airBridge trace, add it.
+
+            var action = new Synthesize
+            {
+                AvatarAddress = avatarAddress,
+                MaterialIds = itemBaseList.Select(i =>
+                {
+                    return i switch
+                    {
+                        Equipment equipment => equipment.ItemId,
+                        Costume costume => costume.ItemId,
+                        _ => throw new InvalidCastException(),
+                    };
+                }).ToList(),
+                ChargeAp = chargeAp,
+                MaterialGradeId = (int)grade,
+                MaterialItemSubTypeId = (int)itemSubType,
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<Synthesize>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => {  });
         }
 
         public IObservable<ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
@@ -1979,6 +2038,21 @@ namespace Nekoyume.Blockchain
 #endif
 
 #endregion
+
+        private void ChargeAP(Address avatarAddress)
+        {
+            var row = TableSheets.Instance.MaterialItemSheet
+                                 .OrderedList
+                                 .First(r => r.ItemSubType == ItemSubType.ApStone);
+            LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(avatarAddress);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(avatarAddress, true);
+        }
 
         public void Dispose()
         {

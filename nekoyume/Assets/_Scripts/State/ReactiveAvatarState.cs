@@ -22,7 +22,7 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<long> DailyRewardReceivedIndexInternal;
         private static readonly ReactiveProperty<QuestList> QuestListInternal;
         private static readonly ReactiveProperty<long> RelationshipInternal;
-        
+
         public static readonly IObservable<Address> Address;
         public static readonly IObservable<Inventory> Inventory;
         public static readonly IObservable<MailBox> MailBox;
@@ -47,7 +47,7 @@ namespace Nekoyume.State
             DailyRewardReceivedIndexInternal = new ReactiveProperty<long>();
             QuestListInternal = new ReactiveProperty<QuestList>();
             RelationshipInternal = new ReactiveProperty<long>();
-            
+
             Address = AddressInternal.ObserveOnMainThread();
             Inventory = InventoryInternal.ObserveOnMainThread();
             MailBox = MailBoxInternal.ObserveOnMainThread();

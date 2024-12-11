@@ -514,6 +514,7 @@ MonoBehaviour:
   grindButton: {fileID: 4868108788663917727}
   runeButton: {fileID: 4062579702270901021}
   customCraftButton: {fileID: 601257163011505506}
+  synthesisButton: {fileID: 4802554497745752618}
   closeButton: {fileID: 3174719986751943182}
   craftNotificationImage: {fileID: 6274492409712002948}
   runeNotificationImage: {fileID: 889186927360354802}
@@ -4871,7 +4872,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 19
-  l10nKey: 
+  l10nKey: SYNTHESIS_UI_BUTTON
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -5303,7 +5304,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 35
-  l10nKey: 
+  l10nKey: SYNTHESIS_UI_BUTTON
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

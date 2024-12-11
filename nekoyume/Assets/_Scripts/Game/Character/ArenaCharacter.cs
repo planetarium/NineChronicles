@@ -295,7 +295,11 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(StageConfig.instance.actionDelay);
             if (_runningAction != null)
             {
+#if TEST_SCENE
+                yield return StartCoroutine(SimulationTest.TestArena.Instance.CoSkill(_runningAction));
+#else
                 yield return StartCoroutine(Game.instance.Arena.CoSkill(_runningAction));
+#endif
             }
 
             _runningAction = null;

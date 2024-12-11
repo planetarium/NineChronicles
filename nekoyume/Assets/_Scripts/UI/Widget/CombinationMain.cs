@@ -30,6 +30,9 @@ namespace Nekoyume.UI
         private Button customCraftButton;
 
         [SerializeField]
+        private Button synthesisButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -102,6 +105,13 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<CustomCraft>().Show();
+                AudioController.PlayClick();
+            });
+
+            synthesisButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<Synthesis>().Show();
                 AudioController.PlayClick();
             });
 

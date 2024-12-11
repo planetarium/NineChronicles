@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
         {
             Normal,
             Conditional,
-            Disabled
+            Disabled,
         }
 
         [SerializeField]
