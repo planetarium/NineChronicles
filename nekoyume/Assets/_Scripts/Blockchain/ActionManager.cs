@@ -26,6 +26,7 @@ using Nekoyume.UI.Scroller;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
+using Nekoyume.Model.EnumType;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1276,7 +1277,9 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<Synthesize>> Synthesize(
             List<ItemBase> itemBaseList,
-            bool chargeAp)
+            bool chargeAp,
+            Grade grade,
+            ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             itemBaseList.ForEach(itemBase =>
@@ -1329,6 +1332,8 @@ namespace Nekoyume.Blockchain
                     };
                 }).ToList(),
                 ChargeAp = chargeAp,
+                MaterialGradeId = (int)grade,
+                MaterialItemSubTypeId = (int)itemSubType,
             };
             ProcessAction(action);
 

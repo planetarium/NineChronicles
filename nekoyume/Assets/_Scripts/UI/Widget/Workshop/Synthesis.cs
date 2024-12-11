@@ -81,6 +81,8 @@ namespace Nekoyume.UI
             }
         }
 
+        public SynthesisModule SynthesisModule => synthesisModule;
+
         #endregion Properties
 
         #region MonoBehaviour
@@ -215,6 +217,12 @@ namespace Nekoyume.UI
                     continue;
                 }
 
+                if (!row.RequiredCountDict.ContainsKey(_currentItemSubType))
+                {
+                    // 특정 subType에 대한 value가 없을 수 있음
+                    continue;
+                }
+
                 var requiredItemCount = row.RequiredCountDict[_currentItemSubType].RequiredCount;
                 var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
@@ -245,18 +253,24 @@ namespace Nekoyume.UI
 
         #region Utils
 
-        public static HashSet<int>? GetSynthesizeResultPool(Grade grade, ItemSubType itemSubType)
+        public static HashSet<(int, Grade)>? GetSynthesizeResultPool(Grade grade, ItemSubType itemSubType)
         {
+            var gradeSet = new HashSet<Grade>
+            {
+                //grade,
+                SynthesizeSimulator.GetTargetGrade(grade),
+            };
+
             switch (itemSubType)
             {
                 case ItemSubType.Aura:
                 case ItemSubType.Grimoire:
                     var equipmentItem = TableSheets.Instance.EquipmentItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(grade, itemSubType, equipmentItem);
+                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, equipmentItem);
                 case ItemSubType.FullCostume:
                 case ItemSubType.Title:
                     var costumeItem = TableSheets.Instance.CostumeItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(grade, itemSubType, costumeItem);
+                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, costumeItem);
             }
 
             return null;

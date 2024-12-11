@@ -435,6 +435,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSynthesize)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Synthesize>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionSynthesize)
+                .AddTo(_disposables);
         }
 
         private void UnlockEquipmentRecipe()
@@ -2690,22 +2698,12 @@ namespace Nekoyume.Blockchain
         {
             var sheets = TableSheets.Instance;
             var eval = prepared.eval;
-            var materialItemList = prepared.eval.Action.MaterialIds;
-            var avatarState = StateGetter.GetAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-            var blockIndex = eval.BlockIndex;
-            var addressHex = eval.Action.AvatarAddress.ToHex();
-
-            var gradeDict = SynthesizeSimulator.GetGradeDict(
-                materialItemList,
-                avatarState,
-                blockIndex,
-                addressHex,
-                out _,
-                out _
-                );
 
             var inputData = new SynthesizeSimulator.InputData()
             {
+                Grade = (Grade)eval.Action.MaterialGradeId,
+                ItemSubType = (ItemSubType)eval.Action.MaterialItemSubTypeId,
+                MaterialCount = eval.Action.MaterialIds.Count,
                 SynthesizeSheet = sheets.SynthesizeSheet,
                 SynthesizeWeightSheet = sheets.SynthesizeWeightSheet,
                 CostumeItemSheet = sheets.CostumeItemSheet,
@@ -2715,12 +2713,20 @@ namespace Nekoyume.Blockchain
                 EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
                 SkillSheet = sheets.SkillSheet,
                 RandomObject = new LocalRandom(prepared.eval.RandomSeed),
-                GradeDict = gradeDict,
             };
 
             var result = SynthesizeSimulator.Simulate(inputData);
             var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
             synthesisResultScreen.Show(result);
+
+            var synthesis = Widget.Find<Synthesis>();
+            synthesis.SynthesisModule.SetOnActionState(false);
+        }
+
+        private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
+        {
+            var synthesis = Widget.Find<Synthesis>();
+            synthesis.SynthesisModule.SetOnActionState(false);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
