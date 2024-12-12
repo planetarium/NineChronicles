@@ -12,6 +12,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -25,6 +26,8 @@ namespace Nekoyume.UI.Module
     public class SynthesisModule : MonoBehaviour
     {
         private readonly int isActiveAnimHash = Animator.StringToHash("IsActive");
+
+        private readonly List<IDisposable> _disposables = new();
 
         [SerializeField]
         private SynthesisMaterialScroll scroll = null!;
@@ -86,9 +89,18 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             ClearScrollData();
+
+            ReactiveAvatarState.ObservableActionPoint
+                .Subscribe(_ => synthesisButton.UpdateObjects())
+                .AddTo(_disposables);
         }
 
-        #endregion MonoBehavioir
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+
+#endregion MonoBehavioir
 
         public void UpdateData(IList<InventoryItem> registrationItems, SynthesizeModel model)
         {
