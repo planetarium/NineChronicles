@@ -69,9 +69,7 @@ namespace Nekoyume.UI.Module
 
         private IList<InventoryItem> _selectedItemsForSynthesize = new List<InventoryItem>();
 
-        private int _inventoryApStoneCount;
         private ItemSubType _itemSubType;
-
         private CancellationTokenSource? _expectationsItemIconCts;
 
         #region MonoBehavioir
@@ -198,12 +196,17 @@ namespace Nekoyume.UI.Module
 
         private void CheckChargeAp(Action<bool> chargeAp)
         {
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            var inventoryApStoneCount = inventory.GetUsableItemCount(
+                (int)CostType.ApPotion,
+                Game.Game.instance.Agent?.BlockIndex ?? -1);
+
             switch (synthesisButton.CurrentState.Value)
             {
                 case ConditionalButton.State.Conditional:
                 {
                     var paymentPopup = Widget.Find<PaymentPopup>();
-                    if (_inventoryApStoneCount > 0)
+                    if (inventoryApStoneCount > 0)
                     {
                         paymentPopup.ShowCheckPaymentApPotion(GameConfig.ActionCostAP, () => chargeAp(true));
                     }
