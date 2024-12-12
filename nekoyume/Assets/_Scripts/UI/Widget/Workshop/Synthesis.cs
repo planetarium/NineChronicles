@@ -144,6 +144,11 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Synthesis);
             CurrentItemSubType = DefaultItemSubType;
+            foreach (var tapItem in synthesisTapGroup)
+            {
+                tapItem.tabButton.SetToggledOff();
+            }
+            synthesisTapGroup.First().tabButton.SetToggledOn();
         }
 
         #endregion Widget
