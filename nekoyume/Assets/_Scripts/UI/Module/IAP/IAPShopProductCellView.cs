@@ -61,6 +61,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject dimObj;
 
+        [SerializeField]
+        private IAPRewardView[] rewardViews;
+        [SerializeField]
+        private CenteredGridLayout rewardLayout;
+        [SerializeField]
+        private GameObject mileageObj;
+        [SerializeField]
+        private TextMeshProUGUI mileageText;
+
         private RectTransform _rect;
         private InAppPurchaseServiceClient.ProductSchema _data;
         private UnityEngine.Purchasing.Product _purchasingData;
@@ -124,7 +133,7 @@ namespace Nekoyume.UI.Module
         private async UniTask DownLoadImage()
         {
             backgroundImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.BgPath}");
-            productImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.Path}");
+            productImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.GetListImagePath()}");
             productImage.SetNativeSize();
         }
 
@@ -155,15 +164,62 @@ namespace Nekoyume.UI.Module
             switch (_data.Size)
             {
                 case InAppPurchaseServiceClient.ProductAssetUISize._1x1:
-                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 230);
+                    _rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 230);
                     bottomButtonLayoutElement.minHeight = 65;
                     bottomLayout.spacing = 0;
+                    rewardLayout.gameObject.SetActive(false);
                     break;
                 case InAppPurchaseServiceClient.ProductAssetUISize._1x2:
-                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467); // add spacing size
+                    _rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 467);
                     bottomButtonLayoutElement.minHeight = 75;
                     bottomLayout.spacing = 3;
+                    rewardLayout.gameObject.SetActive(true);
+
+                    var iapRewardIndex = 0;
+                    foreach (var item in _data.FavList)
+                    {
+                        if (iapRewardIndex < rewardViews.Length)
+                        {
+                            rewardViews[iapRewardIndex].SetFavItem(item);
+                            iapRewardIndex++;
+                        }
+                    }
+                    foreach (var item in _data.FungibleItemList)
+                    {
+                        if (iapRewardIndex < rewardViews.Length)
+                        {
+                            rewardViews[iapRewardIndex].SetItemBase(item);
+                            iapRewardIndex++;
+                        }
+                    }
+
+                    //4개인 경우 2x2로 배치
+                    if(iapRewardIndex == 4)
+                    {
+                        rewardLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                        rewardLayout.constraintCount = 2;
+                    }
+                    else
+                    {
+                        rewardLayout.constraint = GridLayoutGroup.Constraint.Flexible;
+                    }
+
+                    for (; iapRewardIndex < rewardViews.Length; iapRewardIndex++)
+                    {
+                        rewardViews[iapRewardIndex].gameObject.SetActive(false);
+                    }
+
                     break;
+            }
+
+            if (_data.Mileage > 0)
+            {
+                mileageObj.SetActive(true);
+                mileageText.text = _data.Mileage.ToString("N0");
+            }
+            else
+            {
+                mileageObj.SetActive(false);
             }
 
             tagObj.SetActive(false);

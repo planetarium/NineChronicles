@@ -384,6 +384,10 @@ public class InAppPurchaseServiceClient
         public string? BgPath { get; set; }
         [JsonPropertyName("popup_path_key")]
         public string? PopupPathKey { get; set; }
+        [JsonPropertyName("open_timestamp")]
+        public string? OpenTimestamp { get; set; }
+        [JsonPropertyName("close_timestamp")]
+        public string? CloseTimestamp { get; set; }
         [JsonPropertyName("fav_list")]
         public List<FungibleAssetValueSchema> FavList { get; set; }
         [JsonPropertyName("fungible_item_list")]

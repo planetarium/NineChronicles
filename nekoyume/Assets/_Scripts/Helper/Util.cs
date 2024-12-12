@@ -642,7 +642,7 @@ namespace Nekoyume.Helper
             return result;
         }
 
-        public static async UniTask<byte[]> DownloadTextureRaw(string url)
+        private static async UniTask<byte[]> DownloadTextureRaw(string url)
         {
             if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTexture))
             {
