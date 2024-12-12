@@ -121,6 +121,10 @@ namespace Nekoyume.UI.Module
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
                 .Subscribe(context.OnDoubleClick.OnNext).AddTo(Disposables);
 
+            model.CanMinus
+                .Subscribe(b => baseItemView.MinusObject.SetActive(b))
+                .AddTo(Disposables);
+
             if (model.ItemBase is Equipment equipmentItem)
             {
                 baseItemView.CustomCraftArea.SetActive(equipmentItem.ByCustomCraft);
@@ -191,6 +195,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(context.OnClick.OnNext).AddTo(Disposables);
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
                 .Subscribe(context.OnDoubleClick.OnNext).AddTo(Disposables);
+
+            model.CanMinus
+                .Subscribe(b => baseItemView.MinusObject.SetActive(b))
+                .AddTo(Disposables);
         }
 
         protected virtual void UpdateFungibleAsset(InventoryItem model, InventoryScroll.ContextModel context)

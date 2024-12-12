@@ -69,20 +69,8 @@ namespace Nekoyume.UI.Module
 
         private IList<InventoryItem> _selectedItemsForSynthesize = new List<InventoryItem>();
 
-        private int _inventoryApStoneCount;
         private ItemSubType _itemSubType;
-
         private CancellationTokenSource? _expectationsItemIconCts;
-
-        private bool IsStrong(ItemBase itemBase)
-        {
-            if (itemBase is Equipment equipment)
-            {
-                return equipment.level > 0;
-            }
-
-            return false;
-        }
 
         #region MonoBehavioir
 
@@ -203,32 +191,22 @@ namespace Nekoyume.UI.Module
                 _ => throw new ArgumentException($"Invalid item type: {itemBaseList[0].GetType()}"),
             };
 
-            CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType)));
-        }
-
-        private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
-        {
-            if (itemBaseList.Exists(IsStrong))
-            {
-                var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
-                system.ConfirmCallback = callback;
-            }
-            else
-            {
-                callback();
-            }
+            CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType));
         }
 
         private void CheckChargeAp(Action<bool> chargeAp)
         {
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            var inventoryApStoneCount = inventory.GetUsableItemCount(
+                (int)CostType.ApPotion,
+                Game.Game.instance.Agent?.BlockIndex ?? -1);
+
             switch (synthesisButton.CurrentState.Value)
             {
                 case ConditionalButton.State.Conditional:
                 {
                     var paymentPopup = Widget.Find<PaymentPopup>();
-                    if (_inventoryApStoneCount > 0)
+                    if (inventoryApStoneCount > 0)
                     {
                         paymentPopup.ShowCheckPaymentApPotion(GameConfig.ActionCostAP, () => chargeAp(true));
                     }

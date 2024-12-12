@@ -18,6 +18,8 @@ namespace Nekoyume.UI.Module
 
     public class SynthesisInventory : MonoBehaviour
     {
+        private const int AutoSelectLimitLevel = 4;
+
         [SerializeField] private InventoryScroll scroll = null!;
         [SerializeField] private Transform cellContainer = null!;
 
@@ -41,10 +43,15 @@ namespace Nekoyume.UI.Module
             SelectedItems.ObserveAdd().Subscribe(item =>
             {
                 item.Value.SelectCountEnabled.SetValueAndForceNotify(true);
+                item.Value.CanMinus.SetValueAndForceNotify(true);
             }).AddTo(gameObject);
 
             SelectedItems.ObserveRemove()
-                .Subscribe(item => item.Value.SelectCountEnabled.SetValueAndForceNotify(false))
+                .Subscribe(item =>
+                {
+                    item.Value.SelectCountEnabled.SetValueAndForceNotify(false);
+                    item.Value.CanMinus.SetValueAndForceNotify(false);
+                })
                 .AddTo(gameObject);
         }
 
@@ -77,22 +84,15 @@ namespace Nekoyume.UI.Module
         private void SetRequiredItem(SynthesizeModel requiredModel)
         {
             _cachedInventoryItems = GetModels(requiredModel);
-            var model = _cachedInventoryItems.FirstOrDefault();
-            if (model == null)
-            {
-                NcDebug.LogError("model is null.");
-                return;
-            }
-
             scroll.UpdateData(_cachedInventoryItems, true);
-            SelectItem(model);
+            SelectAutoSelectItems(requiredModel);
         }
 
         public bool SelectAutoSelectItems(SynthesizeModel model)
         {
             _cachedInventoryItems ??= GetModels(model);
 
-            var itemCount = _cachedInventoryItems.Count();
+            var itemCount = GetCanAutoSelectCount();
             var selectedCount = SelectedItems.Count;
             var remainder = selectedCount % model.RequiredItemCount;
             if (itemCount - (selectedCount - remainder) < model.RequiredItemCount)
@@ -119,6 +119,11 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
+                if (!CanAutoSelect(cachedItem))
+                {
+                    continue;
+                }
+
                 SelectItem(cachedItem);
                 i++;
 
@@ -136,7 +141,7 @@ namespace Nekoyume.UI.Module
             ClearSelectedItems();
             _cachedInventoryItems ??= GetModels(model);
 
-            var itemCount = _cachedInventoryItems.Count();
+            var itemCount = GetCanAutoSelectCount();
             if (itemCount < model.RequiredItemCount)
             {
                 return false;
@@ -144,12 +149,40 @@ namespace Nekoyume.UI.Module
 
             var selectCount = itemCount - (itemCount % model.RequiredItemCount);
             selectCount = Math.Min(selectCount, Synthesis.MaxSynthesisCount * model.RequiredItemCount);
-            for (var i = 0; i < selectCount; ++i)
+            var selectedCount = 0;
+
+            foreach (var item in _cachedInventoryItems)
             {
-                SelectItem(_cachedInventoryItems[i]);
+                if (!CanAutoSelect(item))
+                {
+                    continue;
+                }
+
+                SelectItem(item);
+                selectedCount++;
+
+                if (selectedCount >= selectCount)
+                {
+                    break;
+                }
             }
 
             return true;
+        }
+
+        private int GetCanAutoSelectCount()
+        {
+            return _cachedInventoryItems?.Count(CanAutoSelect) ?? 0;
+        }
+
+        private bool CanAutoSelect(InventoryItem item)
+        {
+            if (item.ItemBase is Equipment { level: >= AutoSelectLimitLevel, })
+            {
+                return false;
+            }
+
+            return !item.Equipped.Value;
         }
 
         private List<InventoryItem> GetModels(SynthesizeModel requiredItem)

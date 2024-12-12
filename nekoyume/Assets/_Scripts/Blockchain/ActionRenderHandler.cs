@@ -2500,6 +2500,11 @@ namespace Nekoyume.Blockchain
                 await UniTask.SwitchToMainThread();
                 // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
                 ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+
+                var headerMenu = Widget.Find<HeaderMenuStatic>();
+                var apPortionUi = headerMenu.ApPotion;
+                apPortionUi.UpdateApPotion();
+                apPortionUi.SetActiveLoading(false);
             });
         }
 

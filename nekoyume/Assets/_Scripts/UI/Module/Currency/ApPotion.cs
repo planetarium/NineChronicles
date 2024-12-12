@@ -1,4 +1,4 @@
-using Nekoyume.Helper;
+using System;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
             UpdateApPotion();
         }
 
-        private void UpdateApPotion()
+        public void UpdateApPotion()
         {
             if (Game.Game.instance.States.CurrentAvatarState == null)
             {

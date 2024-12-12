@@ -27,6 +27,7 @@ using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Module;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1185,6 +1186,10 @@ namespace Nekoyume.Blockchain
             var row = TableSheets.Instance.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.ApStone);
             LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
+            var apPortionUi = headerMenu.ApPotion;
+            apPortionUi.SetActiveLoading(true);
 
             var action = new ChargeActionPoint
             {

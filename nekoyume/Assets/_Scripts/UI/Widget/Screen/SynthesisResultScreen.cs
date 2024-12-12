@@ -69,6 +69,9 @@ namespace Nekoyume.UI
                 }
             }
 
+            // 성공했으면 뒤쪽으로 정렬
+            resultList.Sort((a, b) => a.IsSuccess.CompareTo(b.IsSuccess));
+
             for (var i = 0; i < _cachedItemViews.Count; i++)
             {
                 var view = _cachedItemViews[i];
