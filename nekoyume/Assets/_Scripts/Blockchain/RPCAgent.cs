@@ -658,7 +658,7 @@ namespace Nekoyume.Blockchain
                 {
                     var raw =
                         await _service.GetSheets(
-                            BlockTipHash.ToByteArray(),
+                            BlockTipStateRootHash.ToByteArray(),
                             list.Select(a => a.ToByteArray()));
                     await raw.ParallelForEachAsync(async pair =>
                     {
