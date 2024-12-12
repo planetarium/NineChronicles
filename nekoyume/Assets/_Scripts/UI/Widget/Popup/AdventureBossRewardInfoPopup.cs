@@ -105,7 +105,6 @@ namespace Nekoyume.UI
                     {
                         item.gameObject.SetActive(false);
                     }
-
                     return;
                 }
 
@@ -131,7 +130,12 @@ namespace Nekoyume.UI
 
                     floorRewardCells[i].gameObject.SetActive(true);
                     floorRewardCells[i].SetData(floorRewardDatas[i].Floor, floorRewardDatas[i].Rewards);
-                }   
+                }
+                if (floorRewardDatas.Count - 4 <= 0)
+                {
+                    NcDebug.LogError($"FloorRewardData is not enough. floorRewardDatas.Count: {floorRewardDatas.Count}");
+                    return;
+                }
                 var exploreInfo = Game.instance.AdventureBossData.ExploreInfo.Value;
                 if (exploreInfo != null)
                 {
