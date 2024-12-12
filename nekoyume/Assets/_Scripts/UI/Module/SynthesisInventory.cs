@@ -77,15 +77,8 @@ namespace Nekoyume.UI.Module
         private void SetRequiredItem(SynthesizeModel requiredModel)
         {
             _cachedInventoryItems = GetModels(requiredModel);
-            var model = _cachedInventoryItems.FirstOrDefault();
-            if (model == null)
-            {
-                NcDebug.LogError("model is null.");
-                return;
-            }
-
             scroll.UpdateData(_cachedInventoryItems, true);
-            SelectItem(model);
+            SelectAutoSelectItems(requiredModel);
         }
 
         public bool SelectAutoSelectItems(SynthesizeModel model)

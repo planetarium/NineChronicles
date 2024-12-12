@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -184,20 +182,6 @@ namespace Nekoyume.UI
             }
 
             RegisterItem(synthesisInventory.SelectedItems);
-        }
-
-        private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
-        {
-            if (itemBaseList.Exists(Synthesis.IsStrong))
-            {
-                var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
-                system.ConfirmCallback = callback;
-            }
-            else
-            {
-                callback();
-            }
         }
 
         private void OnClickInventoryItem(InventoryItem item)
