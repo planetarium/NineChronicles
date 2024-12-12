@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Scroller
         {
             _grade = grade;
             SetTitleText();
-            selectButton.OnClickSubject
+            selectButton.OnSubmitSubject
                 .Subscribe(_ =>
                 {
                     var synthesisWidget = Widget.Find<Synthesis>();

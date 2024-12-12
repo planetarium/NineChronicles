@@ -87,7 +87,7 @@ namespace Nekoyume.UI
                     }
 
                     var remainder = count % _synthesizeModel.RequiredItemCount;
-                    registrationButton.Interactable = remainder == 0;
+                    registrationButton.Interactable = remainder == 0 && count > 0;
                     registrationButton.UpdateObjects();
                     numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", count / _synthesizeModel.RequiredItemCount);
                 })
