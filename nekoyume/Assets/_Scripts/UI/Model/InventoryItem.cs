@@ -26,6 +26,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Disabled;
         public readonly ReactiveProperty<bool> SelectCountEnabled;
         public readonly ReactiveProperty<bool> CollectionSelected;
+        public readonly ReactiveProperty<bool> CanMinus;
 
         public InventoryItem(ItemBase itemBase, int count, bool limited, bool tradable)
         {
@@ -41,6 +42,7 @@ namespace Nekoyume.UI.Model
             Disabled = new ReactiveProperty<bool>(false);
             SelectCountEnabled = new ReactiveProperty<bool>(false);
             CollectionSelected = new ReactiveProperty<bool>(false);
+            CanMinus = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(RuneState runeState)
@@ -57,6 +59,7 @@ namespace Nekoyume.UI.Model
             Disabled = new ReactiveProperty<bool>(false);
             SelectCountEnabled = new ReactiveProperty<bool>(false);
             CollectionSelected = new ReactiveProperty<bool>(false);
+            CanMinus = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(FungibleAssetValue fungibleAssetValue)
@@ -74,6 +77,7 @@ namespace Nekoyume.UI.Model
             Disabled = new ReactiveProperty<bool>(false);
             SelectCountEnabled = new ReactiveProperty<bool>(false);
             CollectionSelected = new ReactiveProperty<bool>(false);
+            CanMinus = new ReactiveProperty<bool>(false);
         }
     }
 

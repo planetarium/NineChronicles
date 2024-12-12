@@ -41,10 +41,15 @@ namespace Nekoyume.UI.Module
             SelectedItems.ObserveAdd().Subscribe(item =>
             {
                 item.Value.SelectCountEnabled.SetValueAndForceNotify(true);
+                item.Value.CanMinus.SetValueAndForceNotify(true);
             }).AddTo(gameObject);
 
             SelectedItems.ObserveRemove()
-                .Subscribe(item => item.Value.SelectCountEnabled.SetValueAndForceNotify(false))
+                .Subscribe(item =>
+                {
+                    item.Value.SelectCountEnabled.SetValueAndForceNotify(false);
+                    item.Value.CanMinus.SetValueAndForceNotify(false);
+                })
                 .AddTo(gameObject);
         }
 
