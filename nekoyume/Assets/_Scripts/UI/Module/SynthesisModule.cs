@@ -74,16 +74,6 @@ namespace Nekoyume.UI.Module
 
         private CancellationTokenSource? _expectationsItemIconCts;
 
-        private bool IsStrong(ItemBase itemBase)
-        {
-            if (itemBase is Equipment equipment)
-            {
-                return equipment.level > 0;
-            }
-
-            return false;
-        }
-
         #region MonoBehavioir
 
         private void Awake()
@@ -203,22 +193,7 @@ namespace Nekoyume.UI.Module
                 _ => throw new ArgumentException($"Invalid item type: {itemBaseList[0].GetType()}"),
             };
 
-            CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType)));
-        }
-
-        private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
-        {
-            if (itemBaseList.Exists(IsStrong))
-            {
-                var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
-                system.ConfirmCallback = callback;
-            }
-            else
-            {
-                callback();
-            }
+            CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType));
         }
 
         private void CheckChargeAp(Action<bool> chargeAp)

@@ -288,6 +288,16 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Alert);
         }
 
+        public static bool IsStrong(ItemBase itemBase)
+        {
+            if (itemBase is Equipment equipment)
+            {
+                return equipment.level > 0;
+            }
+
+            return false;
+        }
+
         #endregion Utils
     }
 }
