@@ -266,19 +266,41 @@ namespace Nekoyume.UI
                 SynthesizeSimulator.GetTargetGrade(grade),
             };
 
+            HashSet<(int, Grade)>? resultPool = null;
             switch (itemSubType)
             {
                 case ItemSubType.Aura:
                 case ItemSubType.Grimoire:
                     var equipmentItem = TableSheets.Instance.EquipmentItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, equipmentItem);
+                    resultPool = SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, equipmentItem);
+                    break;
                 case ItemSubType.FullCostume:
                 case ItemSubType.Title:
                     var costumeItem = TableSheets.Instance.CostumeItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, costumeItem);
+                    resultPool = SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, costumeItem);
+                    break;
             }
 
-            return null;
+            if (resultPool == null)
+            {
+                NcDebug.LogError($"Failed to get SynthesizeResultPool for {grade} and {itemSubType}");
+                return null;
+            }
+
+            var result = resultPool.Where(pair =>
+            {
+                var id = pair.Item1;
+                var weightSheet = TableSheets.Instance.SynthesizeWeightSheet;
+
+                if (!weightSheet.TryGetValue(id, out var row))
+                {
+                    return true;
+                }
+
+                return row.Weight != 0;
+            }).ToHashSet();
+
+            return result;
         }
 
         public static void NotificationMaxSynthesisCount(int requiredItemCount)
