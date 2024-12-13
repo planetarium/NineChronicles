@@ -33,6 +33,7 @@ namespace Nekoyume.UI.Module
             UpdateApPotion();
         }
 
+        // TODO: Use ReactiveProperty?
         public void UpdateApPotion()
         {
             if (Game.Game.instance.States.CurrentAvatarState == null)

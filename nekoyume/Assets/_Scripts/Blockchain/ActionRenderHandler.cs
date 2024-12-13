@@ -2726,6 +2726,11 @@ namespace Nekoyume.Blockchain
 
             var synthesis = Widget.Find<Synthesis>();
             synthesis.SynthesisModule.SetOnActionState(false);
+
+            // TODO: Use ReactiveProperty?
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
+            var apPortionUi = headerMenu.ApPotion;
+            apPortionUi.UpdateApPotion();
         }
 
         private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
