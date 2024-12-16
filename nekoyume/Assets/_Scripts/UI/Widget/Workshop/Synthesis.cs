@@ -161,8 +161,19 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var registrationPopup = Find<SynthesisRegistrationPopup>();
-            registrationPopup.Show(model, RegisterItems);
+            System.Action showRegistrationPopup = () => Find<SynthesisRegistrationPopup>().Show(model, RegisterItems);
+
+            if (synthesisModule.PossibleSynthesis)
+            {
+                Find<TwoButtonSystem>().Show(
+                    L10nManager.Localize("UI_SYNTHESIZE_MATERIAL_CHANGE"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    showRegistrationPopup);
+                return;
+            }
+
+            showRegistrationPopup.Invoke();
         }
 
         private void RegisterItems(IList<InventoryItem> items, SynthesizeModel model)
