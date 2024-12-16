@@ -64,6 +64,10 @@ namespace Nekoyume.ApiClient
         {
             return $"shop/images/product/detail/{product.GetCode()}.png";
         }
+        public static string GetNameText(this InAppPurchaseServiceClient.ProductSchema product)
+        {
+            return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}");
+        }
     }
 
     public class IAPServiceManager : IDisposable

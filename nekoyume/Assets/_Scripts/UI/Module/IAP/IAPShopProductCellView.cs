@@ -100,7 +100,7 @@ namespace Nekoyume.UI.Module
 
         public async UniTask RefreshLocalized()
         {
-            productName.text = L10nManager.Localize(_data.L10nKey);
+            productName.text = _data.GetNameText();
 
             buyLimitDescription.gameObject.SetActive(false);
             if (_data.AccountLimit != null)
