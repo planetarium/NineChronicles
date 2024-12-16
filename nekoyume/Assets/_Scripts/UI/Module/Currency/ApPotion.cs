@@ -62,8 +62,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowMaterialNavigationPopup()
         {
-            //todo: implement this
-            //Widget.Find<MaterialNavigationPopup>().ShowCurrency((int)CurrencyType.ApPotion);
+            Widget.Find<MaterialNavigationPopup>().ShowCurrency(CostType.ApPotion);
         }
     }
 }
