@@ -75,7 +75,9 @@ namespace Nekoyume.UI.Module
         private ItemSubType _itemSubType;
         private CancellationTokenSource? _expectationsItemIconCts;
 
-        #region MonoBehavioir
+        public bool PossibleSynthesis => _selectedItemsForSynthesize.Count > 0;
+
+#region MonoBehavioir
 
         private void Awake()
         {

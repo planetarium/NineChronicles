@@ -69,8 +69,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            // 성공했으면 뒤쪽으로 정렬
-            resultList.Sort((a, b) => a.IsSuccess.CompareTo(b.IsSuccess));
+            // 성공했으면 앞쪽으로 정렬
+            resultList.Sort((a, b) => b.IsSuccess.CompareTo(a.IsSuccess));
 
             for (var i = 0; i < _cachedItemViews.Count; i++)
             {
@@ -114,7 +114,6 @@ namespace Nekoyume.UI
                 await UniTask.Delay(TimeSpan.FromSeconds(activeItemCount != 1 ?
                     DefaultAnimInterval/_cachedItemViews.Count :
                     ItemViewAnimInterval));
-                // TODO: Success
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(DefaultAnimInterval));
