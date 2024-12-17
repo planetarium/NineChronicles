@@ -110,7 +110,7 @@ namespace Nekoyume.Game.Character
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
             _target = target;
-            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer, TableSheets.Instance);
         }
 
         public void Spawn(Model.ArenaCharacter model)

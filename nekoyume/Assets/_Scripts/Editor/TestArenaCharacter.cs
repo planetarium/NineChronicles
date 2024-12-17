@@ -103,7 +103,7 @@ namespace Nekoyume.Editor
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
             _target = target;
-            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer, TestArena.Instance.TableSheets);
         }
 
         public void Spawn(Model.ArenaCharacter model)
