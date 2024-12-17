@@ -154,7 +154,7 @@ namespace Nekoyume.Game.Character
 
 #endregion
 
-        public virtual void Set(CharacterBase model, bool updateCurrentHp = false)
+        public virtual void Set(CharacterBase model, TableSheets tableSheets, bool updateCurrentHp = false)
         {
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
