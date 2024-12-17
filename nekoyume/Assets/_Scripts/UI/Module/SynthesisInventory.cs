@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -191,7 +192,9 @@ namespace Nekoyume.UI.Module
             var items = _items.Where(item =>
                 (Grade)item.ItemBase.Grade == requiredItem.Grade &&
                 item.ItemBase.ItemSubType == requiredItem.ItemSubType &&
+                !Synthesize.InvalidMaterialItemId.Contains(item.ItemBase.Id) &&
                 item.ItemBase is INonFungibleItem).ToList();
+
             if (!items.Any())
             {
                 return items;
@@ -201,10 +204,13 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Equipment:
                     items = items
-                        .OrderBy(item => CPHelper.GetCP(item.ItemBase as Equipment)).ToList();
+                        .OrderBy(item => CPHelper.GetCP(item.ItemBase as Equipment))
+                        .ToList();
                     UpdateEquipmentEquipped(items);
                     break;
                 case ItemType.Costume:
+                    items = items
+                        .ToList();
                     UpdateCostumeEquipped(items);
                     break;
             }

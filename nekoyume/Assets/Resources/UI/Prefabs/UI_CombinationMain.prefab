@@ -507,7 +507,9 @@ MonoBehaviour:
     rectTransform: {fileID: 2825980892997678628}
   - type: 1000023
     rectTransform: {fileID: 2127526991923566990}
-  tutorialActions: 51c3000041420f0045420f004e420f0053420f00
+  - type: 1000030
+    rectTransform: {fileID: 7529640232885010345}
+  tutorialActions: 51c3000041420f0045420f004e420f0053420f0055420f00
   summonButton: {fileID: 3248731447781743755}
   combineButton: {fileID: 6274492408613066932}
   upgradeButton: {fileID: 6274492408546324230}
@@ -547,6 +549,10 @@ MonoBehaviour:
     - {fileID: 5297428661270293189}
     - {fileID: 837055042965900662}
     - {fileID: 2445357087302935803}
+  - lockObject: {fileID: 5762185131428648864}
+    requiredStageId: 151
+    lockedButton: {fileID: 4802554497745752618}
+    unlockObjects: []
 --- !u!225 &3856260509446582021
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -10542,7 +10548,7 @@ PrefabInstance:
     - target: {fileID: 2999888582975684998, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 56.826
+      value: 98.516
       objectReference: {fileID: 0}
     - target: {fileID: 2999888582975684998, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10552,7 +10558,7 @@ PrefabInstance:
     - target: {fileID: 2999888582975684998, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 31.254301
+      value: 54.1838
       objectReference: {fileID: 0}
     - target: {fileID: 2999888582975684998, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10562,7 +10568,7 @@ PrefabInstance:
     - target: {fileID: 3122595813999163567, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 192.92601
+      value: 234.616
       objectReference: {fileID: 0}
     - target: {fileID: 3122595813999163567, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10582,7 +10588,7 @@ PrefabInstance:
     - target: {fileID: 5160208393108687111, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 56.826
+      value: 98.516
       objectReference: {fileID: 0}
     - target: {fileID: 5160208393108687111, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10592,7 +10598,7 @@ PrefabInstance:
     - target: {fileID: 5160208393108687111, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 31.254301
+      value: 54.1838
       objectReference: {fileID: 0}
     - target: {fileID: 5160208393108687111, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10612,12 +10618,12 @@ PrefabInstance:
     - target: {fileID: 6789562942759134738, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 56.826
+      value: 98.516
       objectReference: {fileID: 0}
     - target: {fileID: 6789562942759134738, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 114.513
+      value: 135.358
       objectReference: {fileID: 0}
     - target: {fileID: 6789562942759134738, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10658,12 +10664,12 @@ PrefabInstance:
     - target: {fileID: 7506740305144947679, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_text
-      value: Grind
+      value: Synthesis
       objectReference: {fileID: 0}
     - target: {fileID: 8259376983496205467, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_text
-      value: Stage 40
+      value: Stage 151
       objectReference: {fileID: 0}
     - target: {fileID: 8322290979673836999, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10774,7 +10780,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0404b330db07240ecb8e7eeac481c6c0,
+      objectReference: {fileID: 21300000, guid: a5f8aff26763583439236a9bd710f897,
         type: 3}
     - target: {fileID: 8466524692079143312, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10799,7 +10805,7 @@ PrefabInstance:
     - target: {fileID: 8516529415375919055, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: l10nKey
-      value: 
+      value: SYNTHESIS_UI_BUTTON
       objectReference: {fileID: 0}
     - target: {fileID: 8897611578532137315, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -10866,6 +10872,12 @@ PrefabInstance:
 --- !u!224 &5184621473251037956 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8322290979673836999, guid: 0517f477e3636ed42aaab081c05cd889,
+    type: 3}
+  m_PrefabInstance: {fileID: 3786909703860657859}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5762185131428648864 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8897611578532137315, guid: 0517f477e3636ed42aaab081c05cd889,
     type: 3}
   m_PrefabInstance: {fileID: 3786909703860657859}
   m_PrefabAsset: {fileID: 0}
