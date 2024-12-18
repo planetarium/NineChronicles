@@ -9,9 +9,12 @@ using Nekoyume;
 using Nekoyume.Arena;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,50 +48,21 @@ namespace SimulationTest
 
         private void LoadFileAndSerialize()
         {
-            var avatar1 = GetAvatarStateFromRawState(GetTrimmedStringFromPath("serialized_avatar1.txt"));
-            var avatar2 = GetAvatarStateFromRawState(GetTrimmedStringFromPath("serialized_avatar2.txt"));
+            var avatarSheets = TestArena.Instance.TableSheets.GetAvatarSheets();
+            var avatar1 = GetAvatarState(1, "me", avatarSheets);
+            var avatar2 = GetAvatarState(1, "enemy", avatarSheets);
 
-            var inventory1 = GetInventoryFromRawState(GetTrimmedStringFromPath("serialized_inventory1.txt"));
-            var inventory2 = GetInventoryFromRawState(GetTrimmedStringFromPath("serialized_inventory2.txt"));
+            var inventory1 = new Inventory();
+            var inventory2 = new Inventory();
 
-            var allRune1 = GetAllRuneStateFromRawState(GetTrimmedStringFromPath("serialized_allrune1.txt"));
-            var allRune2 = GetAllRuneStateFromRawState(GetTrimmedStringFromPath("serialized_allrune2.txt"));
+            var allRune1 = new AllRuneState();
+            var allRune2 = new AllRuneState();
 
-            var runeSlot1 = GetRuneSlotStateStateFromRawState(GetTrimmedStringFromPath("serialized_runeslot1.txt"));
-            var runeSlot2 = GetRuneSlotStateStateFromRawState(GetTrimmedStringFromPath("serialized_runeslot2.txt"));
+            var runeSlot1 = new RuneSlotState(BattleType.Arena);
+            var runeSlot2 = new RuneSlotState(BattleType.Arena);
 
-            var collection1Str =
-                GetTrimmedStringFromPath("serialized_collection1.txt");
-            var collection2Str =
-                GetTrimmedStringFromPath("serialized_collection1.txt");
-            CollectionState collection1;
-            CollectionState collection2;
-            try
-            {
-                collection1 = GetCollectionStateFromRawState(collection1Str);
-            }
-            catch
-            {
-                collection1 = new CollectionState();
-                foreach (var id in collection1Str.Trim().Split(",").Select(int.Parse))
-                {
-                    collection1.Ids.Add(id);
-                }
-            }
-
-            try
-            {
-                collection2 = GetCollectionStateFromRawState(collection2Str);
-            }
-            catch
-            {
-                collection2 = new CollectionState();
-                foreach (var id in collection2Str.Trim().Split(",").Select(int.Parse))
-                {
-                    collection2.Ids.Add(id);
-                }
-            }
-
+            CollectionState collection1 = new CollectionState();
+            CollectionState collection2 = new CollectionState();
             _myCollectionState = collection1;
             _enemyCollectionState = collection2;
             _me = new ArenaPlayerDigest(avatar1,
@@ -145,6 +119,13 @@ namespace SimulationTest
         private static AvatarState GetAvatarStateFromRawState(string rawBinaryString)
         {
             return new AvatarState((List)GetStateFromRawState(rawBinaryString));
+        }
+
+        private static AvatarState GetAvatarState(int level, string name, AvatarSheets avatarSheets)
+        {
+            var avatarState = AvatarState.Create(new Address(), new Address(), 0, avatarSheets, new Address(), name);
+            avatarState.level = level;
+            return avatarState;
         }
 
         private static Inventory GetInventoryFromRawState(string rawBinaryString)
