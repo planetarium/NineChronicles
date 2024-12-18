@@ -45,13 +45,13 @@ namespace Nekoyume.ApiClient
         {
             if (!DateTime.TryParse(product.OpenTimestamp, out var openDate))
             {
-                NcDebug.LogError($"Invalid OpenTimestamp: {product.OpenTimestamp}");
+                NcDebug.LogWarning($"Invalid OpenTimestamp: {product.OpenTimestamp}");
                 return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE");
             }
 
             if (!DateTime.TryParse(product.CloseTimestamp, out var closeDate))
             {
-                NcDebug.LogError($"Invalid CloseTimestamp: {product.CloseTimestamp}");
+                NcDebug.LogWarning($"Invalid CloseTimestamp: {product.CloseTimestamp}");
                 return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE");
             }
             return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE", openDate.ToString("MM/dd"),closeDate.ToString("MM/dd"));
