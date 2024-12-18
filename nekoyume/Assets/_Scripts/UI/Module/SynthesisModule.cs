@@ -107,7 +107,8 @@ namespace Nekoyume.UI.Module
         public void UpdateData(IList<InventoryItem> registrationItems, SynthesizeModel model)
         {
             _itemSubType = model.ItemSubType;
-            _selectedItemsForSynthesize = registrationItems;
+            // 외부에서 변경되지 않도록 copy
+            _selectedItemsForSynthesize = registrationItems.ToList();
 
             var synthesisCount = registrationItems.Count / model.RequiredItemCount;
             var possibleSynthesis = synthesisCount > 0;
