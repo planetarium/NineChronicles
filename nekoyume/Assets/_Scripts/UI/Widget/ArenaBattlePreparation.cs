@@ -267,20 +267,27 @@ namespace Nekoyume.UI
                 _info.PortraitId,
                 _info.AvatarAddr);
 
-            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                .GetEquippedRuneSlotInfos();
-            ActionRenderHandler.Instance.Pending = true;
-            ActionManager.Instance.BattleArena(
-                    _info.AvatarAddr,
-                    costumes,
-                    equipments,
-                    runeInfos,
-                    _roundData.ChampionshipId,
-                    _roundData.Round,
-                    ticket)
-                .Subscribe();
+            try
+            {
+                var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+                var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
+                    .GetEquippedRuneSlotInfos();
+                ActionRenderHandler.Instance.Pending = true;
+                ActionManager.Instance.BattleArena(
+                        _info.AvatarAddr,
+                        costumes,
+                        equipments,
+                        runeInfos,
+                        _roundData.ChampionshipId,
+                        _roundData.Round,
+                        ticket)
+                    .Subscribe();
+            }
+            catch(Exception e)
+            {
+                Game.Game.BackToMainAsync(e).Forget();
+            }
         }
 
         public void OnRenderBattleArena(ActionEvaluation<BattleArena> eval)
