@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Nekoyume.TableData;
 using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.TableData.Crystal;
@@ -19,7 +20,16 @@ namespace Nekoyume.Game
 {
     public class TableSheets
     {
-        public static TableSheets Instance => Game.instance.TableSheets;
+        public static TableSheets Instance
+        {
+            get
+            {
+#if TEST_SCENE
+                return SimulationTest.TestArena.Instance.TableSheets;
+#endif
+                return Game.instance.TableSheets;
+            }
+        }
 
         private TableSheets()
         {
@@ -294,6 +304,12 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftRecipeSheet CustomEquipmentCraftRecipeSheet { get; private set; }
         public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
         public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
+
+        [UsedImplicitly]
+        public SynthesizeSheet SynthesizeSheet { get; private set; }
+
+        [UsedImplicitly]
+        public SynthesizeWeightSheet SynthesizeWeightSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

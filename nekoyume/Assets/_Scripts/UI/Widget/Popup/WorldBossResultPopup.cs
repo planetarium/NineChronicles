@@ -126,11 +126,6 @@ namespace Nekoyume.UI
 
         public void ShowAsPractice(int bossId, long score)
         {
-            foreach (var view in runeRewardViews)
-            {
-                view.gameObject.SetActive(false);
-            }
-
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
             _practiceText.SetActive(true);
@@ -140,6 +135,11 @@ namespace Nekoyume.UI
             foreach (var view in runeRewardViews)
             {
                 view.gameObject.SetActive(false);
+            }
+
+            foreach (var item in itemRewardViews)
+            {
+                item.Hide();
             }
 
             if (Game.Game.instance.TableSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var row))
