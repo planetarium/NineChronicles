@@ -1,4 +1,5 @@
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using System.Numerics;
 using TMPro;
@@ -24,7 +25,13 @@ namespace Nekoyume.UI.Module
 
         public void Awake()
         {
-            GetComponent<Button>().onClick.AddListener(() =>
+            var button = GetComponent<Button>();
+            if (button == null )
+            {
+                return;
+            }
+
+            button.onClick.AddListener(() =>
             {
                 if (itemBaseForToolTip != null)
                 {
@@ -45,11 +52,27 @@ namespace Nekoyume.UI.Module
         {
             fungibleAssetValue = fav;
             itemBaseForToolTip = null;
+            gameObject.SetActive(true);
+            RewardImage.sprite = SpriteHelper.GetFavIcon(fungibleAssetValue.Ticker);
+            RewardCount.text = ((BigInteger)fungibleAssetValue.Amount).ToCurrencyNotation();
+            RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(fungibleAssetValue.Ticker));
         }
 
-        public void SetItemBase(ItemBase itemBase)
+        public void SetItemBase(InAppPurchaseServiceClient.FungibleItemSchema itemBase)
         {
-            itemBaseForToolTip = itemBase;
+            gameObject.SetActive(true);
+            RewardImage.sprite = SpriteHelper.GetItemIcon(itemBase.SheetItemId);
+            RewardCount.text = $"x{itemBase.Amount}";
+            try
+            {
+                var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemBase.SheetItemId];
+                RewardGrade.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+                itemBaseForToolTip = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
+            }
+            catch
+            {
+                NcDebug.LogError($"Can't Find Item ID {itemBase.SheetItemId} in ItemSheet");
+            }
             fungibleAssetValue = null;
         }
     }

@@ -1,4 +1,4 @@
-using Nekoyume.Helper;
+using System;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
@@ -33,7 +33,8 @@ namespace Nekoyume.UI.Module
             UpdateApPotion();
         }
 
-        private void UpdateApPotion()
+        // TODO: Use ReactiveProperty?
+        public void UpdateApPotion()
         {
             if (Game.Game.instance.States.CurrentAvatarState == null)
             {
@@ -61,8 +62,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowMaterialNavigationPopup()
         {
-            //todo: implement this
-            //Widget.Find<MaterialNavigationPopup>().ShowCurrency((int)CurrencyType.ApPotion);
+            Widget.Find<MaterialNavigationPopup>().ShowCurrency(CostType.ApPotion);
         }
     }
 }

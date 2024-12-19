@@ -3,6 +3,7 @@
 using System;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -30,13 +31,29 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             CheckNull();
+
+            selectButton.OnClickSubject
+                .Subscribe(_ =>
+                {
+                    if (selectButton.IsSubmittable)
+                    {
+                        return;
+                    }
+
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_SYNTHESIZE_LACK_MATERIAL"),
+                        NotificationCell.NotificationType.Alert);
+                })
+                .AddTo(gameObject);
         }
 
         public void Initialize(Grade grade)
         {
             _grade = grade;
             SetTitleText();
-            selectButton.OnClickSubject
+
+            selectButton.OnSubmitSubject
                 .Subscribe(_ =>
                 {
                     var synthesisWidget = Widget.Find<Synthesis>();

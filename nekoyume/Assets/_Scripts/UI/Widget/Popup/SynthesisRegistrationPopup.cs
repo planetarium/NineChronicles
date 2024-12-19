@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -87,7 +86,7 @@ namespace Nekoyume.UI
                     }
 
                     var remainder = count % _synthesizeModel.RequiredItemCount;
-                    registrationButton.Interactable = remainder == 0;
+                    registrationButton.Interactable = remainder == 0 && count > 0;
                     registrationButton.UpdateObjects();
                     numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", count / _synthesizeModel.RequiredItemCount);
                 })
@@ -136,6 +135,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // 선택된 아이템이 필요 수량으로 나누어 떨어지는지 확인
             var selectedCount = synthesisInventory.SelectedItems.Count;
             if (selectedCount % _synthesizeModel.RequiredItemCount != 0)
             {
@@ -143,6 +143,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // 최대 합성 가능 수량 확인
             var synthesisCount = selectedCount / _synthesizeModel.RequiredItemCount;
             if (synthesisCount > Synthesis.MaxSynthesisCount)
             {
@@ -150,6 +151,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // 장착된 장비가 포함되어 있는지 확인
             foreach (var selectedItem in synthesisInventory.SelectedItems)
             {
                 if (!selectedItem.Equipped.Value)
@@ -162,6 +164,20 @@ namespace Nekoyume.UI
                     "UI_WARNING", "UI_COLLECTION_REGISTRATION_CAUTION_PHRASE");
                 confirm.ConfirmCallback = () => RegisterItem(synthesisInventory.SelectedItems);
                 confirm.CancelCallback = () => confirm.Close();
+                return;
+            }
+
+            // 강화된 장비가 포함되어 있는지 확인
+            foreach (var selectedItem in synthesisInventory.SelectedItems)
+            {
+                if (!Synthesis.IsStrong(selectedItem.ItemBase))
+                {
+                    continue;
+                }
+
+                var system = Widget.Find<IconAndButtonSystem>();
+                system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
+                system.ConfirmCallback = () => RegisterItem(synthesisInventory.SelectedItems);
                 return;
             }
 
@@ -235,8 +251,6 @@ namespace Nekoyume.UI
             }
 
             _registerMaterials.Invoke(items, _synthesizeModel);
-
-            // TODO: 강화된 아이템 체크
             CloseWidget.Invoke();
         }
 

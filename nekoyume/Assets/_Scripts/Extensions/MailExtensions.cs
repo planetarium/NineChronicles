@@ -60,7 +60,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var productName = L10nManager.Localize(product.L10nKey);
+            var productName = product.GetNameText();
 
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
@@ -211,7 +211,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var productName = L10nManager.Localize(product.L10nKey);
+            var productName = product.GetNameText();
 
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");

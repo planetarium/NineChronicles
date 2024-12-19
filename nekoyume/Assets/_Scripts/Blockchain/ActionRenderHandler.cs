@@ -2500,6 +2500,11 @@ namespace Nekoyume.Blockchain
                 await UniTask.SwitchToMainThread();
                 // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
                 ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+
+                var headerMenu = Widget.Find<HeaderMenuStatic>();
+                var apPortionUi = headerMenu.ApPotion;
+                apPortionUi.UpdateApPotion();
+                apPortionUi.SetActiveLoading(false);
             });
         }
 
@@ -2721,6 +2726,11 @@ namespace Nekoyume.Blockchain
 
             var synthesis = Widget.Find<Synthesis>();
             synthesis.SynthesisModule.SetOnActionState(false);
+
+            // TODO: Use ReactiveProperty?
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
+            var apPortionUi = headerMenu.ApPotion;
+            apPortionUi.UpdateApPotion();
         }
 
         private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
@@ -3749,7 +3759,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10nKey);
+                            var productName = product.GetNameText();
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,
@@ -3867,7 +3877,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10nKey);
+                            var productName = product.GetNameText();
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,

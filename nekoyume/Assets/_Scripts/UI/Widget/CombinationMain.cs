@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -188,6 +189,7 @@ namespace Nekoyume.UI
             customCraftNotificationImage.enabled = CustomCraft.HasNotification;
         }
 
+        [UsedImplicitly]
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickSummonEnteringButton()
         {
@@ -195,24 +197,36 @@ namespace Nekoyume.UI
             Find<Summon>().SetCostUIForTutorial();
         }
 
+        [UsedImplicitly]
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationUpgradeButton()
         {
             upgradeButton.onClick?.Invoke();
         }
 
+        [UsedImplicitly]
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationGrindButton()
         {
             grindButton.onClick?.Invoke();
         }
 
+        [UsedImplicitly]
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationRuneButton()
         {
             runeButton.onClick?.Invoke();
         }
 
+        [UsedImplicitly]
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionSynthesisShow()
+        {
+            synthesisButton.onClick?.Invoke();
+            Find<Synthesis>().CheckTutorial();
+        }
+
+        [UsedImplicitly]
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionCustomCraftShow()
         {

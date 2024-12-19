@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -27,6 +28,8 @@ namespace Nekoyume.UI
         public const int MaxSynthesisCount = 12;
 
         private const ItemSubType DefaultItemSubType = ItemSubType.Aura;
+
+        private static string TutorialCheckKey => $"Tutorial_Check_Synthesis_{Game.Game.instance.States.CurrentAvatarKey}";
 
         private readonly List<IDisposable> _activeDisposables = new();
         private readonly ToggleGroup _toggleGroup = new();
@@ -134,6 +137,13 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (PlayerPrefs.GetInt(TutorialCheckKey, 0) == 0)
+            {
+                // Play Tutorial - for old user
+                Game.Game.instance.Stage.TutorialController.Play(1510002);
+                PlayerPrefs.SetInt(TutorialCheckKey, 1);
+            }
+
             base.Show(ignoreShowAnimation);
 
             if (CurrentItemSubType == DefaultItemSubType)
@@ -144,6 +154,11 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Synthesis);
             CurrentItemSubType = DefaultItemSubType;
+            foreach (var tapItem in synthesisTapGroup)
+            {
+                tapItem.tabButton.SetToggledOff();
+            }
+            synthesisTapGroup.First().tabButton.SetToggledOn();
         }
 
         #endregion Widget
@@ -156,8 +171,19 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var registrationPopup = Find<SynthesisRegistrationPopup>();
-            registrationPopup.Show(model, RegisterItems);
+            System.Action showRegistrationPopup = () => Find<SynthesisRegistrationPopup>().Show(model, RegisterItems);
+
+            if (synthesisModule.PossibleSynthesis)
+            {
+                Find<TwoButtonSystem>().Show(
+                    L10nManager.Localize("UI_SYNTHESIZE_MATERIAL_CHANGE"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    showRegistrationPopup);
+                return;
+            }
+
+            showRegistrationPopup.Invoke();
         }
 
         private void RegisterItems(IList<InventoryItem> items, SynthesizeModel model)
@@ -238,6 +264,11 @@ namespace Nekoyume.UI
             _gradeItemCountDict.Clear();
             foreach (var item in itemList)
             {
+                if (Synthesize.InvalidMaterialItemId.Contains(item.item.Id))
+                {
+                    continue;
+                }
+
                 if (_gradeItemCountDict.ContainsKey((Grade)item.item.Grade))
                 {
                     _gradeItemCountDict[(Grade)item.item.Grade]++;
@@ -261,19 +292,41 @@ namespace Nekoyume.UI
                 SynthesizeSimulator.GetTargetGrade(grade),
             };
 
+            HashSet<(int, Grade)>? resultPool = null;
             switch (itemSubType)
             {
                 case ItemSubType.Aura:
                 case ItemSubType.Grimoire:
                     var equipmentItem = TableSheets.Instance.EquipmentItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, equipmentItem);
+                    resultPool = SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, equipmentItem);
+                    break;
                 case ItemSubType.FullCostume:
                 case ItemSubType.Title:
                     var costumeItem = TableSheets.Instance.CostumeItemSheet;
-                    return SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, costumeItem);
+                    resultPool = SynthesizeSimulator.GetSynthesizeResultPool(gradeSet, itemSubType, costumeItem);
+                    break;
             }
 
-            return null;
+            if (resultPool == null)
+            {
+                NcDebug.LogError($"Failed to get SynthesizeResultPool for {grade} and {itemSubType}");
+                return null;
+            }
+
+            var result = resultPool.Where(pair =>
+            {
+                var id = pair.Item1;
+                var weightSheet = TableSheets.Instance.SynthesizeWeightSheet;
+
+                if (!weightSheet.TryGetValue(id, out var row))
+                {
+                    return true;
+                }
+
+                return row.Weight != 0;
+            }).ToHashSet();
+
+            return result;
         }
 
         public static void NotificationMaxSynthesisCount(int requiredItemCount)
@@ -288,6 +341,21 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Alert);
         }
 
+        public static bool IsStrong(ItemBase itemBase)
+        {
+            if (itemBase is Equipment equipment)
+            {
+                return equipment.level > 0;
+            }
+
+            return false;
+        }
+
         #endregion Utils
+
+        public void CheckTutorial()
+        {
+            PlayerPrefs.SetInt(TutorialCheckKey, 1);
+        }
     }
 }

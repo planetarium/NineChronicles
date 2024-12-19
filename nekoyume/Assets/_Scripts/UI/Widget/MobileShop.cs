@@ -185,6 +185,8 @@ namespace Nekoyume.UI
                 _recommendedToggle.isOn = true;
                 _recommendedToggle.onObject.SetActive(true);
                 _recommendedToggle.offObject.SetActive(true);
+                // 그리드 Cell의 LayOut이 제대로 갱신 되지 않아서 한 프레임 뒤에 실행
+                await UniTask.DelayFrame(1);
                 RefreshGridByCategory(RecommendedString);
                 _lastSelectedCategory = RecommendedString;
             }

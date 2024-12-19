@@ -12,6 +12,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -25,6 +26,8 @@ namespace Nekoyume.UI.Module
     public class SynthesisModule : MonoBehaviour
     {
         private readonly int isActiveAnimHash = Animator.StringToHash("IsActive");
+
+        private readonly List<IDisposable> _disposables = new();
 
         [SerializeField]
         private SynthesisMaterialScroll scroll = null!;
@@ -69,22 +72,12 @@ namespace Nekoyume.UI.Module
 
         private IList<InventoryItem> _selectedItemsForSynthesize = new List<InventoryItem>();
 
-        private int _inventoryApStoneCount;
         private ItemSubType _itemSubType;
-
         private CancellationTokenSource? _expectationsItemIconCts;
 
-        private bool IsStrong(ItemBase itemBase)
-        {
-            if (itemBase is Equipment equipment)
-            {
-                return equipment.level > 0;
-            }
+        public bool PossibleSynthesis => _selectedItemsForSynthesize.Count > 0;
 
-            return false;
-        }
-
-        #region MonoBehavioir
+#region MonoBehavioir
 
         private void Awake()
         {
@@ -98,14 +91,24 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             ClearScrollData();
+
+            ReactiveAvatarState.ObservableActionPoint
+                .Subscribe(_ => synthesisButton.UpdateObjects())
+                .AddTo(_disposables);
         }
 
-        #endregion MonoBehavioir
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+
+#endregion MonoBehavioir
 
         public void UpdateData(IList<InventoryItem> registrationItems, SynthesizeModel model)
         {
             _itemSubType = model.ItemSubType;
-            _selectedItemsForSynthesize = registrationItems;
+            // 외부에서 변경되지 않도록 copy
+            _selectedItemsForSynthesize = registrationItems.ToList();
 
             var synthesisCount = registrationItems.Count / model.RequiredItemCount;
             var possibleSynthesis = synthesisCount > 0;
@@ -203,32 +206,22 @@ namespace Nekoyume.UI.Module
                 _ => throw new ArgumentException($"Invalid item type: {itemBaseList[0].GetType()}"),
             };
 
-            CheckSynthesizeStringEquipment(itemBaseList, () =>
-                CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType)));
-        }
-
-        private void CheckSynthesizeStringEquipment(List<ItemBase> itemBaseList, System.Action callback)
-        {
-            if (itemBaseList.Exists(IsStrong))
-            {
-                var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_WARNING", "UI_SYNTHESIZE_STRONG_CONFIRM");
-                system.ConfirmCallback = callback;
-            }
-            else
-            {
-                callback();
-            }
+            CheckChargeAp(chargeAp => PushAction(itemBaseList, chargeAp, grade, _itemSubType));
         }
 
         private void CheckChargeAp(Action<bool> chargeAp)
         {
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            var inventoryApStoneCount = inventory.GetUsableItemCount(
+                (int)CostType.ApPotion,
+                Game.Game.instance.Agent?.BlockIndex ?? -1);
+
             switch (synthesisButton.CurrentState.Value)
             {
                 case ConditionalButton.State.Conditional:
                 {
                     var paymentPopup = Widget.Find<PaymentPopup>();
-                    if (_inventoryApStoneCount > 0)
+                    if (inventoryApStoneCount > 0)
                     {
                         paymentPopup.ShowCheckPaymentApPotion(GameConfig.ActionCostAP, () => chargeAp(true));
                     }
