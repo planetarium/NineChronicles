@@ -928,9 +928,16 @@ namespace Nekoyume.Blockchain
                         df.CopyTo(decompressed);
                         decompressed.Seek(0, SeekOrigin.Begin);
                         var dec = decompressed.ToArray();
-                        var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                            .ToActionEvaluation();
-                        ActionRenderer.ActionRenderSubject.OnNext(ev);
+                        try
+                        {
+                            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                                .ToActionEvaluation();
+                            ActionRenderer.ActionRenderSubject.OnNext(ev);
+                        }
+                        catch (Exception e)
+                        {
+                            NcDebug.LogError($"[RPCAgent] OnRender()... Failed to deserialize ActionEvaluation. {e}");
+                        }
                     }
                 }
             }
