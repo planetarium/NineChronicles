@@ -577,7 +577,8 @@ namespace Nekoyume.Game.Scene
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
                     requiredAddress,
-                    false).ToCoroutine();
+                    false,
+                    context => { planetContext = context;}).ToCoroutine();
                 dimmedLoadingScreen.Close();
                 if (planetContext.HasError)
                 {
@@ -694,7 +695,8 @@ namespace Nekoyume.Game.Scene
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                         planetContext,
                         pk.Address,
-                        true).ToCoroutine();
+                        true,
+                        context => { planetContext = context;}).ToCoroutine();
                     dimmedLoadingScreen.Close();
                     if (planetContext.HasError)
                     {
