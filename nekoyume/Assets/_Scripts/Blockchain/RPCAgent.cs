@@ -609,6 +609,7 @@ namespace Nekoyume.Blockchain
 
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
         {
+            throw new NotImplementedException();
             var raw =
                 await _service.GetBulkStateByBlockHash(
                     BlockTipHash.ToByteArray(),
