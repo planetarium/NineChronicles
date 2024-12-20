@@ -42,7 +42,7 @@ namespace Nekoyume.Blockchain
     /// </summary>
     public class ActionManager : IDisposable
     {
-        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(360f);
+        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(60f);
 
         private readonly IAgent _agent;
 
