@@ -25,15 +25,16 @@ namespace Nekoyume.Multiplanetary
         }
 
         public readonly CommandLineOptions CommandLineOptions;
-        public bool IsSkipped;
-        public PlanetRegistry? PlanetRegistry;
-        public PlanetInfo? SelectedPlanetInfo;
-        public PlanetAccountInfo[]? PlanetAccountInfos;
-        public PlanetAccountInfo? SelectedPlanetAccountInfo;
+
+        public bool IsSkipped { get; set; }
+        public PlanetRegistry? PlanetRegistry { get; set; }
+        public PlanetInfo? SelectedPlanetInfo { get; set; }
+        public PlanetAccountInfo[]? PlanetAccountInfos { get; set; }
+        public PlanetAccountInfo? SelectedPlanetAccountInfo { get; set; }
 
         // NOTE: This is not kind of planet context, it is authentication context.
         //       But we have no idea where to put this yet.
-        public bool? CanSkipPlanetSelection;
+        public bool? CanSkipPlanetSelection { get; set; }
 
         public string Error { get; private set; } = string.Empty;
         public bool HasError => !string.IsNullOrEmpty(Error);
