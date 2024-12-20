@@ -14,7 +14,6 @@ using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.Multiplanetary.Extensions;
 using UniRx;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.Multiplanetary
@@ -39,78 +38,11 @@ namespace Nekoyume.Multiplanetary
         public static Subject<(PlanetContext planetContext, PlanetAccountInfo? planetAccountInfo)>
             SelectedPlanetAccountInfoSubject { get; } = new();
 
-        public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(PlanetContext context)
-        {
-            NcDebug.Log("[PlanetSelector] Initializing planet registry...");
-#if UNITY_EDITOR
-            if (string.IsNullOrEmpty(context.CommandLineOptions.PlanetRegistryUrl))
-            {
-                NcDebug.Log("[PlanetSelector] Skip initializing Planets because" +
-                    " PlanetRegistryUrl in CommandLineOptions is" +
-                    " null or empty in editor.");
-                context.IsSkipped = true;
-                return context;
-            }
-#endif
-
-            var clo = context.CommandLineOptions;
-            if (!clo.RpcClient)
-            {
-                NcDebug.Log("[PlanetSelector] Skip initializing PlanetRegistry because" +
-                    " RpcClient is false.");
-                context.IsSkipped = true;
-                return context;
-            }
-
-            if (string.IsNullOrEmpty(clo.PlanetRegistryUrl))
-            {
-                NcDebug.LogError("[PlanetSelector] CommandLineOptions.PlanetRegisterUrl must" +
-                    " not be null or empty when RpcClient is true.");
-                context.SetError(PlanetContext.ErrorType.PlanetRegistryUrlIsEmpty);
-                return context;
-            }
-
-            NcDebug.Log("[PlanetSelector] Initializing PlanetRegistry with" +
-                $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
-            context.PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
-
-            if (clo.DefaultPlanetId != null)
-            {
-                LiveAssetManager.instance.SetThorSchedule(new PlanetId(clo.DefaultPlanetId));
-            }
-
-            for (var i = 0; i < 3; i++)
-            {
-                var sw = new Stopwatch();
-                sw.Start();
-                await context.PlanetRegistry.InitializeAsync();
-                sw.Stop();
-                if (context.PlanetRegistry.IsInitialized)
-                {
-                    NcDebug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                    break;
-                }
-
-                NcDebug.LogError($"[PlanetSelector] Failed to initialize PlanetRegistry. Retry({i + 1})...");
-            }
-
-            if (!context.PlanetRegistry.IsInitialized)
-            {
-                NcDebug.LogError("[PlanetSelector] Failed to initialize PlanetRegistry.");
-                context.SetNetworkConnectionError(PlanetContext.ErrorType.InitializePlanetRegistryFailed);
-                return context;
-            }
-
-            NcDebug.Log("[PlanetSelector] PlanetRegistry initialized successfully.");
-            return context;
-        }
-
 #region PlanetInfo
 
         /// <summary>
         /// This method initializes <see cref="PlanetContext.SelectedPlanetInfo"/> and
         /// <see cref="PlanetContext.CanSkipPlanetSelection"/> if possible.
-        ///
         /// Check planet selection in the following order:
         /// 1. <see cref="Nekoyume.Helper.CommandLineOptions.SelectedPlanetId"/> in context argument.
         /// 2. <see cref="PlanetSelector.CachedPlanetIdString"/>.
@@ -311,7 +243,8 @@ namespace Nekoyume.Multiplanetary
         public static async UniTask<PlanetContext> UpdatePlanetAccountInfosAsync(
             PlanetContext context,
             Address agentAddress,
-            bool updateSelectedPlanetAccountInfo)
+            bool updateSelectedPlanetAccountInfo,
+            Action<PlanetContext>? onComplete = null)
         {
             NcDebug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
             if (context.PlanetRegistry is null)
@@ -334,6 +267,7 @@ namespace Nekoyume.Multiplanetary
             sw.Start();
             var planetAccountInfos = new List<PlanetAccountInfo>();
             var jsonSerializer = new NewtonsoftJsonSerializer();
+            List<PlanetInfo> planetInfos = new();
             foreach (var planetInfo in context.PlanetRegistry.PlanetInfos)
             {
                 if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
@@ -342,7 +276,7 @@ namespace Nekoyume.Multiplanetary
                     context.SetError(
                         PlanetContext.ErrorType.NoHeadlessGqlEndpointInPlanet,
                         planetInfo.ID.ToLocalizedPlanetName(false));
-                    break;
+                    continue;
                 }
 
                 var index = Random.Range(0, planetInfo.RPCEndpoints.HeadlessGql.Count);
@@ -355,7 +289,7 @@ namespace Nekoyume.Multiplanetary
                         PlanetContext.ErrorType.PlanetHeadlessGqlEndpointIsEmpty,
                         planetInfo.ID.ToLocalizedPlanetName(false),
                         index);
-                    break;
+                    continue;
                 }
 
                 NcDebug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
@@ -376,7 +310,7 @@ namespace Nekoyume.Multiplanetary
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
                         planetInfo.ID.ToLocalizedPlanetName(false),
                         agentAddress.ToString());
-                    break;
+                    continue;
                 }
                 catch (HttpRequestException ex)
                 {
@@ -387,7 +321,7 @@ namespace Nekoyume.Multiplanetary
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
                         planetInfo.ID.ToLocalizedPlanetName(false),
                         agentAddress.ToString());
-                    break;
+                    continue;
                 }
                 catch (Exception ex)
                 {
@@ -400,8 +334,9 @@ namespace Nekoyume.Multiplanetary
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
                         planetInfo.ID.ToLocalizedPlanetName(false),
                         agentAddress.ToString());
-                    break;
+                    continue;
                 }
+                planetInfos.Add(planetInfo);
 
                 NcDebug.Log($"[PlanetSelector] {agentAndPledgeGraphType}");
                 var info = new PlanetAccountInfo(
@@ -411,6 +346,7 @@ namespace Nekoyume.Multiplanetary
                     agentAndPledgeGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
                 planetAccountInfos.Add(info);
             }
+            context.PlanetRegistry.SetPlanetInfos(planetInfos);
 
             sw.Stop();
             NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
@@ -424,6 +360,7 @@ namespace Nekoyume.Multiplanetary
             context.PlanetAccountInfos = planetAccountInfos.ToArray();
             NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
                 " updated successfully.");
+            onComplete?.Invoke(context);
             return updateSelectedPlanetAccountInfo
                 ? UpdateSelectedPlanetAccountInfo(context)
                 : context;

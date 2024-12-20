@@ -602,7 +602,7 @@ namespace Nekoyume.UI
         }
 #endif
 
-        private void ApplyPlanetContext(PlanetContext planetContext)
+        public void ApplyPlanetContext(PlanetContext planetContext)
         {
             NcDebug.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
             selectPlanetScroll.SetData(
