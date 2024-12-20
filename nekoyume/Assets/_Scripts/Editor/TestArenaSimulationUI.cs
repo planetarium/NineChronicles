@@ -28,6 +28,12 @@ namespace SimulationTest
         [SerializeField]
         private Button simulationButton;
 
+        [SerializeField]
+        private int avatarLevel;
+
+        [SerializeField]
+        private int enemyLevel;
+
         private ArenaPlayerDigest _me;
         private ArenaPlayerDigest _enemy;
         private Address _myAddress;
@@ -49,8 +55,8 @@ namespace SimulationTest
         private void LoadFileAndSerialize()
         {
             var avatarSheets = TestArena.Instance.TableSheets.GetAvatarSheets();
-            var avatar1 = GetAvatarState(1, "me", avatarSheets);
-            var avatar2 = GetAvatarState(1, "enemy", avatarSheets);
+            var avatar1 = GetAvatarState(avatarLevel, "me", avatarSheets);
+            var avatar2 = GetAvatarState(enemyLevel, "enemy", avatarSheets);
 
             var inventory1 = new Inventory();
             var inventory2 = new Inventory();
