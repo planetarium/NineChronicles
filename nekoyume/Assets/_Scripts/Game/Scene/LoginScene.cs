@@ -130,7 +130,7 @@ namespace Nekoyume.Game.Scene
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(CommandLineOptions);
-            yield return PlanetSelector.InitializePlanetRegistryAsync(planetContext).ToCoroutine();
+            yield return planetContext.InitializePlanetRegistryAsync().ToCoroutine();
 
 #if RUN_ON_MOBILE
             if (planetContext.HasError)

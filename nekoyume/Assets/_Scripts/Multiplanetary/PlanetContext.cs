@@ -1,7 +1,10 @@
 #nullable enable
 
 using System;
+using System.Diagnostics;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 
@@ -9,6 +12,8 @@ namespace Nekoyume.Multiplanetary
 {
     public class PlanetContext
     {
+        private const int InitializeRetryCount = 3;
+
         public enum ErrorType
         {
             PlanetRegistryUrlIsEmpty,
@@ -26,7 +31,7 @@ namespace Nekoyume.Multiplanetary
 
         public readonly CommandLineOptions CommandLineOptions;
 
-        public bool IsSkipped { get; set; }
+        public bool IsSkipped { get; }
         public PlanetRegistry? PlanetRegistry { get; set; }
         public PlanetInfo? SelectedPlanetInfo { get; set; }
         public PlanetAccountInfo[]? PlanetAccountInfos { get; set; }
@@ -49,6 +54,22 @@ namespace Nekoyume.Multiplanetary
         public PlanetContext(CommandLineOptions commandLineOptions)
         {
             CommandLineOptions = commandLineOptions;
+
+            if (GameConfig.IsEditor || !commandLineOptions.RpcClient)
+            {
+                IsSkipped = true;
+            }
+        }
+
+        /// <summary>
+        /// IsSkipped 필드를 수동으로 설정할 수 있는 테스트용 생성자
+        /// </summary>
+        /// <param name="commandLineOptions">초기화 시킬 CommandLineOptions</param>
+        /// <param name="isSkipped">InitializePlanetRegistryAsync()를 스킵할지 여부</param>
+        public PlanetContext(CommandLineOptions commandLineOptions, bool isSkipped)
+        {
+            CommandLineOptions = commandLineOptions;
+            IsSkipped = isSkipped;
         }
 
         public void SetError(ErrorType errorType, params object[] args)
@@ -86,6 +107,62 @@ namespace Nekoyume.Multiplanetary
             SetError(errorType, args);
             Error = $"{Error}\n{L10nManager.Localize("EDESC_NETWORK_CONNECTION_ERROR")}";
             NcDebug.LogError($"[{nameof(PlanetContext)}] {Error}");
+        }
+
+        public async UniTask InitializePlanetRegistryAsync()
+        {
+            NcDebug.Log($"[{nameof(PlanetContext)}] Initializing planet registry...");
+            if (IsSkipped)
+            {
+                if (!CommandLineOptions.RpcClient)
+                {
+                    NcDebug.Log($"[{nameof(PlanetContext)}] Skip initializing PlanetRegistry because RpcClient is false.");
+                    return;
+                }
+
+                NcDebug.Log($"[{nameof(PlanetContext)}] Skip initializing Planets because PlanetRegistryUrl in CommandLineOptions is null or empty in editor.");
+                return;
+            }
+
+            var clo = CommandLineOptions;
+            if (string.IsNullOrEmpty(clo.PlanetRegistryUrl))
+            {
+                NcDebug.LogError($"[{nameof(PlanetContext)}] CommandLineOptions.PlanetRegisterUrl must not be null or empty when RpcClient is true.");
+                SetError(ErrorType.PlanetRegistryUrlIsEmpty);
+                return;
+            }
+
+            NcDebug.Log($"[{nameof(PlanetContext)}] Initializing PlanetRegistry with PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
+            PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
+
+            if (clo.DefaultPlanetId != null)
+            {
+                LiveAssetManager.instance.SetThorSchedule(new PlanetId(clo.DefaultPlanetId));
+            }
+
+            for (var i = 1; i <= InitializeRetryCount; i++)
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                await PlanetRegistry.InitializeAsync();
+                sw.Stop();
+                if (PlanetRegistry.IsInitialized)
+                {
+                    NcDebug.Log($"[{nameof(PlanetContext)}] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    break;
+                }
+
+                NcDebug.LogError($"[{nameof(PlanetContext)}] Failed to initialize PlanetRegistry. Retry({i})...");
+            }
+
+            if (!PlanetRegistry.IsInitialized)
+            {
+                NcDebug.LogError($"[{nameof(PlanetContext)}] Failed to initialize PlanetRegistry.");
+                SetNetworkConnectionError(ErrorType.InitializePlanetRegistryFailed);
+                return;
+            }
+
+            NcDebug.Log($"[{nameof(PlanetContext)}] PlanetRegistry initialized successfully.");
         }
     }
 }
