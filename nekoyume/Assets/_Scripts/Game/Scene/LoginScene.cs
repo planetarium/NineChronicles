@@ -432,8 +432,6 @@ namespace Nekoyume.Game.Scene
             }
 
             var loginSystem = Widget.Find<LoginSystem>();
-            var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
-            var sw = new Stopwatch();
             if (Application.isBatchMode)
             {
                 loginSystem.Show(CommandLineOptions.PrivateKey);
@@ -442,6 +440,15 @@ namespace Nekoyume.Game.Scene
             }
 
 #if !RUN_ON_MOBILE
+            yield return StartCoroutine(CoLoginPc(planetContext, loginCallback));
+            yield break;
+#endif
+            yield return StartCoroutine(CoLoginMobile(planetContext, loginCallback));
+        }
+
+        private IEnumerator CoLoginPc(PlanetContext planetContext, Action<bool> loginCallback)
+        {
+            var game = Game.instance;
             // NOTE: planetContext and planet info are already initialized when the game is launched from the non-mobile platform.
             NcDebug.Log("[LoginScene] CoLogin()... PlanetContext and planet info are already initialized.");
             if (!KeyManager.Instance.IsSignedIn)
@@ -462,13 +469,18 @@ namespace Nekoyume.Game.Scene
 
                 // NOTE: Update CommandlineOptions.PrivateKey finally.
                 CommandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
-                NcDebug.Log("[LoginScene] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                    $" to ({KeyManager.Instance.SignedInAddress}).");
+                NcDebug.Log($"[LoginScene] CoLogin()... CommandLineOptions.PrivateKey finally updated to ({KeyManager.Instance.SignedInAddress}).");
             }
 
             yield return game.AgentInitialize(true, loginCallback);
-            yield break;
-#endif
+        }
+
+        private IEnumerator CoLoginMobile(PlanetContext planetContext, Action<bool> loginCallback)
+        {
+            var game = Game.instance;
+            var loginSystem = Widget.Find<LoginSystem>();
+            var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
+            var sw = new Stopwatch();
 
             // NOTE: Initialize current planet info.
             sw.Reset();
