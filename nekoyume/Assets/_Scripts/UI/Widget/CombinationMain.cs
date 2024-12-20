@@ -223,6 +223,7 @@ namespace Nekoyume.UI
         public void TutorialActionSynthesisShow()
         {
             synthesisButton.onClick?.Invoke();
+            Find<Synthesis>().CheckTutorial();
         }
 
         [UsedImplicitly]

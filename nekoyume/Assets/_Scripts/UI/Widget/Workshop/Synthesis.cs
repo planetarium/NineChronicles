@@ -29,6 +29,8 @@ namespace Nekoyume.UI
 
         private const ItemSubType DefaultItemSubType = ItemSubType.Aura;
 
+        private static string TutorialCheckKey => $"Tutorial_Check_Synthesis_{Game.Game.instance.States.CurrentAvatarKey}";
+
         private readonly List<IDisposable> _activeDisposables = new();
         private readonly ToggleGroup _toggleGroup = new();
 
@@ -135,6 +137,13 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (PlayerPrefs.GetInt(TutorialCheckKey, 0) == 0)
+            {
+                // Play Tutorial - for old user
+                Game.Game.instance.Stage.TutorialController.Play(1510002);
+                PlayerPrefs.SetInt(TutorialCheckKey, 1);
+            }
+
             base.Show(ignoreShowAnimation);
 
             if (CurrentItemSubType == DefaultItemSubType)
@@ -343,5 +352,10 @@ namespace Nekoyume.UI
         }
 
         #endregion Utils
+
+        public void CheckTutorial()
+        {
+            PlayerPrefs.SetInt(TutorialCheckKey, 1);
+        }
     }
 }
