@@ -12586,6 +12586,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializeButton: {fileID: 603112895}
   simulationButton: {fileID: 632760628}
+  avatarLevel: 100
+  enemyLevel: 10
 --- !u!114 &4035234573589188916
 MonoBehaviour:
   m_ObjectHideFlags: 0
