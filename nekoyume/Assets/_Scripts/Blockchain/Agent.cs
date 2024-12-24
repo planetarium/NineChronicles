@@ -355,18 +355,6 @@ namespace Nekoyume.Blockchain
             return dict;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
-        {
-            var dict = new Dictionary<Address, IValue>();
-            foreach (var address in addressList)
-            {
-                var result = await await Task.FromResult(GetStateAsync(accountAddress, address));
-                dict[address] = result;
-            }
-
-            return dict;
-        }
-
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,

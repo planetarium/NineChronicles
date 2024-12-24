@@ -607,11 +607,6 @@ namespace Nekoyume.Blockchain
             return avatarState;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,
