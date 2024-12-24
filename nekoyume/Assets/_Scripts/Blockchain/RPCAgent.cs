@@ -607,22 +607,6 @@ namespace Nekoyume.Blockchain
             return avatarState;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
-        {
-            var raw =
-                await _service.GetBulkStateByBlockHash(
-                    BlockTipHash.ToByteArray(),
-                    accountAddress.ToByteArray(),
-                    addressList.Select(a => a.ToByteArray()));
-            var result = new Dictionary<Address, IValue>();
-            foreach (var kv in raw)
-            {
-                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
-            }
-
-            return result;
-        }
-
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,

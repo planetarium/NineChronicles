@@ -71,7 +71,7 @@ namespace Nekoyume.State
         public FungibleAssetValue CrystalBalance { get; private set; }
 
         public AllRuneState AllRuneState { get; private set; }
-        
+
         public AllCombinationSlotState AllCombinationSlotState { get; private set; }
 
         public readonly ConcurrentDictionary<int, Dictionary<BattleType, RuneSlotState>>
@@ -86,12 +86,12 @@ namespace Nekoyume.State
         private class Workshop
         {
             private readonly ConcurrentDictionary<int, CombinationSlotState> _states = new();
-            
+
             public void UpdateCombinationSlotState(int index, CombinationSlotState state)
             {
                 _states[index] = state;
             }
-            
+
             /// <summary>
             /// If you want to update the state, use <see cref="UpdateCombinationSlotState"/>.
             /// </summary>
@@ -216,7 +216,7 @@ namespace Nekoyume.State
         {
             AllRuneState = allRuneState;
         }
-        
+
         private void SetAllCombinationSlotState(Address avatarAddress, AllCombinationSlotState allCombinationSlotState)
         {
             LocalLayer.Instance.InitializeCombinationSlots(allCombinationSlotState);
@@ -251,7 +251,7 @@ namespace Nekoyume.State
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
-                var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addresses);
+                var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
@@ -321,7 +321,7 @@ namespace Nekoyume.State
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
-                var stateBulk = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addresses);
+                var stateBulk = await agent.GetStateBulkAsync(agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
@@ -359,7 +359,7 @@ namespace Nekoyume.State
                 ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
             };
 
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addresses);
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
             foreach (var value in stateBulk.Values)
             {
                 if (value is List list)
@@ -726,7 +726,7 @@ namespace Nekoyume.State
         {
             return !_slotStates.ContainsKey(avatarState.address) ? null : _slotStates[avatarState.address].States;
         }
-        
+
         public void SetGameConfigState(GameConfigState state)
         {
             GameConfigState = state;
@@ -782,6 +782,7 @@ namespace Nekoyume.State
                         .ToList();
                 var states =
                     await Game.Game.instance.Agent.GetStateBulkAsync(
+                        Game.Game.instance.Agent.BlockTipStateRootHash,
                         ReservedAddresses.LegacyAccount,
                         hammerPointStateAddresses.Select(tuple => tuple.Item1));
                 var joinedStates = states.Join(
