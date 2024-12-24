@@ -10,6 +10,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Character
 {
@@ -120,10 +121,10 @@ namespace Nekoyume.Game.Character
                 tableSheets.CharacterSheet,
                 tableSheets.CharacterLevelSheet,
                 tableSheets.EquipmentItemSetEffectSheet);
-            Set(model);
+            Set(model, tableSheets);
         }
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
+        public override void Set(Model.CharacterBase model, TableSheets tableSheets, bool updateCurrentHp = false)
         {
             if (!(model is Model.Player playerModel))
             {
@@ -131,12 +132,12 @@ namespace Nekoyume.Game.Character
             }
 
             var avatarState = Game.instance.States.CurrentAvatarState;
-            Set(avatarState.address, playerModel, updateCurrentHp);
+            Set(avatarState.address, playerModel, updateCurrentHp, tableSheets);
         }
 
-        public void Set(Address avatarAddress, Model.Player model, bool updateCurrentHP)
+        public void Set(Address avatarAddress, Model.Player model, bool updateCurrentHP, TableSheets tableSheets)
         {
-            Set(avatarAddress, model, model.Costumes, model.armor, model.weapon, model.aura, updateCurrentHP);
+            Set(avatarAddress, model, model.Costumes, model.armor, model.weapon, model.aura, updateCurrentHP, tableSheets);
         }
 
         public void Set(
@@ -146,10 +147,11 @@ namespace Nekoyume.Game.Character
             Armor armor,
             Weapon weapon,
             Aura aura,
-            bool updateCurrentHP)
+            bool updateCurrentHP,
+            TableSheets tableSheets)
         {
             InitStats(model);
-            base.Set(model, updateCurrentHP);
+            base.Set(model, tableSheets, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
@@ -165,7 +167,8 @@ namespace Nekoyume.Game.Character
                 model.earIndex,
                 model.lensIndex,
                 model.hairIndex,
-                model.tailIndex);
+                model.tailIndex,
+                tableSheets);
 
             if (!SpeechBubble)
             {
@@ -239,7 +242,8 @@ namespace Nekoyume.Game.Character
                 0,
                 0,
                 0,
-                0);
+                0,
+                TableSheets.Instance.CostumeItemSheet);
             SpineController.UpdateWeapon(weaponId);
         }
 

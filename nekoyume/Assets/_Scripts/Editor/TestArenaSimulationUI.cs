@@ -2,16 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Bencodex;
 using Bencodex.Types;
+using Lib9c.DevExtensions;
+using Lib9c.DevExtensions.Model;
 using Libplanet.Crypto;
 using Nekoyume;
+using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Quest;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +33,9 @@ namespace SimulationTest
 
         [SerializeField]
         private Button simulationButton;
+
+        [SerializeField]
+        private int enemyLevel;
 
         private ArenaPlayerDigest _me;
         private ArenaPlayerDigest _enemy;
@@ -45,50 +57,75 @@ namespace SimulationTest
 
         private void LoadFileAndSerialize()
         {
-            var avatar1 = GetAvatarStateFromRawState(GetTrimmedStringFromPath("serialized_avatar1.txt"));
-            var avatar2 = GetAvatarStateFromRawState(GetTrimmedStringFromPath("serialized_avatar2.txt"));
+            var tableSheets = TestArena.Instance.TableSheets;
+            var avatarSheets = tableSheets.GetAvatarSheets();
+            var jsonPath = Platform.GetStreamingAssetsPath("avatar.json");
+            var fileStream = new FileStream(jsonPath, FileMode.Open);
+            var data = new byte[fileStream.Length];
+            fileStream.Read(data, 0, data.Length);
+            fileStream.Close();
+            var jsonData = Encoding.UTF8.GetString(data);
+            var result = JsonConvert.DeserializeObject<AvatarModel>(jsonData);
+            var avatar1 = GetAvatarState(result.Level, "me", avatarSheets);
+            var avatar2 = GetAvatarState(enemyLevel, "enemy", avatarSheets);
 
-            var inventory1 = GetInventoryFromRawState(GetTrimmedStringFromPath("serialized_inventory1.txt"));
-            var inventory2 = GetInventoryFromRawState(GetTrimmedStringFromPath("serialized_inventory2.txt"));
-
-            var allRune1 = GetAllRuneStateFromRawState(GetTrimmedStringFromPath("serialized_allrune1.txt"));
-            var allRune2 = GetAllRuneStateFromRawState(GetTrimmedStringFromPath("serialized_allrune2.txt"));
-
-            var runeSlot1 = GetRuneSlotStateStateFromRawState(GetTrimmedStringFromPath("serialized_runeslot1.txt"));
-            var runeSlot2 = GetRuneSlotStateStateFromRawState(GetTrimmedStringFromPath("serialized_runeslot2.txt"));
-
-            var collection1Str =
-                GetTrimmedStringFromPath("serialized_collection1.txt");
-            var collection2Str =
-                GetTrimmedStringFromPath("serialized_collection1.txt");
-            CollectionState collection1;
-            CollectionState collection2;
-            try
+            var inventory1 = new Inventory();
+            var equipmentItemSheet = tableSheets.EquipmentItemSheet;
+            var skillSheet = tableSheets.SkillSheet;
+            foreach (var equipmentItem in result.EquipmentItems)
             {
-                collection1 = GetCollectionStateFromRawState(collection1Str);
-            }
-            catch
-            {
-                collection1 = new CollectionState();
-                foreach (var id in collection1Str.Trim().Split(",").Select(int.Parse))
+                var row = equipmentItemSheet[equipmentItem.Id];
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(row, new Guid(), 0L);
+                foreach (var statOption in equipmentItem.StatOptions)
                 {
-                    collection1.Ids.Add(id);
+                    var statMap = new DecimalStat(statOption.StatType, statOption.Value);
+                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.TotalValue);
+                }
+
+                foreach (var skillOption in equipmentItem.SkillOptions)
+                {
+                    var skillRow = skillSheet.Values.First(r => r.Id == skillOption.Id);
+                    var skill = SkillFactory.Get(skillRow, skillOption.Power, skillOption.Chance, skillOption.StatPowerRatio, skillOption.StatType);
+                    equipment.Skills.Add(skill);
+                }
+                equipment.SetLevel(new RandomImpl(), equipmentItem.Level, tableSheets.EnhancementCostSheetV3);
+                equipment.equipped = true;
+                inventory1.AddItem(equipment);
+            }
+            var costumeSheet = tableSheets.CostumeItemSheet;
+            foreach (var costumeId in result.CostumeIds)
+            {
+                var costume = new Costume(costumeSheet[costumeId], new Guid())
+                {
+                    equipped = true,
+                };
+                inventory1.AddItem(costume);
+            }
+            var inventory2 = new Inventory();
+
+            var allRune1 = new AllRuneState();
+            var runeSlotInfos = new List<RuneSlotInfo>();
+            foreach (var runeItem in result.RuneItems)
+            {
+                var runeId = runeItem.Id;
+                allRune1.AddRuneState(new RuneState(runeId, runeItem.Level));
+                if (runeItem.SlotIndex.HasValue)
+                {
+                    runeSlotInfos.Add(new RuneSlotInfo(runeItem.SlotIndex.Value, runeId));
                 }
             }
+            var allRune2 = new AllRuneState();
+            var runeSlot1 = new RuneSlotState(BattleType.Arena);
+            runeSlot1.UpdateSlot(runeSlotInfos, tableSheets.RuneListSheet);
+            var runeSlot2 = new RuneSlotState(BattleType.Arena);
 
-            try
+            CollectionState collection1 = new CollectionState();
+            var collectionIds = result.CollectionIds.Distinct();
+            foreach (var collectionId in collectionIds)
             {
-                collection2 = GetCollectionStateFromRawState(collection2Str);
+                collection1.Ids.Add(collectionId);
             }
-            catch
-            {
-                collection2 = new CollectionState();
-                foreach (var id in collection2Str.Trim().Split(",").Select(int.Parse))
-                {
-                    collection2.Ids.Add(id);
-                }
-            }
-
+            CollectionState collection2 = new CollectionState();
             _myCollectionState = collection1;
             _enemyCollectionState = collection2;
             _me = new ArenaPlayerDigest(avatar1,
@@ -147,6 +184,13 @@ namespace SimulationTest
             return new AvatarState((List)GetStateFromRawState(rawBinaryString));
         }
 
+        private static AvatarState GetAvatarState(int level, string name, AvatarSheets avatarSheets)
+        {
+            var avatarState = AvatarState.Create(new Address(), new Address(), 0, avatarSheets, new Address(), name);
+            avatarState.level = level;
+            return avatarState;
+        }
+
         private static Inventory GetInventoryFromRawState(string rawBinaryString)
         {
             return new Inventory((List)GetStateFromRawState(rawBinaryString));
@@ -189,6 +233,50 @@ spd: {arenaCharacter.SPD}
 hit: {arenaCharacter.HIT}
 cri: {arenaCharacter.CRI}
 cdmg: {arenaCharacter.CDMG}";
+        }
+
+        [Serializable]
+        public class AvatarModel
+        {
+            public int Level;
+            public int[] CollectionIds;
+            public RuneItem[] RuneItems;
+            public int[] CostumeIds;
+            public EquipmentItem[] EquipmentItems;
+        }
+
+        [Serializable]
+        public class RuneItem
+        {
+            public int Id;
+            public int Level;
+            public int? SlotIndex;
+        }
+
+        [Serializable]
+        public class EquipmentItem
+        {
+            public int Id;
+            public int Level;
+            public StatOptions[] StatOptions;
+            public SkillOptions[] SkillOptions;
+        }
+
+        [Serializable]
+        public class StatOptions
+        {
+            public StatType StatType;
+            public int Value;
+        }
+
+        [Serializable]
+        public class SkillOptions
+        {
+            public int Id;
+            public int Power;
+            public int Chance;
+            public int StatPowerRatio;
+            public StatType StatType;
         }
     }
 }

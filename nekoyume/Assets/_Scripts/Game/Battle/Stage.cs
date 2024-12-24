@@ -892,7 +892,7 @@ namespace Nekoyume.Game.Battle
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
             var playerCharacter = RunPlayer(false);
-            playerCharacter.Set(avatarState.address, character, true);
+            playerCharacter.Set(avatarState.address, character, true, TableSheets.Instance);
             playerCharacter.Run();
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
@@ -1622,7 +1622,7 @@ namespace Nekoyume.Game.Battle
                 }
             }
 
-            character?.Set(caster);
+            character?.Set(caster, TableSheets.Instance);
 
             return character;
         }

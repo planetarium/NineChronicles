@@ -108,7 +108,10 @@ namespace Nekoyume.UI
             var result = synthesisInventory.SelectAutoSelectItems(_synthesizeModel);
             if (!result)
             {
-                NcDebug.LogWarning("Failed to select items.");
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SYNTHESIZE_AUTO_SELECT_NOT_ENOUGH", _synthesizeModel?.RequiredItemCount ?? -1),
+                    NotificationCell.NotificationType.Alert);
             }
         }
 
@@ -123,7 +126,10 @@ namespace Nekoyume.UI
             var result = synthesisInventory.SelectAutoSelectAllItems(_synthesizeModel);
             if (!result)
             {
-                NcDebug.LogWarning("Failed to select all items.");
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SYNTHESIZE_AUTO_SELECT_NOT_ENOUGH", _synthesizeModel?.RequiredItemCount ?? -1),
+                    NotificationCell.NotificationType.Alert);
             }
         }
 
