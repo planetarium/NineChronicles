@@ -104,6 +104,7 @@ namespace Nekoyume.Multiplanetary
 
         public void SetNetworkConnectionError(ErrorType errorType, params object[] args)
         {
+            return;
             SetError(errorType, args);
             Error = $"{Error}\n{L10nManager.Localize("EDESC_NETWORK_CONNECTION_ERROR")}";
             NcDebug.LogError($"[{nameof(PlanetContext)}] {Error}");
