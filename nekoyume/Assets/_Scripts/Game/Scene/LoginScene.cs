@@ -483,12 +483,7 @@ namespace Nekoyume.Game.Scene
             var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
             var sw = new Stopwatch();
 
-            // NOTE: Initialize current planet info.
-            sw.Reset();
-            sw.Start();
-            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
-            sw.Stop();
-            NcDebug.Log($"[LoginScene] CoLoginMobile()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            planetContext = InitializePlanetInfo(planetContext, sw);
 
             if (planetContext.HasError)
             {
@@ -496,10 +491,8 @@ namespace Nekoyume.Game.Scene
                 return;
             }
 
-            await CheckAlreadyLoginOrLocalPassphrase(planetContext).ToUniTask();
-            if (planetContext.HasError)
+            if (!await CheckLoginOrPassphrase(planetContext, loginCallback))
             {
-                loginCallback.Invoke(false);
                 return;
             }
 
@@ -509,15 +502,7 @@ namespace Nekoyume.Game.Scene
                 return;
             }
 
-            // NOTE: Show IntroScreen's tab to start button.
-            //       It should be called after the PlanetSelector.InitializeSelectedPlanetInfo().
-            //       Because the IntroScreen uses the PlanetContext.SelectedPlanetInfo.
-            //       And it should be called after the IntroScreen.SetData().
-            introScreen.ShowTabToStart();
-            introScreen.ShowTabToStart();
-            NcDebug.Log("[LoginScene] CoLoginMobile()... WaitUntil introScreen.OnClickTabToStart.");
-            await introScreen.OnClickTabToStart.AsObservable().First().ToUniTask();
-            NcDebug.Log("[LoginScene] CoLoginMobile()... WaitUntil introScreen.OnClickTabToStart. Done.");
+            await ShowIntroAndWaitForStart();
 
             string email = null;
             Address? agentAddrInPortal = null;
@@ -558,7 +543,65 @@ namespace Nekoyume.Game.Scene
                 await PortalLoginProcess(socialType, idToken, outAddr => { agentAddrInPortal = outAddr; }).ToUniTask();
             }
 
-            // NOTE: Update PlanetContext.PlanetAccountInfos.
+            if (!await UpdatePlanetAccountInfos(planetContext, loginSystem, dimmedLoadingScreen, agentAddrInPortal, loginCallback))
+            {
+                return;
+            }
+
+            if (!await CheckPledgedAccount(planetContext, loginCallback, email, agentAddrInPortal))
+            {
+                return;
+            }
+
+            game.CurrentSocialEmail = email ?? string.Empty;
+
+            // Update CommandlineOptions.PrivateKey finally.
+            CommandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
+            NcDebug.Log($"[LoginScene] CoLoginMobile()... CommandLineOptions.PrivateKey updated to ({KeyManager.Instance.SignedInAddress}).");
+
+            await game.AgentInitialize(true, loginCallback).ToUniTask();
+        }
+
+        private PlanetContext InitializePlanetInfo(PlanetContext planetContext, Stopwatch sw)
+        {
+            sw.Reset();
+            sw.Start();
+            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
+            sw.Stop();
+            NcDebug.Log($"[LoginScene] CoLoginMobile()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
+
+            return planetContext;
+        }
+
+        private async UniTask<bool> CheckLoginOrPassphrase(PlanetContext planetContext, Action<bool> loginCallback)
+        {
+            await CheckAlreadyLoginOrLocalPassphrase(planetContext).ToUniTask();
+            if (!planetContext.HasError)
+            {
+                return true;
+            }
+
+            loginCallback.Invoke(false);
+            return false;
+        }
+
+        private async UniTask ShowIntroAndWaitForStart()
+        {
+            introScreen.ShowTabToStart();
+            introScreen.ShowTabToStart(); // 의도적으로 두 번 호출되어 있는 것으로 보입니다.
+            NcDebug.Log("[LoginScene] CoLoginMobile()... WaitUntil introScreen.OnClickTabToStart.");
+            await introScreen.OnClickTabToStart.AsObservable().First().ToUniTask();
+            NcDebug.Log("[LoginScene] CoLoginMobile()... WaitUntil introScreen.OnClickTabToStart. Done.");
+        }
+
+        private async UniTask<bool> UpdatePlanetAccountInfos(
+            PlanetContext planetContext,
+            LoginSystem loginSystem,
+            DimmedLoadingScreen dimmedLoadingScreen,
+            Address? agentAddrInPortal,
+            Action<bool> loginCallback
+        )
+        {
             if (agentAddrInPortal is null)
             {
                 NcDebug.Log("[LoginScene] CoLoginMobile()... AgentAddress in portal is null");
@@ -566,7 +609,6 @@ namespace Nekoyume.Game.Scene
                 {
                     NcDebug.Log("[LoginScene] CoLoginMobile()... KeyManager.Instance.IsSignedIn is false");
                     loginSystem.Show(connectedAddress: null);
-                    // NOTE: Don't set the autoGeneratedAgentAddress to agentAddr.
                     var autoGeneratedAgentAddress = KeyManager.Instance.SignedInAddress;
                     NcDebug.Log($"[LoginScene] CoLogin()... auto generated agent address: {autoGeneratedAgentAddress}. And Update planet account infos w/ empty agent address.");
                 }
@@ -593,14 +635,25 @@ namespace Nekoyume.Game.Scene
                 );
                 dimmedLoadingScreen.Close();
 
-                if (planetContext.HasError)
+                if (!planetContext.HasError)
                 {
-                    loginCallback?.Invoke(false);
-                    return;
+                    return true;
                 }
+
+                loginCallback?.Invoke(false);
+                return false;
             }
 
-            // NOTE: Check if the planets have at least one agent.
+            return true;
+        }
+
+        private async UniTask<bool> CheckPledgedAccount(
+            PlanetContext planetContext,
+            Action<bool> loginCallback,
+            string email,
+            Address? agentAddrInPortal
+        )
+        {
             if (planetContext.HasPledgedAccount)
             {
                 await ShowPlanetAccountInfosPopup(planetContext).ToUniTask();
@@ -625,7 +678,7 @@ namespace Nekoyume.Game.Scene
                 {
                     HasNotPledgedAccountAndNotSignedProcess(planetContext, email, agentAddrInPortal);
                     loginCallback?.Invoke(false);
-                    return;
+                    return false;
                 }
 
                 NcDebug.Log("[LoginScene] CoLoginMobile()... Player have to make a pledge.");
@@ -634,13 +687,7 @@ namespace Nekoyume.Game.Scene
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
 
-            game.CurrentSocialEmail = email ?? string.Empty;
-
-            // Update CommandlineOptions.PrivateKey finally.
-            CommandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
-            NcDebug.Log($"[LoginScene] CoLoginMobile()... CommandLineOptions.PrivateKey updated to ({KeyManager.Instance.SignedInAddress}).");
-
-            await game.AgentInitialize(true, loginCallback).ToUniTask();
+            return true;
         }
 
         private void ShowMaintenancePopup()
