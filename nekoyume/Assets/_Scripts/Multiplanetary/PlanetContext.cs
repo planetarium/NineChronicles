@@ -1,18 +1,25 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using Cysharp.Threading.Tasks;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
+using Libplanet.Crypto;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Multiplanetary.Extensions;
 
 namespace Nekoyume.Multiplanetary
 {
     public class PlanetContext
     {
-        private const int InitializeRetryCount = 3;
+        private const int InitializeRegistryRetryCount = 3;
 
         public enum ErrorType
         {
@@ -26,7 +33,7 @@ namespace Nekoyume.Multiplanetary
             QueryPlanetAccountInfoFailed,
             PlanetAccountInfosNotInitialized,
             PlanetNotSelected,
-            UnsupportedCase01
+            UnsupportedCase01,
         }
 
         public readonly CommandLineOptions CommandLineOptions;
@@ -43,6 +50,8 @@ namespace Nekoyume.Multiplanetary
 
         public string Error { get; private set; } = string.Empty;
         public bool HasError => !string.IsNullOrEmpty(Error);
+
+        public bool IsInitialized { get; private set; }
 
         public bool HasPledgedAccount =>
             PlanetAccountInfos?.Any(e =>
@@ -104,13 +113,12 @@ namespace Nekoyume.Multiplanetary
 
         public void SetNetworkConnectionError(ErrorType errorType, params object[] args)
         {
-            return;
             SetError(errorType, args);
             Error = $"{Error}\n{L10nManager.Localize("EDESC_NETWORK_CONNECTION_ERROR")}";
             NcDebug.LogError($"[{nameof(PlanetContext)}] {Error}");
         }
 
-        public async UniTask InitializePlanetRegistryAsync()
+        public async UniTask InitializePlanetContextAsync()
         {
             NcDebug.Log($"[{nameof(PlanetContext)}] Initializing planet registry...");
             if (IsSkipped)
@@ -141,20 +149,7 @@ namespace Nekoyume.Multiplanetary
                 LiveAssetManager.instance.SetThorSchedule(new PlanetId(clo.DefaultPlanetId));
             }
 
-            for (var i = 1; i <= InitializeRetryCount; i++)
-            {
-                var sw = new Stopwatch();
-                sw.Start();
-                await PlanetRegistry.InitializeAsync();
-                sw.Stop();
-                if (PlanetRegistry.IsInitialized)
-                {
-                    NcDebug.Log($"[{nameof(PlanetContext)}] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                    break;
-                }
-
-                NcDebug.LogError($"[{nameof(PlanetContext)}] Failed to initialize PlanetRegistry. Retry({i})...");
-            }
+            await InitializePlanetRegistryAsync(PlanetRegistry);
 
             if (!PlanetRegistry.IsInitialized)
             {
@@ -164,6 +159,108 @@ namespace Nekoyume.Multiplanetary
             }
 
             NcDebug.Log($"[{nameof(PlanetContext)}] PlanetRegistry initialized successfully.");
+            IsInitialized = true;
+        }
+
+        private async UniTask InitializePlanetRegistryAsync(PlanetRegistry planetRegistry)
+        {
+            for (var i = 1; i <= InitializeRegistryRetryCount; i++)
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                await planetRegistry.InitializeAsync();
+                sw.Stop();
+                if (planetRegistry.IsInitialized)
+                {
+                    NcDebug.Log($"[{nameof(PlanetContext)}] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    break;
+                }
+
+                NcDebug.LogError($"[{nameof(PlanetContext)}] Failed to initialize PlanetRegistry. Retry({i})...");
+            }
+        }
+
+        // TODO: PlanetInfoCheck와 PlanetAccountInfo 정보 구성을 분리하는 것이 좋을 것 같습니다.
+        public async UniTask<PlanetAccountInfo[]?> SetPlanetAccountInfoAsync(Address agentAddress)
+        {
+            var planetRegistry = PlanetRegistry;
+            if (planetRegistry == null)
+            {
+                NcDebug.LogError($"[{nameof(PlanetContext)}] PlanetRegistry is null.");
+                SetError(ErrorType.PlanetRegistryNotInitialized);
+                return null;
+            }
+
+            var sw = new Stopwatch();
+            sw.Start();
+            var planetAccountInfos = new List<PlanetAccountInfo>();
+            var planetInfos = new List<PlanetInfo>();
+            var jsonSerializer = new NewtonsoftJsonSerializer();
+
+            foreach (var planetInfo in planetRegistry.PlanetInfos)
+            {
+                if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
+                {
+                    // ErrorType.NoHeadlessGqlEndpointInPlanet
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] HeadlessGql endpoint of planet({planetInfo.ID.ToLocalizedPlanetName(true)}) is empty.");
+                    continue;
+                }
+
+                var index = UnityEngine.Random.Range(0, planetInfo.RPCEndpoints.HeadlessGql.Count);
+                var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
+                if (string.IsNullOrEmpty(endpoint))
+                {
+                    // ErrorType.PlanetHeadlessGqlEndpointIsEmpty
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] endpoint(index: {index}) is null or empty for planet({planetInfo.ID.ToLocalizedPlanetName(true)}).");
+                    continue;
+                }
+
+                NcDebug.Log($"[{nameof(PlanetContext)}] Querying agent and avatars for planet({planetInfo.ID.ToLocalizedPlanetName(true)}) with endpoint({endpoint})...");
+                AgentAndPledgeGraphType? agentAndPledgeGraphType;
+                using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
+                client.HttpClient.Timeout = TimeSpan.FromSeconds(10);
+                try
+                {
+                    (_, agentAndPledgeGraphType) = await client.QueryAgentAndPledgeAsync(agentAddress);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    NcDebug.LogException(ex);
+                    // ErrorType.QueryPlanetAccountInfoFailed
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] Querying agent and pledge canceled. Check the network connection.");
+                    continue;
+                }
+                catch (HttpRequestException ex)
+                {
+                    NcDebug.LogException(ex);
+                    // ErrorType.QueryPlanetAccountInfoFailed
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] Querying agent and avatars failed. Check the endpoint url.");
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    NcDebug.LogException(ex);
+                    NcDebug.LogException(ex.InnerException);
+                    // ErrorType.QueryPlanetAccountInfoFailed
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] Querying agent and avatars failed. Unexpected exception occurred.{ex.GetType().FullName}({ex.InnerException?.GetType().FullName})");
+                    continue;
+                }
+                planetInfos.Add(planetInfo);
+
+                NcDebug.Log($"[{nameof(PlanetContext)}] {agentAndPledgeGraphType}");
+                var info = new PlanetAccountInfo(
+                    planetInfo.ID,
+                    agentAndPledgeGraphType?.Agent?.Address,
+                    agentAndPledgeGraphType?.Pledge.Approved,
+                    agentAndPledgeGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
+                planetAccountInfos.Add(info);
+            }
+            planetRegistry.SetPlanetInfos(planetInfos);
+
+            sw.Stop();
+            NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count}) updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            PlanetAccountInfos = planetAccountInfos.ToArray();
+            return PlanetAccountInfos;
         }
     }
 }

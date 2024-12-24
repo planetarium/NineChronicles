@@ -1,16 +1,9 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
 using Cysharp.Threading.Tasks;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
 using Libplanet.Crypto;
-using Nekoyume.Game.LiveAsset;
-using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.Multiplanetary.Extensions;
 using UniRx;
 using UnityEngine;
@@ -246,6 +239,11 @@ namespace Nekoyume.Multiplanetary
             bool updateSelectedPlanetAccountInfo,
             Action<PlanetContext>? onComplete = null)
         {
+            if (context.HasError)
+            {
+                return context;
+            }
+
             NcDebug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
             if (context.PlanetRegistry is null)
             {
@@ -263,103 +261,13 @@ namespace Nekoyume.Multiplanetary
                 return context;
             }
 
-            var sw = new Stopwatch();
-            sw.Start();
-            var planetAccountInfos = new List<PlanetAccountInfo>();
-            var jsonSerializer = new NewtonsoftJsonSerializer();
-            List<PlanetInfo> planetInfos = new();
-            foreach (var planetInfo in context.PlanetRegistry.PlanetInfos)
-            {
-                if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
-                {
-                    NcDebug.LogError($"[PlanetSelector] HeadlessGql endpoint of planet({planetInfo.ID}) is empty.");
-                    context.SetError(
-                        PlanetContext.ErrorType.NoHeadlessGqlEndpointInPlanet,
-                        planetInfo.ID.ToLocalizedPlanetName(false));
-                    continue;
-                }
-
-                var index = Random.Range(0, planetInfo.RPCEndpoints.HeadlessGql.Count);
-                var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
-                if (string.IsNullOrEmpty(endpoint))
-                {
-                    NcDebug.LogError($"[PlanetSelector] endpoint(index: {index}) is null or empty" +
-                        $" for planet({planetInfo.ID}).");
-                    context.SetError(
-                        PlanetContext.ErrorType.PlanetHeadlessGqlEndpointIsEmpty,
-                        planetInfo.ID.ToLocalizedPlanetName(false),
-                        index);
-                    continue;
-                }
-
-                NcDebug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
-                    $" with endpoint({endpoint})...");
-                AgentAndPledgeGraphType? agentAndPledgeGraphType;
-                using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
-                client.HttpClient.Timeout = TimeSpan.FromSeconds(10);
-                try
-                {
-                    (_, agentAndPledgeGraphType) = await client.QueryAgentAndPledgeAsync(agentAddress);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    NcDebug.LogException(ex);
-                    NcDebug.LogError("[PlanetSelector] Querying agent and pledge canceled." +
-                        " Check the network connection.");
-                    context.SetNetworkConnectionError(
-                        PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
-                        planetInfo.ID.ToLocalizedPlanetName(false),
-                        agentAddress.ToString());
-                    continue;
-                }
-                catch (HttpRequestException ex)
-                {
-                    NcDebug.LogException(ex);
-                    NcDebug.LogError("[PlanetSelector] Querying agent and avatars failed." +
-                        " Check the endpoint url.");
-                    context.SetNetworkConnectionError(
-                        PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
-                        planetInfo.ID.ToLocalizedPlanetName(false),
-                        agentAddress.ToString());
-                    continue;
-                }
-                catch (Exception ex)
-                {
-                    NcDebug.LogException(ex);
-                    NcDebug.LogException(ex.InnerException);
-                    NcDebug.LogError("[PlanetSelector] Querying agent and avatars failed." +
-                        " Unexpected exception occurred." +
-                        $"{ex.GetType().FullName}({ex.InnerException?.GetType().FullName})");
-                    context.SetError(
-                        PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
-                        planetInfo.ID.ToLocalizedPlanetName(false),
-                        agentAddress.ToString());
-                    continue;
-                }
-                planetInfos.Add(planetInfo);
-
-                NcDebug.Log($"[PlanetSelector] {agentAndPledgeGraphType}");
-                var info = new PlanetAccountInfo(
-                    planetInfo.ID,
-                    agentAndPledgeGraphType?.Agent?.Address,
-                    agentAndPledgeGraphType?.Pledge.Approved,
-                    agentAndPledgeGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
-                planetAccountInfos.Add(info);
-            }
-            context.PlanetRegistry.SetPlanetInfos(planetInfos);
-
-            sw.Stop();
-            NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
-                $" updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
-
-            if (context.HasError)
+            var planetAccountInfos = await context.SetPlanetAccountInfoAsync(agentAddress);
+            if (planetAccountInfos is null)
             {
                 return context;
             }
 
-            context.PlanetAccountInfos = planetAccountInfos.ToArray();
-            NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
-                " updated successfully.");
+            NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Length}) updated successfully.");
             onComplete?.Invoke(context);
             return updateSelectedPlanetAccountInfo
                 ? UpdateSelectedPlanetAccountInfo(context)
