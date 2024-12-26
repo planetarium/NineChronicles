@@ -22,19 +22,19 @@ namespace Nekoyume
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var message = $" Endpoint: {client.Options.EndPoint?.AbsoluteUri ?? "null"}" +
-                $" Query: {query}";
+            var message = $" Endpoint: {client.Options.EndPoint?.AbsoluteUri ?? "null"} Query: {query}";
             NcDebug.Log($"[GraphQl] StateQueryAsync()... {message}");
             var request = new GraphQLRequest(query);
             var response = await client.SendQueryAsync<StateQueryGraphType<T>>(request);
-            if (response.Errors != null)
+            if (response.Errors == null)
             {
-                NcDebug.LogError("[GraphQl] StateQueryAsync()... request has errors." +
-                    $" request: {message}");
-                foreach (var error in response.Errors)
-                {
-                    NcDebug.LogError(error.Message);
-                }
+                return (response.Errors, response.Data.StateQuery);
+            }
+
+            NcDebug.LogError($"[GraphQl] StateQueryAsync()... request has errors. request: {message}");
+            foreach (var error in response.Errors)
+            {
+                NcDebug.LogError(error.Message);
             }
 
             return (response.Errors, response.Data.StateQuery);
@@ -102,9 +102,15 @@ namespace Nekoyume
             {
                 Addresses.GetAvatarAddress(addr, 0).ToString(),
                 Addresses.GetAvatarAddress(addr, 1).ToString(),
-                Addresses.GetAvatarAddress(addr, 2).ToString()
+                Addresses.GetAvatarAddress(addr, 2).ToString(),
             };
             return await client.QueryAvatarsAsync(avatarAddresses);
+        }
+
+        public static async UniTask<(GraphQLError[]? errors, NodeStatusType? result)> QueryNodeTipIndex(this GraphQLHttpClient client)
+        {
+            var query = "query{nodeStatus{tip{id}}}";
+            return await client.StateQueryAsync<NodeStatusType>(query);
         }
     }
 }
