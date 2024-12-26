@@ -36,4 +36,19 @@ namespace Nekoyume.GraphQL.GraphTypes
             return $"NodeStatus: {{ {nodeStatus} }}, IsMining: {IsMining}, InformationalVersion: {InformationalVersion}, StagedTxIdsCount: {StagedTxIdsCount}";
         }
     }
+
+    public class NodeStatusResponse
+    {
+        public TipResultQuery NodeStatus;
+    }
+
+    public class TipResultQuery
+    {
+        public TipResult Tip;
+    }
+
+    public class TipResult
+    {
+        public string Id;
+    }
 }

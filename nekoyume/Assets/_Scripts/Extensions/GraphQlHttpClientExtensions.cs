@@ -107,10 +107,25 @@ namespace Nekoyume
             return await client.QueryAvatarsAsync(avatarAddresses);
         }
 
-        public static async UniTask<(GraphQLError[]? errors, NodeStatusType? result)> QueryNodeTipIndex(this GraphQLHttpClient client)
+        public static async UniTask<(GraphQLError[]? errors, TipResultQuery result)> QueryNodeTipIndex(this GraphQLHttpClient client)
         {
             var query = "query{nodeStatus{tip{id}}}";
-            return await client.StateQueryAsync<NodeStatusType>(query);
+            var message = $" Endpoint: {client.Options.EndPoint?.AbsoluteUri ?? "null"} Query: {query}";
+            NcDebug.Log($"[GraphQl] StateQueryAsync()... {message}");
+            var request = new GraphQLRequest(query);
+            var response =  await client.SendQueryAsync<NodeStatusResponse>(request);
+            if (response.Errors == null)
+            {
+                return (response.Errors, response.Data.NodeStatus);
+            }
+
+            NcDebug.LogError($"[GraphQl] StateQueryAsync()... request has errors. request: {message}");
+            foreach (var error in response.Errors)
+            {
+                NcDebug.LogError(error.Message);
+            }
+
+            return (response.Errors, response.Data.NodeStatus);
         }
     }
 }
