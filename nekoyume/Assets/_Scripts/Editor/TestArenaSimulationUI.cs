@@ -2,16 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bencodex;
-using Bencodex.Types;
+using System.Text;
 using Libplanet.Crypto;
 using Nekoyume;
+using Nekoyume.Action;
 using Nekoyume.Arena;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,71 +50,97 @@ namespace SimulationTest
 
         private void LoadFileAndSerialize()
         {
-            var avatar1 = GetAvatarStateFromRawState(GetTrimmedStringFromPath("serialized_avatar1.txt"));
-            var avatar2 = GetAvatarStateFromRawState(GetTrimmedStringFromPath("serialized_avatar2.txt"));
+            var tableSheets = TestArena.Instance.TableSheets;
+            var avatarSheets = tableSheets.GetAvatarSheets();
+            LoadAvatar(tableSheets, avatarSheets, "avatar.json", true);
+            LoadAvatar(tableSheets, avatarSheets, "avatar-enemy.json", false);
+        }
 
-            var inventory1 = GetInventoryFromRawState(GetTrimmedStringFromPath("serialized_inventory1.txt"));
-            var inventory2 = GetInventoryFromRawState(GetTrimmedStringFromPath("serialized_inventory2.txt"));
-
-            var allRune1 = GetAllRuneStateFromRawState(GetTrimmedStringFromPath("serialized_allrune1.txt"));
-            var allRune2 = GetAllRuneStateFromRawState(GetTrimmedStringFromPath("serialized_allrune2.txt"));
-
-            var runeSlot1 = GetRuneSlotStateStateFromRawState(GetTrimmedStringFromPath("serialized_runeslot1.txt"));
-            var runeSlot2 = GetRuneSlotStateStateFromRawState(GetTrimmedStringFromPath("serialized_runeslot2.txt"));
-
-            var collection1Str =
-                GetTrimmedStringFromPath("serialized_collection1.txt");
-            var collection2Str =
-                GetTrimmedStringFromPath("serialized_collection1.txt");
-            CollectionState collection1;
-            CollectionState collection2;
-            try
+        private void LoadAvatar(TableSheets tableSheets, AvatarSheets avatarSheets, string fileName, bool me)
+        {
+            var jsonPath = Platform.GetStreamingAssetsPath(fileName);
+            var fileStream = new FileStream(jsonPath, FileMode.Open);
+            var data = new byte[fileStream.Length];
+            fileStream.Read(data, 0, data.Length);
+            fileStream.Close();
+            var jsonData = Encoding.UTF8.GetString(data);
+            var result = JsonConvert.DeserializeObject<AvatarModel>(jsonData);
+            var avatarName = me ? "me" : "enemy";
+            var avatar = GetAvatarState(result.Level, avatarName, avatarSheets);
+            var inventory = new Inventory();
+            var equipmentItemSheet = tableSheets.EquipmentItemSheet;
+            var skillSheet = tableSheets.SkillSheet;
+            foreach (var equipmentItem in result.EquipmentItems)
             {
-                collection1 = GetCollectionStateFromRawState(collection1Str);
-            }
-            catch
-            {
-                collection1 = new CollectionState();
-                foreach (var id in collection1Str.Trim().Split(",").Select(int.Parse))
+                var row = equipmentItemSheet[equipmentItem.Id];
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(row, new Guid(), 0L, equipmentItem.Level);
+                foreach (var statOption in equipmentItem.StatOptions)
                 {
-                    collection1.Ids.Add(id);
+                    var statMap = new DecimalStat(statOption.StatType, statOption.Value);
+                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.TotalValue);
+                }
+
+                foreach (var skillOption in equipmentItem.SkillOptions)
+                {
+                    var skillRow = skillSheet.Values.First(r => r.Id == skillOption.Id);
+                    var skill = SkillFactory.Get(skillRow, skillOption.Power, skillOption.Chance, skillOption.StatPowerRatio, skillOption.StatType);
+                    equipment.Skills.Add(skill);
+                }
+                equipment.equipped = true;
+                inventory.AddItem(equipment);
+            }
+            var costumeSheet = tableSheets.CostumeItemSheet;
+            foreach (var costumeId in result.CostumeIds)
+            {
+                var costume = new Costume(costumeSheet[costumeId], new Guid())
+                {
+                    equipped = true,
+                };
+                inventory.AddItem(costume);
+            }
+            var allRuneState = new AllRuneState();
+            var runeSlotInfos = new List<RuneSlotInfo>();
+            foreach (var runeItem in result.RuneItems)
+            {
+                var runeId = runeItem.Id;
+                allRuneState.AddRuneState(new RuneState(runeId, runeItem.Level));
+                if (runeItem.SlotIndex.HasValue)
+                {
+                    runeSlotInfos.Add(new RuneSlotInfo(runeItem.SlotIndex.Value, runeId));
                 }
             }
+            var runeSlotState = new RuneSlotState(BattleType.Arena);
+            runeSlotState.UpdateSlot(runeSlotInfos, tableSheets.RuneListSheet);
 
-            try
+            CollectionState collectionState = new CollectionState();
+            var collectionIds = result.CollectionIds.Distinct();
+            foreach (var collectionId in collectionIds)
             {
-                collection2 = GetCollectionStateFromRawState(collection2Str);
+                collectionState.Ids.Add(collectionId);
             }
-            catch
+            if (me)
             {
-                collection2 = new CollectionState();
-                foreach (var id in collection2Str.Trim().Split(",").Select(int.Parse))
-                {
-                    collection2.Ids.Add(id);
-                }
+                _myCollectionState = collectionState;
+                _me = new ArenaPlayerDigest(avatar,
+                    inventory.Costumes.Where(eq => eq.equipped).ToList(),
+                    inventory.Equipments.Where(eq => eq.equipped).ToList(),
+                    allRuneState,
+                    runeSlotState);
+                _myAddress = avatar.address;
+            }
+            else
+            {
+                _enemyCollectionState = collectionState;
+                _enemy = new ArenaPlayerDigest(avatar,
+                    inventory.Costumes.Where(eq => eq.equipped).ToList(),
+                    inventory.Equipments.Where(eq => eq.equipped).ToList(),
+                    allRuneState,
+                    runeSlotState);
+                _enemyAddress = avatar.address;
             }
 
-            _myCollectionState = collection1;
-            _enemyCollectionState = collection2;
-            _me = new ArenaPlayerDigest(avatar1,
-                inventory1.Costumes.Where(eq => eq.equipped).ToList(),
-                inventory1.Equipments.Where(eq => eq.equipped).ToList(),
-                allRune1,
-                runeSlot1);
-            _myAddress = avatar1.address;
-            _enemy = new ArenaPlayerDigest(avatar2,
-                inventory2.Costumes.Where(eq => eq.equipped).ToList(),
-                inventory2.Equipments.Where(eq => eq.equipped).ToList(),
-                allRune2,
-                runeSlot2);
-            _enemyAddress = avatar2.address;
-
-            NcDebug.Log($"name: {avatar1.name}\n" + StatStringFromDigest(_me,
-                _myCollectionState.GetModifiers(TestArena.Instance.TableSheets.CollectionSheet)),
-                "TestArenaSimulation");
-            NcDebug.Log($"name: {avatar2.name}\n" + StatStringFromDigest(_enemy,
-                    _enemyCollectionState.GetModifiers(TestArena.Instance.TableSheets
-                        .CollectionSheet)),
+            NcDebug.Log($"name: {avatar.name}\n" + StatStringFromDigest(_me,
+                    _myCollectionState.GetModifiers(TestArena.Instance.TableSheets.CollectionSheet)),
                 "TestArenaSimulation");
         }
 
@@ -131,40 +162,11 @@ namespace SimulationTest
                 _enemyAddress);
         }
 
-        private string GetTrimmedStringFromPath(string path)
+        private static AvatarState GetAvatarState(int level, string name, AvatarSheets avatarSheets)
         {
-            return File.ReadAllText(Platform.GetStreamingAssetsPath(path)).Trim();
-        }
-
-        private static IValue GetStateFromRawState(string rawBinaryString)
-        {
-            var binary = Binary.FromHex(rawBinaryString);
-            return new Codec().Decode(binary.ToByteArray());
-        }
-
-        private static AvatarState GetAvatarStateFromRawState(string rawBinaryString)
-        {
-            return new AvatarState((List)GetStateFromRawState(rawBinaryString));
-        }
-
-        private static Inventory GetInventoryFromRawState(string rawBinaryString)
-        {
-            return new Inventory((List)GetStateFromRawState(rawBinaryString));
-        }
-
-        private static AllRuneState GetAllRuneStateFromRawState(string rawBinaryString)
-        {
-            return new AllRuneState((List)GetStateFromRawState(rawBinaryString));
-        }
-
-        private static RuneSlotState GetRuneSlotStateStateFromRawState(string rawBinaryString)
-        {
-            return new RuneSlotState((List)GetStateFromRawState(rawBinaryString));
-        }
-
-        private static CollectionState GetCollectionStateFromRawState(string rawBinaryString)
-        {
-            return new CollectionState((List)GetStateFromRawState(rawBinaryString));
+            var avatarState = AvatarState.Create(new Address(), new Address(), 0, avatarSheets, new Address(), name);
+            avatarState.level = level;
+            return avatarState;
         }
 
         public static string StatStringFromDigest(ArenaPlayerDigest avatar, List<StatModifier> modifier)
@@ -189,6 +191,50 @@ spd: {arenaCharacter.SPD}
 hit: {arenaCharacter.HIT}
 cri: {arenaCharacter.CRI}
 cdmg: {arenaCharacter.CDMG}";
+        }
+
+        [Serializable]
+        public class AvatarModel
+        {
+            public int Level;
+            public int[] CollectionIds;
+            public RuneItem[] RuneItems;
+            public int[] CostumeIds;
+            public EquipmentItem[] EquipmentItems;
+        }
+
+        [Serializable]
+        public class RuneItem
+        {
+            public int Id;
+            public int Level;
+            public int? SlotIndex;
+        }
+
+        [Serializable]
+        public class EquipmentItem
+        {
+            public int Id;
+            public int Level;
+            public StatOptions[] StatOptions;
+            public SkillOptions[] SkillOptions;
+        }
+
+        [Serializable]
+        public class StatOptions
+        {
+            public StatType StatType;
+            public int Value;
+        }
+
+        [Serializable]
+        public class SkillOptions
+        {
+            public int Id;
+            public int Power;
+            public int Chance;
+            public int StatPowerRatio;
+            public StatType StatType;
         }
     }
 }
