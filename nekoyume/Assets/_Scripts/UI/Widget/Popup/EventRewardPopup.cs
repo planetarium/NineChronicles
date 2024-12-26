@@ -193,6 +193,12 @@ namespace Nekoyume.UI
 
         private void ShowAsTab(int index, bool ignoreShowAnimation = false)
         {
+            if (index < 0 || index >= tabToggles.Length)
+            {
+                NcDebug.LogError($"Invalid index: {index}");
+                return;
+            }
+
             base.Show(ignoreShowAnimation);
 
             if (!_isInitialized)
