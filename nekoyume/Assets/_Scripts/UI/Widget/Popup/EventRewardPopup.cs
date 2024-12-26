@@ -78,6 +78,21 @@ namespace Nekoyume.UI
             }
         }
 
+        public bool HasEvent
+        {
+            get
+            {
+                var liveAssetManager = LiveAssetManager.instance;
+                if (!liveAssetManager.IsInitialized || !_isInitialized)
+                {
+                    return false;
+                }
+
+                var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
+                return eventRewardPopupData.EventRewards.Length > 0;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -121,11 +136,13 @@ namespace Nekoyume.UI
                 };
                 tabToggle.toggle.onValueChanged.AddListener(value =>
                 {
-                    if (value)
+                    if (!value)
                     {
-                        SetData(eventReward);
-                        setContent?.Invoke();
+                        return;
                     }
+
+                    SetData(eventReward);
+                    setContent?.Invoke();
                 });
                 tabToggle.SetText(L10nManager.Localize(eventReward.ToggleL10NKey));
                 tabToggle.toggle.gameObject.SetActive(true);
