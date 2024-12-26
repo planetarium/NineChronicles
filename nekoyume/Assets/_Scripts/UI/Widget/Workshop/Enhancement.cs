@@ -11,6 +11,7 @@ using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -610,7 +611,7 @@ namespace Nekoyume.UI
 
                     var valueText = $"<color=#FBF0B8>({currentEffect} > <color=#E3C32C>{targetEffectMin.Replace("%", "")}~{targetEffectMax}</color><sprite name=icon_Arrow>)</color>";
                     var chanceText = $"<color=#FBF0B8>({chance}% > <color=#E3C32C>{skillChancesMin[skillIndex]}~{skillChancesMax[skillIndex]}%</color><sprite name=icon_Arrow>)</color>";
-                    skillView.Set(skillRow.GetLocalizedName(), skillRow.SkillType, skillRow.Id, skillRow.Cooldown, chanceText, valueText);
+                    skillView.Set(skillRow.GetLocalizedName(), skillRow.SkillType, skillRow.Id, skillRow.Cooldown, chanceText, valueText, TableSheets.Instance);
                 }
 
                 // Update next CP text

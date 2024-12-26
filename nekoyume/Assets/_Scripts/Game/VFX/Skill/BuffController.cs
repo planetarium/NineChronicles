@@ -17,7 +17,7 @@ namespace Nekoyume.Game.VFX.Skill
 #endif
 
         private ObjectPool _pool;
-        
+
         public async UniTask InitializeAsync(ObjectPool objectPool)
         {
             _pool = objectPool;
@@ -33,16 +33,16 @@ namespace Nekoyume.Game.VFX.Skill
             });
         }
 
-        public T Get<T>(GameObject target, Buff buff) where T : BuffVFX
+        public T Get<T>(GameObject target, Buff buff, TableSheets tableSheets) where T : BuffVFX
         {
             if (target == null)
             {
                 return null;
             }
 
-            var position = target.transform.position + BuffHelper.GetBuffPosition(buff.BuffInfo.Id);
+            var position = target.transform.position + BuffHelper.GetBuffPosition(buff.BuffInfo.Id, tableSheets);
 
-            var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
+            var resourceName = BuffHelper.GetBuffVFXPrefab(buff, tableSheets).name;
             var go = _pool.Get(resourceName, false, position);
             if (go == null)
             {
@@ -52,11 +52,11 @@ namespace Nekoyume.Game.VFX.Skill
             return GetEffect<T>(go);
         }
 
-        public BuffCastingVFX Get(Vector3 position, Buff buff)
+        public BuffCastingVFX Get(Vector3 position, Buff buff, TableSheets tableSheets)
         {
             // TODO: ID대신 GroupID사용 고려 혹은 ID와 GroupID사이의 정의 정리
-            var resourceName = BuffHelper.GetCastingVFXPrefab(buff).name;
-            position += BuffHelper.GetBuffPosition(buff.BuffInfo.Id, true);
+            var resourceName = BuffHelper.GetCastingVFXPrefab(buff, tableSheets).name;
+            position += BuffHelper.GetBuffPosition(buff.BuffInfo.Id, tableSheets, true);
             var go = _pool.Get(resourceName, false, position);
             if (go == null)
             {
@@ -78,13 +78,13 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public static IEnumerator CoChaseTarget(Component vfx, Character.Character target, Buff buffModel)
+        public static IEnumerator CoChaseTarget(Component vfx, Character.Character target, Buff buffModel, TableSheets tableSheets)
         {
             var g = vfx.gameObject;
             var t = vfx.transform;
             while (g.activeSelf && target)
             {
-                t.position = target.transform.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
+                t.position = target.transform.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id, tableSheets);
 
                 if (buffModel is ActionBuff actionBuff)
                 {
