@@ -116,7 +116,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 var sheetStates = await agent.GetStateBulkAsync(
-                    ReservedAddresses.LegacyAccount, sheetAddrArr);
+                    agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, sheetAddrArr);
                 var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                 stakeRegularFixedRewardSheet.Set(
                     sheetStates[sheetAddrArr[0]].ToDotnetString());

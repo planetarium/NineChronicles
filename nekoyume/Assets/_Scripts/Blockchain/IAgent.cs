@@ -109,10 +109,6 @@ namespace Nekoyume.Blockchain
             IEnumerable<Address> addressList);
 
         Task<Dictionary<Address, IValue>> GetStateBulkAsync(
-            Address accountAddress,
-            IEnumerable<Address> addressList);
-
-        Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,
             IEnumerable<Address> addressList);
