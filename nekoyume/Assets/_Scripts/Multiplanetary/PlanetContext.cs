@@ -158,6 +158,12 @@ namespace Nekoyume.Multiplanetary
                 return;
             }
 
+            var planetCheckResult = await PlanetInfoCheck();
+            if (!planetCheckResult)
+            {
+                return;
+            }
+
             NcDebug.Log($"[{nameof(PlanetContext)}] PlanetRegistry initialized successfully.");
             IsInitialized = true;
         }
@@ -180,6 +186,70 @@ namespace Nekoyume.Multiplanetary
             }
         }
 
+        private async UniTask<bool> PlanetInfoCheck()
+        {
+            var planetRegistry = PlanetRegistry;
+            if (planetRegistry == null)
+            {
+                NcDebug.LogError($"[{nameof(PlanetContext)}] PlanetRegistry is null.");
+                SetError(ErrorType.PlanetRegistryNotInitialized);
+                return false;
+            }
+
+            var jsonSerializer = new NewtonsoftJsonSerializer();
+            var planetInfos = new List<PlanetInfo>();
+            foreach (var planetInfo in planetRegistry.PlanetInfos)
+            {
+                if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
+                {
+                    // ErrorType.NoHeadlessGqlEndpointInPlanet
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] HeadlessGql endpoint of planet({planetInfo.ID.ToLocalizedPlanetName(true)}) is empty.");
+                    continue;
+                }
+
+                var index = UnityEngine.Random.Range(0, planetInfo.RPCEndpoints.HeadlessGql.Count);
+                var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
+                if (string.IsNullOrEmpty(endpoint))
+                {
+                    // ErrorType.PlanetHeadlessGqlEndpointIsEmpty
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] endpoint(index: {index}) is null or empty for planet({planetInfo.ID.ToLocalizedPlanetName(true)}).");
+                    continue;
+                }
+
+                using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
+                client.HttpClient.Timeout = TimeSpan.FromSeconds(10);
+                bool hasError = false;
+                try
+                {
+                    var (errors, nodeStatusGraphType) = await client.QueryNodeTipIndex();
+                    if (errors != null)
+                    {
+                        foreach (var error in errors)
+                        {
+                            NcDebug.LogError($"[{nameof(PlanetContext)}] {error.Message}");
+                        }
+
+                        hasError = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogException(e);
+                    hasError = true;
+                }
+                if (hasError)
+                {
+                    // ErrorType.QueryPlanetAccountInfoFailed
+                    NcDebug.LogError($"[{nameof(PlanetContext)}] Querying failed. Check the endpoint url.");
+                    continue;
+                }
+                planetInfos.Add(planetInfo);
+            }
+
+            planetRegistry.SetPlanetInfos(planetInfos);
+            return true;
+        }
+
         // TODO: PlanetInfoCheck와 PlanetAccountInfo 정보 구성을 분리하는 것이 좋을 것 같습니다.
         public async UniTask<PlanetAccountInfo[]?> SetPlanetAccountInfoAsync(Address agentAddress)
         {
@@ -194,18 +264,10 @@ namespace Nekoyume.Multiplanetary
             var sw = new Stopwatch();
             sw.Start();
             var planetAccountInfos = new List<PlanetAccountInfo>();
-            var planetInfos = new List<PlanetInfo>();
             var jsonSerializer = new NewtonsoftJsonSerializer();
 
             foreach (var planetInfo in planetRegistry.PlanetInfos)
             {
-                if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
-                {
-                    // ErrorType.NoHeadlessGqlEndpointInPlanet
-                    NcDebug.LogError($"[{nameof(PlanetContext)}] HeadlessGql endpoint of planet({planetInfo.ID.ToLocalizedPlanetName(true)}) is empty.");
-                    continue;
-                }
-
                 var index = UnityEngine.Random.Range(0, planetInfo.RPCEndpoints.HeadlessGql.Count);
                 var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
                 if (string.IsNullOrEmpty(endpoint))
@@ -255,7 +317,6 @@ namespace Nekoyume.Multiplanetary
                     agentAndPledgeGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
                 planetAccountInfos.Add(info);
             }
-            planetRegistry.SetPlanetInfos(planetInfos);
 
             sw.Stop();
             NcDebug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count}) updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
