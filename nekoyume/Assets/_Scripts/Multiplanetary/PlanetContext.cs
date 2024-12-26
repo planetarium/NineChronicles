@@ -307,7 +307,6 @@ namespace Nekoyume.Multiplanetary
                     NcDebug.LogError($"[{nameof(PlanetContext)}] Querying agent and avatars failed. Unexpected exception occurred.{ex.GetType().FullName}({ex.InnerException?.GetType().FullName})");
                     continue;
                 }
-                planetInfos.Add(planetInfo);
 
                 NcDebug.Log($"[{nameof(PlanetContext)}] {agentAndPledgeGraphType}");
                 var info = new PlanetAccountInfo(
