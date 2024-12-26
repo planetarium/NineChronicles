@@ -9,7 +9,7 @@ namespace Nekoyume.GraphQL.GraphTypes
     {
         public class InnerType
         {
-            [JsonPropertyName("nodeStatus")]
+            [JsonPropertyName("tip")]
             public TipType? Tip;
 
             public override string ToString()
