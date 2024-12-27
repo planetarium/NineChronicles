@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nekoyume.ApiClient;
+using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -46,16 +48,16 @@ namespace Nekoyume.UI.Module
         public async Task SetData()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
+            var lastClaimedBlockIndex = ReactiveAvatarState.PatrolRewardClaimedBlockIndex;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             if (PatrolReward.NeedToInitialize(avatarAddress))
             {
-                await PatrolReward.InitializeInformation(avatarAddress.ToHex(),
-                    agentAddress.ToHex(), level);
+                PatrolReward.InitializeInformation(avatarAddress, level, lastClaimedBlockIndex, currentBlockIndex);
             }
             else if (PatrolReward.NextLevel <= level)
             {
-                await PatrolReward.LoadPolicyInfo(level);
+                PatrolReward.LoadPolicyInfo(level, currentBlockIndex);
             }
 
             SetIntervalText(PatrolReward.Interval);

@@ -40,6 +40,8 @@ namespace Nekoyume.UI.Model
         public TimeSpan MinimumRequiredInterval { get; set; }
 
         public List<PatrolRewardModel> Rewards { get; set; }
+
+        public long RequiredBlockInterval { get; set; }
     }
 
     public class PatrolRewardModel

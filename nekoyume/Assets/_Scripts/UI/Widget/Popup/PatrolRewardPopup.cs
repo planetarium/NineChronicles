@@ -56,7 +56,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var clientInitialized = ApiClients.Instance.PatrolRewardServiceClient.IsInitialized;
+            var clientInitialized = true;
             if (!clientInitialized)
             {
                 NcDebug.Log(

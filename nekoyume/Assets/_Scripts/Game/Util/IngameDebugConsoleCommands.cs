@@ -88,8 +88,8 @@ namespace Nekoyume.Game.Util
             DebugLogConsole.AddCommand("patrol-avatar", "Sync patrol reward avatar info", () =>
             {
                 var avatarAddress = Game.instance.States.CurrentAvatarState.address;
-                var agentAddress = Game.instance.States.AgentState.address;
-                PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+                var lastClaimedBlockIndex = 0L;
+                PatrolReward.LoadAvatarInfo(avatarAddress, lastClaimedBlockIndex);
             });
 
             DebugLogConsole.AddCommand("adventureboss-info", "Clear Screen", () =>

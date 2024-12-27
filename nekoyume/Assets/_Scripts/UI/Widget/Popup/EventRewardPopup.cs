@@ -151,6 +151,8 @@ namespace Nekoyume.UI
                 index = Array.IndexOf(eventRewards, other);
             }
 
+            index = 0;
+
             ShowAsTab(index);
         }
 
