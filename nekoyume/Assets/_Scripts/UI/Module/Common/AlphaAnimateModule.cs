@@ -26,24 +26,28 @@ namespace Nekoyume.UI.Module.Common
                 canvasGroup.alpha = 1f;
             }
 
-            if (Platform.IsMobilePlatform())
+            if (!Platform.IsMobilePlatform())
             {
-                var eventTrigger = GetComponent<EventTrigger>();
-                if (eventTrigger is null)
+                return;
+            }
+
+            var eventTrigger = GetComponent<EventTrigger>();
+            if (eventTrigger is null)
+            {
+                return;
+            }
+
+            // Disable pointer_exit event on mobile platform
+            // Because this causes wrong interaction
+            foreach (var item in eventTrigger.triggers)
+            {
+                if (item.eventID != EventTriggerType.PointerExit)
                 {
-                    return;
+                    continue;
                 }
 
-                // Disable pointer_exit event on mobile platform
-                // Because this causes wrong interaction
-                foreach (var item in eventTrigger.triggers)
-                {
-                    if (item.eventID == EventTriggerType.PointerExit)
-                    {
-                        eventTrigger.triggers.Remove(item);
-                        break;
-                    }
-                }
+                eventTrigger.triggers.Remove(item);
+                break;
             }
         }
 

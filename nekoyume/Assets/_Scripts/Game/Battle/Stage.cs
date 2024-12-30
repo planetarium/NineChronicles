@@ -59,9 +59,9 @@ namespace Nekoyume.Game.Battle
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
-        
+
         [SerializeField] private ObjectPool objectPool;
-        
+
         public DropItemFactory dropItemFactory;
 
         public MonsterSpawner spawner;
@@ -184,7 +184,7 @@ namespace Nekoyume.Game.Battle
         private void OnStartStage(BattleLog log)
         {
 #if TEST_LOG
-            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnStartStage)}() enter");
 #endif
             if (_battleLog is null)
             {
@@ -408,7 +408,7 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.IsOnBattle = true;
 
             yield return StartCoroutine(CoStageEnter(log));
-            
+
             var eventCount = log.events.Count;
             if (StageType == StageType.AdventureBoss)
             {

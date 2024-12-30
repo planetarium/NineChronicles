@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: EventDungeon_06
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 47
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: iPhone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 50
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: e51bbc39e20d87846854452b4258de84, type: 3}
+    - {fileID: 2800000, guid: 5073481397207d144a0baee83de6f6f4, type: 3}
+    - {fileID: 2800000, guid: d2374488a04a5c046a786e636bc17d61, type: 3}
+    - {fileID: 2800000, guid: c05a392df62bc4a4ebe9b544c5ba41e7, type: 3}
+    - {fileID: 2800000, guid: ff2f5697f2575fe409bcdd85f405c695, type: 3}
+    - {fileID: 2800000, guid: fe19582e8ed944848982ccee0d28b055, type: 3}
+    - {fileID: 2800000, guid: 71ea78422781e5b4689f8d0c016db279, type: 3}
+    - {fileID: 2800000, guid: a39b682eef89f624092a38c439576f1a, type: 3}
+    - {fileID: 2800000, guid: 655c4febe48899844b632d825e7df2ec, type: 3}
+    - {fileID: 2800000, guid: 13e560c40018d6349954da651e9e0604, type: 3}
+    - {fileID: 2800000, guid: 6cf99ac343ce0eb4ab435b6c30b73199, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 71ea78422781e5b4689f8d0c016db279, type: 3}
+  - {fileID: 21300000, guid: 5073481397207d144a0baee83de6f6f4, type: 3}
+  - {fileID: 21300000, guid: 6cf99ac343ce0eb4ab435b6c30b73199, type: 3}
+  - {fileID: 21300000, guid: 13e560c40018d6349954da651e9e0604, type: 3}
+  - {fileID: 21300000, guid: ff2f5697f2575fe409bcdd85f405c695, type: 3}
+  - {fileID: 21300000, guid: d2374488a04a5c046a786e636bc17d61, type: 3}
+  - {fileID: 21300000, guid: e51bbc39e20d87846854452b4258de84, type: 3}
+  - {fileID: 21300000, guid: 655c4febe48899844b632d825e7df2ec, type: 3}
+  - {fileID: 21300000, guid: c05a392df62bc4a4ebe9b544c5ba41e7, type: 3}
+  - {fileID: 21300000, guid: fe19582e8ed944848982ccee0d28b055, type: 3}
+  - {fileID: 21300000, guid: a39b682eef89f624092a38c439576f1a, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_eventdungeon_06_03_02
+  - bg_eventdungeon_06_01_03
+  - eventdungeon_06_01_02
+  - eventdungeon_06_01_01
+  - bg_eventdungeon_06_02_03
+  - bg_eventdungeon_06_01_04
+  - bg_eventdungeon_06_01_02
+  - bg_eventdungeon_06_03_04
+  - bg_eventdungeon_06_02_02
+  - bg_eventdungeon_06_02_04
+  - bg_eventdungeon_06_03_03
+  m_RenderDataMap: {}
+  m_Tag: EventDungeon_06
+  m_IsVariant: 0

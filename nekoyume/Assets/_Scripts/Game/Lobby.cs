@@ -27,9 +27,9 @@ namespace Nekoyume.Game
         public FriendCharacter FriendCharacter => friendCharacter;
 
         public readonly ISubject<Object> OnLobbyEnterEnd = new Subject<Object>();
-        
+
         private static System.Action? _onLobbyEnterEnd;
-        
+
         public static event System.Action? OnLobbyEnterEvent
         {
             add
@@ -39,21 +39,21 @@ namespace Nekoyume.Game
             }
             remove => _onLobbyEnterEnd -= value;
         }
-        
+
         public static void Enter(bool showScreen = false)
         {
             var lobbyMenu = Widget.Find<LobbyMenu>();
             lobbyMenu.CloseWithOtherWidgetsOnEnterLobby();
             lobbyMenu.Show();
-            
+
             _onLobbyEnterEnd?.Invoke();
-            
+
             if (showScreen)
             {
                 Widget.Find<LoadingScreen>().Show();
             }
         }
-        
+
         private void Awake()
         {
             OnLobbyEnterEvent += OnLobbyEnter;

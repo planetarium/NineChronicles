@@ -29,6 +29,7 @@ namespace Nekoyume
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
             var itemBulk = await agent.GetStateBulkAsync(
+                agent.BlockTipStateRootHash,
                 ReservedAddresses.LegacyAccount,
                 itemAddresses);
             var itemSlotStates = new List<ItemSlotState>();
@@ -47,6 +48,7 @@ namespace Nekoyume
                 RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
             var runeBulk = await Game.Game.instance.Agent.GetStateBulkAsync(
+                Game.Game.instance.Agent.BlockTipStateRootHash,
                 ReservedAddresses.LegacyAccount,
                 runeAddresses);
             var runeSlotStates = new List<RuneSlotState>();
@@ -60,12 +62,12 @@ namespace Nekoyume
 
             return (itemSlotStates, runeSlotStates);
         }
-        
+
         public static async Task<AllCombinationSlotState> GetAllCombinationSlotStateAsync(
             this IAgent agent, Address avatarAddress)
         {
             AllCombinationSlotState allCombinationSlotState;
-            
+
             var value = await agent.GetStateAsync(Addresses.CombinationSlot, avatarAddress);
             if (value is List list)
             {
@@ -78,9 +80,9 @@ namespace Nekoyume
                 {
                     combinationSlotAddresses.Add(CombinationSlotState.DeriveAddress(avatarAddress, i));
                 }
-                var bulkStates = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, combinationSlotAddresses);
+                var bulkStates = await agent.GetStateBulkAsync(agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, combinationSlotAddresses);
                 allCombinationSlotState = new AllCombinationSlotState();
-                
+
                 for (var i = 0; i < AvatarState.DefaultCombinationSlotCount; i++)
                 {
                     var bulkState = bulkStates[combinationSlotAddresses[i]];
@@ -142,7 +144,7 @@ namespace Nekoyume
                 var runeAddresses = runeListSheet.Values.Select(row =>
                     RuneState.DeriveAddress(avatarAddress, row.Id));
                 var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(
-                    ReservedAddresses.LegacyAccount, runeAddresses);
+                    Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, runeAddresses);
                 foreach (var runeSerialized in stateBulk.Values.OfType<List>())
                 {
                     allRuneState.AddRuneState(new RuneState(runeSerialized));

@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
                 baseItemView.EmptyObject.SetActive(true);
                 return;
             }
-            
+
             baseItemView.ClearItem();
 
             if (model.ItemBase != null)
@@ -109,8 +109,8 @@ namespace Nekoyume.UI.Module
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(Disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b))
                 .AddTo(Disposables);
-            model.GrindingCountEnabled
-                .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
+            model.SelectCountEnabled
+                .Subscribe(b => baseItemView.SelectCountObject.SetActive(b))
                 .AddTo(Disposables);
             model.CollectionSelected
                 .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))
@@ -120,6 +120,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(context.OnClick.OnNext).AddTo(Disposables);
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
                 .Subscribe(context.OnDoubleClick.OnNext).AddTo(Disposables);
+
+            model.CanMinus
+                .Subscribe(b => baseItemView.MinusObject.SetActive(b))
+                .AddTo(Disposables);
 
             if (model.ItemBase is Equipment equipmentItem)
             {
@@ -191,6 +195,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(context.OnClick.OnNext).AddTo(Disposables);
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
                 .Subscribe(context.OnDoubleClick.OnNext).AddTo(Disposables);
+
+            model.CanMinus
+                .Subscribe(b => baseItemView.MinusObject.SetActive(b))
+                .AddTo(Disposables);
         }
 
         protected virtual void UpdateFungibleAsset(InventoryItem model, InventoryScroll.ContextModel context)

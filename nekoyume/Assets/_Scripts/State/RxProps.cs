@@ -72,10 +72,33 @@ namespace Nekoyume.State
         public static async UniTask SelectAvatarAsync(
             int avatarIndexToSelect,
             HashDigest<SHA256> stateRootHash,
+            AvatarState avatarState,
             bool forceNewSelection = false)
         {
             await States.Instance.SelectAvatarAsync(
                 avatarIndexToSelect,
+                stateRootHash,
+                avatarState,
+                forceNewSelection: forceNewSelection);
+            await UniTask.WhenAll(
+                ArenaInfoTuple.UpdateAsync(stateRootHash),
+                EventDungeonInfo.UpdateAsync(stateRootHash),
+                WorldBossStates.Set(
+                    stateRootHash,
+                    _agent.BlockIndex,
+                    _states.CurrentAvatarState.address),
+                UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
+                States.Instance.InitItemSlotStates());
+        }
+
+        public static async UniTask SelectAvatarAsync(
+            int avatarIndexToSelect,
+            HashDigest<SHA256> stateRootHash,
+            bool forceNewSelection = false)
+        {
+            await States.Instance.SelectAvatarAsync(
+                avatarIndexToSelect,
+                stateRootHash,
                 forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
                 ArenaInfoTuple.UpdateAsync(stateRootHash),
