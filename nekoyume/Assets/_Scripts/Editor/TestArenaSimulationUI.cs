@@ -153,7 +153,8 @@ namespace SimulationTest
                 _myCollectionState.GetModifiers(TestArena.Instance.TableSheets.CollectionSheet),
                 _enemyCollectionState.GetModifiers(TestArena.Instance.TableSheets.CollectionSheet),
                 TestArena.Instance.TableSheets.BuffLimitSheet,
-                TestArena.Instance.TableSheets.BuffLinkSheet);
+                TestArena.Instance.TableSheets.BuffLinkSheet,
+                true);
             TestArena.Instance.Enter(log,
                 new List<ItemBase>(),
                 _me,
