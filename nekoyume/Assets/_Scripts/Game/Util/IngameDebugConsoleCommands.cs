@@ -5,6 +5,7 @@ using Nekoyume.UI;
 using System.Linq;
 using System.Reactive.Linq;
 using Nekoyume.ApiClient;
+using Nekoyume.State;
 
 namespace Nekoyume.Game.Util
 {
@@ -88,8 +89,7 @@ namespace Nekoyume.Game.Util
             DebugLogConsole.AddCommand("patrol-avatar", "Sync patrol reward avatar info", () =>
             {
                 var avatarAddress = Game.instance.States.CurrentAvatarState.address;
-                var lastClaimedBlockIndex = 0L;
-                PatrolReward.LoadAvatarInfo(avatarAddress, lastClaimedBlockIndex);
+                PatrolReward.LoadAvatarInfo(avatarAddress, ReactiveAvatarState.PatrolRewardClaimedBlockIndex);
             });
 
             DebugLogConsole.AddCommand("adventureboss-info", "Clear Screen", () =>

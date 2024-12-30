@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.GraphQL;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.TableData;
@@ -18,12 +19,12 @@ namespace Nekoyume.ApiClient
 
     public static class PatrolReward
     {
-        public static readonly ReactiveProperty<DateTime> LastRewardTime = new();
+        public static readonly ReactiveProperty<long> LastRewardClaimedBlockIndex = new();
         public static int NextLevel { get; private set; }
-        public static TimeSpan Interval { get; private set; }
+        public static long Interval { get; private set; }
         public static readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
-        public static readonly IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public static readonly IReadOnlyReactiveProperty<long> PatrolTime;
         public static readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
@@ -38,14 +39,14 @@ namespace Nekoyume.ApiClient
         static PatrolReward()
         {
             PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardTime, (_, lastReward) =>
+                .CombineLatest(LastRewardClaimedBlockIndex, (_, lastReward) =>
                 {
-                    var timeSpan = DateTime.Now - lastReward;
-                    return timeSpan > Interval ? Interval : timeSpan;
+                    var blckInterval = Game.Game.instance.Agent.BlockIndex - lastReward;
+                    return blckInterval > Interval ? Interval : blckInterval;
                 })
                 .ToReactiveProperty();
-            LastRewardTime.ObserveOnMainThread()
-                .Select(lastRewardTime => lastRewardTime + Interval - DateTime.Now)
+            LastRewardClaimedBlockIndex.ObserveOnMainThread()
+                .Select(lastRewardTime => lastRewardTime + Interval - Game.Game.instance.Agent.BlockIndex)
                 .Subscribe(SetPushNotification);
         }
 
@@ -93,30 +94,28 @@ namespace Nekoyume.ApiClient
         public static async void ClaimReward(System.Action onSuccess)
         {
             Claiming.Value = true;
-            while (true)
-            {
-                onSuccess?.Invoke();
-                break;
-            }
-
-            Claiming.Value = false;
+            ActionManager.Instance.ClaimPatrolReward()
+                .Subscribe(_ =>
+                {
+                    onSuccess?.Invoke();
+                    Claiming.Value = false;
+                });
         }
 
         private static void SetAvatarModel(Address avatarAddress, long lastClaimedBlockIndex)
         {
-            // var lastClaimedAt = avatar.LastClaimedAt ?? avatar.CreatedAt;
-            // LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            LastRewardClaimedBlockIndex.Value = lastClaimedBlockIndex;
             _currentAvatarAddress = avatarAddress;
         }
 
         private static void SetPolicyModel(PolicyModel policy)
         {
             NextLevel = policy.MaxLevel ?? int.MaxValue;
-            Interval = policy.MinimumRequiredInterval;
+            Interval = policy.RequiredBlockInterval;
             RewardModels.Value = policy.Rewards;
         }
 
-        private static void SetPushNotification(TimeSpan completeTime)
+        private static void SetPushNotification(long completeTime)
         {
             var prevPushIdentifier = PlayerPrefs.GetString(PatrolRewardPushIdentifierKey, string.Empty);
             if (!string.IsNullOrEmpty(prevPushIdentifier))
@@ -127,7 +126,7 @@ namespace Nekoyume.ApiClient
 
             var pushIdentifier = PushNotifier.Push(
                 L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"),
-                completeTime,
+                completeTime.BlockToTimeSpan(),
                 PushNotifier.PushType.Reward);
             PlayerPrefs.SetString(PatrolRewardPushIdentifierKey, pushIdentifier);
         }

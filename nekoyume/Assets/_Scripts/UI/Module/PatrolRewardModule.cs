@@ -87,17 +87,17 @@ namespace Nekoyume.UI.Module
         }
 
         // Time
-        private void SetPatrolTime(TimeSpan patrolTime, TimeSpan interval)
+        private void SetPatrolTime(long patrolTime, long interval)
         {
             patrolTimeText.text =
-                L10nManager.Localize("UI_PATROL_TIME_FORMAT", TimeSpanToString(patrolTime));
+                L10nManager.Localize("UI_PATROL_TIME_FORMAT", patrolTime.BlockToTimeSpan());
             patrolTimeGauge.fillAmount = (float)(patrolTime / interval);
         }
 
-        private void SetIntervalText(TimeSpan interval)
+        private void SetIntervalText(long interval)
         {
-            gaugeUnitText1.text = TimeSpanToString(interval / 2);
-            gaugeUnitText2.text = TimeSpanToString(interval);
+            gaugeUnitText1.text = (interval / 2).BlockRangeToTimeSpanString();
+            gaugeUnitText2.text = interval.BlockRangeToTimeSpanString();
         }
 
         public static string TimeSpanToString(TimeSpan time)
