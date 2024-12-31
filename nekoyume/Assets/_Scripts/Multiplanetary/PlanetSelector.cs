@@ -519,9 +519,6 @@ namespace Nekoyume.Multiplanetary
             clo.OnBoardingHost = rpcEndpoints.WorldBossRest.Count > 0
                 ? rpcEndpoints.WorldBossRest[Random.Range(0, rpcEndpoints.WorldBossRest.Count)]
                 : null;
-            clo.PatrolRewardServiceHost = rpcEndpoints.PatrolRewardGql.Count > 0
-                ? rpcEndpoints.PatrolRewardGql[Random.Range(0, rpcEndpoints.PatrolRewardGql.Count)]
-                : null;
             clo.ArenaServiceHost = rpcEndpoints.ArenaGql.Count > 0
                 ? rpcEndpoints.ArenaGql[Random.Range(0, rpcEndpoints.ArenaGql.Count)]
                 : null;

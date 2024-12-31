@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action.State;
 using Libplanet.Common;
@@ -281,6 +282,15 @@ namespace Nekoyume.Blockchain
             }
 
             return new MailBox(mailBoxList);
+        }
+
+        public static async Task<long> GetPatrolRewardReceivedBlockIndex(HashDigest<SHA256>
+            hash, Address avatarAddress)
+        {
+            var state = await Game.Game.instance.Agent.GetStateAsync(hash, Addresses.PatrolReward, avatarAddress);
+            return state is Integer index
+                ? index
+                : 0L;
         }
     }
 }

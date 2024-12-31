@@ -98,8 +98,6 @@ namespace Nekoyume.Helper
 
         private string _arenaServiceHost;
 
-        private string _patrolRewardServiceHost;
-
         private string _seasonPassServiceHost;
 
         private string _googleMarketUrl;
@@ -117,7 +115,7 @@ namespace Nekoyume.Helper
         private bool _mixpanelDebugError;
 
         private bool _mixpanelDebugAssert;
-        
+
         private bool _mixpanelDebugException;
 
         private bool _mixpanelDebugWarning;
@@ -532,17 +530,6 @@ namespace Nekoyume.Helper
             set
             {
                 _arenaServiceHost = value;
-                Empty = false;
-            }
-        }
-
-        [Option("patrol-reward-service-host", Required = false, HelpText = "patrol reward service host")]
-        public string PatrolRewardServiceHost
-        {
-            get => _patrolRewardServiceHost;
-            set
-            {
-                _patrolRewardServiceHost = value;
                 Empty = false;
             }
         }

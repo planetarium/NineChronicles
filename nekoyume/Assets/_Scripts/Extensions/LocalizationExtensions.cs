@@ -261,6 +261,8 @@ namespace Nekoyume
                         GetLocalizedNonColoredName(
                             customCraftMail.Equipment,
                             customCraftMail.Equipment.ItemType.HasElementType()));
+                case PatrolRewardMail _:
+                    return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");

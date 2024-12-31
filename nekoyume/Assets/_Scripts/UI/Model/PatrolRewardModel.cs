@@ -36,10 +36,9 @@ namespace Nekoyume.UI.Model
         public int MinimumLevel { get; set; }
         public int? MaxLevel { get; set; }
 
-        [JsonConverter(typeof(TimespanConverter))]
-        public TimeSpan MinimumRequiredInterval { get; set; }
-
         public List<PatrolRewardModel> Rewards { get; set; }
+
+        public long RequiredBlockInterval { get; set; }
     }
 
     public class PatrolRewardModel

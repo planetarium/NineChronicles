@@ -151,6 +151,8 @@ namespace Nekoyume.UI
                 index = Array.IndexOf(eventRewards, other);
             }
 
+            index = 0;
+
             ShowAsTab(index);
         }
 
@@ -248,12 +250,7 @@ namespace Nekoyume.UI
 
             PatrolReward.PatrolTime
                 .Where(_ => !PatrolReward.Claiming.Value)
-                .Select(patrolTime =>
-                {
-                    var patrolTimeWithOutSeconds = new TimeSpan(patrolTime.Ticks /
-                        TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
-                    return PatrolReward.Interval - patrolTimeWithOutSeconds;
-                })
+                .Select(patrolTime => PatrolReward.Interval - patrolTime)
                 .Subscribe(SetReceiveButton)
                 .AddTo(_disposables);
 
@@ -358,14 +355,14 @@ namespace Nekoyume.UI
         }
 
         // subscribe from PatrolReward.PatrolTime
-        private void SetReceiveButton(TimeSpan remainTime)
+        private void SetReceiveButton(long remainTime)
         {
-            var canReceive = remainTime <= TimeSpan.Zero;
+            var canReceive = remainTime <= 0L;
             receiveButton.Interactable = canReceive;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME",
-                    PatrolRewardModule.TimeSpanToString(remainTime));
+                    remainTime.BlockRangeToTimeSpanString());
             receiveButtonIndicator.SetActive(false);
         }
 

@@ -22,6 +22,7 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<long> DailyRewardReceivedIndexInternal;
         private static readonly ReactiveProperty<QuestList> QuestListInternal;
         private static readonly ReactiveProperty<long> RelationshipInternal;
+        private static readonly ReactiveProperty<long> PatrolRewardClaimedBlockIndexInternal;
 
         public static readonly IObservable<Address> Address;
         public static readonly IObservable<Inventory> Inventory;
@@ -31,11 +32,13 @@ namespace Nekoyume.State
         public static readonly IObservable<long> ObservableDailyRewardReceivedIndex;
         public static readonly IObservable<QuestList> ObservableQuestList;
         public static readonly IObservable<long> ObservableRelationship;
+        public static readonly IObservable<long> ObservablePatrolRewardClaimedBlockIndex;
 
         public static long ActionPoint => ActionPointInternal.Value;
         public static long DailyRewardReceivedIndex => DailyRewardReceivedIndexInternal.Value;
         public static QuestList QuestList => QuestListInternal.Value;
         public static long Relationship => RelationshipInternal.Value;
+        public static long PatrolRewardClaimedBlockIndex => PatrolRewardClaimedBlockIndexInternal.Value;
 
         static ReactiveAvatarState()
         {
@@ -47,6 +50,7 @@ namespace Nekoyume.State
             DailyRewardReceivedIndexInternal = new ReactiveProperty<long>();
             QuestListInternal = new ReactiveProperty<QuestList>();
             RelationshipInternal = new ReactiveProperty<long>();
+            PatrolRewardClaimedBlockIndexInternal = new ReactiveProperty<long>();
 
             Address = AddressInternal.ObserveOnMainThread();
             Inventory = InventoryInternal.ObserveOnMainThread();
@@ -56,6 +60,8 @@ namespace Nekoyume.State
             ObservableDailyRewardReceivedIndex = DailyRewardReceivedIndexInternal.ObserveOnMainThread();
             ObservableQuestList = QuestListInternal.ObserveOnMainThread();
             ObservableRelationship = RelationshipInternal.ObserveOnMainThread();
+            ObservablePatrolRewardClaimedBlockIndex =
+                PatrolRewardClaimedBlockIndexInternal.ObserveOnMainThread();
         }
 
         public static void Initialize(AvatarState state)
@@ -117,6 +123,11 @@ namespace Nekoyume.State
         public static void UpdateRelationship(long relationship)
         {
             RelationshipInternal.SetValueAndForceNotify(relationship);
+        }
+
+        public static void UpdatePatrolRewardClaimedBlockIndex(long index)
+        {
+            PatrolRewardClaimedBlockIndexInternal.SetValueAndForceNotify(index);
         }
     }
 }
