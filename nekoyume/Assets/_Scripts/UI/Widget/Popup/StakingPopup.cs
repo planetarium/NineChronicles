@@ -293,8 +293,9 @@ namespace Nekoyume.UI
             var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Application.OpenURL(linkInfo.GetLinkID()); });
             confirmUI.ConfirmCallback = () =>
             {
-                ActionManager.Instance.Stake(States.Instance.StakedBalanceState.Gold.MajorUnit)
-                    .Subscribe();
+                var majorUnit = States.Instance.StakedBalanceState.Gold.MajorUnit;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 disposable.Dispose();
                 OnChangeEditingState(false);
             };
@@ -367,8 +368,9 @@ namespace Nekoyume.UI
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize: true, type: confirmIcon);
             confirmUI.ConfirmCallback = () =>
             {
-                ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
-                    .Subscribe();
+                var majorUnit = BigInteger.Parse(stakingNcgInputField.text);
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 OnChangeEditingState(false);
             };
         }

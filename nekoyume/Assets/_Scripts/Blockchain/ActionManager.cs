@@ -1796,10 +1796,9 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
-        public IObservable<ActionEvaluation<Stake>> Stake(
-            BigInteger amount)
+        public IObservable<ActionEvaluation<Stake>> Stake(BigInteger amount, Address avatarAddress)
         {
-            var action = new Stake(amount);
+            var action = new Stake(amount, avatarAddress);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<Stake>()
                 .Timeout(ActionTimeout)
@@ -1809,8 +1808,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionEvaluation<ClaimStakeReward>> ClaimStakeReward(
-            Address avatarAddress)
+        public IObservable<ActionEvaluation<ClaimStakeReward>> ClaimStakeReward(Address avatarAddress)
         {
             var action = new ClaimStakeReward(avatarAddress);
             ProcessAction(action);
