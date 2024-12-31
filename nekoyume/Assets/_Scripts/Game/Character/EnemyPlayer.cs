@@ -22,7 +22,7 @@ namespace Nekoyume.Game.Character
 
         public void Set(Model.CharacterBase model, Player player, bool updateCurrentHP = false)
         {
-            base.Set(model, updateCurrentHP);
+            base.Set(model, TableSheets.Instance, updateCurrentHP);
             _player = player;
             InitBT();
 

@@ -46,6 +46,7 @@ namespace Nekoyume.Game.Character
                 avatarState.lens,
                 avatarState.hair,
                 avatarState.tail,
+                TableSheets.Instance,
                 onFinish: onFinish);
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);

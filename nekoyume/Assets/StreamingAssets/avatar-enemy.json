@@ -1,0 +1,38 @@
+{
+    "Level": 1,
+    "collectionIds": [
+      1,
+      8
+    ],
+    "RuneItems": [
+      {
+        "Id": 30001,
+        "Level": 2,
+        "SlotIndex": 0
+      }
+    ],
+  "CostumeIds": [
+    49900024
+  ],
+  "EquipmentItems": [
+    {
+      "Id": 10120000,
+      "Level": 17,
+      "StatOptions": [
+        {
+          "StatType": "ATK",
+          "Value": 100
+        }
+      ],
+      "SkillOptions": [
+        {
+          "Id": 800072,
+          "Power": 100,
+          "Chance": 100,
+          "StatPowerRatio": 1,
+          "StatType": "HP"
+        }
+      ]
+    }
+  ]
+}

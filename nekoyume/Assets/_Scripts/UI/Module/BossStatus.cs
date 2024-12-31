@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -22,7 +23,7 @@ namespace Nekoyume.UI.Module
         public void Show()
         {
             gameObject.SetActive(true);
-            buffLayout.SetBuff(null);
+            buffLayout.SetBuff(null, TableSheets.Instance, true);
 
             animator.enabled = true;
         }
@@ -63,7 +64,7 @@ namespace Nekoyume.UI.Module
 
         public void SetBuff(Dictionary<int, Buff> modelBuffs)
         {
-            buffLayout.SetBuff(modelBuffs);
+            buffLayout.SetBuff(modelBuffs, TableSheets.Instance, true);
         }
 
         public void OnCompleteOfShowAnimation()

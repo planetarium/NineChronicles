@@ -154,7 +154,7 @@ namespace Nekoyume.Game.Character
 
 #endregion
 
-        public virtual void Set(CharacterBase model, bool updateCurrentHp = false)
+        public virtual void Set(CharacterBase model, TableSheets tableSheets, bool updateCurrentHp = false)
         {
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
@@ -267,7 +267,7 @@ namespace Nekoyume.Game.Character
 
             HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             ActorHud.Set(CurrentHp, CharacterModel.AdditionalHP, Hp);
-            ActorHud.SetBuffs(CharacterModel.Buffs);
+            ActorHud.SetBuffs(CharacterModel.Buffs, TableSheets.Instance);
             ActorHud.SetLevel(Level);
 
             OnUpdateActorHud.OnNext(this);
@@ -606,7 +606,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ProcessBuff(Actor target, Model.BattleStatus.Skill.SkillInfo info)
+        private void ProcessBuff(Actor target, Model.BattleStatus.Skill.SkillInfo info, TableSheets tableSheets)
         {
             if (!target || info.Target!.IsDead)
             {
@@ -614,7 +614,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff, tableSheets);
             effect.Target = target;
             effect.Buff = buff;
 
@@ -631,7 +631,7 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff, tableSheets));
             }
 
             target.UpdateActorHud();
@@ -765,10 +765,10 @@ namespace Nekoyume.Game.Character
             PostAnimationForTheKindOfAttack();
         }
 
-        private IEnumerator CoAnimationBuffCast(Model.BattleStatus.Skill.SkillInfo info)
+        private IEnumerator CoAnimationBuffCast(Model.BattleStatus.Skill.SkillInfo info, TableSheets tableSheets)
         {
             var pos = transform.position;
-            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff, tableSheets);
             if (effect is null)
             {
                 NcDebug.LogError($"[CoAnimationBuffCast] [Buff] {info.Buff.BuffInfo.Id}");
@@ -1168,20 +1168,20 @@ namespace Nekoyume.Game.Character
                     continue;
                 }
 
-                var buffPrefab = BuffHelper.GetCastingVFXPrefab(skillInfo.Buff.BuffInfo.Id);
+                var buffPrefab = BuffHelper.GetCastingVFXPrefab(skillInfo.Buff.BuffInfo.Id, TableSheets.Instance);
                 _buffSkillInfoMap[buffPrefab.name] = skillInfo;
             }
 
             foreach (var (_, skillInfo) in _buffSkillInfoMap)
             {
-                yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
+                yield return StartCoroutine(CoAnimationBuffCast(skillInfo, TableSheets.Instance));
             }
 
             var dispeledTargets = new HashSet<Actor>();
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.Stage.GetActor(info.Target);
-                ProcessBuff(target, info);
+                ProcessBuff(target, info, TableSheets.Instance);
                 if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
                 {
                     dispeledTargets.Add(target);
