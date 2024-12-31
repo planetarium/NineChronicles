@@ -26,6 +26,8 @@ using Nekoyume.UI.Scroller;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
+using Nekoyume.Action.Guild;
+using Nekoyume.Action.ValidatorDelegation;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module;
 
@@ -1813,6 +1815,45 @@ namespace Nekoyume.Blockchain
             var action = new ClaimStakeReward(avatarAddress);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ClaimStakeReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<ClaimGuildUnbonded>> ClaimGuildUnbonded()
+        {
+            var action = new ClaimGuildUnbonded();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimGuildUnbonded>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<ClaimUnbonded>> ClaimUnbonded()
+        {
+            var action = new ClaimUnbonded();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimUnbonded>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<ClaimValidatorUnbonded>> ClaimValidatorUnbonded()
+        {
+            var action = new ClaimValidatorUnbonded();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimValidatorUnbonded>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
