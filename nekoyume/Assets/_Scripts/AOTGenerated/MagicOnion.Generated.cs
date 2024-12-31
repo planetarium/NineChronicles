@@ -72,7 +72,7 @@ namespace MagicOnion
                 Factory = (global::MagicOnion.Client.MagicOnionClientFactoryDelegate<T>)factory;
             }
         }
-
+        
         static class StreamingHubClientFactoryCache<TStreamingHub, TReceiver> where TStreamingHub : global::MagicOnion.IStreamingHub<TStreamingHub, TReceiver>
         {
             public readonly static global::MagicOnion.Client.StreamingHubClientFactoryDelegate<TStreamingHub, TReceiver> Factory;
@@ -119,16 +119,16 @@ namespace MagicOnion.Resolvers
     public class MagicOnionResolver : global::MessagePack.IFormatterResolver
     {
         public static readonly global::MessagePack.IFormatterResolver Instance = new MagicOnionResolver();
-
+    
         MagicOnionResolver() {}
-
+    
         public global::MessagePack.Formatters.IMessagePackFormatter<T> GetFormatter<T>()
             => FormatterCache<T>.formatter;
-
+    
         static class FormatterCache<T>
         {
             public static readonly global::MessagePack.Formatters.IMessagePackFormatter<T> formatter;
-
+    
             static FormatterCache()
             {
                 var f = MagicOnionResolverGetFormatterHelper.GetFormatter(typeof(T));
@@ -142,20 +142,19 @@ namespace MagicOnion.Resolvers
     internal static class MagicOnionResolverGetFormatterHelper
     {
         static readonly global::System.Collections.Generic.Dictionary<global::System.Type, int> lookup;
-
+    
         static MagicOnionResolverGetFormatterHelper()
         {
             lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(8)
             {
                 {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>), 0 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>), 1 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>), 2 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>), 3 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>), 1 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>), 2 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>), 3 },
                 {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>), 4 },
                 {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>), 5 },
                 {typeof(global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>), 6 },
                 {typeof(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>), 7 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>), 8 },
             };
         }
         internal static object GetFormatter(Type t)
@@ -165,25 +164,17 @@ namespace MagicOnion.Resolvers
             {
                 return null;
             }
-
+        
             switch (key)
             {
                 case 0: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(default(global::System.Byte[]), default(global::System.Byte[]), default(global::System.Byte[]));
-                case 1: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[]>(default(global::System.Byte[]), default(global::System.Byte[]));
-                case 2: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(default(global::System.Byte[]), default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>));
-                case 3: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>(default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>), default(global::System.Byte[]));
+                case 1: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(default(global::System.Byte[]), default(global::System.Byte[]), default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>));
+                case 2: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[]>(default(global::System.Byte[]), default(global::System.Byte[]));
+                case 3: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(default(global::System.Byte[]), default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>));
                 case 4: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Int32, global::System.String>(default(global::System.Int32), default(global::System.String));
                 case 5: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.String, global::System.String>(default(global::System.String), default(global::System.String));
                 case 6: return new global::MessagePack.Formatters.DictionaryFormatter<global::System.Byte[], global::System.Byte[]>();
                 case 7: return new global::MessagePack.Formatters.InterfaceEnumerableFormatter<global::System.Byte[]>();
-                case 8:
-                    return new
-                        global::MagicOnion.DynamicArgumentTupleFormatter<
-                            global::System.Byte[], global::System.Byte[],
-                            global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(
-                            default(global::System.Byte[]), default(global::System.Byte[]),
-                            default(global::System.Collections.Generic.IEnumerable<
-                                global::System.Byte[]>));
                 default: return null;
             }
         }
@@ -196,10 +187,9 @@ namespace MagicOnion.Resolvers
         internal static void Register()
         {
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>>();
-            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>>();
-            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MessagePack.Nil>();
@@ -239,7 +229,7 @@ namespace Nekoyume.Shared.Services
     using global::MagicOnion;
     using global::MagicOnion.Client;
     using global::MessagePack;
-
+    
     [global::MagicOnion.Ignore]
     public class BlockChainServiceClient : global::MagicOnion.Client.MagicOnionClientBase<global::Nekoyume.Shared.Services.IBlockChainService>, global::Nekoyume.Shared.Services.IBlockChainService
     {
@@ -251,6 +241,10 @@ namespace Nekoyume.Shared.Services
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetStateByStateRootHash;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetBalanceByBlockHash;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetBalanceByStateRootHash;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetUnbondClaimableHeightByBlockHash;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetUnbondClaimableHeightByStateRootHash;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetClaimableRewardsByBlockHash;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetClaimableRewardsByStateRootHash;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MessagePack.Nil, global::System.Byte[]> GetTip;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Int64, global::System.Byte[]> GetBlockHash;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Boolean> SetAddressesToSubscribe;
@@ -273,6 +267,10 @@ namespace Nekoyume.Shared.Services
                 this.GetStateByStateRootHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetStateByStateRootHash", serializerProvider);
                 this.GetBalanceByBlockHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetBalanceByBlockHash", serializerProvider);
                 this.GetBalanceByStateRootHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetBalanceByStateRootHash", serializerProvider);
+                this.GetUnbondClaimableHeightByBlockHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetUnbondClaimableHeightByBlockHash", serializerProvider);
+                this.GetUnbondClaimableHeightByStateRootHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetUnbondClaimableHeightByStateRootHash", serializerProvider);
+                this.GetClaimableRewardsByBlockHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetClaimableRewardsByBlockHash", serializerProvider);
+                this.GetClaimableRewardsByStateRootHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetClaimableRewardsByStateRootHash", serializerProvider);
                 this.GetTip = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MessagePack.Nil, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetTip", serializerProvider);
                 this.GetBlockHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::System.Int64, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetBlockHash", serializerProvider);
                 this.SetAddressesToSubscribe = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_ValueType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "SetAddressesToSubscribe", serializerProvider);
@@ -289,22 +287,22 @@ namespace Nekoyume.Shared.Services
                 this.GetSheets = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetSheets", serializerProvider);
             }
         }
-
+        
         readonly ClientCore core;
-
+        
         public BlockChainServiceClient(global::MagicOnion.Client.MagicOnionClientOptions options, global::MagicOnion.Serialization.IMagicOnionSerializerProvider serializerProvider) : base(options)
         {
             this.core = new ClientCore(serializerProvider);
         }
-
+        
         private BlockChainServiceClient(MagicOnionClientOptions options, ClientCore core) : base(options)
         {
             this.core = core;
         }
-
+        
         protected override global::MagicOnion.Client.MagicOnionClientBase<IBlockChainService> Clone(global::MagicOnion.Client.MagicOnionClientOptions options)
             => new BlockChainServiceClient(options, core);
-
+        
         public global::MagicOnion.UnaryResult<global::System.Boolean> PutTransaction(global::System.Byte[] txBytes)
             => this.core.PutTransaction.InvokeUnary(this, "IBlockChainService/PutTransaction", txBytes);
         public global::MagicOnion.UnaryResult<global::System.Int64> GetNextTxNonce(global::System.Byte[] addressBytes)
@@ -317,6 +315,14 @@ namespace Nekoyume.Shared.Services
             => this.core.GetBalanceByBlockHash.InvokeUnary(this, "IBlockChainService/GetBalanceByBlockHash", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(blockHashBytes, addressBytes, currencyBytes));
         public global::MagicOnion.UnaryResult<global::System.Byte[]> GetBalanceByStateRootHash(global::System.Byte[] stateRootHashBytes, global::System.Byte[] addressBytes, global::System.Byte[] currencyBytes)
             => this.core.GetBalanceByStateRootHash.InvokeUnary(this, "IBlockChainService/GetBalanceByStateRootHash", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(stateRootHashBytes, addressBytes, currencyBytes));
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetUnbondClaimableHeightByBlockHash(global::System.Byte[] blockHashBytes, global::System.Byte[] addressBytes)
+            => this.core.GetUnbondClaimableHeightByBlockHash.InvokeUnary(this, "IBlockChainService/GetUnbondClaimableHeightByBlockHash", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(blockHashBytes, addressBytes));
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetUnbondClaimableHeightByStateRootHash(global::System.Byte[] stateRootHashBytes, global::System.Byte[] addressBytes)
+            => this.core.GetUnbondClaimableHeightByStateRootHash.InvokeUnary(this, "IBlockChainService/GetUnbondClaimableHeightByStateRootHash", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(stateRootHashBytes, addressBytes));
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetClaimableRewardsByBlockHash(global::System.Byte[] blockHashBytes, global::System.Byte[] addressBytes)
+            => this.core.GetClaimableRewardsByBlockHash.InvokeUnary(this, "IBlockChainService/GetClaimableRewardsByBlockHash", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(blockHashBytes, addressBytes));
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetClaimableRewardsByStateRootHash(global::System.Byte[] stateRootHashBytes, global::System.Byte[] addressBytes)
+            => this.core.GetClaimableRewardsByStateRootHash.InvokeUnary(this, "IBlockChainService/GetClaimableRewardsByStateRootHash", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(stateRootHashBytes, addressBytes));
         public global::MagicOnion.UnaryResult<global::System.Byte[]> GetTip()
             => this.core.GetTip.InvokeUnary(this, "IBlockChainService/GetTip", global::MessagePack.Nil.Default);
         public global::MagicOnion.UnaryResult<global::System.Byte[]> GetBlockHash(global::System.Int64 blockIndex)
@@ -349,7 +355,6 @@ namespace Nekoyume.Shared.Services
 }
 
 
-
 #pragma warning disable 618
 #pragma warning disable 612
 #pragma warning disable 414
@@ -369,19 +374,19 @@ namespace Nekoyume.Shared.Hubs
     using global::MagicOnion;
     using global::MagicOnion.Client;
     using global::MessagePack;
-
+    
     [global::MagicOnion.Ignore]
     public class ActionEvaluationHubClient : global::MagicOnion.Client.StreamingHubClientBase<global::Nekoyume.Shared.Hubs.IActionEvaluationHub, global::Nekoyume.Shared.Hubs.IActionEvaluationHubReceiver>, global::Nekoyume.Shared.Hubs.IActionEvaluationHub
     {
         protected override global::Grpc.Core.Method<global::System.Byte[], global::System.Byte[]> DuplexStreamingAsyncMethod { get; }
-
+        
         public ActionEvaluationHubClient(global::Grpc.Core.CallInvoker callInvoker, global::System.String host, global::Grpc.Core.CallOptions options, global::MagicOnion.Serialization.IMagicOnionSerializerProvider serializerProvider, global::MagicOnion.Client.IMagicOnionClientLogger logger)
             : base(callInvoker, host, options, serializerProvider, logger)
         {
             var marshaller = global::MagicOnion.MagicOnionMarshallers.ThroughMarshaller;
             DuplexStreamingAsyncMethod = new global::Grpc.Core.Method<global::System.Byte[], global::System.Byte[]>(global::Grpc.Core.MethodType.DuplexStreaming, "IActionEvaluationHub", "Connect", marshaller, marshaller);
         }
-
+        
         public global::System.Threading.Tasks.Task JoinAsync(global::System.String addressHex)
             => base.WriteMessageWithResponseAsync<global::System.String, global::MessagePack.Nil>(-733403293, addressHex);
         public global::System.Threading.Tasks.Task LeaveAsync()
@@ -402,22 +407,22 @@ namespace Nekoyume.Shared.Hubs
             => base.WriteMessageWithResponseAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-662856294, global::MessagePack.Nil.Default);
         public global::System.Threading.Tasks.Task PreloadEndAsync()
             => base.WriteMessageWithResponseAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-486331643, global::MessagePack.Nil.Default);
-
+        
         public global::Nekoyume.Shared.Hubs.IActionEvaluationHub FireAndForget()
             => new FireAndForgetClient(this);
-
+        
         [global::MagicOnion.Ignore]
         class FireAndForgetClient : global::Nekoyume.Shared.Hubs.IActionEvaluationHub
         {
             readonly ActionEvaluationHubClient parent;
-
+        
             public FireAndForgetClient(ActionEvaluationHubClient parent)
                 => this.parent = parent;
-
+        
             public global::Nekoyume.Shared.Hubs.IActionEvaluationHub FireAndForget() => this;
             public global::System.Threading.Tasks.Task DisposeAsync() => throw new global::System.NotSupportedException();
             public global::System.Threading.Tasks.Task WaitForDisconnect() => throw new global::System.NotSupportedException();
-
+        
             public global::System.Threading.Tasks.Task JoinAsync(global::System.String addressHex)
                 => parent.WriteMessageFireAndForgetAsync<global::System.String, global::MessagePack.Nil>(-733403293, addressHex);
             public global::System.Threading.Tasks.Task LeaveAsync()
@@ -438,9 +443,9 @@ namespace Nekoyume.Shared.Hubs
                 => parent.WriteMessageFireAndForgetAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-662856294, global::MessagePack.Nil.Default);
             public global::System.Threading.Tasks.Task PreloadEndAsync()
                 => parent.WriteMessageFireAndForgetAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-486331643, global::MessagePack.Nil.Default);
-
+            
         }
-
+        
         protected override void OnBroadcastEvent(global::System.Int32 methodId, global::System.ArraySegment<global::System.Byte> data)
         {
             switch (methodId)
@@ -495,7 +500,7 @@ namespace Nekoyume.Shared.Hubs
                     break;
             }
         }
-
+        
         protected override void OnResponseEvent(global::System.Int32 methodId, global::System.Object taskCompletionSource, global::System.ArraySegment<global::System.Byte> data)
         {
             switch (methodId)
@@ -532,6 +537,8 @@ namespace Nekoyume.Shared.Hubs
                     break;
             }
         }
+        
     }
 }
+
 
