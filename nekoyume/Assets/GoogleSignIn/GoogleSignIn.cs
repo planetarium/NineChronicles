@@ -110,7 +110,7 @@ namespace Google {
 
     /// <summary>Starts the authentication process.</summary>
     /// <remarks>
-    /// The authenication process is started and may display account picker
+    /// The authentication process is started and may display account picker
     /// popups and consent prompts based on the state of authentication and
     /// the requested elements.
     /// </remarks>
