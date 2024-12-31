@@ -51,20 +51,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var clientInitialized = true;
-            if (!clientInitialized)
-            {
-                NcDebug.Log(
-                    $"[{nameof(PatrolRewardPopup)}]PatrolRewardServiceClient is not initialized.");
-                return;
-            }
-
-            ShowAsync(ignoreShowAnimation);
-        }
-
-        private async void ShowAsync(bool ignoreShowAnimation = false)
-        {
-            await patrolRewardModule.SetData();
+            patrolRewardModule.SetData();
 
             var patrolTime = PatrolReward.PatrolTime.Value;
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>

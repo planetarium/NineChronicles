@@ -41,8 +41,8 @@ namespace Nekoyume.ApiClient
             PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
                 .CombineLatest(LastRewardClaimedBlockIndex, (_, lastReward) =>
                 {
-                    var blckInterval = Game.Game.instance.Agent.BlockIndex - lastReward;
-                    return blckInterval > Interval ? Interval : blckInterval;
+                    var blockIndex = Game.Game.instance.Agent.BlockIndex - lastReward;
+                    return blockIndex > Interval ? Interval : blockIndex;
                 })
                 .ToReactiveProperty();
             LastRewardClaimedBlockIndex.ObserveOnMainThread()
@@ -91,7 +91,7 @@ namespace Nekoyume.ApiClient
             SetPolicyModel(policy);
         }
 
-        public static async void ClaimReward(System.Action onSuccess)
+        public static void ClaimReward(System.Action onSuccess)
         {
             Claiming.Value = true;
             ActionManager.Instance.ClaimPatrolReward()

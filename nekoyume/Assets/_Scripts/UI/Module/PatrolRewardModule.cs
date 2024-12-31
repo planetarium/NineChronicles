@@ -34,6 +34,8 @@ namespace Nekoyume.UI.Module
 
         public void Awake()
         {
+            SetData();
+
             PatrolReward.RewardModels
                 .Where(model => model != null)
                 .Subscribe(SetRewardModels)
@@ -45,7 +47,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        public async Task SetData()
+        public void SetData()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;

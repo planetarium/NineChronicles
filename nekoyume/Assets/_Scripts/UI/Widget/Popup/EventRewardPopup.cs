@@ -284,9 +284,9 @@ namespace Nekoyume.UI
             }).AddTo(_disposables);
         }
 
-        private async void SetPatrolReward()
+        private void SetPatrolReward()
         {
-            await patrolRewardModule.SetData();
+            patrolRewardModule.SetData();
             patrolRewardModule.gameObject.SetActive(true);
             receiveButton.gameObject.SetActive(true);
 
@@ -397,7 +397,7 @@ namespace Nekoyume.UI
         }
 
         // subscribe from PatrolReward.PatrolTime
-        private void SetReceiveButton(long remainTime)
+        public void SetReceiveButton(long remainTime)
         {
             var canReceive = remainTime <= 0L;
             receiveButton.Interactable = canReceive;
