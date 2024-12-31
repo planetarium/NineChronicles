@@ -2,6 +2,7 @@ using Nekoyume.Model.Buff;
 using Nekoyume.Model.Stat;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -54,7 +55,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetBuff(IReadOnlyDictionary<int, Buff> buffs)
+        public void SetBuff(IReadOnlyDictionary<int, Buff> buffs, TableSheets tableSheets, bool vfx)
         {
             foreach (var icon in pool.Where(icon => icon.gameObject.activeSelf))
             {
@@ -84,7 +85,7 @@ namespace Nekoyume.UI.Module
             foreach (var buff in ordered)
             {
                 var icon = GetDisabledIcon();
-                icon.Show(buff, AddedBuffs.Contains(buff));
+                icon.Show(buff, AddedBuffs.Contains(buff), tableSheets, vfx);
             }
         }
 

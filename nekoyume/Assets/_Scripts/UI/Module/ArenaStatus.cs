@@ -34,10 +34,10 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void Set(int portraitId, string avatarName, int level, Address address)
+        public void Set(int portraitId, string avatarName, int level, Address address, TableSheets tableSheets, bool vfx)
         {
             SetProfile(portraitId, avatarName, level, address);
-            SetBuff();
+            SetBuff(tableSheets, vfx);
         }
 
         public void Show()
@@ -72,9 +72,10 @@ namespace Nekoyume.UI.Module
             hpText.text = $"{current}/{max}";
         }
 
-        public void SetBuff(Dictionary<int, Buff> modelBuffs = null)
+        public void SetBuff(TableSheets tableSheets, bool vfx,
+            Dictionary<int, Buff> modelBuffs = null)
         {
-            buffLayout.SetBuff(modelBuffs);
+            buffLayout.SetBuff(modelBuffs, tableSheets, vfx);
         }
 
         public void OnCompleteOfShowAnimation()

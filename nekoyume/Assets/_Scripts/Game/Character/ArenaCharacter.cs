@@ -110,7 +110,7 @@ namespace Nekoyume.Game.Character
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
             _target = target;
-            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer, TableSheets.Instance);
         }
 
         public void Spawn(Model.ArenaCharacter model)
@@ -140,7 +140,7 @@ namespace Nekoyume.Game.Character
             }
 
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
-            _arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs);
+            _arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs, TableSheets.Instance, true);
             UpdateBuffVfx();
         }
 
@@ -378,7 +378,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff, TableSheets.Instance);
             effect.Target = target;
             effect.Buff = buff;
 
@@ -386,7 +386,7 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff, TableSheets.Instance));
             }
 
             OnBuff?.Invoke(buff.BuffInfo.GroupId);
@@ -481,7 +481,7 @@ namespace Nekoyume.Game.Character
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
             var pos = transform.position;
-            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff, TableSheets.Instance);
 
             if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
             {

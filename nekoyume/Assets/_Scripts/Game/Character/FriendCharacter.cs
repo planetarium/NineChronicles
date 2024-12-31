@@ -40,6 +40,7 @@ namespace Nekoyume.Game.Character
                 avatarState.lens,
                 avatarState.hair,
                 avatarState.tail,
+                TableSheets.Instance,
                 true);
         }
 

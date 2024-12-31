@@ -69,7 +69,7 @@ namespace Nekoyume.Multiplanetary
         {
             return obj is PlanetId other && Equals(other);
         }
-        
+
         public static bool operator ==(PlanetId obj1, PlanetId obj2)
         {
             return obj1.Equals(obj2);
@@ -79,7 +79,7 @@ namespace Nekoyume.Multiplanetary
         {
             return !obj1.Equals(obj2);
         }
-        
+
         public override int GetHashCode()
         {
             return _value.GetHashCode();
