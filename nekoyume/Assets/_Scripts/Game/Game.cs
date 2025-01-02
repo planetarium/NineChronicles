@@ -260,6 +260,30 @@ namespace Nekoyume.Game
             PortalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown("["))
+            {
+                if (Agent is RPCAgent rpcAgent)
+                {
+                    UniTask.Run(async () =>
+                    {
+                        await rpcAgent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+                    }).Forget();
+                }
+            }
+            if (Input.GetKeyDown("]"))
+            {
+                if (Agent is RPCAgent rpcAgent)
+                {
+                    UniTask.Run(async () =>
+                    {
+                        await rpcAgent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+                    }).Forget();
+                }
+            }
+        }
+
         public void SetActionManager()
         {
             ActionManager = new ActionManager(Agent);

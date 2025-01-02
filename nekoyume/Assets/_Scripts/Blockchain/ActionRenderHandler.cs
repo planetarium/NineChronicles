@@ -4558,6 +4558,15 @@ namespace Nekoyume.Blockchain
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
 
+            var agent = Game.Game.instance.Agent;
+            UniTask.Run(async () =>
+            {
+                var value1 = await agent.GetUnbondClaimableHeightByStateRootHashAsync(eval.OutputState, eval.Signer);
+                var value2 = await agent.GetClaimableRewardsByStateRootHashAsync(eval.OutputState, eval.Signer);
+
+                NcDebug.Log($"UnbondClaimableHeight: {value1}, ClaimableRewards: {value2}");
+            });
+
             return (eval, slot);
         }
 
