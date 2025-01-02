@@ -122,7 +122,7 @@ namespace Nekoyume.Blockchain
             GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
                 new DefaultGrpcChannelProvider(new[]
                 {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
+                    new ChannelOption("grpc.max_receive_message_length", -1),
                 })
             ));
         }
