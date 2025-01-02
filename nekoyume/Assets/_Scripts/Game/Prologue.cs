@@ -230,10 +230,10 @@ namespace Nekoyume.Game
             var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.Value > 0 && r.StatType == StatType.HP);
             var buff = new StatBuff(buffRow);
-            var castingEffect = BattleRenderer.Instance.BuffController.Get(_player.transform.position, buff);
+            var castingEffect = BattleRenderer.Instance.BuffController.Get(_player.transform.position, buff, TableSheets.Instance);
             castingEffect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
-            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_player.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_player.gameObject, buff, TableSheets.Instance);
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);

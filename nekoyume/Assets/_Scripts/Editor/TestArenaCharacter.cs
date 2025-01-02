@@ -11,14 +11,12 @@ using Libplanet.Crypto;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using UnityEngine.Serialization;
 
 namespace Nekoyume.Editor
 {
@@ -103,7 +101,7 @@ namespace Nekoyume.Editor
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
             _target = target;
-            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer, TestArena.Instance.TableSheets);
         }
 
         public void Spawn(Model.ArenaCharacter model)
@@ -128,7 +126,7 @@ namespace Nekoyume.Editor
         public void UpdateStatusUI()
         {
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
-            arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs);
+            arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs, TestArena.Instance.TableSheets, false);
             UpdateBuffVfx();
         }
 
@@ -256,7 +254,7 @@ namespace Nekoyume.Editor
                 }
             }
 
-            yield return new WaitForSeconds(StageConfig.instance.actionDelay);
+            yield return new WaitForSeconds(0.5f);
             if (_runningAction != null)
             {
                 yield return StartCoroutine(TestArena.Instance.CoSkill(_runningAction));

@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Character
         {
             Init(target);
 
-            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer, TableSheets.Instance);
             _attackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
             _criticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
             _target = target;

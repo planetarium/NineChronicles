@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Character
 
 #endregion
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
+        public override void Set(Model.CharacterBase model, TableSheets tableSheets, bool updateCurrentHp = false)
         {
             if (!(model is Model.Enemy enemyModel))
             {
@@ -59,7 +59,7 @@ namespace Nekoyume.Game.Character
 
         public void Set(Model.Enemy model, Player player, bool updateCurrentHP)
         {
-            base.Set(model, updateCurrentHP);
+            base.Set(model, TableSheets.Instance, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Buff;
@@ -24,9 +25,9 @@ namespace Nekoyume.UI
 
         public HpBarVFX HpVFX { get; private set; }
 
-        public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs)
+        public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs, TableSheets tableSheets)
         {
-            buffLayout.SetBuff(buffs);
+            buffLayout.SetBuff(buffs, tableSheets, true);
 
             if (buffLayout.IsBuffAdded(StatType.HP))
             {

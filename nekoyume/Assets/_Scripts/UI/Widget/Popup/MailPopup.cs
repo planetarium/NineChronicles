@@ -962,6 +962,11 @@ namespace Nekoyume.UI
             Find<CustomCraftResultScreen>().Show(itemUsable);
         }
 
+        public void Read(PatrolRewardMail patrolRewardMail)
+        {
+            throw new NotImplementedException();
+        }
+
         [Obsolete]
         public void Read(SellCancelMail mail)
         {
