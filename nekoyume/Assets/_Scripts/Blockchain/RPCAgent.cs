@@ -430,6 +430,38 @@ namespace Nekoyume.Blockchain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public async Task<Integer> GetUnbondClaimableHeightByBlockHashAsync(Address address)
+        {
+            var raw = await _service.GetUnbondClaimableHeightByBlockHash(
+                BlockTipHash.ToByteArray(),
+                address.ToByteArray());
+            return (Integer)_codec.Decode(raw);
+        }
+
+        public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            var raw = await _service.GetUnbondClaimableHeightByStateRootHash(
+                stateRootHash.ToByteArray(),
+                address.ToByteArray());
+            return (Integer)_codec.Decode(raw);
+        }
+
+        public async Task<List> GetClaimableRewardsByBlockHashAsync(Address address)
+        {
+            var raw = await _service.GetClaimableRewardsByBlockHash(
+                BlockTipHash.ToByteArray(),
+                address.ToByteArray());
+            return (List)_codec.Decode(raw);
+        }
+
+        public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            var raw = await _service.GetClaimableRewardsByStateRootHash(
+                stateRootHash.ToByteArray(),
+                address.ToByteArray());
+            return (List)_codec.Decode(raw);
+        }
+
         public async Task<AgentState> GetAgentStateAsync(Address address)
         {
             var raw = await _service.GetAgentStatesByStateRootHash(
