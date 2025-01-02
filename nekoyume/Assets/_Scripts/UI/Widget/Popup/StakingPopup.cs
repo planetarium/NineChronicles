@@ -26,6 +26,13 @@ namespace Nekoyume.UI
 
     public class StakingPopup : PopupWidget
     {
+        [Serializable]
+        private struct CurrencyView
+        {
+            public GameObject view;
+            public TMP_Text amountText;
+        }
+
         [Header("Top")]
         [SerializeField] private Image levelIconImage;
 
@@ -44,10 +51,19 @@ namespace Nekoyume.UI
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
+        [SerializeField] private GameObject currentBenefitsTab;
+        [SerializeField] private GameObject levelBenefitsTab;
 
+        [Space]
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
+
+        [Space]
+        [SerializeField] private TMP_Text rewardNcgText;
+        [SerializeField] private ConditionalButton ncgArchiveButton;
+
+        [Space]
         [SerializeField] private RectTransform scrollableRewardsRectTransform;
         [SerializeField] private Image stakingLevelImage;
         [SerializeField] private Image stakingRewardImage;
@@ -55,11 +71,9 @@ namespace Nekoyume.UI
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
-
         [SerializeField] private CategoryTabButton levelBenefitsTabButton;
-        [SerializeField] private GameObject currentBenefitsTab;
-        [SerializeField] private GameObject levelBenefitsTab;
 
+        [Header("etc")]
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
         [SerializeField] private GameObject stakingInformationObject;
         [SerializeField] private UIBackground informationBg;

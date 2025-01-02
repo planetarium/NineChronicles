@@ -110,6 +110,8 @@ MonoBehaviour:
   - {fileID: 3823265623034877818}
   - {fileID: 8445137412660312501}
   - {fileID: 3345024300918415364}
+  currentBenefitsTab: {fileID: 1277203160402406578}
+  levelBenefitsTab: {fileID: 374039472276035994}
   interestBenefitsViews:
   - {fileID: 1814927991013057055}
   - {fileID: 1691005183597301464}
@@ -125,6 +127,8 @@ MonoBehaviour:
   - {fileID: 8145408699825368618}
   remainingBlockText: {fileID: 1953768218953515660}
   archiveButton: {fileID: 3841732456986124063}
+  rewardNcgText: {fileID: 6729513255701722590}
+  ncgArchiveButton: {fileID: 8672222571820380448}
   scrollableRewardsRectTransform: {fileID: 8475548908103802339}
   stakingLevelImage: {fileID: 6637482716725540419}
   stakingRewardImage: {fileID: 1028178262922361327}
@@ -139,8 +143,6 @@ MonoBehaviour:
   - {fileID: 3448132892838324483}
   currentBenefitsTabButton: {fileID: 164475490579377487}
   levelBenefitsTabButton: {fileID: 1352374952083609231}
-  currentBenefitsTab: {fileID: 1277203160402406578}
-  levelBenefitsTab: {fileID: 374039472276035994}
   stakeIconData: {fileID: 11400000, guid: 09a4839f75f3f7244aae388772ba2dfe, type: 2}
   stakingInformationObject: {fileID: 8255980575800358131}
   informationBg: {fileID: 2781206876934796192}
@@ -24066,6 +24068,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 875129282858578250}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8672222571820380448 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8393857624628101226, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+    type: 3}
+  m_PrefabInstance: {fileID: 875129282858578250}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8672222571820380449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8672222571820380449 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8393857624628101227, guid: 543ea58faa96c47bea69a87c29ba0ce7,
