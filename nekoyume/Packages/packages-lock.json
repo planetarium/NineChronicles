@@ -190,6 +190,15 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.ide.cursor": {
+      "version": "https://github.com/boxqkrtm/com.unity.ide.cursor.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
+      },
+      "hash": "2c0153a9bab1abc783e5599fa2d2cc3c69d5e389"
+    },
     "com.unity.ide.rider": {
       "version": "3.0.28",
       "depth": 0,
