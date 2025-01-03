@@ -393,7 +393,7 @@ namespace Nekoyume.UI
                 return state switch
                 {
                     MailTabState.All => true,
-                    MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
+                    MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop or MailType.CustomCraft,
                     _ => mail.MailType == (MailType)state
                 };
             }
@@ -960,6 +960,11 @@ namespace Nekoyume.UI
             NcDebug.Log("CombinationMail LocalLayer task completed");
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
             Find<CustomCraftResultScreen>().Show(itemUsable);
+        }
+
+        public void Read(PatrolRewardMail patrolRewardMail)
+        {
+            throw new NotImplementedException();
         }
 
         [Obsolete]

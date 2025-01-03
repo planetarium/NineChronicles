@@ -26,9 +26,9 @@ namespace Nekoyume.Game.Factory
 
         public static GameObject Create(Player model = null)
         {
+            var tableSheets = Game.instance.TableSheets;
             if (model is null)
             {
-                var tableSheets = Game.instance.TableSheets;
                 model = new Player(
                     1,
                     tableSheets.CharacterSheet,
@@ -44,7 +44,7 @@ namespace Nekoyume.Game.Factory
             }
 
             var address = new Address();
-            player.Set(address, model, true);
+            player.Set(address, model, true, tableSheets);
             return player.gameObject;
         }
 
@@ -73,7 +73,7 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            player.Set(avatarState.address, model, costumes, armor, weapon, aura, true);
+            player.Set(avatarState.address, model, costumes, armor, weapon, aura, true, tableSheets);
             return player.gameObject;
         }
     }

@@ -1,3 +1,5 @@
+using Nekoyume.L10n;
+
 namespace Nekoyume.Multiplanetary
 {
     public partial struct PlanetId
@@ -46,6 +48,21 @@ namespace Nekoyume.Multiplanetary
 
             // Default to Odin
             return Planet.Odin;
+        }
+
+        public static string GetLocalizationPlanetName(PlanetId planetId)
+        {
+            if (planetId == Heimdall || planetId == HeimdallInternal)
+            {
+                return L10nManager.Localize("PLANET_0x000000000001");
+            }
+
+            if (planetId == Thor || planetId == ThorInternal)
+            {
+                return L10nManager.Localize("PLANET_0x000000000003");
+            }
+
+            return L10nManager.Localize("PLANET_0x000000000000");
         }
 
         // TODO: Flag로 변경?

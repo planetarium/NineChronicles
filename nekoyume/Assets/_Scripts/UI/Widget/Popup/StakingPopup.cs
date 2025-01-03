@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Lib9c;
+using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
@@ -26,6 +28,13 @@ namespace Nekoyume.UI
 
     public class StakingPopup : PopupWidget
     {
+        [Serializable]
+        private struct CurrencyView
+        {
+            public GameObject view;
+            public TMP_Text amountText;
+        }
+
         [Header("Top")]
         [SerializeField] private Image levelIconImage;
 
@@ -44,10 +53,19 @@ namespace Nekoyume.UI
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
+        [SerializeField] private GameObject currentBenefitsTab;
+        [SerializeField] private GameObject levelBenefitsTab;
 
+        [Space]
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
+
+        [Space]
+        [SerializeField] private TMP_Text rewardNcgText;
+        [SerializeField] private ConditionalButton ncgArchiveButton;
+
+        [Space]
         [SerializeField] private RectTransform scrollableRewardsRectTransform;
         [SerializeField] private Image stakingLevelImage;
         [SerializeField] private Image stakingRewardImage;
@@ -55,11 +73,9 @@ namespace Nekoyume.UI
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
-
         [SerializeField] private CategoryTabButton levelBenefitsTabButton;
-        [SerializeField] private GameObject currentBenefitsTab;
-        [SerializeField] private GameObject levelBenefitsTab;
 
+        [Header("etc")]
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
         [SerializeField] private GameObject stakingInformationObject;
         [SerializeField] private UIBackground informationBg;
@@ -134,6 +150,14 @@ namespace Nekoyume.UI
                         ? Palette.GetColor(ColorType.TextDenial)
                         : _normalInputFieldColor;
             });
+            ncgArchiveButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                ActionManager.Instance
+                    .ClaimReward()
+                    .Subscribe();
+                ncgArchiveButton.UpdateObjects();
+            }).AddTo(gameObject);
         }
 
         public override void Initialize()
@@ -158,6 +182,24 @@ namespace Nekoyume.UI
             {
                 stakingInformationObject.SetActive(true);
             }
+
+            CheckClaimNcgReward().Forget();
+        }
+
+        // TODO: Loading Animation
+        private async UniTask CheckClaimNcgReward()
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var agent = Game.Game.instance.Agent;
+            var claimableHeight = await agent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+            var claimableRewards = await agent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+
+            // TODO: 1 ncg 이상인 경우 claim 가능하게 체크
+            // 체인에서 소수점 2자리 보다 작은 단위로 처리해서 줄 수 있는지 체크
+            ncgArchiveButton.SetCondition(() => claimableHeight <= blockIndex);
+
+            var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
+            rewardNcgText.text = fungibleAssetValue.GetQuantityString();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -293,8 +335,9 @@ namespace Nekoyume.UI
             var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Application.OpenURL(linkInfo.GetLinkID()); });
             confirmUI.ConfirmCallback = () =>
             {
-                ActionManager.Instance.Stake(States.Instance.StakedBalanceState.Gold.MajorUnit)
-                    .Subscribe();
+                var majorUnit = States.Instance.StakedBalanceState.Gold.MajorUnit;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 disposable.Dispose();
                 OnChangeEditingState(false);
             };
@@ -367,8 +410,9 @@ namespace Nekoyume.UI
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize: true, type: confirmIcon);
             confirmUI.ConfirmCallback = () =>
             {
-                ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
-                    .Subscribe();
+                var majorUnit = BigInteger.Parse(stakingNcgInputField.text);
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 OnChangeEditingState(false);
             };
         }

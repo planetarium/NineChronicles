@@ -1,5 +1,4 @@
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +6,12 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    using UniRx;
-
     public class SummonDetailCell : RectCell<SummonDetailCell.Model, SummonDetailScroll.ContextModel>
     {
         public class Model
@@ -25,10 +21,7 @@ namespace Nekoyume.UI.Scroller
             public string RuneTicker;
             public RuneOptionSheet.Row.RuneOptionInfo RuneOptionInfo;
             public float Ratio;
-            public float SilverRatio;
-            public float GoldRatio;
-            public float RubyRatio;
-            public float EmeraldRatio;
+            public readonly Dictionary<CostType, float> RatioByCostDict = new();
             public int Grade;
         }
 
@@ -50,6 +43,9 @@ namespace Nekoyume.UI.Scroller
 
         private readonly List<IDisposable> _disposables = new();
 
+        private static readonly List<CostType> DustTypes = new ()
+            {CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust};
+
         public override void UpdateContent(Model itemData)
         {
             button.onClick.RemoveAllListeners();
@@ -60,6 +56,13 @@ namespace Nekoyume.UI.Scroller
             });
             skillObject.SetActive(false);
             skillText.gameObject.SetActive(false);
+            foreach (var cost in DustTypes)
+            {
+                var textObj = GetTextByCostType(cost);
+                textObj.gameObject.SetActive(Context.ContainedCost.Contains(cost));
+                textObj.SetText(GetRatioString(0f));
+            }
+
             foreach (var obj in statObjects)
             {
                 obj.SetActive(false);
@@ -114,10 +117,12 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            silverPercentText.text = GetRatioString(itemData.SilverRatio);
-            goldPercentText.text = GetRatioString(itemData.GoldRatio);
-            rubyPercentText.text = GetRatioString(itemData.RubyRatio);
-            emeraldPercentText.text = GetRatioString(itemData.EmeraldRatio);
+            foreach (var pair in itemData.RatioByCostDict)
+            {
+                var textObj = GetTextByCostType(pair.Key);
+                textObj.SetText(GetRatioString(pair.Value));
+            }
+
             if (itemData.Ratio != 0)
             {
                 percentText.text = itemData.Ratio.ToString("0.####%");
@@ -128,12 +133,18 @@ namespace Nekoyume.UI.Scroller
 
         private static string GetRatioString(float ratio)
         {
-            if (ratio == 0)
-            {
-                return "-";
-            }
+            return ratio == 0 ? "-" : ratio.ToString("0.####%");
+        }
 
-            return ratio.ToString("0.####%");
+        private TextMeshProUGUI GetTextByCostType(CostType costType)
+        {
+            return costType switch
+            {
+                CostType.SilverDust => silverPercentText,
+                CostType.GoldDust => goldPercentText,
+                CostType.RubyDust => rubyPercentText,
+                CostType.EmeraldDust => emeraldPercentText,
+            };
         }
     }
 }

@@ -641,7 +641,8 @@ namespace Nekoyume.UI.Module
                 .Where(x => x.RuneType == (RuneType)row.RuneType)
                 .ToDictionary(x => x.Index, x => x);
 
-            var selectedSlot = slots.Values.FirstOrDefault(x => !x.RuneId.HasValue);
+            // 룬 아이디가 없거나, 현재 보유중인룬ID 가 아닌경우
+            var selectedSlot = slots.Values.FirstOrDefault(x => !x.RuneId.HasValue || !States.Instance.AllRuneState.TryGetRuneState(x.RuneId.Value, out var runeState));
             if (selectedSlot != null) // 비어있으면
             {
                 selectedSlot.Equip(inventoryItem.RuneState.RuneId);
@@ -658,12 +659,14 @@ namespace Nekoyume.UI.Module
                 {
                     if (!firstSlot.Value.RuneId.HasValue)
                     {
+                        NcDebug.LogError("First slot is empty.");
                         return;
                     }
 
                     var firstRuneId = firstSlot.Value.RuneId.Value;
                     if (!States.Instance.AllRuneState.TryGetRuneState(firstRuneId, out var firstState))
                     {
+                        NcDebug.LogError("First rune state is null.");
                         return;
                     }
 
@@ -679,6 +682,7 @@ namespace Nekoyume.UI.Module
                         var runeId = runeSlot.RuneId.Value;
                         if (!States.Instance.AllRuneState.TryGetRuneState(runeId, out var state))
                         {
+                            NcDebug.LogError("Rune state is null.");
                             return;
                         }
 

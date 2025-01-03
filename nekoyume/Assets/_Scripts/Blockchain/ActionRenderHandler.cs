@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -30,6 +29,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
+using Nekoyume.Action.Guild;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
@@ -54,7 +54,6 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
-    using Data;
     using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
@@ -164,6 +163,7 @@ namespace Nekoyume.Blockchain
             ItemEnhancement();
             RapidCombination();
             Grinding();
+            Synthesize();
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
             AuraSummon();
@@ -183,6 +183,7 @@ namespace Nekoyume.Blockchain
             ChargeActionPoint();
             ClaimStakeReward();
             ClaimGifts();
+            ClaimReward();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -422,6 +423,27 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void Synthesize()
+        {
+            _actionRenderer
+                .EveryRender<Synthesize>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareSynthesize)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseSynthesize)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Synthesize>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionSynthesize)
+                .AddTo(_disposables);
+        }
+
         private void UnlockEquipmentRecipe()
         {
             _actionRenderer.EveryRender<UnlockEquipmentRecipe>()
@@ -586,6 +608,16 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsTerminated)
                 .ObserveOnMainThread()
                 .Subscribe(ExceptionClaimGifts)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimReward()
+        {
+            _actionRenderer.EveryRender<ClaimReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimReward)
                 .AddTo(_disposables);
         }
 
@@ -869,26 +901,17 @@ namespace Nekoyume.Blockchain
         private void ResponseCreateAvatar(
             ActionEvaluation<CreateAvatar> eval)
         {
-            UniTask.Run(async () =>
+            UniTask.RunOnThreadPool(async () =>
             {
-                // sloth업데이트 이후 액션에서 지정한 블록보다 클라이언트의 블록이 높아지는 순간 아래 액션을 수행합니다.
-                // 타임아웃은 10초로, 일반적인 블록딜레이인 8초보다 조금 크게 설정하였습니다.
-                await UniTask.WaitUntil(() => Game.Game.instance.Agent.BlockIndex > eval.BlockIndex).TimeoutWithoutException(TimeSpan.FromSeconds(10));
-
-                await UniTask.SwitchToThreadPool();
                 await UpdateAgentStateAsync(eval);
-                await UpdateAvatarState(eval, eval.Action.index);
+                var avatarState = await UpdateAvatarState(eval, eval.Action.index);
                 // 아바타 생성시 States초기화를 위해 forceNewSelection을 true로 설정합니다.
-                await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState, true);
+                await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState, avatarState, true);
 
                 await UniTask.SwitchToMainThread();
 
-                var avatarState = States.Instance.AvatarStates[eval.Action.index];
                 RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
-
-                var agentAddr = States.Instance.AgentState.address;
-                var avatarAddr = Addresses.GetAvatarAddress(agentAddr, eval.Action.index);
-                DialogPopup.DeleteDialogPlayerPrefs(avatarAddr);
+                DialogPopup.DeleteDialogPlayerPrefs(avatarState.address);
                 // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
                 ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
                 var loginDetail = Widget.Find<LoginDetail>();
@@ -2486,6 +2509,11 @@ namespace Nekoyume.Blockchain
                 await UniTask.SwitchToMainThread();
                 // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
                 ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+
+                var headerMenu = Widget.Find<HeaderMenuStatic>();
+                var apPortionUi = headerMenu.ApPotion;
+                apPortionUi.UpdateApPotion();
+                apPortionUi.SetActiveLoading(false);
             });
         }
 
@@ -2593,18 +2621,9 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<Grinding> eval, List<Equipment> equipmentList)
             PrepareGrinding(ActionEvaluation<Grinding> eval)
         {
-            var avatarAddress = eval.Action.AvatarAddress;
             if (eval.Action.ChargeAp)
             {
-                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
-                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1, false);
-
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.AvatarAddress);
-                }
+                ChargeAp(eval.Action.AvatarAddress);
             }
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -2619,7 +2638,7 @@ namespace Nekoyume.Blockchain
                     equipment.RequiredBlockIndex > eval.BlockIndex ||
                     !inventory.RemoveNonFungibleItem(equipmentId))
                 {
-                    Debug.LogError($"Grinding action failed to remove equipment {equipmentId}");
+                    NcDebug.LogError($"Grinding action failed to remove equipment {equipmentId}");
                     OneLineSystem.Push(
                         MailType.Grinding,
                         L10nManager.Localize("ERROR_UNKNOWN"),
@@ -2654,6 +2673,79 @@ namespace Nekoyume.Blockchain
             mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
 
             Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
+        }
+
+        private (ActionEvaluation<Synthesize> eval, List<INonFungibleItem> equipmentList)
+            PrepareSynthesize(ActionEvaluation<Synthesize> eval)
+        {
+            if (eval.Action.ChargeAp)
+            {
+                ChargeAp(eval.Action.AvatarAddress);
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
+
+            var inventory = StateGetter.GetInventory(eval.PreviousState, eval.Action.AvatarAddress);
+            var itemList = new List<INonFungibleItem>();
+            foreach (var itemId in eval.Action.MaterialIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem item) ||
+                    !inventory.RemoveNonFungibleItem(itemId))
+                {
+                    NcDebug.LogError($"Synthesize action failed to remove equipment {itemId}");
+                    OneLineSystem.Push(
+                        MailType.Workshop,
+                        L10nManager.Localize("ERROR_UNKNOWN"),
+                        NotificationCell.NotificationType.Alert);
+                    return (eval, new List<INonFungibleItem>());
+                }
+
+                itemList.Add(item);
+            }
+
+            return (eval, itemList);
+        }
+
+        private void ResponseSynthesize((ActionEvaluation<Synthesize> eval, List<INonFungibleItem> materialItemList) prepared)
+        {
+            var sheets = TableSheets.Instance;
+            var eval = prepared.eval;
+
+            var inputData = new SynthesizeSimulator.InputData()
+            {
+                Grade = (Grade)eval.Action.MaterialGradeId,
+                ItemSubType = (ItemSubType)eval.Action.MaterialItemSubTypeId,
+                MaterialCount = eval.Action.MaterialIds.Count,
+                SynthesizeSheet = sheets.SynthesizeSheet,
+                SynthesizeWeightSheet = sheets.SynthesizeWeightSheet,
+                CostumeItemSheet = sheets.CostumeItemSheet,
+                EquipmentItemSheet = sheets.EquipmentItemSheet,
+                EquipmentItemRecipeSheet = sheets.EquipmentItemRecipeSheet,
+                EquipmentItemSubRecipeSheetV2 = sheets.EquipmentItemSubRecipeSheetV2,
+                EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
+                SkillSheet = sheets.SkillSheet,
+                RandomObject = new LocalRandom(prepared.eval.RandomSeed),
+            };
+
+            var result = SynthesizeSimulator.Simulate(inputData);
+            var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
+            synthesisResultScreen.Show(result);
+
+            var synthesis = Widget.Find<Synthesis>();
+            synthesis.SynthesisModule.SetOnActionState(false);
+
+            // TODO: Use ReactiveProperty?
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
+            var apPortionUi = headerMenu.ApPotion;
+            apPortionUi.UpdateApPotion();
+        }
+
+        private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
+        {
+            var synthesis = Widget.Find<Synthesis>();
+            synthesis.SynthesisModule.SetOnActionState(false);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -2860,6 +2952,10 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Alert);
         }
 
+        private void ResponseClaimReward(ActionEvaluation<ClaimReward> eval)
+        {
+            // Refresh Ncg and staking popup refresh
+        }
 
         internal class LocalRandom : System.Random, IRandom
         {
@@ -3676,7 +3772,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10nKey);
+                            var productName = product.GetNameText();
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,
@@ -3794,7 +3890,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10nKey);
+                            var productName = product.GetNameText();
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,
@@ -4474,6 +4570,15 @@ namespace Nekoyume.Blockchain
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            var agent = Game.Game.instance.Agent;
+            UniTask.Run(async () =>
+            {
+                var value1 = await agent.GetUnbondClaimableHeightByStateRootHashAsync(eval.OutputState, eval.Signer);
+                var value2 = await agent.GetClaimableRewardsByStateRootHashAsync(eval.OutputState, eval.Signer);
+
+                NcDebug.Log($"UnbondClaimableHeight: {value1}, ClaimableRewards: {value2}");
+            });
 
             return (eval, slot);
         }

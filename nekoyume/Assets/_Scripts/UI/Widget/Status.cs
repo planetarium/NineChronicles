@@ -84,7 +84,7 @@ namespace Nekoyume.UI
             base.Show(ignoreStartAnimation);
             battleTimerView.Close();
             hpBar.transform.parent.gameObject.SetActive(false);
-            buffLayout.SetBuff(null);
+            buffLayout.SetBuff(null, TableSheets.Instance, true);
 
 #if UNITY_ANDROID || UNITY_IOS
             transform.SetSiblingIndex(Find<LobbyMenu>().transform.GetSiblingIndex()+1);
@@ -159,7 +159,7 @@ namespace Nekoyume.UI
             }
 
             UpdateExp();
-            buffLayout.SetBuff(player.Model.Buffs);
+            buffLayout.SetBuff(player.Model.Buffs, TableSheets.Instance, true);
         }
 
         private void UpdateExp()

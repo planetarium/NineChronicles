@@ -312,9 +312,9 @@ namespace Nekoyume.UI
             var states = States.Instance;
             var rankingInfos = SharedModel.EquipmentRankingInfosMap[type];
             if (SharedModel.AgentEquipmentRankingInfos
-                .TryGetValue(states.CurrentAvatarKey, out var equipmentRankingMap))
+                .TryGetValue(states.CurrentAvatarKey, out var equipmentRankingMap)
+                && equipmentRankingMap.TryGetValue(type, out var rankingInfo))
             {
-                var rankingInfo = equipmentRankingMap[type];
                 myInfoCell.SetData(rankingInfo);
             }
             else

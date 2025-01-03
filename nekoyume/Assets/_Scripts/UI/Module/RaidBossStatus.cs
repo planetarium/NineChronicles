@@ -7,6 +7,7 @@ using Nekoyume.Model;
 using Nekoyume.L10n;
 using Nekoyume.Helper;
 using System;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI.Module
 {
@@ -43,7 +44,7 @@ namespace Nekoyume.UI.Module
         public void Show()
         {
             gameObject.SetActive(true);
-            buffLayout.SetBuff(null);
+            buffLayout.SetBuff(null, TableSheets.Instance, true);
         }
 
         public void Close(bool ignoreAnimation = true)
@@ -80,7 +81,7 @@ namespace Nekoyume.UI.Module
 
         public void SetBuff(Dictionary<int, Buff> modelBuffs)
         {
-            buffLayout.SetBuff(modelBuffs);
+            buffLayout.SetBuff(modelBuffs, TableSheets.Instance, true);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Nekoyume.UI
         public virtual bool CanHandleInputEvent => AnimationState.Value == AnimationStateType.Shown;
 
         protected bool CanClose => CanHandleInputEvent;
-        
+
         protected virtual bool CloseOnEnterLobby => true;
 
 #region Mono
@@ -178,6 +178,8 @@ namespace Nekoyume.UI
 #if APPLY_MEMORY_IOS_OPTIMIZATION || UNITY_ANDROID || UNITY_IOS
                 // Memory optimization
                 return MainCanvas.instance.AddWidget<T>();
+#elif UNITY_EDITOR && TEST_SCENE
+                return FindObjectOfType<T>();
 #else
                 throw new WidgetNotFoundException(type.Name);
 #endif

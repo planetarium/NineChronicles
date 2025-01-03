@@ -34,7 +34,25 @@ public class CenteredGridLayout : GridLayoutGroup
 
         var containerHeight = rectTransform.rect.height;
         var totalHeightOfAllItems = totalRows * cellSize.y + (totalRows - 1) * spacing.y;
-        var bottomOffset = containerHeight - totalHeightOfAllItems;
+        float verticalOffset = 0f;
+        switch (m_ChildAlignment)
+        {
+            case TextAnchor.UpperLeft:
+            case TextAnchor.UpperCenter:
+            case TextAnchor.UpperRight:
+                verticalOffset = 0f;
+                break;
+            case TextAnchor.MiddleLeft:
+            case TextAnchor.MiddleCenter:
+            case TextAnchor.MiddleRight:
+                verticalOffset = (containerHeight - totalHeightOfAllItems) / 2f;
+                break;
+            case TextAnchor.LowerLeft:
+            case TextAnchor.LowerCenter:
+            case TextAnchor.LowerRight:
+                verticalOffset = (containerHeight - totalHeightOfAllItems);
+                break;
+        }
 
         var lastRowOffset = lastRowItemCount > 0 ? (containerWidth - (lastRowItemCount * (cellSize.x + spacing.x) - spacing.x)) / 2 : offset;
 
@@ -47,7 +65,7 @@ public class CenteredGridLayout : GridLayoutGroup
 
             var item = rectChildren[i];
             var xPos = finalOffset + (cellSize.x + spacing.x) * column;
-            var yPos = bottomOffset + row * (cellSize.y + spacing.y);
+            var yPos = verticalOffset + row * (cellSize.y + spacing.y);
 
             SetChildAlongAxis(item, 0, xPos, cellSize.x);
             SetChildAlongAxis(item, 1, yPos, cellSize.y);

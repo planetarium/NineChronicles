@@ -22,5 +22,15 @@ namespace Nekoyume.Game.Character
             buffInfos = buffs;
             func = coNormalAttack;
         }
+
+        public ArenaActionParams(Editor.TestArenaCharacter arenaCharacter,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skills,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffs,
+            Func<IReadOnlyList<ArenaSkill.ArenaSkillInfo>, IEnumerator> coNormalAttack)
+        {
+            skillInfos = skills;
+            buffInfos = buffs;
+            func = coNormalAttack;
+        }
     }
 }

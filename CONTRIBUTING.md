@@ -241,7 +241,7 @@ Example:
 - Set notifications to **Suggestion** level.
 
 #### Code Body
-- Prefer block body over expression body for functions.  
+- Prefer block body over expression body for functions.
 - Recommend expression body for properties, indexers, and events.
 
 ```csharp
@@ -253,7 +253,7 @@ private int Add(int a, int b)
 ```
 
 #### Attributes
-- Separate each attribute with its own square brackets.  
+- Separate each attribute with its own square brackets.
 
 ### Braces Layout
 - Use BSD style (default setting).
@@ -270,3 +270,51 @@ private int Add(int a, int b)
 
 ### Spaces
 - Use default settings except for **Between attribute sections**, which is set to `false`.
+
+Arena simulation
+---
+You can simulate an ArenaBattle using the Assets/_Scenes/BattleSimulation scene in the editor.
+you can config avatar spec with `Assets/StreamingAssets/avatar.json`, `Assets/StreamingAssets/avatar-enemy.json`
+
+### avatar.json format
+```json5
+{
+    "Level": 1, // Represents the level of the avatar in the simulation
+    "collectionIds": [
+        1, // Corresponds to a specific collection ID in the CollectionSheet. Refers to collections to activate.
+        8  // Refer to the CollectionSheet for more details.
+    ],
+    "RuneItems": [
+        {
+            "Id": 30001, // ID of the rune, as defined in the RuneListSheet
+            "Level": 2, // The level of the rune
+            "SlotIndex": 0 // Slot where the rune is equipped (0-6). If empty, only level bonuses are applied.
+        }
+    ],
+    "CostumeIds": [
+        49900024 // ID of the costume to equip. Refer to the CostumeItemSheet.
+    ],
+    "EquipmentItems": [
+        {
+            "Id": 10120000, // ID of the equipment item, as defined in the EquipmentItemSheet
+            "Level": 17, // The level of the equipment
+            "StatOptions": [
+                {
+                    "StatType": "HP", // The type of stat (e.g., HP, ATK, etc.) from StatType Enum
+                    "Value": 100 // The value of the stat to be applied
+                }
+            ],
+            "SkillOptions": [
+                {
+                    "Id": 800072, // ID of the skill option
+                    "Power": 100, // The power of the skill
+                    "Chance": 100, // The probability of skill activation (percentage)
+                    "StatPowerRatio": 1, // Skill power ratio based on stats
+                    "StatType": "HP" // The type of stat influencing the skill (from StatType Enum)
+                }
+            ]
+        }
+    ]
+}
+
+```

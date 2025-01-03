@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Nekoyume.UI
 {
-    [Serializable]
+    [UsedImplicitly][Serializable]
     public enum TutorialTargetType // 순서 유지해줘야됨
     {
         None = 0,
@@ -81,7 +82,13 @@ namespace Nekoyume.UI
         CustomCraftMenu, // Combination -> CustomCraft
         CustomCraftOutfitScroll,
         CustomCraftInfo,
-        CustomCraftRelationshipArea
+        CustomCraftRelationshipArea,
+
+        // Synthesis
+        SynthesisScroll,
+        SynthesisResultPool,
+        SynthesisSelectedMaterials,
+        SynthesisMenu, // Combination -> Synthesis
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

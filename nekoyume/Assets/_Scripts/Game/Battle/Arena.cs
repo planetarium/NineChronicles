@@ -132,7 +132,7 @@ namespace Nekoyume.Game.Battle
 
             _turnNumber = 1;
 
-            Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress);
+            Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress, TableSheets.Instance);
             enemy.Pet.Animator.DestroyTarget();
             yield return new WaitForSeconds(2.0f);
 

@@ -1,7 +1,7 @@
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume
@@ -28,9 +28,9 @@ namespace Nekoyume
             return $"!{buff.BuffInfo.Id}!";
         }
 
-        public static Sprite GetIcon(this Buff buff)
+        public static Sprite GetIcon(this Buff buff, TableSheets tableSheets)
         {
-            return BuffHelper.GetBuffIcon(buff);
+            return BuffHelper.GetBuffIcon(buff, tableSheets);
         }
     }
 }

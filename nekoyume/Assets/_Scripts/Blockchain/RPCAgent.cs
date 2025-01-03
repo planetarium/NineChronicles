@@ -122,7 +122,7 @@ namespace Nekoyume.Blockchain
             GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
                 new DefaultGrpcChannelProvider(new[]
                 {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
+                    new ChannelOption("grpc.max_receive_message_length", -1),
                 })
             ));
         }
@@ -430,6 +430,38 @@ namespace Nekoyume.Blockchain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public async Task<Integer> GetUnbondClaimableHeightByBlockHashAsync(Address address)
+        {
+            var raw = await _service.GetUnbondClaimableHeightByBlockHash(
+                BlockTipHash.ToByteArray(),
+                address.ToByteArray());
+            return (Integer)_codec.Decode(raw);
+        }
+
+        public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            var raw = await _service.GetUnbondClaimableHeightByStateRootHash(
+                stateRootHash.ToByteArray(),
+                address.ToByteArray());
+            return (Integer)_codec.Decode(raw);
+        }
+
+        public async Task<List> GetClaimableRewardsByBlockHashAsync(Address address)
+        {
+            var raw = await _service.GetClaimableRewardsByBlockHash(
+                BlockTipHash.ToByteArray(),
+                address.ToByteArray());
+            return (List)_codec.Decode(raw);
+        }
+
+        public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            var raw = await _service.GetClaimableRewardsByStateRootHash(
+                stateRootHash.ToByteArray(),
+                address.ToByteArray());
+            return (List)_codec.Decode(raw);
+        }
+
         public async Task<AgentState> GetAgentStateAsync(Address address)
         {
             var raw = await _service.GetAgentStatesByStateRootHash(
@@ -607,22 +639,6 @@ namespace Nekoyume.Blockchain
             return avatarState;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
-        {
-            var raw =
-                await _service.GetBulkStateByBlockHash(
-                    BlockTipHash.ToByteArray(),
-                    accountAddress.ToByteArray(),
-                    addressList.Select(a => a.ToByteArray()));
-            var result = new Dictionary<Address, IValue>();
-            foreach (var kv in raw)
-            {
-                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
-            }
-
-            return result;
-        }
-
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,
@@ -658,7 +674,7 @@ namespace Nekoyume.Blockchain
                 {
                     var raw =
                         await _service.GetSheets(
-                            BlockTipHash.ToByteArray(),
+                            BlockTipStateRootHash.ToByteArray(),
                             list.Select(a => a.ToByteArray()));
                     await raw.ParallelForEachAsync(async pair =>
                     {
@@ -928,9 +944,16 @@ namespace Nekoyume.Blockchain
                         df.CopyTo(decompressed);
                         decompressed.Seek(0, SeekOrigin.Begin);
                         var dec = decompressed.ToArray();
-                        var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                            .ToActionEvaluation();
-                        ActionRenderer.ActionRenderSubject.OnNext(ev);
+                        try
+                        {
+                            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                                .ToActionEvaluation();
+                            ActionRenderer.ActionRenderSubject.OnNext(ev);
+                        }
+                        catch (Exception e)
+                        {
+                            NcDebug.LogError($"[RPCAgent] OnRender()... Failed to deserialize ActionEvaluation. {e}");
+                        }
                     }
                 }
             }

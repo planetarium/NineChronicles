@@ -260,6 +260,30 @@ namespace Nekoyume.Game
             PortalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown("["))
+            {
+                if (Agent is RPCAgent rpcAgent)
+                {
+                    UniTask.Run(async () =>
+                    {
+                        await rpcAgent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+                    }).Forget();
+                }
+            }
+            if (Input.GetKeyDown("]"))
+            {
+                if (Agent is RPCAgent rpcAgent)
+                {
+                    UniTask.Run(async () =>
+                    {
+                        await rpcAgent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+                    }).Forget();
+                }
+            }
+        }
+
         public void SetActionManager()
         {
             ActionManager = new ActionManager(Agent);
@@ -313,13 +337,13 @@ namespace Nekoyume.Game
                         continue;
                     }
 
-                    await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                    await Helper.Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
 
                     foreach (var product in category.ProductList)
                     {
-                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
-                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
-                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                        await Helper.Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                        await Helper.Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.GetListImagePath()}");
+                        await Helper.Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.GetDetailImagePath()}");
                     }
                 }
             });

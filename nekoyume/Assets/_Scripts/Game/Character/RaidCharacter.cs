@@ -137,7 +137,7 @@ namespace Nekoyume.Game.Character
 
             _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
             HPBar.Set(_currentHp, _characterModel.AdditionalHP, _characterModel.HP);
-            HPBar.SetBuffs(_characterModel.Buffs);
+            HPBar.SetBuffs(_characterModel.Buffs, TableSheets.Instance);
 
             UpdateBuffVfx();
 
@@ -646,7 +646,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff, TableSheets.Instance);
             if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
             {
                 yield return coroutine.Invoke(effect);
@@ -766,7 +766,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff, TableSheets.Instance);
             effect.Target = target;
             effect.Buff = buff;
 
@@ -774,7 +774,7 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff, TableSheets.Instance));
             }
 
             target.AddNextBuff(buff);

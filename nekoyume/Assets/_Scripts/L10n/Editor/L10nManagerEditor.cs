@@ -118,6 +118,11 @@ namespace Nekoyume.L10n.Editor
 
             await L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv", true);
 
+            //인터널 마켓서비스에서 l10n 다운로드하여 빌드전 포함되도록 함
+            var iapClient = new InAppPurchaseServiceClient("https://xd2n1dpmce.execute-api.us-east-2.amazonaws.com/internal");
+            await IAPL10nDownload(iapClient, InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobile);
+            await IAPL10nDownload(iapClient, InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobilek);
+
             foreach (var languageType in Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>())
             {
                 var dict = L10nManager.GetDictionary(languageType);
@@ -165,6 +170,25 @@ namespace Nekoyume.L10n.Editor
 
                     fileIndex++;
                 }
+            }
+        }
+
+        private static async Task IAPL10nDownload(InAppPurchaseServiceClient client, InAppPurchaseServiceClient.PackageName packageName)
+        {
+            InAppPurchaseServiceClient.L10NSchema MOBILE_L10N_SCHEMA = null;
+            await client.GetL10nAsync(packageName,
+                (success) =>
+                {
+                    MOBILE_L10N_SCHEMA = success;
+                },
+                (error) =>
+                {
+                    Debug.LogError(error);
+                });
+            if (MOBILE_L10N_SCHEMA != null)
+            {
+                await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
+                await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
             }
         }
 

@@ -47,7 +47,7 @@ namespace Nekoyume.UI.Module.Lobby
             OnUserValueChanged = () =>
             {
                 int claimCount = ApiClients.Instance.SeasonPassServiceManager.HasClaimPassType.Count + ApiClients.Instance.SeasonPassServiceManager.HasPrevClaimPassType.Count;
-                notificationObj.SetActive(claimCount > 0);
+                notificationObj.SetActive(claimCount > 0 && IsUnlocked);
             };
             ApiClients.Instance.SeasonPassServiceManager.UpdatedUserDatas += OnUserValueChanged;
 

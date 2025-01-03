@@ -30,7 +30,7 @@ RectTransform:
   m_Children:
   - {fileID: 3471496514113104215}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 22
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5054,7 +5054,6 @@ RectTransform:
   - {fileID: 8836464339148689937}
   - {fileID: 7640358342650765785}
   - {fileID: 8313173497880091062}
-  - {fileID: 6366859173446400923}
   - {fileID: 6272582741665665046}
   - {fileID: 230980274720409600}
   - {fileID: 2869691326236865729}
@@ -5067,6 +5066,7 @@ RectTransform:
   - {fileID: 119398252320266759}
   - {fileID: 2589320576509100885}
   - {fileID: 2007183548125925224}
+  - {fileID: 6366859173446400923}
   m_Father: {fileID: 8953210588604891776}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5585,7 +5585,7 @@ RectTransform:
   m_Children:
   - {fileID: 8749441877276992973}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 31
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5739,7 +5739,7 @@ RectTransform:
   m_Children:
   - {fileID: 4078956271715454788}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 27
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5915,7 +5915,7 @@ RectTransform:
   m_Children:
   - {fileID: 7204744958304332424}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 24
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -7903,7 +7903,7 @@ RectTransform:
   m_Children:
   - {fileID: 1326830016214638790}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 25
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -8018,7 +8018,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 26
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8539,7 +8539,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 29
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 24.515, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -13801,7 +13801,7 @@ RectTransform:
   - {fileID: 2347555007620021811}
   - {fileID: 811878278936256908}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 20
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -19740,7 +19740,7 @@ RectTransform:
   m_Children:
   - {fileID: 8463918375759246293}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 21
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -20109,7 +20109,7 @@ RectTransform:
   m_Children:
   - {fileID: 7047532548002958089}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 23
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -20147,7 +20147,7 @@ RectTransform:
   - {fileID: 1039546496964640815}
   - {fileID: 1051436268902849296}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 30
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -20471,7 +20471,7 @@ RectTransform:
   m_Children:
   - {fileID: 6380480282320003601}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 28
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -21231,7 +21231,7 @@ RectTransform:
   m_Children:
   - {fileID: 2252241056031600335}
   m_Father: {fileID: 6177845597666212447}
-  m_RootOrder: 19
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -21508,7 +21508,7 @@ MonoBehaviour:
   shadowObject: {fileID: 5977983775739720328}
   loadingObject: {fileID: 8107634084518972577}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 159627430590016752}
+  selectCountObject: {fileID: 159627430590016752}
   runeNotificationObj: {fileID: 7899557810706925779}
   runeSelectMove: {fileID: 4751058657144168851}
   selectCollectionObject: {fileID: 7687049088140130312}

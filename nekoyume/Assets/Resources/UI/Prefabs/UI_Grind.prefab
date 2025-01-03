@@ -974,7 +974,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 7967368376665556397}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -4821,7 +4821,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -6041,7 +6041,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -7029,7 +7029,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -7765,7 +7765,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -8068,7 +8068,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -9826,7 +9826,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -10374,7 +10374,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -11259,7 +11259,7 @@ MonoBehaviour:
   shadowObject: {fileID: 0}
   loadingObject: {fileID: 0}
   itemGradeParticle: {fileID: 0}
-  grindingCountObject: {fileID: 0}
+  selectCountObject: {fileID: 0}
   runeNotificationObj: {fileID: 0}
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
@@ -12602,7 +12602,7 @@ PrefabInstance:
     - target: {fileID: 488617205127339955, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 488617205127339955, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
@@ -14073,12 +14073,12 @@ PrefabInstance:
     - target: {fileID: 6206956982856106073, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6206956982856106073, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6232077314685349055, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}

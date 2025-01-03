@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Nekoyume.UI
 {
     [Serializable]
+    [UsedImplicitly]
     public enum TutorialActionType
     {
         None = 0,
@@ -72,7 +74,10 @@ namespace Nekoyume.UI
 
         // CustomCraft
         TutorialActionCustomCraftShow,
-        TutorialActionShowInfo
+        TutorialActionShowInfo,
+
+        // Synthesis
+        TutorialActionSynthesisShow,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

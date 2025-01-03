@@ -6,7 +6,6 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Pool;
 using Nekoyume.State;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx.Toolkit;
@@ -95,7 +94,7 @@ namespace Nekoyume.UI
                 ? _instanceCache
                 : _instanceCache = Find<HelpTooltip>();
 
-        private static List<ViewModel> SharedViewModels => _sharedViewModelsCache ?? (_sharedViewModelsCache = GetViewModels());
+        private static List<ViewModel> SharedViewModels => _sharedViewModelsCache ??= GetViewModels();
 
         [SerializeField]
         private Button backgroundImageButton = null;
@@ -159,7 +158,7 @@ namespace Nekoyume.UI
 
             var props = new Dictionary<string, Value>()
             {
-                ["HelpPopupId"] = id
+                ["HelpPopupId"] = id,
             };
 
             Analyzer.Instance.Track("Unity/Click HelpPopup", props);
@@ -380,8 +379,7 @@ namespace Nekoyume.UI
 
         private bool TrySetId(int id)
         {
-            if (!(_viewModel is null) &&
-                id == _viewModel.id)
+            if (_viewModel is not null && id == _viewModel.id)
             {
                 return TrySetPage(0);
             }
@@ -404,12 +402,7 @@ namespace Nekoyume.UI
 
         private bool TrySetPage(int pageIndex)
         {
-            if (_viewModel is null)
-            {
-                return false;
-            }
-
-            return TrySetPage(_viewModel, pageIndex);
+            return _viewModel is not null && TrySetPage(_viewModel, pageIndex);
         }
 
         private bool TrySetPage(ViewModel viewModel, int pageIndex)
@@ -514,14 +507,8 @@ namespace Nekoyume.UI
             text.text = Regex.Unescape(localizedString);
             text.fontSizeMax = textModel.fontSize;
 
-            if (!Enum.TryParse<TextAlignmentOptions>(textModel.alignment, out var alignment))
-            {
-                text.alignment = TextAlignmentOptions.TopLeft;
-            }
-            else
-            {
-                text.alignment = alignment;
-            }
+            text.alignment = !Enum.TryParse<TextAlignmentOptions>(textModel.alignment, out var alignment) ?
+                TextAlignmentOptions.TopLeft : alignment;
 
             _texts.Add((
                 text,

@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Model
 
         private const string VariableColorTag = "<color=#f5e3c0>";
 
-        public void Set(string skillName, SkillType skillType, int skillId, int coolDown, string chanceText, string valueText)
+        public void Set(string skillName, SkillType skillType, int skillId, int coolDown, string chanceText, string valueText, TableSheets tableSheets)
         {
             titleText.text = skillName;
 
@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Model
             {
                 buffObject.SetActive(false);
                 debuffObject.SetActive(true);
-                var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First());
+                var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First(), tableSheets);
                 buffIconImage.overrideSprite = buffIcon;
                 buffStatTypeText.text = skillName;
                 debuffObject.SetActive(false);

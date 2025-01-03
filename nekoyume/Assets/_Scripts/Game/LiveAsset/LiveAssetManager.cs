@@ -12,6 +12,7 @@ using UnityEngine;
 using System.Collections;
 using System.Text.Json.Serialization;
 using System.Threading;
+using JetBrains.Annotations;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game.LiveAsset
@@ -69,6 +70,7 @@ namespace Nekoyume.Game.LiveAsset
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
+        [CanBeNull]
         public ApiClient.ThorSchedule ThorSchedule { get; private set; }
         public EventRewardPopupData EventRewardPopupData { get; private set; }
         public Sprite StakingLevelSprite { get; private set; }
@@ -76,7 +78,7 @@ namespace Nekoyume.Game.LiveAsset
         public int[] StakingArenaBonusValues { get; private set; }
         public bool IsInitialized => _state == InitializingState.Initialized;
 
-        public System.Action<Nekoyume.ApiClient.ThorSchedule> OnChangedThorSchedule;
+        public Action<ApiClient.ThorSchedule> OnChangedThorSchedule;
 
         public void InitializeData()
         {

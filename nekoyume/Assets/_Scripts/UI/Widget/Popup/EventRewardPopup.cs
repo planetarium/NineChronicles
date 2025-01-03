@@ -78,6 +78,21 @@ namespace Nekoyume.UI
             }
         }
 
+        public bool HasEvent
+        {
+            get
+            {
+                var liveAssetManager = LiveAssetManager.instance;
+                if (!liveAssetManager.IsInitialized || !_isInitialized)
+                {
+                    return false;
+                }
+
+                var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
+                return eventRewardPopupData.EventRewards.Length > 0;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -121,11 +136,13 @@ namespace Nekoyume.UI
                 };
                 tabToggle.toggle.onValueChanged.AddListener(value =>
                 {
-                    if (value)
+                    if (!value)
                     {
-                        SetData(eventReward);
-                        setContent?.Invoke();
+                        return;
                     }
+
+                    SetData(eventReward);
+                    setContent?.Invoke();
                 });
                 tabToggle.SetText(L10nManager.Localize(eventReward.ToggleL10NKey));
                 tabToggle.toggle.gameObject.SetActive(true);
@@ -137,45 +154,72 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            if (eventRewards.Length == 0)
+            {
+                NcDebug.LogError("No event rewards.");
+                return;
+            }
+
             int index;
-            if (TryGetClaimableGifts(out _))
+            if (TryGetClaimableGift(out _))
             {
                 var claimGifts = eventRewards.FirstOrDefault(reward =>
                     reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ClaimGift);
                 index = Array.IndexOf(eventRewards, claimGifts);
-            }
-            else
-            {
-                var other = eventRewards.FirstOrDefault(reward =>
-                    reward.ContentPresetType != EventRewardPopupData.ContentPresetType.ClaimGift);
-                index = Array.IndexOf(eventRewards, other);
+                if (index >= 0)
+                {
+                    ShowAsTab(index);
+                    return;
+                }
             }
 
-            ShowAsTab(index);
+            var other = eventRewards.FirstOrDefault(reward =>
+                reward.ContentPresetType != EventRewardPopupData.ContentPresetType.ClaimGift);
+            index = Array.IndexOf(eventRewards, other);
+
+            ShowAsTab(Mathf.Max(index, 0));
         }
 
         public void ShowAsThorChain()
         {
             var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            if (eventRewards.Length == 0)
+            {
+                NcDebug.LogError("No event rewards.");
+                return;
+            }
+
             var thor = eventRewards.FirstOrDefault(reward =>
                 reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ThorChain);
             var index = Array.IndexOf(eventRewards, thor);
 
-            ShowAsTab(index);
+            ShowAsTab(Mathf.Max(index, 0));
         }
 
         public void ShowAsPatrolReward()
         {
             var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            if (eventRewards.Length == 0)
+            {
+                NcDebug.LogError("No event rewards.");
+                return;
+            }
+
             var patrolReward = eventRewards.FirstOrDefault(reward =>
                 reward.ContentPresetType == EventRewardPopupData.ContentPresetType.PatrolReward);
             var index = Array.IndexOf(eventRewards, patrolReward);
 
-            ShowAsTab(index);
+            ShowAsTab(Mathf.Max(index, 0));
         }
 
         private void ShowAsTab(int index, bool ignoreShowAnimation = false)
         {
+            if (index < 0 || index >= tabToggles.Length)
+            {
+                NcDebug.LogError($"Invalid index: {index}");
+                return;
+            }
+
             base.Show(ignoreShowAnimation);
 
             if (!_isInitialized)
@@ -236,7 +280,7 @@ namespace Nekoyume.UI
                     ? string.Empty
                     : L10nManager.Localize("UI_GET_REWARD");
                 receiveButtonIndicator.SetActive(value);
-                receiveButton.Interactable = TryGetClaimableGifts(out _) && !value;
+                receiveButton.Interactable = TryGetClaimableGift(out _) && !value;
             }).AddTo(_disposables);
         }
 
@@ -335,9 +379,9 @@ namespace Nekoyume.UI
 
         private void ClaimGifts()
         {
-            if (!TryGetClaimableGifts(out var row))
+            if (!TryGetClaimableGift(out var row))
             {
-                NcDebug.LogError("No claimable gifts.");
+                NcDebug.LogError("No claimable gift.");
                 return;
             }
 
@@ -369,14 +413,16 @@ namespace Nekoyume.UI
             receiveButtonIndicator.SetActive(false);
         }
 
-        private static bool TryGetClaimableGifts(out ClaimableGiftsSheet.Row row)
+        private static bool TryGetClaimableGift(out ClaimableGiftsSheet.Row row)
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var sheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
             var claimedGiftIds = Game.Game.instance.States.ClaimedGiftIds;
             if (claimedGiftIds != null)
             {
-                return sheet.TryFindRowByBlockIndex(blockIndex, out row) && !claimedGiftIds.Contains(row.Id);
+                row = sheet.OrderedList.FirstOrDefault(r =>
+                    r.Validate(blockIndex) && !claimedGiftIds.Contains(r.Id));
+                return row != null;
             }
 
             row = null;

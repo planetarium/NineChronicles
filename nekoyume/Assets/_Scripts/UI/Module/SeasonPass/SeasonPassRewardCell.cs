@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Module
                 ItemView.SelectObject.SetActive(false);
                 ItemView.FocusObject.SetActive(false);
                 ItemView.NotificationObject.SetActive(false);
-                ItemView.GrindingCountObject.SetActive(false);
+                ItemView.SelectCountObject.SetActive(false);
                 ItemView.LevelLimitObject.SetActive(false);
                 ItemView.RewardReceived.SetActive(false);
                 ItemView.RuneNotificationObj.SetActiveSafe(false);

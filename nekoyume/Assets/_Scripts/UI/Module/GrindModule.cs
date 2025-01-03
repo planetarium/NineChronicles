@@ -24,9 +24,6 @@ namespace Nekoyume.UI.Module
 
     public class GrindModule : MonoBehaviour
     {
-        // TODO: 셋팅 파일 or lib9c 등으로 분리
-        private const int GrindCost = 5;
-
         [Serializable]
         private struct CrystalAnimationData
         {
@@ -92,12 +89,12 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            grindButton.SetCost(CostType.ActionPoint, GrindCost);
+            grindButton.SetCost(CostType.ActionPoint, GameConfig.ActionCostAP);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
                 foreach (var item in _selectedItemsForGrind.ToList())
                 {
-                    item.GrindingCountEnabled.SetValueAndForceNotify(false);
+                    item.SelectCountEnabled.SetValueAndForceNotify(false);
                 }
 
                 _selectedItemsForGrind.Clear();
@@ -142,7 +139,7 @@ namespace Nekoyume.UI.Module
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
-                item.Value.GrindingCountEnabled.SetValueAndForceNotify(true);
+                item.Value.SelectCountEnabled.SetValueAndForceNotify(true);
 
                 if (_selectedItemsForGrind.Count == 1 && animator)
                 {
@@ -150,7 +147,7 @@ namespace Nekoyume.UI.Module
                 }
             }).AddTo(gameObject);
             _selectedItemsForGrind.ObserveRemove()
-                .Subscribe(item => item.Value.GrindingCountEnabled.SetValueAndForceNotify(false))
+                .Subscribe(item => item.Value.SelectCountEnabled.SetValueAndForceNotify(false))
                 .AddTo(gameObject);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
             {
@@ -397,7 +394,7 @@ namespace Nekoyume.UI.Module
                     var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        paymentPopup.ShowCheckPaymentApPotion(GrindCost, () => chargeAp(true));
+                        paymentPopup.ShowCheckPaymentApPotion(GameConfig.ActionCostAP, () => chargeAp(true));
                     }
                     else
                     {

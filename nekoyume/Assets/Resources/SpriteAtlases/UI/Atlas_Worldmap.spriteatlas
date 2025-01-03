@@ -70,6 +70,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fbcb61637b42a4b3b91a0bbfbebc6aff, type: 3}
   - {fileID: 21300000, guid: d0740a7316321974082876f15f68627a, type: 3}
   - {fileID: 21300000, guid: 2f345eb3278d6424aab446e6e606a3e2, type: 3}
+  - {fileID: 21300000, guid: 8af17884ccf6f52479d49f59c4cd84f2, type: 3}
   - {fileID: 21300000, guid: 00406794f40274ccdab1a2dbcf625bdf, type: 3}
   - {fileID: 21300000, guid: c181cb94f0589470eaaaac3b21fdb37c, type: 3}
   - {fileID: 21300000, guid: 8afa5f94b321b4e05b6867f90107ae15, type: 3}
@@ -77,6 +78,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6c778ee49925c4a669e7e079f6be2691, type: 3}
   - {fileID: 21300000, guid: 6105e7e5b5d97412a86a4586eadc107a, type: 3}
   - {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f, type: 3}
+  - {fileID: 21300000, guid: cf3d1e363eca2d94a81c8337fad78878, type: 3}
   - {fileID: 21300000, guid: 8804d0a68f34f4d918c719e22e1b8416, type: 3}
   - {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8, type: 3}
   - {fileID: 21300000, guid: 2652d2472e7a3314a9ee2e5459b3cae6, type: 3}
@@ -89,6 +91,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
   - {fileID: 21300000, guid: 833f5ac8afbf841a8afcb0bba773bb3a, type: 3}
   - {fileID: 21300000, guid: b8b531f80d8c54c8fa32aca4b1e0d131, type: 3}
+  - {fileID: 21300000, guid: 741b5c49251541a48808f4b8bada183f, type: 3}
+  - {fileID: 21300000, guid: 59873f6913f1768459d893e17e71144d, type: 3}
   - {fileID: 21300000, guid: c38cbe89fdcd54cbebec4ae89e0a963f, type: 3}
   - {fileID: 21300000, guid: 12344d9942c34405598506e0aa65e2a6, type: 3}
   - {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a, type: 3}
@@ -140,6 +144,7 @@ SpriteAtlas:
   - Worldmap_Tile_bg_01
   - bg_worldmap_springevent_icon_02
   - bg_worldmap_springevent_icon_01
+  - bg_worldmap_ragnarokevent_icon_03
   - Worldmap_bg_04
   - bg_worldmap_hardmode_icon_01
   - bg_worldmap_asgard_icon_01
@@ -147,6 +152,7 @@ SpriteAtlas:
   - bg_worldmap_muspelheim_icon_01
   - bg_worldmap_niflheim_icon_01
   - bg_worldmap_asgard_icon_02
+  - bg_worldmap_ragnarokevent_icon_01
   - bg_worldmap_event_icon_03
   - bg_worldmap_asgard_icon_03
   - bg_worldmap_anniversaryevent_icon_02
@@ -159,6 +165,8 @@ SpriteAtlas:
   - battle_UI_icon_01
   - bg_worldmap_winterevent_icon_03
   - bg_worldmap_muspelheim_icon_03
+  - battle_UI_icon_09
+  - bg_worldmap_ragnarokevent_icon_02
   - bg_worldmap_svartalfaheimr_icon_01
   - button_page_01
   - bg_worldmap_svartalfaheimr_icon_02

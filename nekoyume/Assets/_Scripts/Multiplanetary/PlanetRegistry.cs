@@ -138,5 +138,10 @@ namespace Nekoyume.Multiplanetary
 
             return false;
         }
+
+        public void SetPlanetInfos(IEnumerable<PlanetInfo> planetInfos)
+        {
+            _planetInfos = planetInfos.ToArray();
+        }
     }
 }

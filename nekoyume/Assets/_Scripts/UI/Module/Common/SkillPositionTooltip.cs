@@ -65,7 +65,8 @@ namespace Nekoyume.UI.Module.Common
                     optionRow.SkillDamageMax,
                     optionRow.StatDamageRatioMin,
                     optionRow.StatDamageRatioMax,
-                    optionRow.SkillChanceMin);
+                    optionRow.SkillChanceMin,
+                    TableSheets.Instance);
             }
             else
             {
@@ -114,7 +115,7 @@ namespace Nekoyume.UI.Module.Common
             gameObject.SetActive(true);
         }
 
-        private void SetSkillDescription(string key, SkillSheet.Row skillRow, long skillPowerMin, long skillPowerMax, int skillRatioMin, int skillRatioMax, int skillChance)
+        private void SetSkillDescription(string key, SkillSheet.Row skillRow, long skillPowerMin, long skillPowerMax, int skillRatioMin, int skillRatioMax, int skillChance, TableSheets tableSheets)
         {
             var sheets = TableSheets.Instance;
             var arg = new List<string>();
@@ -188,7 +189,7 @@ namespace Nekoyume.UI.Module.Common
                 arg.Add(skillChance.ToString());
                 arg.Add(skillRow.Cooldown.ToString());
                 arg.Add(skillPowerMin.ToString());
-                var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First());
+                var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First(), tableSheets);
                 buffIconImage.overrideSprite = buffIcon;
                 buffStatTypeText.text = skillRow.SkillCategory.ToString();
                 debuffObject.SetActive(false);
@@ -264,7 +265,8 @@ namespace Nekoyume.UI.Module.Common
                     powerMax,
                     ratioMin,
                     ratioMax,
-                    chanceMin);
+                    chanceMin,
+                    TableSheets.Instance);
             }
             else
             {

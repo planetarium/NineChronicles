@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Nekoyume.L10n;
+using Nekoyume.Multiplanetary;
 
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -146,6 +147,13 @@ namespace Nekoyume
             NcDebug.Log($"FireTime : {fireTime}");
             var title = L10nManager.Localize("TITLE");
             var iconName = pushType.ToString().ToLower();
+
+            var currentPlanetId = Game.Game.instance.CurrentPlanetId;
+            if (currentPlanetId.HasValue)
+            {
+                var currentPlanet = PlanetId.GetLocalizationPlanetName(currentPlanetId.Value);
+                text = $"{currentPlanet} - {text}";
+            }
 
 #if UNITY_ANDROID
             var notification = new AndroidNotification()

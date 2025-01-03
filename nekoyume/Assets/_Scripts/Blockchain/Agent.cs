@@ -355,18 +355,6 @@ namespace Nekoyume.Blockchain
             return dict;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
-        {
-            var dict = new Dictionary<Address, IValue>();
-            foreach (var address in addressList)
-            {
-                var result = await await Task.FromResult(GetStateAsync(accountAddress, address));
-                dict[address] = result;
-            }
-
-            return dict;
-        }
-
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,
@@ -440,6 +428,26 @@ namespace Nekoyume.Blockchain
             Currency currency)
         {
             return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
+        }
+
+        public async Task<Integer> GetUnbondClaimableHeightByBlockHashAsync(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List> GetClaimableRewardsByBlockHashAsync(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            throw new NotImplementedException();
         }
 
         // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
@@ -836,7 +844,7 @@ namespace Nekoyume.Blockchain
             );
             NcDebug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
-            yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
+            yield return States.Instance.SelectAvatarAsync(avatarIndex, Game.Game.instance.Agent.BlockTipStateRootHash).ToCoroutine();
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
 
             while (true)

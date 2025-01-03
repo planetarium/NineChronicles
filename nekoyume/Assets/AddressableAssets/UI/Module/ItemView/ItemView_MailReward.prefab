@@ -366,7 +366,7 @@ RectTransform:
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &440190992019026276
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -383,7 +383,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!225 &4750100423465195911
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -624,17 +625,17 @@ PrefabInstance:
     - target: {fileID: 842998767822749533, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 842998767822749533, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 842998767822749533, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1499761865216367145, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}

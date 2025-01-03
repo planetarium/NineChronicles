@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.L10n;
 using UniRx;
 using UnityEngine;
 
@@ -35,6 +36,38 @@ namespace Nekoyume.ApiClient
         {
             return product.GoogleSku == sku || product.AppleSku == sku || product.AppleSkuK == sku;
         }
+        public static string GetCode(this InAppPurchaseServiceClient.ProductSchema product)
+        {
+            var skuInfos = product.GoogleSku.Split("_");
+            return skuInfos.Last();
+        }
+        public static string GetPopupTitleText(this InAppPurchaseServiceClient.ProductSchema product)
+        {
+            if (!DateTime.TryParse(product.OpenTimestamp, out var openDate))
+            {
+                NcDebug.LogWarning($"Invalid OpenTimestamp: {product.OpenTimestamp}");
+                return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE");
+            }
+
+            if (!DateTime.TryParse(product.CloseTimestamp, out var closeDate))
+            {
+                NcDebug.LogWarning($"Invalid CloseTimestamp: {product.CloseTimestamp}");
+                return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE");
+            }
+            return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE", openDate.ToString("MM/dd"),closeDate.ToString("MM/dd"));
+        }
+        public static string GetListImagePath(this InAppPurchaseServiceClient.ProductSchema product)
+        {
+            return $"shop/images/product/list/{product.GetCode()}.png";
+        }
+        public static string GetDetailImagePath(this InAppPurchaseServiceClient.ProductSchema product)
+        {
+            return $"shop/images/product/detail/{product.GetCode()}.png";
+        }
+        public static string GetNameText(this InAppPurchaseServiceClient.ProductSchema product)
+        {
+            return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}");
+        }
     }
 
     public class IAPServiceManager : IDisposable
@@ -60,13 +93,13 @@ namespace Nekoyume.ApiClient
                 Debug.LogError($"[{nameof(IAPServiceManager)}] IAPServiceHost is null.");
                 return;
             }
-            
+
             _client = new InAppPurchaseServiceClient(url);
             _store = store;
 
             // 플렛폼에 따라 기본적으로 사용하는 패키지 이름이 다르기 때문에 그에 맞게 설정해준다.
 #if UNITY_IOS || UNITY_ANDROID
-            if(InAppPurchaseServiceClient.PackageNameTypeConverter.InvalidEnumMapping.TryGetValue(Application.identifier, out var packageName))
+            if (InAppPurchaseServiceClient.PackageNameTypeConverter.InvalidEnumMapping.TryGetValue(Application.identifier, out var packageName))
             {
                 _packageName = Enum.Parse<InAppPurchaseServiceClient.PackageName>(packageName);
             }

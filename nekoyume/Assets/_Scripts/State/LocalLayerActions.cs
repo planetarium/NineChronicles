@@ -27,30 +27,6 @@ namespace Nekoyume.State
         private readonly Dictionary<Guid, Info> _infos = new();
 
         /// <summary>
-        /// Register `GameAction` information.
-        /// </summary>
-        /// <param name="gameActionId">`GameAction.Id`</param>
-        /// <param name="payCostAction">Pay the cost if `GameAction` has.</param>
-        /// <param name="createdBlockIndex">Block index when `GameAction` created in ActionManager.</param>
-        /// <param name="isRendered">Set `true` when this `GameAction` already rendered by `IActionRenderer`</param>
-        public void Register(
-            Guid gameActionId,
-            Action<IAgent, States, TableSheets> payCostAction,
-            long createdBlockIndex,
-            bool isRendered = false)
-        {
-            if (TryGetRegisteredInfo(gameActionId, out var info))
-            {
-                NcDebug.LogError($"[{nameof(LocalLayerActions)}] Already registered. {gameActionId.ToString()}");
-
-                return;
-            }
-
-            info = GetNewInfo(payCostAction, createdBlockIndex, isRendered);
-            _infos.Add(gameActionId, info);
-        }
-
-        /// <summary>
         /// Set rendered or unrendered flag.
         /// </summary>
         /// <param name="gameActionId">`GameAction.Id`</param>

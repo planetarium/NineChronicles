@@ -103,7 +103,7 @@ jobs:
           androidExportType: 'androidAppBundle'
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
+          buildMethod: 'NekoyumeEditor.Builder.Build${{ matrix.targetPlatform }}'
           buildName: ${{ matrix.targetPlatform }}
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Text.Json.Serialization;
 using Libplanet.Crypto;
 

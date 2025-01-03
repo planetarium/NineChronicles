@@ -27,9 +27,9 @@ namespace Nekoyume.Game
         public FriendCharacter FriendCharacter => friendCharacter;
 
         public readonly ISubject<Object> OnLobbyEnterEnd = new Subject<Object>();
-        
+
         private static System.Action? _onLobbyEnterEnd;
-        
+
         public static event System.Action? OnLobbyEnterEvent
         {
             add
@@ -39,21 +39,21 @@ namespace Nekoyume.Game
             }
             remove => _onLobbyEnterEnd -= value;
         }
-        
+
         public static void Enter(bool showScreen = false)
         {
             var lobbyMenu = Widget.Find<LobbyMenu>();
             lobbyMenu.CloseWithOtherWidgetsOnEnterLobby();
             lobbyMenu.Show();
-            
+
             _onLobbyEnterEnd?.Invoke();
-            
+
             if (showScreen)
             {
                 Widget.Find<LoadingScreen>().Show();
             }
         }
-        
+
         private void Awake()
         {
             OnLobbyEnterEvent += OnLobbyEnter;
@@ -73,7 +73,7 @@ namespace Nekoyume.Game
         private async UniTask OnLobbyEnterAsync()
         {
             Widget.Find<HeaderMenuStatic>().Close(true);
-            
+
             var avatarState = States.Instance.CurrentAvatarState;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
             var onFinish = false;
@@ -84,22 +84,22 @@ namespace Nekoyume.Game
             GC.Collect();
 
             await UniTask.WaitUntil(() => onFinish);
-            
+
             var loadingScreen = Widget.Find<LoadingScreen>();
             if (loadingScreen.IsActive())
             {
                 loadingScreen.Close();
             }
-            
+
             Character.EnterLobby();
             Widget.Find<LobbyMenu>().EnterLobby();
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
             ActionRenderHandler.Instance.Pending = false;
-            
+
             await UniTask.Delay(TimeSpan.FromSeconds(1f));
-            
+
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();
             var headerMenu = Widget.Find<HeaderMenuStatic>();
@@ -113,13 +113,13 @@ namespace Nekoyume.Game
         }
 
         private void OnLobbyPopup()
-        {          
+        {
             const int requiredStage = LiveAsset.GameConfig.RequiredStage.ShowPopupLobbyEntering;
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 return;
             }
-            
+
             try
             {
 #if UNITY_ANDROID || UNITY_IOS
@@ -140,7 +140,7 @@ namespace Nekoyume.Game
 
                 if (Widget.TryFind<EventRewardPopup>(out var notificationPopup))
                 {
-                    if (notificationPopup.HasUnread)
+                    if (notificationPopup.HasUnread && notificationPopup.HasEvent)
                     {
                         notificationPopup.Show();
                     }

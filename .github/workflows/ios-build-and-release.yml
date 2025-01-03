@@ -106,7 +106,7 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
+          buildMethod: 'NekoyumeEditor.Builder.Build${{ matrix.targetPlatform }}'
           buildName: ${{ matrix.targetPlatform }}
           versioning: Custom
           version: ${{ github.event.inputs.app-version }}

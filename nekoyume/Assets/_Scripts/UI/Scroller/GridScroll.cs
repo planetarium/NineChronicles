@@ -148,6 +148,12 @@ namespace Nekoyume.UI.Scroller
 
         public void ClearData()
         {
+            if (!initialized)
+            {
+                Initialize();
+                initialized = true;
+            }
+
             UpdateContents(new List<TItemData>());
         }
 

@@ -9,5 +9,6 @@ namespace Nekoyume.EnumType
 	EventWinter,
 	EventSpring,
 	EventAnniversary,
+	RagnarokCollaboration,
     }
 }

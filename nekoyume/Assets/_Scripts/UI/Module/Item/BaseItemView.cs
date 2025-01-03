@@ -13,6 +13,7 @@ using System;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume
@@ -114,7 +115,7 @@ namespace Nekoyume
         private ParticleSystem itemGradeParticle;
 
         [SerializeField]
-        private GameObject grindingCountObject;
+        private GameObject selectCountObject;
 
         [SerializeField]
         private GameObject runeNotificationObj;
@@ -163,7 +164,7 @@ namespace Nekoyume
         public GameObject ShadowObject => shadowObject;
         public GameObject LoadingObject => loadingObject;
         public ParticleSystem ItemGradeParticle => itemGradeParticle;
-        public GameObject GrindingCountObject => grindingCountObject;
+        public GameObject SelectCountObject => selectCountObject;
         public GameObject RewardReceived;
 
         public GameObject RuneNotificationObj => runeNotificationObj;
@@ -214,7 +215,7 @@ namespace Nekoyume
             SelectObject.SetActive(false);
             FocusObject.SetActive(false);
             NotificationObject.SetActive(false);
-            GrindingCountObject.SetActiveSafe(false);
+            SelectCountObject.SetActiveSafe(false);
             LevelLimitObject.SetActiveSafe(false);
             RewardReceived.SetActiveSafe(false);
             LevelLimitObject.SetActiveSafe(false);

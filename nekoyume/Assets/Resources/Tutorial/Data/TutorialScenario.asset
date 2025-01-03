@@ -2671,6 +2671,105 @@ MonoBehaviour:
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
+  - title: Stage 151
+    description: Synthesis
+    tutorialScenario:
+      scenario:
+      - id: 1510000
+        nextId: 1510001
+        checkPointId: 1510000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_151_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 1510001
+        nextId: 1510002
+        checkPointId: 1510000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000030
+          actionType: 1000021
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_151_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 1510002
+        nextId: 1510003
+        checkPointId: 1510000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 5, y: 5}
+          targetSizeOffset: {x: 5, y: 5}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000027
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_151_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 1510003
+        nextId: 1510004
+        checkPointId: 1510000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 5, y: 5}
+          targetSizeOffset: {x: 5, y: 5}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000028
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_151_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 1510004
+        nextId: 0
+        checkPointId: -151
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 5, y: 5}
+          targetSizeOffset: {x: 5, y: 5}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000029
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_151_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
   - title: Stage 301
     description: CustomEquipmentCraft
     tutorialScenario:
