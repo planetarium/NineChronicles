@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -31,6 +29,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
+using Nekoyume.Action.Guild;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
@@ -55,7 +54,6 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
-    using Data;
     using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
@@ -185,6 +183,7 @@ namespace Nekoyume.Blockchain
             ChargeActionPoint();
             ClaimStakeReward();
             ClaimGifts();
+            ClaimReward();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -609,6 +608,16 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsTerminated)
                 .ObserveOnMainThread()
                 .Subscribe(ExceptionClaimGifts)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimReward()
+        {
+            _actionRenderer.EveryRender<ClaimReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimReward)
                 .AddTo(_disposables);
         }
 
@@ -2943,6 +2952,10 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Alert);
         }
 
+        private void ResponseClaimReward(ActionEvaluation<ClaimReward> eval)
+        {
+            // Refresh Ncg and staking popup refresh
+        }
 
         internal class LocalRandom : System.Random, IRandom
         {

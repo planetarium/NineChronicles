@@ -1820,6 +1820,19 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
+        public IObservable<ActionEvaluation<ClaimReward>> ClaimReward()
+        {
+            var action = new ClaimReward();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
         public IObservable<ActionEvaluation<ClaimGifts>> ClaimGifts(
             Address avatarAddress,
             int giftId)
