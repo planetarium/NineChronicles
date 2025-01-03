@@ -451,7 +451,18 @@ namespace Nekoyume
 
                     if (GUILayout.Button("TesterWindow"))
                     {
-                        GeneratedApiTester.ShowWindow(data.Value.Replace("/openapi.json", ""), data.Key);
+                        var baseUrl = data.Value;
+                        var comIndex = baseUrl.IndexOf(".com");
+                        if (comIndex >= 0)
+                        {
+                            baseUrl = baseUrl.Substring(0, comIndex + 4);
+                        }
+                        var swaggerIndex = baseUrl.IndexOf("/swagger");
+                        if (swaggerIndex >= 0)
+                        {
+                            baseUrl = baseUrl.Substring(0, swaggerIndex);
+                        }
+                        GeneratedApiTester.ShowWindow(baseUrl, data.Key);
                     }
 
                     GUILayout.EndHorizontal();
@@ -525,6 +536,10 @@ namespace Nekoyume
             sb.AppendLine("//     Source URL: " + url);
             sb.AppendLine("// </auto-generated>");
             sb.AppendLine("//------------------------------------------------------------------------------");
+            
+            sb.AppendLine();
+            sb.AppendLine("#nullable enable");
+            sb.AppendLine();
 
             sb.AppendLine("using System.Text.Json.Serialization;");
             sb.AppendLine("using System.Collections.Generic;");
@@ -791,18 +806,20 @@ namespace Nekoyume
                             var parameterTypeDict = new Dictionary<string, string>();
                             foreach (var parameter in parameters as JsonArray)
                             {
-                                var parameterName = parameter["name"].ToString();
+                                var parameterName = parameter["name"].ToString()
+                                    .Replace(" ", "_")
+                                    .Replace("-", "_");
                                 var parameterType = ConvertToCSharpType(parameter["schema"]);
-                                parameterDefinitions.Append($"{parameterType} {parameterName.Replace("-", "_")}, ");
+                                parameterDefinitions.Append($"{parameterType} {parameterName}, ");
 
-                                parameterTypeDict[parameterName] = parameterType.Replace("?", "");
+                                parameterTypeDict[parameter["name"].ToString()] = parameterType.Replace("?", "");
                                 switch (parameter["in"].ToString())
                                 {
                                     case "query":
-                                        queryParameters.Add($"{parameterName}={{{parameterName}}}");
+                                        queryParameters.Add($"{parameter["name"]}={{{parameterName}}}");
                                         break;
                                     case "header":
-                                        headerParameters.Add(parameterName);
+                                        headerParameters.Add(parameter["name"].ToString());
                                         break;
                                 }
                             }
