@@ -171,7 +171,7 @@
 # Version 1.2.156 - June 10, 2020
 ## Bug Fixes
 * Android Resolver: Fixed that the generated local repo assets contains
-  redundent labels which are causing Version Handler to failed while
+  redundant labels which are causing Version Handler to failed while
   uninstalling packages.
 * Android Resolver: Fixed that the repo url injected into mainTemplate.gradle
   is incorrect when Unity is configured to export gradle project.
