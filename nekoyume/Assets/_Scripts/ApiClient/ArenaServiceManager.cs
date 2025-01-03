@@ -9,9 +9,9 @@ namespace Nekoyume.ApiClient
 {
     public class ArenaServiceManager : IDisposable
     {
-        public ArenaServiceClient Client { get; private set; }
+        //public ArenaServiceClient Client { get; private set; }
 
-        public bool IsInitialized => Client != null;
+        //public bool IsInitialized => Client != null;
 
         public ArenaServiceManager(string url)
         {
@@ -20,34 +20,40 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"ArenaServiceManager Initialized Fail url is Null");
                 return;
             }
-            Client = new ArenaServiceClient(url);
+            //Client = new ArenaServiceClient(url);
         }
 
         public void Dispose()
         {
-            Client?.Dispose();
-            Client = null;
+            //Client?.Dispose();
+            //Client = null;
         }
+
 
         public static string CreateJwt(PrivateKey privateKey, string address)
         {
             var payload = new
             {
-                aud = "arena-service",
+                iss = "user",
                 avt_adr = address,
                 sub = privateKey.PublicKey.ToHex(true),
+                role = "user",
                 iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 exp = DateTimeOffset.UtcNow.AddMinutes(60).ToUnixTimeSeconds()
             };
+
             string payloadJson = JsonConvert.SerializeObject(payload);
             byte[] payloadBytes = Encoding.UTF8.GetBytes(payloadJson);
-            byte[] hash = HashDigest<SHA256>.DeriveFrom(payloadBytes).ToByteArray();
-            byte[] signature = privateKey.Sign(hash);
+
+            byte[] signature = privateKey.Sign(payloadBytes);
+
             string signatureBase64 = Convert.ToBase64String(signature);
+
             string headerJson = JsonConvert.SerializeObject(new { alg = "ES256K", typ = "JWT" });
             string headerBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(headerJson));
             string payloadBase64 = Convert.ToBase64String(payloadBytes);
-            return $"{headerBase64}.{payloadBase64}.{signatureBase64}";
+
+            return $"Bearer {headerBase64}.{payloadBase64}.{signatureBase64}";
         }
     }
 }
