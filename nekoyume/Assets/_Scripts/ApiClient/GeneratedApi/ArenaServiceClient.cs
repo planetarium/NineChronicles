@@ -6,6 +6,9 @@
 //     Source URL: http://k8s-arenaser-arenaser-caf72b8307-d45b2a0992a4815e.elb.us-east-2.amazonaws.com/swagger/v1/swagger.json
 // </auto-generated>
 //------------------------------------------------------------------------------
+
+#nullable enable
+
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using System;
@@ -31,7 +34,35 @@ public class ArenaServiceClient
     {
     }
 
+    public class AuthenticationProperties
+    {
+        [JsonPropertyName("items")]
+        public object Items { get; set; }
+    }
+
+    public class AvailableOpponentsResponse
+    {
+        [JsonPropertyName("availableOpponents")]
+        public List<ParticipantResponse> AvailableOpponents { get; set; }
+    }
+
+    public class ForbidHttpResult
+    {
+        [JsonPropertyName("authenticationSchemes")]
+        public List<string> AuthenticationSchemes { get; set; }
+        [JsonPropertyName("properties")]
+        public AuthenticationProperties Properties { get; set; }
+    }
+
     public class JoinRequest
+    {
+        [JsonPropertyName("nameWithHash")]
+        public string NameWithHash { get; set; }
+        [JsonPropertyName("portraitId")]
+        public int PortraitId { get; set; }
+    }
+
+    public class LeaderboardEntryResponse
     {
         [JsonPropertyName("avatarAddress")]
         public string AvatarAddress { get; set; }
@@ -39,18 +70,57 @@ public class ArenaServiceClient
         public string NameWithHash { get; set; }
         [JsonPropertyName("portraitId")]
         public int PortraitId { get; set; }
-        [JsonPropertyName("authToken")]
-        public string AuthToken { get; set; }
+        [JsonPropertyName("rank")]
+        public int Rank { get; set; }
+        [JsonPropertyName("totalScore")]
+        public int TotalScore { get; set; }
     }
 
-    public async Task GetSeasonsAvailableopponentsAsync(int seasonId, Action<string> onSuccess, Action<string> onError)
+    public class ParticipantResponse
+    {
+        [JsonPropertyName("avatarAddress")]
+        public string AvatarAddress { get; set; }
+        [JsonPropertyName("nameWithHash")]
+        public string NameWithHash { get; set; }
+        [JsonPropertyName("portraitId")]
+        public int PortraitId { get; set; }
+    }
+
+    public class SeasonResponse
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("startBlockIndex")]
+        public int StartBlockIndex { get; set; }
+        [JsonPropertyName("endBlockIndex")]
+        public int EndBlockIndex { get; set; }
+        [JsonPropertyName("ticketRefillInterval")]
+        public int TicketRefillInterval { get; set; }
+    }
+
+    public class StringNotFound
+    {
+        [JsonPropertyName("value")]
+        public string Value { get; set; }
+        [JsonPropertyName("statusCode")]
+        public int StatusCode { get; set; }
+    }
+
+    public class UnauthorizedHttpResult
+    {
+        [JsonPropertyName("statusCode")]
+        public int StatusCode { get; set; }
+    }
+
+    public async Task GetSeasonsAvailableopponentsAsync(int seasonId, string Authorization, Action<AvailableOpponentsResponse> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/seasons/{seasonId}/available-opponents";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("accept", "text/plain");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
             try
@@ -62,7 +132,8 @@ public class ArenaServiceClient
                     return;
                 }
                 string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
+                AvailableOpponentsResponse result = System.Text.Json.JsonSerializer.Deserialize<AvailableOpponentsResponse>(responseBody);
+                onSuccess?.Invoke(result);
             }
             catch (Exception ex)
             {
@@ -71,12 +142,13 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task PostSeasonsAvailableopponentsAsync(int seasonId, Action<string> onSuccess, Action<string> onError)
+    public async Task PostSeasonsAvailableopponentsAsync(int seasonId, string Authorization, Action<string> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/seasons/{seasonId}/available-opponents";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
@@ -99,12 +171,13 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task PostSeasonsOpponentBattleAsync(int seasonId, int opponentId, Action<string> onSuccess, Action<string> onError)
+    public async Task PostSeasonsOpponentBattleAsync(int seasonId, int opponentId, string Authorization, Action<string> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/seasons/{seasonId}/opponent/{opponentId}/battle";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
@@ -154,9 +227,9 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task GetSeasonsLeaderboardParticipantsAsync(int seasonId, int participantId, Action<string> onSuccess, Action<string> onError)
+    public async Task GetSeasonsLeaderboardParticipantsAsync(int seasonId, string avatarAddress, Action<LeaderboardEntryResponse> onSuccess, Action<string> onError)
     {
-        string url = $"{Url}/seasons/{seasonId}/leaderboard/participants/{participantId}";
+        string url = $"{Url}/seasons/{seasonId}/leaderboard/participants/{avatarAddress}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
@@ -173,7 +246,8 @@ public class ArenaServiceClient
                     return;
                 }
                 string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
+                LeaderboardEntryResponse result = System.Text.Json.JsonSerializer.Deserialize<LeaderboardEntryResponse>(responseBody);
+                onSuccess?.Invoke(result);
             }
             catch (Exception ex)
             {
@@ -182,12 +256,13 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task PostSeasonsParticipantsAsync(int seasonId, JoinRequest requestBody, Action<string> onSuccess, Action<string> onError)
+    public async Task PostSeasonsParticipantsAsync(int seasonId, string Authorization, JoinRequest requestBody, Action<string> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/seasons/{seasonId}/participants";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
             var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -214,7 +289,7 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task GetSeasonsCurrentAsync(int blockIndex, Action<string> onSuccess, Action<string> onError)
+    public async Task GetSeasonsCurrentAsync(int blockIndex, Action<SeasonResponse> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/seasons/current";
         using (var request = new UnityWebRequest(url, "GET"))
@@ -234,7 +309,38 @@ public class ArenaServiceClient
                     return;
                 }
                 string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
+                SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostAsync(string id, string Authorization, Action<SeasonResponse> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/{id}";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
+                onSuccess?.Invoke(result);
             }
             catch (Exception ex)
             {
