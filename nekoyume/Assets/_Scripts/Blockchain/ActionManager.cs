@@ -934,52 +934,60 @@ namespace Nekoyume.Blockchain
             int ticket
         )
         {
-            var action = new BattleArena
+            try
             {
-                myAvatarAddress = States.Instance.CurrentAvatarState.address,
-                enemyAvatarAddress = enemyAvatarAddress,
-                costumes = costumes,
-                equipments = equipments,
-                runeInfos = runeInfos,
-                championshipId = championshipId,
-                round = round,
-                ticket = ticket
-            };
-
-            var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
-                new Dictionary<string, Value>()
+                var action = new BattleArena
                 {
-                    ["championshipId"] = championshipId,
-                    ["round"] = round,
-                    ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
-                }, true);
+                    myAvatarAddress = States.Instance.CurrentAvatarState.address,
+                    enemyAvatarAddress = enemyAvatarAddress,
+                    costumes = costumes,
+                    equipments = equipments,
+                    runeInfos = runeInfos,
+                    championshipId = championshipId,
+                    round = round,
+                    ticket = ticket
+                };
 
-            var evt = new AirbridgeEvent("BattleArena");
-            evt.SetValue(championshipId);
-            evt.AddCustomAttribute("round", round);
-            evt.AddCustomAttribute("enemy-avatar-address", enemyAvatarAddress.ToString());
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
-
-            ProcessAction(action);
-            _lastBattleActionId = action.Id;
-            return _agent.ActionRenderer.EveryRender<BattleArena>()
-                .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    if (_lastBattleActionId == action.Id)
+                var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
+                    new Dictionary<string, Value>()
                     {
-                        _lastBattleActionId = null;
-                    }
+                        ["championshipId"] = championshipId,
+                        ["round"] = round,
+                        ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
+                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                    }, true);
 
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                var evt = new AirbridgeEvent("BattleArena");
+                evt.SetValue(championshipId);
+                evt.AddCustomAttribute("round", round);
+                evt.AddCustomAttribute("enemy-avatar-address", enemyAvatarAddress.ToString());
+                evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+                evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+                AirbridgeUnity.TrackEvent(evt);
+
+                ProcessAction(action);
+                _lastBattleActionId = action.Id;
+                return _agent.ActionRenderer.EveryRender<BattleArena>()
+                    .Timeout(ActionTimeout)
+                    .Where(eval => eval.Action.Id.Equals(action.Id))
+                    .First()
+                    .ObserveOnMainThread()
+                    .DoOnError(e =>
+                    {
+                        if (_lastBattleActionId == action.Id)
+                        {
+                            _lastBattleActionId = null;
+                        }
+
+                        Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                    }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+            }
+            catch (Exception e)
+            {
+                Game.Game.BackToMainAsync(e).Forget();
+                return null;
+            }
         }
 
         public IObservable<ActionEvaluation<PatchTableSheet>> PatchTableSheet(
