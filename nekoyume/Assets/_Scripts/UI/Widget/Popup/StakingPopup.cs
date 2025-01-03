@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Lib9c;
+using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
@@ -172,6 +174,22 @@ namespace Nekoyume.UI
             {
                 stakingInformationObject.SetActive(true);
             }
+
+            CheckClaimNcgReward().Forget();
+        }
+
+        // TODO: Loading Animation
+        private async UniTask CheckClaimNcgReward()
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var agent = Game.Game.instance.Agent;
+            var claimableHeight = await agent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+            var claimableRewards = await agent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+
+            ncgArchiveButton.SetCondition(() => claimableHeight <= blockIndex);
+
+            var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
+            rewardNcgText.text = fungibleAssetValue.GetQuantityString();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
