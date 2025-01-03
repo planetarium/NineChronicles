@@ -150,6 +150,14 @@ namespace Nekoyume.UI
                         ? Palette.GetColor(ColorType.TextDenial)
                         : _normalInputFieldColor;
             });
+            ncgArchiveButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                ActionManager.Instance
+                    .ClaimUnbonded()
+                    .Subscribe();
+                ncgArchiveButton.UpdateObjects();
+            }).AddTo(gameObject);
         }
 
         public override void Initialize()
