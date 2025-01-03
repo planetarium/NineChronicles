@@ -194,6 +194,8 @@ namespace Nekoyume.UI
             var claimableHeight = await agent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
             var claimableRewards = await agent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
 
+            // TODO: 1 ncg 이상인 경우 claim 가능하게 체크
+            // 체인에서 소수점 2자리 보다 작은 단위로 처리해서 줄 수 있는지 체크
             ncgArchiveButton.SetCondition(() => claimableHeight <= blockIndex);
 
             var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
