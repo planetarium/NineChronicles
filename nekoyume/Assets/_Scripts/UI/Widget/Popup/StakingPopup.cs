@@ -154,7 +154,7 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 ActionManager.Instance
-                    .ClaimUnbonded()
+                    .ClaimReward()
                     .Subscribe();
                 ncgArchiveButton.UpdateObjects();
             }).AddTo(gameObject);
