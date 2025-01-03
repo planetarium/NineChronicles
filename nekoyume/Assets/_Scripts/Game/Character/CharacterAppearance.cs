@@ -200,12 +200,13 @@ namespace Nekoyume.Game.Character
             {
                 var fullCostume =
                     costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+                var useEquipment = true;
                 if (fullCostume is not null)
                 {
-                    UpdateFullCostume(fullCostume);
-                    UpdateAura(aura);
+                    useEquipment = !UpdateFullCostume(fullCostume);
                 }
-                else
+
+                if (useEquipment)
                 {
                     SpineController.UnequipFullCostume(false);
                     UpdateEar(earIndex, false, costumeItemSheet);
@@ -217,9 +218,9 @@ namespace Nekoyume.Game.Character
                     UpdateAcHead(0, false);
                     UpdateArmor(armor, 0, false);
                     UpdateWeapon(weapon);
-                    UpdateAura(aura);
                 }
 
+                UpdateAura(aura);
                 if (!isFriendCharacter && pet)
                 {
                     pet.SetPosition(SpineController.GetBodySkeletonAnimation(), fullCostume is not null);
@@ -235,11 +236,31 @@ namespace Nekoyume.Game.Character
             onFinish?.Invoke();
         }
 
-        private void UpdateFullCostume(Costume fullCostume)
+        /// <summary>
+        /// Updates the full costume for the character by setting the corresponding costume ID.
+        /// If the costume exists, updates the target and hit points.
+        /// Note: If <c>UpdateHitPoint</c> is called conditionally on <c>costumeExist</c>,
+        /// fallback behavior (when the costume does not exist) may not execute as intended.
+        /// </summary>
+        /// <param name="fullCostume">The costume object containing the ID to be applied.</param>
+        /// <returns>True if the costume exists and was successfully updated; otherwise, false.</returns>
+        private bool UpdateFullCostume(Costume fullCostume)
         {
-            SpineController.UpdateFullCostume(fullCostume.Id, false);
-            UpdateTarget();
-            UpdateHitPoint();
+            // Attempt to update the full costume using the SpineController and check if it exists.
+            var costumeExist = SpineController.UpdateFullCostume(fullCostume.Id, false);
+
+            // If the costume exists, update the character's target and hit points.
+            if (costumeExist)
+            {
+                UpdateTarget(); // Update the target object for the character's animations.
+
+                // Warning: If the costume does not exist, fallback logic (e.g., resetting hit points)
+                // will not execute as intended because UpdateHitPoint is conditionally called here.
+                UpdateHitPoint(); // Update the character's collider and hit point dimensions.
+            }
+
+            // Return whether the costume exists.
+            return costumeExist;
         }
 
         private void UpdateAcFace(int index, bool isDcc)
