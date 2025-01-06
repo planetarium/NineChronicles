@@ -38,7 +38,7 @@ namespace Nekoyume.UI
 
                 var rectTransform = bar.rectTransform;
                 HpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform);
-                HpVFX.Play();
+                HpVFX?.Play();
             }
             else if (!buffLayout.HasBuff(StatType.HP))
             {
