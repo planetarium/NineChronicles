@@ -446,6 +446,11 @@ namespace Nekoyume.Blockchain
             return (Integer)_codec.Decode(raw);
         }
 
+        /// <summary>
+        /// Need Convert to FungibleAssetValue
+        /// </summary>
+        /// <param name="address">agentAddress</param>
+        /// <returns>raw value list of fav</returns>
         public async Task<List> GetClaimableRewardsByBlockHashAsync(Address address)
         {
             var raw = await _service.GetClaimableRewardsByBlockHash(
@@ -454,6 +459,12 @@ namespace Nekoyume.Blockchain
             return (List)_codec.Decode(raw);
         }
 
+
+        /// <summary>
+        /// Need Convert to FungibleAssetValue
+        /// </summary>
+        /// <param name="address">agentAddress</param>
+        /// <returns>raw value list of fav</returns>
         public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
         {
             var raw = await _service.GetClaimableRewardsByStateRootHash(

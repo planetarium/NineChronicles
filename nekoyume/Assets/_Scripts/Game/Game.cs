@@ -268,7 +268,8 @@ namespace Nekoyume.Game
                 {
                     UniTask.Run(async () =>
                     {
-                        await rpcAgent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+                        var value = await rpcAgent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+                        Debug.Log($"UnbondClaimableHeightByBlockHash: {value}");
                     }).Forget();
                 }
             }
@@ -278,7 +279,9 @@ namespace Nekoyume.Game
                 {
                     UniTask.Run(async () =>
                     {
-                        await rpcAgent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+                        var rawValue = await rpcAgent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+                        var fav = new FungibleAssetValue(rawValue[0]);
+                        Debug.Log($"ClaimableRewardsByBlockHash: {fav}");
                     }).Forget();
                 }
             }
