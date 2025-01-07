@@ -73,9 +73,9 @@ namespace Nekoyume.UI.Module.Lobby
                 PatrolReward.InitializeInformation(avatarAddress, level, lastClaimedBlockIndex, currentBlockIndex);
             }
 
-            PatrolReward.PatrolTime
+            Game.Game.instance.Agent.BlockIndexSubject
                 .Where(_ => !PatrolReward.Claiming.Value)
-                .Select(time => time < PatrolReward.Interval)
+                .Select(_ => !PatrolReward.CanClaim)
                 .Subscribe(patrolling => SetCanClaim(patrolling, false))
                 .AddTo(_disposables);
 
