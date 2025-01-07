@@ -1,16 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
-using Nekoyume.GraphQL;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
-using Nekoyume.TableData;
-using Nekoyume.UI;
 using Nekoyume.UI.Model;
-using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.ApiClient
@@ -34,7 +27,7 @@ namespace Nekoyume.ApiClient
             !_currentAvatarAddress.HasValue || _currentAvatarAddress != avatarAddress;
 
         public static bool CanClaim =>
-            _currentAvatarAddress.HasValue && !Claiming.Value && PatrolTime.Value >= Interval;
+            _currentAvatarAddress.HasValue && !Claiming.Value && (PatrolTime.Value >= Interval || PatrolTime.Value == 0);
 
         static PatrolReward()
         {
