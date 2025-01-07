@@ -56,6 +56,7 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton receiveButton;
         [SerializeField] private GameObject receiveButtonIndicator;
 
+        private bool _isPatrolRewardInitialized;
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new ();
 
@@ -158,6 +159,12 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError("No event rewards.");
                 return;
+            }
+
+            if (!_isPatrolRewardInitialized)
+            {
+                patrolRewardModule.Initialize();
+                _isPatrolRewardInitialized = true;
             }
 
             int index;

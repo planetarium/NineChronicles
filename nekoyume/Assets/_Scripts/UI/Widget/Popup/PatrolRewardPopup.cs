@@ -18,6 +18,8 @@ namespace Nekoyume.UI
         [SerializeField] private PatrolRewardModule patrolRewardModule;
         [SerializeField] private ConditionalButton receiveButton;
 
+        private bool _isInitialized;
+
         protected override void Awake()
         {
             base.Awake();
@@ -44,11 +46,17 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public void Show(bool ignoreShowAnimation = false)
+        public override void Show(bool ignoreShowAnimation = false)
         {
             if (PatrolReward.Claiming.Value)
             {
                 return;
+            }
+
+            if (!_isInitialized)
+            {
+                patrolRewardModule.Initialize();
+                _isInitialized = true;
             }
 
             patrolRewardModule.SetData();

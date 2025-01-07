@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI gaugeUnitText1;
         [SerializeField] private TextMeshProUGUI gaugeUnitText2;
 
-        public void Awake()
+        public void Initialize()
         {
             SetData();
 
@@ -118,12 +118,7 @@ namespace Nekoyume.UI.Module
                 return SpriteHelper.GetItemIcon(reward.ItemId.Value);
             }
 
-            if (!string.IsNullOrEmpty(reward.Currency))
-            {
-                return SpriteHelper.GetFavIcon(reward.Currency);
-            }
-
-            return null;
+            return !string.IsNullOrEmpty(reward.Currency) ? SpriteHelper.GetFavIcon(reward.Currency) : null;
         }
 
         #endregion
