@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using mixpanel;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
@@ -85,7 +86,6 @@ namespace Nekoyume.UI
             Close();
         }
 
-        // subscribe from PatrolReward.PatrolTime
         private void SetReceiveButton(long remainTime)
         {
             var canReceive = remainTime <= 0L;
@@ -96,6 +96,7 @@ namespace Nekoyume.UI
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        [UsedImplicitly]
         public void TutorialActionClickClaimPatrolRewardButton()
         {
             receiveButton.OnSubmitSubject.OnNext(default);

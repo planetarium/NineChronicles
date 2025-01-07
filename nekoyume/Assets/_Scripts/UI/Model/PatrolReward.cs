@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
@@ -17,11 +18,11 @@ namespace Nekoyume.ApiClient
         public static long Interval { get; private set; }
         public static readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
-        public static readonly IReadOnlyReactiveProperty<long> PatrolTime;
+        public static readonly ReactiveProperty<long> PatrolTime = new();
         public static readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        private static Address? _currentAvatarAddress = null;
+        private static Address? _currentAvatarAddress;
 
         public static bool NeedToInitialize(Address avatarAddress) =>
             !_currentAvatarAddress.HasValue || _currentAvatarAddress != avatarAddress;
@@ -31,16 +32,25 @@ namespace Nekoyume.ApiClient
 
         static PatrolReward()
         {
-            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardClaimedBlockIndex, (_, lastReward) =>
-                {
-                    var blockIndex = Game.Game.instance.Agent.BlockIndex - lastReward;
-                    return blockIndex > Interval ? Interval : blockIndex;
-                })
-                .ToReactiveProperty();
+            var agent = Game.Game.instance.Agent;
+            agent.BlockIndexSubject
+                .Subscribe(OnUpdateBlockIndex)
+                .AddTo(Game.Game.instance);
+
             LastRewardClaimedBlockIndex.ObserveOnMainThread()
                 .Select(lastRewardTime => lastRewardTime + Interval - Game.Game.instance.Agent.BlockIndex)
                 .Subscribe(SetPushNotification);
+
+            ReactiveAvatarState.ObservablePatrolRewardClaimedBlockIndex
+                .Subscribe(blockIndex => LastRewardClaimedBlockIndex.Value = blockIndex)
+                .AddTo(Game.Game.instance);
+        }
+
+        private static void OnUpdateBlockIndex(long blockIndex)
+        {
+            var lastRewardTime = LastRewardClaimedBlockIndex.Value;
+            var patrolTime = blockIndex - lastRewardTime;
+            PatrolTime.Value = Math.Min(Interval, patrolTime);
         }
 
         // Called at CurrentAvatarState isNewlySelected

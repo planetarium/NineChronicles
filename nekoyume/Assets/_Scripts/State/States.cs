@@ -653,14 +653,13 @@ namespace Nekoyume.State
             SetClaimedGiftIds(listStates[5] is List rawIds
                 ? rawIds.ToList(serialized => (int)(Integer)serialized)
                 : new List<int>());
-            ReactiveAvatarState.UpdatePatrolRewardClaimedBlockIndex(listStates[3] is Integer claimedIndex
-                ? claimedIndex
-                : 0L);
 
             var allCombinationSlotState = GetStateExtensions.GetAllCombinationSlotState(stateRootHash, curAvatarState.address);
             SetAllCombinationSlotState(avatarAddr, allCombinationSlotState);
             SetAllRuneState(GetStateExtensions.GetAllRuneState(stateRootHash, curAvatarState.address));
 
+            var latestPatrolRewardBlock = await StateGetter.GetPatrolRewardReceivedBlockIndex(stateRootHash, curAvatarState.address);
+            ReactiveAvatarState.UpdatePatrolRewardClaimedBlockIndex(latestPatrolRewardBlock);
             await InitRuneSlotStates();
         }
 
