@@ -59,7 +59,10 @@ namespace Nekoyume.State
                 .Subscribe(OnAvatarChanged)
                 .AddTo(_disposables);
 
-            StartArena();
+            // TODO: 아레나 서비스 완성 후 구현
+            // 시점 변경이 필요할수도 있음.
+            // StartArena();
+
             StartEvent();
         }
 
@@ -81,7 +84,9 @@ namespace Nekoyume.State
                 avatarState,
                 forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
-                ArenaInfoTuple.UpdateAsync(stateRootHash),
+                // TODO: 아레나 서비스 완성 후 구현
+                // 시점 변경이 필요할수도 있음.
+                // ArenaInfoTuple.UpdateAsync(stateRootHash),
                 EventDungeonInfo.UpdateAsync(stateRootHash),
                 WorldBossStates.Set(
                     stateRootHash,
@@ -101,7 +106,9 @@ namespace Nekoyume.State
                 stateRootHash,
                 forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
-                ArenaInfoTuple.UpdateAsync(stateRootHash),
+                // TODO: 아레나 서비스 완성 후 구현
+                // 시점 변경이 필요할수도 있음.
+                // ArenaInfoTuple.UpdateAsync(stateRootHash),
                 EventDungeonInfo.UpdateAsync(stateRootHash),
                 WorldBossStates.Set(
                     stateRootHash,
@@ -113,7 +120,9 @@ namespace Nekoyume.State
 
         private static void OnBlockIndex(long blockIndex)
         {
-            OnBlockIndexArena(blockIndex);
+            // TODO: 아레나 서비스 완성 후 구현
+            // 시점 변경이 필요할수도 있음.
+            // OnBlockIndexArena(blockIndex);
             OnBlockIndexEvent(blockIndex);
         }
 
@@ -126,7 +135,9 @@ namespace Nekoyume.State
             }
 
             _currentAvatarAddr = avatarAddr;
-            OnAvatarChangedArena();
+            // TODO: 아레나 서비스 완성 후 구현
+            // 시점 변경이 필요할수도 있음.
+            // OnAvatarChangedArena();
             OnAvatarChangedEvent();
         }
     }

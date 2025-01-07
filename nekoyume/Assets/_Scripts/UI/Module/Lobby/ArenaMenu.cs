@@ -42,10 +42,11 @@ namespace Nekoyume.UI.Module.Lobby
             agent.BlockIndexSubject
                 .Subscribe(UpdateArenaSeasonTitle)
                 .AddTo(_disposables);
-            RxProps.ArenaTicketsProgress
-                .ObserveOnMainThread()
-                .Subscribe(UpdateTicket)
-                .AddTo(_disposables);
+            // TODO: 아레나 서비스 완성 후 구현
+            // RxProps.ArenaTicketsProgress
+            //     .ObserveOnMainThread()
+            //     .Subscribe(UpdateTicket)
+            //     .AddTo(_disposables);
         }
 
         private void OnDisable()

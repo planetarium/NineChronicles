@@ -108,9 +108,11 @@ namespace Nekoyume.UI
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            await UniTask.WhenAll(
-                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash));
+            // TODO: 아레나 서비스 완성 후 구현
+            // 서비스에서 데이터 받아서 갱신하도록 수정
+            // await UniTask.WhenAll(
+            //     RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash),
+            //     RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash));
             loading.Close();
             sw.Stop();
             NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
@@ -125,9 +127,10 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
-            RxProps.ArenaInfoTuple
-                .Subscribe(tuple => UpdateBottomButtons())
-                .AddTo(_disposablesForShow);
+            // TODO: 아레나 서비스 완성 후 구현
+            // RxProps.ArenaInfoTuple
+            //     .Subscribe(tuple => UpdateBottomButtons())
+            //     .AddTo(_disposablesForShow);
             baseArenaJoinObject.SetActive(true);
 
             base.Show(ignoreShowAnimation);
@@ -177,9 +180,14 @@ namespace Nekoyume.UI
 
                     Close();
                     Find<LoadingScreen>().Close();
+
+                    // TODO: 아레나 서비스 완성 후 구현
+                    // Find<ArenaBoard>().Show(
+                    //     _scroll.SelectedItemData.RoundData,
+                    //     RxProps.ArenaInformationOrderedWithScore.Value);
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
-                        RxProps.ArenaInformationOrderedWithScore.Value);
+                        null);
                     return;
                 case InnerState.Idle:
                     UpdateBottomButtons();
@@ -337,13 +345,17 @@ namespace Nekoyume.UI
             void OnClickJoinButton()
             {
                 AudioController.PlayClick();
-                if (RxProps.ArenaInfoTuple.HasValue &&
-                    RxProps.ArenaInfoTuple.Value.current is not null)
+                // TODO: 아레나 서비스 완성 후 구현
+                // if (RxProps.ArenaInfoTuple.HasValue &&
+                //     RxProps.ArenaInfoTuple.Value.current is not null)
                 {
                     Close();
+                    // Find<ArenaBoard>().Show(
+                    //     _scroll.SelectedItemData.RoundData,
+                    //     RxProps.ArenaInformationOrderedWithScore.Value);
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
-                        RxProps.ArenaInformationOrderedWithScore.Value);
+                        null);
                     return;
                 }
 
@@ -386,7 +398,8 @@ namespace Nekoyume.UI
                 .Merge(_info.OnSeasonEnded)
                 .Subscribe(_ =>
                 {
-                    RxProps.UpdateArenaInfoToNext();
+                    // TODO: 아레나 서비스 완성 후 구현
+                    // RxProps.UpdateArenaInfoToNext();
                     UpdateBottomButtons();
                 })
                 .AddTo(gameObject);
@@ -416,30 +429,45 @@ namespace Nekoyume.UI
             switch (arenaType)
             {
                 case ArenaType.OffSeason:
-                {
-                    if (isOpened &&
-                        TableSheets.Instance.ArenaSheet.TryGetNextRound(
-                            blockIndex,
-                            out var next))
                     {
-                        var cost = (long)ArenaHelper.GetEntranceFee(
-                            next,
-                            blockIndex,
-                            States.Instance.CurrentAvatarState.level).MajorUnit;
-                        if (RxProps.ArenaInfoTuple.Value.next is not null)
+                        if (isOpened &&
+                            TableSheets.Instance.ArenaSheet.TryGetNextRound(
+                                blockIndex,
+                                out var next))
                         {
-                            _earlyPaymentButton.Show(
-                                next.ArenaType,
-                                next.ChampionshipId,
-                                next.Round,
-                                true,
-                                cost);
-                        }
-                        else if (next.ArenaType == ArenaType.Championship)
-                        {
-                            if (TableSheets.Instance.ArenaSheet.IsChampionshipConditionComplete(
-                                championshipId,
-                                States.Instance.CurrentAvatarState))
+                            var cost = (long)ArenaHelper.GetEntranceFee(
+                                next,
+                                blockIndex,
+                                States.Instance.CurrentAvatarState.level).MajorUnit;
+                            // TODO: 아레나 서비스 완성 후 구현
+                            // if (RxProps.ArenaInfoTuple.Value.next is not null)
+                            // {
+                            //     _earlyPaymentButton.Show(
+                            //         next.ArenaType,
+                            //         next.ChampionshipId,
+                            //         next.Round,
+                            //         true,
+                            //         cost);
+                            // }
+                            // else if (next.ArenaType == ArenaType.Championship)
+                            // {
+                            //     if (TableSheets.Instance.ArenaSheet.IsChampionshipConditionComplete(
+                            //         championshipId,
+                            //         States.Instance.CurrentAvatarState))
+                            //     {
+                            //         _earlyPaymentButton.Show(
+                            //             next.ArenaType,
+                            //             next.ChampionshipId,
+                            //             next.Round,
+                            //             false,
+                            //             cost);
+                            //     }
+                            //     else
+                            //     {
+                            //         _earlyPaymentButton.Hide();
+                            //     }
+                            // }
+                            // else
                             {
                                 _earlyPaymentButton.Show(
                                     next.ArenaType,
@@ -448,34 +476,20 @@ namespace Nekoyume.UI
                                     false,
                                     cost);
                             }
-                            else
-                            {
-                                _earlyPaymentButton.Hide();
-                            }
                         }
                         else
                         {
-                            _earlyPaymentButton.Show(
-                                next.ArenaType,
-                                next.ChampionshipId,
-                                next.Round,
-                                false,
-                                cost);
+                            _earlyPaymentButton.Hide();
                         }
-                    }
-                    else
-                    {
-                        _earlyPaymentButton.Hide();
-                    }
 
-                    break;
-                }
+                        break;
+                    }
                 case ArenaType.Season:
                 case ArenaType.Championship:
-                {
-                    _earlyPaymentButton.Hide();
-                    break;
-                }
+                    {
+                        _earlyPaymentButton.Hide();
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -488,74 +502,76 @@ namespace Nekoyume.UI
             switch (arenaType)
             {
                 case ArenaType.OffSeason:
-                {
-                    _bottomButtonText.enabled = false;
-                    _joinButton.Interactable = isOpened;
-                    _joinButton.gameObject.SetActive(true);
-                    _paymentButton.gameObject.SetActive(false);
+                    {
+                        _bottomButtonText.enabled = false;
+                        _joinButton.Interactable = isOpened;
+                        _joinButton.gameObject.SetActive(true);
+                        _paymentButton.gameObject.SetActive(false);
 
-                    return;
-                }
+                        return;
+                    }
                 case ArenaType.Season:
                 case ArenaType.Championship:
-                {
-                    if (isOpened)
                     {
-                        if (RxProps.ArenaInfoTuple.Value.current is null)
+                        if (isOpened)
                         {
-                            _joinButton.gameObject.SetActive(false);
+                            // TODO: 아레나 서비스 완성 후 구현
+                            // if (RxProps.ArenaInfoTuple.Value.current is null)
+                            if (false)
+                            {
+                                _joinButton.gameObject.SetActive(false);
+                                if (arenaType == ArenaType.Championship &&
+                                    !CheckChampionshipConditions(false))
+                                {
+                                    _bottomButtonText.text =
+                                        L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
+                                    _bottomButtonText.enabled = true;
+                                    _paymentButton.gameObject.SetActive(false);
+
+                                    return;
+                                }
+
+                                _bottomButtonText.enabled = false;
+
+                                var cost = (long)ArenaHelper.GetEntranceFee(
+                                    _scroll.SelectedItemData.RoundData,
+                                    Game.Game.instance.Agent.BlockIndex,
+                                    States.Instance.CurrentAvatarState.level).MajorUnit;
+                                _paymentButton.SetCost(CostType.Crystal, cost);
+                                _paymentButton.UpdateObjects();
+                                _paymentButton.Interactable = true;
+                                _paymentButton.gameObject.SetActive(true);
+
+                                return;
+                            }
+
+                            _bottomButtonText.enabled = false;
+                            _joinButton.Interactable = true;
+                            _joinButton.gameObject.SetActive(true);
+                            _paymentButton.gameObject.SetActive(false);
+                        }
+                        else
+                        {
                             if (arenaType == ArenaType.Championship &&
                                 !CheckChampionshipConditions(false))
                             {
                                 _bottomButtonText.text =
                                     L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
                                 _bottomButtonText.enabled = true;
+                                _joinButton.gameObject.SetActive(false);
                                 _paymentButton.gameObject.SetActive(false);
 
                                 return;
                             }
 
                             _bottomButtonText.enabled = false;
-
-                            var cost = (long)ArenaHelper.GetEntranceFee(
-                                _scroll.SelectedItemData.RoundData,
-                                Game.Game.instance.Agent.BlockIndex,
-                                States.Instance.CurrentAvatarState.level).MajorUnit;
-                            _paymentButton.SetCost(CostType.Crystal, cost);
-                            _paymentButton.UpdateObjects();
-                            _paymentButton.Interactable = true;
-                            _paymentButton.gameObject.SetActive(true);
-
-                            return;
-                        }
-
-                        _bottomButtonText.enabled = false;
-                        _joinButton.Interactable = true;
-                        _joinButton.gameObject.SetActive(true);
-                        _paymentButton.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        if (arenaType == ArenaType.Championship &&
-                            !CheckChampionshipConditions(false))
-                        {
-                            _bottomButtonText.text =
-                                L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
-                            _bottomButtonText.enabled = true;
-                            _joinButton.gameObject.SetActive(false);
+                            _joinButton.Interactable = false;
+                            _joinButton.gameObject.SetActive(true);
                             _paymentButton.gameObject.SetActive(false);
-
-                            return;
                         }
 
-                        _bottomButtonText.enabled = false;
-                        _joinButton.Interactable = false;
-                        _joinButton.gameObject.SetActive(true);
-                        _paymentButton.gameObject.SetActive(false);
+                        break;
                     }
-
-                    break;
-                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

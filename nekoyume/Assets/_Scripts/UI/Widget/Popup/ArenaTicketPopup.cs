@@ -55,12 +55,14 @@ namespace Nekoyume.UI
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var ticketCount = RxProps.ArenaInfoTuple.HasValue
-                ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
-                    blockIndex,
-                    currentRound.StartBlockIndex,
-                    States.Instance.GameConfigState.DailyArenaInterval)
-                : 0;
+            // TODO: 아레나 서비스 완성 후 구현
+            // var ticketCount = RxProps.ArenaInfoTuple.HasValue
+            //     ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
+            //         blockIndex,
+            //         currentRound.StartBlockIndex,
+            //         States.Instance.GameConfigState.DailyArenaInterval)
+            //     : 0;
+            var ticketCount = 0;
             haveTicketText.text = ticketCount.ToString();
 
             ticketSlider.Set(0, ticketCount, ticketCount, 8, 1, x => _ticketCountToUse.Value = x);

@@ -28,12 +28,13 @@ namespace Nekoyume.UI.Module.Arena
             _sliderText.text = string.Empty;
             _paused = false;
             _disposables.DisposeAllAndClear();
-            UpdateSliderAndText(RxProps.ArenaTicketsProgress.Value);
-            RxProps.ArenaTicketsProgress
-                .Where(_ => !_paused)
-                .SubscribeOnMainThread()
-                .Subscribe(UpdateSliderAndText)
-                .AddTo(_disposables);
+            // TODO: 아레나 서비스 완성 후 구현
+            // UpdateSliderAndText(RxProps.ArenaTicketsProgress.Value);
+            // RxProps.ArenaTicketsProgress
+            //     .Where(_ => !_paused)
+            //     .SubscribeOnMainThread()
+            //     .Subscribe(UpdateSliderAndText)
+            //     .AddTo(_disposables);
             gameObject.SetActive(true);
         }
 

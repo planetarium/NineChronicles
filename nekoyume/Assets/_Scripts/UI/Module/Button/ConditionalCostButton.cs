@@ -189,7 +189,9 @@ namespace Nekoyume.UI.Module
                 case CostType.ActionPoint:
                     return ReactiveAvatarState.ActionPoint >= cost;
                 case CostType.ArenaTicket:
-                    return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
+                    // TODO: 아레나 서비스 완성 후 구현
+                    // return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
+                    return true;
                 case CostType.EventDungeonTicket:
                     return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
                 case CostType.SilverDust:

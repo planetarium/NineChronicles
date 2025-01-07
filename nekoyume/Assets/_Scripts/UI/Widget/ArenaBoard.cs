@@ -65,12 +65,16 @@ namespace Nekoyume.UI
             var sw = new Stopwatch();
             sw.Start();
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            await UniTask.WhenAll(
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash),
-                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash));
+            // TODO: 아레나 서비스 완성 후 구현
+            // await UniTask.WhenAll(
+            //     RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash),
+            //     RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash));
             loading.Close();
-            Show(RxProps.ArenaInformationOrderedWithScore.Value,
-                ignoreShowAnimation);
+            // Show(RxProps.ArenaInformationOrderedWithScore.Value,
+            //     ignoreShowAnimation);
+            Show(null, ignoreShowAnimation);
+            _useSo = true;
+
             sw.Stop();
             NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
         }
@@ -119,38 +123,6 @@ namespace Nekoyume.UI
                 return;
             }
 #endif
-            var player = RxProps.PlayerArenaInfo.Value;
-            if (player is null)
-            {
-                NcDebug.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
-                _billboard.SetData();
-                return;
-            }
-
-            if (!RxProps.ArenaInfoTuple.HasValue)
-            {
-                NcDebug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
-                _billboard.SetData();
-                return;
-            }
-
-            var win = 0;
-            var lose = 0;
-            var currentInfo = RxProps.ArenaInfoTuple.Value.current;
-            if (currentInfo is not null)
-            {
-                win = currentInfo.Win;
-                lose = currentInfo.Lose;
-            }
-
-            var cp = player.Cp;
-            _billboard.SetData(
-                "season",
-                player.Rank,
-                win,
-                lose,
-                cp,
-                player.Score);
         }
 
         private void InitializeScrolls()

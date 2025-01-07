@@ -74,7 +74,9 @@ namespace Nekoyume.UI
             remainingContainer.SetActive(showRemaining);
             if (showRemaining)
             {
-                var ticketProgress = RxProps.ArenaTicketsProgress.Value; // Todo : remaining 표시
+                // TODO: 아레나 서비스 완성 후 구현
+                // var ticketProgress = RxProps.ArenaTicketsProgress.Value; // Todo : remaining 표시
+                var ticketProgress = new RxProps.TicketProgress();
                 var progressed = ticketProgress.progressedBlockRange;
                 var total = ticketProgress.totalBlockRange;
                 long remaining = total - progressed;
@@ -118,7 +120,9 @@ namespace Nekoyume.UI
             purchaseMessage = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
             if (showRemaining)
             {
-                var ticketProgress = RxProps.ArenaTicketsProgress.Value;
+                // TODO: 아레나 서비스 완성 후 구현
+                // var ticketProgress = RxProps.ArenaTicketsProgress.Value;
+                var ticketProgress = new RxProps.TicketProgress();
                 long remaining = ticketProgress.totalBlockRange - ticketProgress.progressedBlockRange;
                 purchaseMessage = $"{purchaseMessage}\n({remaining.BlockRangeToTimeSpanString()})";
             }

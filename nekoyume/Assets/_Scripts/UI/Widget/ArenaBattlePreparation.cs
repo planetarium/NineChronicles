@@ -84,16 +84,17 @@ namespace Nekoyume.UI
         {
             get
             {
-                var blockIndex = Game.Game.instance.Agent.BlockIndex;
-                var currentRound =
-                    TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-                var ticketCount = RxProps.ArenaInfoTuple.HasValue
-                    ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
-                        blockIndex,
-                        currentRound.StartBlockIndex,
-                        States.Instance.GameConfigState.DailyArenaInterval)
-                    : 0;
-                return ticketCount >= TicketCountToUse;
+                // TODO: 아레나 서비스 완성 후 구현
+                // var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                // var currentRound =
+                //     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+                // var ticketCount = RxProps.ArenaInfoTuple.HasValue
+                //     ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
+                //         blockIndex,
+                //         currentRound.StartBlockIndex,
+                //         States.Instance.GameConfigState.DailyArenaInterval)
+                //     : 0;
+                return true;
             }
         }
 
@@ -191,9 +192,12 @@ namespace Nekoyume.UI
             }
 
             var arenaTicketCost = startButton.GetCost(CostType.ArenaTicket);
+
+            // TODO: 아레나 서비스 완성 후 구현
             var hasEnoughTickets =
-                RxProps.ArenaTicketsProgress.HasValue &&
-                RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
+                // RxProps.ArenaTicketsProgress.HasValue &&
+                // RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
+                true;
             if (hasEnoughTickets)
             {
                 StartCoroutine(CoBattleStart(CostType.ArenaTicket));
@@ -201,10 +205,12 @@ namespace Nekoyume.UI
             }
 
             var balance = States.Instance.GoldBalanceState.Gold;
-            var currentArenaInfo = RxProps.ArenaInfoTuple.Value.current;
+            // TODO: 아레나 서비스 완성 후 구현
+            // var currentArenaInfo = RxProps.ArenaInfoTuple.Value.current;
             var cost = ArenaHelper.GetTicketPrice(
                 _roundData,
-                currentArenaInfo,
+                // currentArenaInfo,
+                null,
                 balance.Currency);
 
             Find<ArenaTicketPurchasePopup>().Show(
@@ -213,9 +219,11 @@ namespace Nekoyume.UI
                 balance,
                 cost,
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                currentArenaInfo.PurchasedTicketCount,
+                // currentArenaInfo.PurchasedTicketCount,
+                0,
                 _roundData.MaxPurchaseCount,
-                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
+                // RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
+                0,
                 _roundData.MaxPurchaseCountWithInterval
             );
         }
@@ -323,7 +331,9 @@ namespace Nekoyume.UI
 
         private static bool IsIntervalValid(long blockIndex)
         {
-            var lastBattleBlockIndex = RxProps.LastArenaBattleBlockIndex.Value;
+            // TODO: 아레나 서비스 완성 후 구현
+            // var lastBattleBlockIndex = RxProps.LastArenaBattleBlockIndex.Value;
+            var lastBattleBlockIndex = 0;
             var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
 
             return blockIndex - lastBattleBlockIndex >= battleArenaInterval;

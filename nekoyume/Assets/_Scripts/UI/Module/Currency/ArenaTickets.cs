@@ -29,10 +29,11 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            RxProps.ArenaTicketsProgress
-                .SubscribeOnMainThread()
-                .Subscribe(UpdateTimespanText)
-                .AddTo(_disposables);
+            // TODO: 아레나 서비스 완성 후 구현
+            // RxProps.ArenaTicketsProgress
+            //     .SubscribeOnMainThread()
+            //     .Subscribe(UpdateTimespanText)
+            //     .AddTo(_disposables);
         }
 
         private void OnDestroy()

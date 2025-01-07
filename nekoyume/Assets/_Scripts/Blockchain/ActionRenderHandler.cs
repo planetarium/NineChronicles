@@ -191,9 +191,6 @@ namespace Nekoyume.Blockchain
             UnlockWorld();
             UnlockCombinationSlot();
 
-            // Arena
-            InitializeArenaActions();
-
             // World Boss
             Raid();
             ClaimRaidReward();
@@ -609,25 +606,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsTerminated)
                 .ObserveOnMainThread()
                 .Subscribe(ExceptionClaimGifts)
-                .AddTo(_disposables);
-        }
-
-        private void InitializeArenaActions()
-        {
-            _actionRenderer.EveryRender<JoinArena>()
-                .ObserveOn(Scheduler.ThreadPool)
-                .Where(ValidateEvaluationForCurrentAgent)
-                .Select(PrepareJoinArena)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseJoinArenaAsync)
-                .AddTo(_disposables);
-
-            _actionRenderer.EveryRender<BattleArena>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOn(Scheduler.ThreadPool)
-                .Select(PrepareBattleArena)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseBattleArenaAsync)
                 .AddTo(_disposables);
         }
 
@@ -2954,52 +2932,6 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private static ActionEvaluation<JoinArena> PrepareJoinArena(
-            ActionEvaluation<JoinArena> eval)
-        {
-            UpdateCrystalBalance(eval);
-            UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
-            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
-            return eval;
-        }
-
-        private static async UniTaskVoid ResponseJoinArenaAsync(
-            ActionEvaluation<JoinArena> eval)
-        {
-            if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
-            var arenaJoin = Widget.Find<ArenaJoin>();
-            if (eval.Exception != null)
-            {
-                if (arenaJoin && arenaJoin.IsActive())
-                {
-                    arenaJoin.OnRenderJoinArena(eval);
-                }
-            }
-
-            var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(
-                Game.Game.instance.Agent.BlockIndex);
-            if (eval.Action.championshipId == currentRound.ChampionshipId &&
-                eval.Action.round == currentRound.Round)
-            {
-                await UniTask.WhenAll(
-                    RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
-                    RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
-            }
-            else
-            {
-                await RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState);
-            }
-
-            if (arenaJoin && arenaJoin.IsActive())
-            {
-                arenaJoin.OnRenderJoinArena(eval);
-            }
-        }
-
         private static ActionEvaluation<BattleArena> PrepareBattleArena(
             ActionEvaluation<BattleArena> eval)
         {
@@ -3030,9 +2962,8 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            // NOTE: Start cache some arena info which will be used after battle ends.
-            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
+            // TODO: 아레나 서비스 완성 후 구현
+            // 아레나 서비스에 데이터가 갱신되기까지 요청을 보내며 대기하는 로직을 추가한다.
 
             void OnBattleEnd()
             {

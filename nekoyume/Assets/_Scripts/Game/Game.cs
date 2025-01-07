@@ -190,7 +190,7 @@ namespace Nekoyume.Game
 
         private PlanetId? _currentPlanetId;
 
-#region Mono & Initialization
+        #region Mono & Initialization
 
 #if !UNITY_EDITOR && UNITY_IOS
         void OnAuthorizationStatusReceived(AppTrackingTransparency.AuthorizationStatus status)
@@ -442,7 +442,7 @@ namespace Nekoyume.Game
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
         }
 
-#region RPCAgent
+        #region RPCAgent
 
         private void SubscribeRPCAgent()
         {
@@ -580,7 +580,7 @@ namespace Nekoyume.Game
                 .Forget();
         }
 
-#endregion
+        #endregion
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
         {
@@ -886,7 +886,7 @@ namespace Nekoyume.Game
             return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
-#endregion
+        #endregion
 
         protected override void OnApplicationQuit()
         {
@@ -1167,23 +1167,30 @@ namespace Nekoyume.Game
             }
         }
 
+        /// <summary>
+        /// 아레나 티켓 푸시 알림을 예약합니다.
+        /// </summary>
+        /// <param name="roundData">아레나 라운드 데이터</param>
+        /// <param name="currentBlockIndex">현재 블록 인덱스</param>
         private static void ReserveArenaTicketPush(
             ArenaSheet.RoundData roundData,
             long currentBlockIndex)
         {
             var prevPushIdentifier =
                 PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
-            if (RxProps.ArenaTicketsProgress.HasValue &&
-                RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
-            {
-                if (!string.IsNullOrEmpty(prevPushIdentifier))
-                {
-                    PushNotifier.CancelReservation(prevPushIdentifier);
-                    PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
-                }
+            // TODO: 아레나 서비스 완성 후 구현
+            // 아레나 서비스에서 데이터를 받아서 처리하도록 변경해야함
+            // if (RxProps.ArenaTicketsProgress.HasValue &&
+            //     RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
+            // {
+            //     if (!string.IsNullOrEmpty(prevPushIdentifier))
+            //     {
+            //         PushNotifier.CancelReservation(prevPushIdentifier);
+            //         PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
+            //     }
 
-                return;
-            }
+            //     return;
+            // }
 
             var interval = States.Instance.GameConfigState.DailyArenaInterval;
             var remainingBlockCount = interval -
@@ -1330,7 +1337,7 @@ namespace Nekoyume.Game
                 ApplicationQuit);
         }
 
-#region Initialize On Awake
+        #region Initialize On Awake
 
         private void PreAwake()
         {
@@ -1373,9 +1380,9 @@ namespace Nekoyume.Game
             LocalLayerActions = new LocalLayerActions();
         }
 
-#endregion Initialize On Awake
+        #endregion Initialize On Awake
 
-#region Initialize On Start
+        #region Initialize On Start
 
         public IEnumerator InitializeL10N()
         {
@@ -1517,9 +1524,9 @@ namespace Nekoyume.Game
             NcDebug.Log($"[Game] Start()... BattleRenderer vfx initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
-#endregion Initialize On Start
+        #endregion Initialize On Start
 
-#region Initialize On Login
+        #region Initialize On Login
 
         public IEnumerator AgentInitialize(bool needDimmed, Action<bool> loginCallback)
         {
@@ -1547,7 +1554,7 @@ namespace Nekoyume.Game
             }
         }
 
-#endregion Initialize On Login
+        #endregion Initialize On Login
 
         private void OpenUpdateURL()
         {
