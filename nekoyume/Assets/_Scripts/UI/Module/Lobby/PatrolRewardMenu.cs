@@ -19,12 +19,6 @@ namespace Nekoyume.UI.Module.Lobby
         private Image rewardIcon;
 
         [SerializeField]
-        private PatrolRewardDataScriptableObject patrolRewardData;
-
-        [SerializeField]
-        private GameObject effect00;
-
-        [SerializeField]
         private GameObject effect03;
 
         [SerializeField]
