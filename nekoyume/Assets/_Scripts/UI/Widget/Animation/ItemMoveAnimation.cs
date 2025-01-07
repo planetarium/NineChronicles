@@ -149,7 +149,10 @@ namespace Nekoyume.UI
             if (endPoint == EndPoint.None)
             {
                 var vfx = VFXController.instance.Create<ItemMoveVFX>(_endPosition);
-                yield return new WaitWhile(() => vfx.gameObject.activeSelf);
+                if (vfx)
+                {
+                    yield return new WaitWhile(() => vfx.gameObject.activeSelf);
+                }
             }
 
             IsPlaying = false;
