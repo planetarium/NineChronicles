@@ -98,7 +98,6 @@ namespace Nekoyume.ApiClient
                 .Subscribe(_ =>
                 {
                     onSuccess?.Invoke();
-                    Claiming.Value = false;
                 });
         }
 
