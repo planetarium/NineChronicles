@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Nekoyume.ApiClient;
-using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -63,7 +60,6 @@ namespace Nekoyume.UI.Module
             }
 
             SetIntervalText(PatrolReward.Interval);
-            // SetPatrolTime(PatrolReward.PatrolTime.Value, PatrolReward.Interval); // 구독하고 있으니 필요 없지 않나?
         }
 
         #region UI
@@ -102,18 +98,9 @@ namespace Nekoyume.UI.Module
             gaugeUnitText2.text = interval.BlockRangeToTimeSpanString();
         }
 
-        public static string TimeSpanToString(TimeSpan time)
-        {
-            var hourExist = time.TotalHours >= 1;
-            var minuteExist = time.Minutes >= 1;
-            var hourText = hourExist ? $"{(int)time.TotalHours}h " : string.Empty;
-            var minuteText = minuteExist || !hourExist ? $"{time.Minutes}m" : string.Empty;
-            return $"{hourText}{minuteText}";
-        }
-
         private static Sprite GetSprite(PatrolRewardModel reward)
         {
-            if (reward.ItemId != null)
+            if (reward.ItemId != null && reward.ItemId != 0)
             {
                 return SpriteHelper.GetItemIcon(reward.ItemId.Value);
             }
@@ -121,6 +108,6 @@ namespace Nekoyume.UI.Module
             return !string.IsNullOrEmpty(reward.Currency) ? SpriteHelper.GetFavIcon(reward.Currency) : null;
         }
 
-        #endregion
+        #endregion UI
     }
 }
