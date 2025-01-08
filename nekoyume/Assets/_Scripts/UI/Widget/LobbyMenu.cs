@@ -758,7 +758,7 @@ namespace Nekoyume.UI
             var thorSchedule = LiveAssetManager.instance.ThorSchedule;
             thorSeasonButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
 
-            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
+            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.HasEvent;
             btnPatrolReward.gameObject.SetActive(!isInEventDate);
             btnEventReward.gameObject.SetActive(isInEventDate);
         }

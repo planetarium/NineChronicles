@@ -226,7 +226,7 @@ namespace Nekoyume.UI
                 if (checkPoint is 100000 or 101000)
                 {
                     // if check point is in patrol reward tutorial, play patrol reward tutorial for event condition
-                    return !LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any()
+                    return !LiveAssetManager.instance.EventRewardPopupData.HasEvent
                         ? 100000
                         : 101000;
                 }
@@ -253,7 +253,7 @@ namespace Nekoyume.UI
                     // Skip tutorial 7 (portal reward) in K version
                 }
                 else if (clearedStageId == 10 &&
-                    LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any())
+                    LiveAssetManager.instance.EventRewardPopupData.HasEvent)
                 {
                     // if there is event reward data, play other patrol reward tutorial for event
                     checkPoint = 101000;
