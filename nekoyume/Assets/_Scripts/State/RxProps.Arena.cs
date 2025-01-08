@@ -152,8 +152,15 @@ namespace Nekoyume.State
 
             _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
-            var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetCurrentSeasonAsync((int)_arenaInfoTupleUpdatedBlockIndex);
-            _currentSeasonId = currentSeason.Id;
+            try{
+                var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetCurrentSeasonAsync((int)_arenaInfoTupleUpdatedBlockIndex);
+                _currentSeasonId = currentSeason.Id;
+            }   
+            catch (Exception e)
+            {
+                NcDebug.LogError($"Failed to get current season: {e}");
+                return (null, null);
+            }
             
             var blockIndex = _agent.BlockIndex;
             var sheet = _tableSheets.ArenaSheet;
