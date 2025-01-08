@@ -95,7 +95,10 @@ namespace Nekoyume.Game.Character
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossMonCollision);
             var vfx = VFXController.instance.CreateAndChaseCam<AdventureBossSweepAttackVFX>(pos);
-            vfx.transform.localScale = new Vector3(2f, 2f, 2f);
+            if (vfx)
+            {
+                vfx.transform.localScale = new Vector3(2f, 2f, 2f);
+            }
             StartCoroutine(Dying());
             transform.DOMove(transform.position + new Vector3(16f, 6f, 0), 4.8f).SetEase(Ease.OutExpo);
             SpineController.transform.DOBlendablePunchRotation(new Vector3(0, 0, 360), 2.2f).SetEase(Ease.OutExpo);
