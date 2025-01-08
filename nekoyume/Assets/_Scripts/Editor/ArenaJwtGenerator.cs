@@ -11,14 +11,17 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using System;
 using Nekoyume.Helper;
+using Nekoyume.Action;
 
 public class ArenaJwtGenerator : EditorWindow
 {
     private string loginPassword = "";
     private string generatedJwt = "";
     private int selectedAccountIndex = 0;
+    private int selectedAvatarIndex = 0;
     private List<Address> registeredAccounts;
     private string[] accountAddresses;
+    private string[] avatarIndexes = new[] { "Avatar 1", "Avatar 2", "Avatar 3" };
 
     [MenuItem("Tools/Arena/JWT Generator")]
     public static void ShowWindow()
@@ -75,7 +78,7 @@ public class ArenaJwtGenerator : EditorWindow
         selectedAccountIndex = Mathf.Clamp(selectedAccountIndex, 0, accountAddresses.Length - 1);
     }
 
-    private void OnGUI()
+    private async void OnGUI()
     {
         EditorGUILayout.LabelField("Arena JWT Generator", EditorStyles.boldLabel);
 
@@ -100,6 +103,10 @@ public class ArenaJwtGenerator : EditorWindow
             EditorGUILayout.LabelField("Selected Address:", EditorStyles.boldLabel);
             EditorGUILayout.SelectableLabel(accountAddresses[selectedAccountIndex],
                 EditorStyles.textField, GUILayout.Height(20));
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Select Avatar:", EditorStyles.boldLabel);
+            selectedAvatarIndex = EditorGUILayout.Popup(selectedAvatarIndex, avatarIndexes);
         }
 
         EditorGUILayout.Space();
@@ -155,20 +162,33 @@ public class ArenaJwtGenerator : EditorWindow
 
                 try
                 {
-                    // ProtectedPrivateKey의 Unprotect를 사용하여 privateKey 생성
                     var privateKey = selectedKey.Item2.Unprotect(loginPassword);
                     if (privateKey == null)
                     {
                         throw new Exception("Failed to decrypt private key");
                     }
 
-                    // 생성된 privateKey로 JWT 생성
+                    // 선택된 인덱스로 아바타 주소 도출
+                    var avatarAddress = selectedAddress.Derive(string.Format(
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        CreateAvatar.DeriveFormat,
+                        selectedAvatarIndex));
+                        
+                    if (avatarAddress == null)
+                    {
+                        EditorUtility.DisplayDialog("Error", "Failed to derive avatar address", "OK");
+                        return;
+                    }
+
+                    // 아바타 어드레스로 JWT 생성
                     generatedJwt = ArenaServiceManager.CreateJwt(
                         privateKey,
-                        selectedAddress.ToString()
+                        avatarAddress.ToString()
                     );
 
                     Debug.Log($"Login successful. Address: {selectedAddress}");
+                    Debug.Log($"Avatar Address: {avatarAddress}");
+                    Debug.Log($"Selected Avatar Index: {selectedAvatarIndex}");
                     Debug.Log($"Generated JWT: {generatedJwt}");
 
                     // JWT를 클립보드에 자동 복사
