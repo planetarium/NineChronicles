@@ -23,7 +23,7 @@ namespace Nekoyume.State
 
     public static partial class RxProps
     {
-#region RxPropInternal
+        #region RxPropInternal
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
@@ -38,9 +38,9 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
         private static readonly ReactiveProperty<ArenaTicketProgress>
             _arenaTicketsProgress = new(new ArenaTicketProgress());
-#endregion RxPropInternal
+        #endregion RxPropInternal
 
-#region RxPropObservable
+        #region RxPropObservable
         public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval => _purchasedDuringInterval;
         public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex => _lastArenaBattleBlockIndex;
         public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo => _playerArenaInfo;
@@ -51,10 +51,11 @@ namespace Nekoyume.State
             ArenaTicketsProgress => _arenaTicketsProgress;
         public static IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
-#endregion RxPropObservable
+        #endregion RxPropObservable
 
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
         private static long _arenaInfoTupleUpdatedBlockIndex;
+        private static int _currentSeasonId;
 
         public static void UpdateArenaInfoToNext()
         {
@@ -63,6 +64,7 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
+
             OnBlockIndexArena(_agent.BlockIndex);
             OnAvatarChangedArena();
 
@@ -150,6 +152,9 @@ namespace Nekoyume.State
 
             _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
+            var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetCurrentSeasonAsync((int)_arenaInfoTupleUpdatedBlockIndex);
+            _currentSeasonId = currentSeason.Id;
+            
             var blockIndex = _agent.BlockIndex;
             var sheet = _tableSheets.ArenaSheet;
             if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
@@ -212,40 +217,12 @@ namespace Nekoyume.State
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
             var arenaInfo = new List<ArenaParticipantModel>();
-            var agent = Game.Game.instance.Agent;
-            var blockIndex = agent.BlockIndex;
-            var currentRoundData = Game.Game.instance.TableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var playerArenaInfoAddr = ArenaInformation.DeriveAddress(
-                currentAvatarAddr,
-                currentRoundData.ChampionshipId,
-                currentRoundData.Round);
-            var purchasedCountAddress =
-                playerArenaInfoAddr.Derive(BattleArena.PurchasedCountKey);
-            var arenaAvatarAddress =
-                ArenaAvatarState.DeriveAddress(currentAvatarAddr);
-            var playerScoreAddr = ArenaScore.DeriveAddress(currentAvatarAddr,
-                currentRoundData.ChampionshipId,
-                currentRoundData.Round);
-            var addrBulk = new List<Address>
-            {
-                purchasedCountAddress,
-                arenaAvatarAddress,
-                playerScoreAddr
-            };
-            var stateBulk =
-                await agent.GetStateBulkAsync(stateRootHash, ReservedAddresses.LegacyAccount, addrBulk);
-            var purchasedCountDuringInterval = stateBulk[purchasedCountAddress] is Integer iValue
-                ? (int)iValue
-                : 0;
-            var arenaAvatarState = stateBulk[arenaAvatarAddress] is List iValue2
-                ? new ArenaAvatarState(iValue2)
-                : null;
-            var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
+           
+            // TODO: 신규아레나
+            // var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
-                // Arrange my information so that it comes first when it's the same score.
-                arenaInfo = response.StateQuery.ArenaParticipants.ToList();
+                arenaInfo = await ApiClients.Instance.Arenaservicemanager.GetSeasonsAvailableOpponentsAsync(_currentSeasonId, currentAvatarAddr.ToString());
             }
             catch (Exception e)
             {
@@ -299,8 +276,6 @@ namespace Nekoyume.State
             {
                 NcDebug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
 
-                // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
-                // 따로 처리합니다.
                 _playerArenaInfo.SetValueAndForceNotify(playerArenaInf);
                 return avatarAddrAndScoresWithRank;
             }
@@ -318,36 +293,18 @@ namespace Nekoyume.State
             {
                 playerArenaInfo.Cp = cp;
                 playerArenaInfo.PortraitId = portraitId;
-                var playerScoreValue = ((List)stateBulk[playerScoreAddr])?[1];
-                playerArenaInfo.Score = playerScoreValue == null ? 0 : (Integer)playerScoreValue;
+                // TODO: 신규아레나
+                // 점수 추가해야함
+                // var playerScoreValue = ((List)stateBulk[playerScoreAddr])?[1];
+                // playerArenaInfo.Score = playerScoreValue == null ? 0 : (Integer)playerScoreValue;
             }
 
-            // NOTE: If the [`addrBulk`] is too large, and split and get separately.
-            _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
-            _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
-
-            // Calculate and Reset Rank.
-            var arenaInfoList = arenaInfo
-                .OrderByDescending(participant => participant.Score)
-                .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
-                .ToList();
-            var playerIndex =
-                arenaInfoList.FindIndex(model => model.AvatarAddr == currentAvatarAddr);
-            var avatarCount = arenaInfoList.Count;
-
-            var defaultRank = playerIndex == 0 ? 1 : arenaInfoList[playerIndex - 1].Rank + 1;
-            if (playerIndex < avatarCount - 1) // avoid out of range exception
-            {
-                // 다음 순서에 위치한 유저가 같은 점수일 경우, 같은 등수로 표기한다.
-                // 같지 않을 경우, 앞 순서에 있는 유저의 등수 + 1로 표기한다.
-                playerArenaInfo.Rank =
-                    arenaInfoList[playerIndex + 1].Score == playerArenaInfo.Score
-                        ? arenaInfoList[playerIndex + 1].Rank
-                        : defaultRank;
-            }
+            // TODO: 신규아레나
+            // _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
+            // _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
             SetArenaInfoOnMainThreadAsync(playerArenaInfo).Forget();
-            return arenaInfoList;
+            return arenaInfo;
         }
 
         private static async UniTask SetArenaInfoOnMainThreadAsync(ArenaParticipantModel playerArenaInfo)

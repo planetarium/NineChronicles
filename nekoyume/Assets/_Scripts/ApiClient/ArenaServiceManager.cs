@@ -1,17 +1,20 @@
 using System;
 using System.Text;
 using Newtonsoft.Json;
-using Libplanet.Common;
 using Libplanet.Crypto;
-using System.Security.Cryptography;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Nekoyume.UI.Model;
+using System.Linq;
+using static ArenaServiceClient;
 
 namespace Nekoyume.ApiClient
 {
     public class ArenaServiceManager : IDisposable
     {
-        //public ArenaServiceClient Client { get; private set; }
+        public ArenaServiceClient Client { get; private set; }
 
-        //public bool IsInitialized => Client != null;
+        public bool IsInitialized => Client != null;
 
         public ArenaServiceManager(string url)
         {
@@ -20,24 +23,24 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"ArenaServiceManager Initialized Fail url is Null");
                 return;
             }
-            //Client = new ArenaServiceClient(url);
+            Client = new ArenaServiceClient(url);
         }
 
         public void Dispose()
         {
-            //Client?.Dispose();
-            //Client = null;
+            Client?.Dispose();
+            Client = null;
         }
 
-
-        public static string CreateJwt(PrivateKey privateKey, string address)
+        public static string CreateJwt(PrivateKey privateKey, string avatarAddress)
         {
+            avatarAddress = avatarAddress.StartsWith("0x") ? avatarAddress.Substring(2) : avatarAddress;
             var payload = new
             {
                 iss = "user",
-                avt_adr = address,
+                avt_adr = avatarAddress,
                 sub = privateKey.PublicKey.ToHex(true),
-                role = "user",
+                role = "User",
                 iat = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 exp = DateTimeOffset.UtcNow.AddMinutes(60).ToUnixTimeSeconds()
             };
@@ -54,6 +57,68 @@ namespace Nekoyume.ApiClient
             string payloadBase64 = Convert.ToBase64String(payloadBytes);
 
             return $"Bearer {headerBase64}.{payloadBase64}.{signatureBase64}";
+        }
+
+        public async Task<List<ArenaParticipantModel>> GetSeasonsAvailableOpponentsAsync(int seasonId, string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("ArenaServiceManager is not initialized");
+            }
+
+            try
+            {
+                string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+                var models = new List<ArenaParticipantModel>();
+
+                await Client.GetSeasonsAvailableopponentsAsync(seasonId, jwt, result =>
+                {
+                    models.AddRange(
+                        result.AvailableOpponents.Select(opponent => new ArenaParticipantModel
+                        {
+                            AvatarAddr = new Address(opponent.AvatarAddress),
+                            NameWithHash = opponent.NameWithHash,
+                            PortraitId = opponent.PortraitId
+                        })
+                    );
+                }, error =>{
+                    NcDebug.LogError($"Failed to get seasons available opponents: {error}");
+                });
+
+                return models;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"Failed to get seasons available opponents: {e}");
+                throw;
+            }
+        }
+
+        public async Task<SeasonResponse> GetCurrentSeasonAsync(int blockIndex)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("ArenaServiceManager is not initialized");
+            }
+
+            try
+            {
+                SeasonResponse currentSeason = null;
+                await Client.GetSeasonsCurrentAsync(blockIndex, result =>
+                {
+                    currentSeason = result;
+                }, error =>
+                {
+                    NcDebug.LogError($"Failed to get current season: {error}");
+                });
+
+                return currentSeason;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"Failed to get current season: {e}");
+                throw;
+            }
         }
     }
 }

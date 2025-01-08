@@ -23,11 +23,11 @@ namespace Nekoyume.ApiClient
 
         public NineChroniclesAPIClient RpcGraphQlClient { get; private set; }
 
-        public NineChroniclesAPIClient ArenaServiceClient { get; private set; }
-
         public MarketServiceClient MarketServiceClient { get; private set; }
 
         public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
+
+        public ArenaServiceManager Arenaservicemanager { get; private set; }
 
         // Game.IAPStoreManager와 기능 정리 가능할지도?
         public IAPServiceManager IAPServiceManager { get; private set; }
@@ -56,10 +56,10 @@ namespace Nekoyume.ApiClient
             RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
                 new NineChroniclesAPIClient(string.Empty) :
                 new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
-            ArenaServiceClient = new NineChroniclesAPIClient(clo.ArenaServiceHost);
             WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
+            Arenaservicemanager = new ArenaServiceManager(clo.ArenaServiceHost);
             ApplySeasonPassMarketUrl(clo);
 
 #if UNITY_IOS
