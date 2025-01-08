@@ -4628,6 +4628,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimPatrolReward)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<ClaimPatrolReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionClaimPatrolReward)
+                .AddTo(_disposables);
         }
 
         private (ActionEvaluation<ClaimPatrolReward>, PatrolRewardMail, AvatarState) PrepareClaimPatrolReward(ActionEvaluation<ClaimPatrolReward> eval)
@@ -4682,6 +4690,11 @@ namespace Nekoyume.Blockchain
                 MailType.System,
                 L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
                 NotificationCell.NotificationType.Notification);
+            PatrolReward.Claiming.Value = false;
+        }
+
+        private void ExceptionClaimPatrolReward(ActionEvaluation<ClaimPatrolReward> eval)
+        {
             PatrolReward.Claiming.Value = false;
         }
 
