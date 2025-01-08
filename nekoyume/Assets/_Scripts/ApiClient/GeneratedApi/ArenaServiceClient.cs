@@ -120,7 +120,7 @@ public class ArenaServiceClient
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("accept", "text/plain");
+            request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
             try
