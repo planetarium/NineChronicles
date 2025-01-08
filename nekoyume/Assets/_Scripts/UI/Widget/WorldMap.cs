@@ -161,7 +161,7 @@ namespace Nekoyume.UI
 
         public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
-            SubscribeAtShow();
+            UpdateAssets();
 
             HasNotification = false;
             SetWorldInformation(worldInformation);
@@ -180,22 +180,15 @@ namespace Nekoyume.UI
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            SubscribeAtShow();
+            UpdateAssets();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
             Find<AdventureBossRewardPopup>().Show();
         }
 
-        private void SubscribeAtShow()
+        public void UpdateAssets(bool isForceSetBattle = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            OnDisableStaticObservable
-                .Where(widget => widget is StageInformation)
-                .DelayFrame(1)
-                .Where(_ => gameObject.activeSelf)
-                .Subscribe(_ => SubscribeAtShow())
-                .AddTo(_disposablesAtShow);
-            TextMeshProUGUI eventDungeonRemainingTimeText = null;
             RxProps.EventScheduleRowForDungeon.Subscribe(value =>
             {
                 foreach (var eventDungeonObject in eventDungeonObjects)
@@ -204,7 +197,7 @@ namespace Nekoyume.UI
                     eventDungeonObject.remainingTimeObject.SetActive(false);
                 }
 
-                if (value is null)
+                if (isForceSetBattle || value is null)
                 {
                     Find<HeaderMenuStatic>()
                         .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -221,15 +214,17 @@ namespace Nekoyume.UI
                     eventDungeonObject.button.HasNotification.Value = true;
                     eventDungeonObject.button.Unlock();
                     eventDungeonObject.remainingTimeObject.SetActive(true);
-                    eventDungeonRemainingTimeText = eventDungeonObject.remainingTimeText;
+
+                    if (eventDungeonObject.remainingTimeText == null)
+                    {
+                        return;
+                    }
+
+                    RxProps.EventDungeonRemainingTimeText
+                        .SubscribeTo(eventDungeonObject.remainingTimeText)
+                        .AddTo(_disposablesAtShow);
                 }
             }).AddTo(_disposablesAtShow);
-            if (eventDungeonRemainingTimeText != null)
-            {
-                RxProps.EventDungeonRemainingTimeText
-                    .SubscribeTo(eventDungeonRemainingTimeText)
-                    .AddTo(_disposablesAtShow);
-            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -343,7 +338,6 @@ namespace Nekoyume.UI
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
 
-            SubscribeAtShow();
 
             TableSheets.Instance.WorldSheet.TryGetValue(
                 worldId,
@@ -354,7 +348,7 @@ namespace Nekoyume.UI
             var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageType.HackAndSlash);
             UpdateNotificationInfo();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+            UpdateAssets(true);
             Find<HeaderMenuStatic>().Show();
         }
 
@@ -371,8 +365,6 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
-
-            SubscribeAtShow();
 
             Show(true);
             var openedStageId =
@@ -391,7 +383,7 @@ namespace Nekoyume.UI
                 openedStageId,
                 openedStageId);
             StageIdToNotify = openedStageId;
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+            UpdateAssets();
             Find<HeaderMenuStatic>().Show();
         }
 
