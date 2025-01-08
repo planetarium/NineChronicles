@@ -924,7 +924,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
-        public IObservable<ActionEvaluation<Action.Battle>> BattleArena(
+        public IObservable<ActionEvaluation<Action.Arena.Battle>> BattleArena(
             Address enemyAvatarAddress,
             List<Guid> costumes,
             List<Guid> equipments,
@@ -934,18 +934,17 @@ namespace Nekoyume.Blockchain
             int ticket
         )
         {
+            // TODO: 아레나 서비스
+            // 티켓이나 라운드 정보 조회 및 소모 기능 추가 후 적용
             try
             {
-                var action = new Action.Battle
+                var action = new Action.Arena.Battle
                 {
                     myAvatarAddress = States.Instance.CurrentAvatarState.address,
                     enemyAvatarAddress = enemyAvatarAddress,
                     costumes = costumes,
                     equipments = equipments,
                     runeInfos = runeInfos,
-                    championshipId = championshipId,
-                    round = round,
-                    ticket = ticket
                 };
 
                 var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
@@ -968,7 +967,7 @@ namespace Nekoyume.Blockchain
 
                 ProcessAction(action);
                 _lastBattleActionId = action.Id;
-                return _agent.ActionRenderer.EveryRender<Action.Battle>()
+                return _agent.ActionRenderer.EveryRender<Action.Arena.Battle>()
                     .Timeout(ActionTimeout)
                     .Where(eval => eval.Action.Id.Equals(action.Id))
                     .First()

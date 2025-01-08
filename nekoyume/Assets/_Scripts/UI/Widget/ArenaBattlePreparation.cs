@@ -290,7 +290,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OnRenderBattleArena(ActionEvaluation<Action.Battle> eval)
+        public void OnRenderBattleArena(ActionEvaluation<Action.Arena.Battle> eval)
         {
             if (eval.Exception is not null)
             {

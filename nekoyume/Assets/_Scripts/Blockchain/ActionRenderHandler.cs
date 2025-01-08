@@ -623,7 +623,7 @@ namespace Nekoyume.Blockchain
                 .Subscribe(ResponseJoinArenaAsync)
                 .AddTo(_disposables);
 
-            _actionRenderer.EveryRender<Action.Battle>()
+            _actionRenderer.EveryRender<Action.Arena.Battle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOn(Scheduler.ThreadPool)
                 .Select(PrepareBattle)
@@ -3001,8 +3001,8 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private static ActionEvaluation<Action.Battle> PrepareBattle(
-            ActionEvaluation<Action.Battle> eval)
+        private static ActionEvaluation<Action.Arena.Battle> PrepareBattle(
+            ActionEvaluation<Action.Arena.Battle> eval)
         {
             UpdatePreviousAvatarState(eval.PreviousState, eval.Action.myAvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
@@ -3010,7 +3010,7 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
-        private async void ResponseBattleAsync(ActionEvaluation<Action.Battle> eval)
+        private async void ResponseBattleAsync(ActionEvaluation<Action.Arena.Battle> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -3062,14 +3062,8 @@ namespace Nekoyume.Blockchain
             CollectionState myCollectionState = null;
             CollectionState enemyCollectionState = null;
 
-            var championshipId = eval.Action.championshipId;
-            var round = eval.Action.round;
-
-            var myArenaScoreAdr = ArenaScore.DeriveAddress(
-                eval.Action.myAvatarAddress,
-                championshipId,
-                round);
-
+            // TODO: 아레나 서비스에서 점수 조회 기능 추가 후 적용
+            // 시점 변경이 필요할듯.
             var previousMyScore = ArenaScore.ArenaScoreDefault;
             var outMyScore = ArenaScore.ArenaScoreDefault;
 
@@ -3085,19 +3079,6 @@ namespace Nekoyume.Blockchain
                             .First()
                             .DoOnError(e => NcDebug.LogException(e));
                     });
-                previousMyScore = StateGetter.TryGetArenaScore(
-                    eval.PreviousState,
-                    myArenaScoreAdr,
-                    out var myArenaScore)
-                    ? myArenaScore.Score
-                    : ArenaScore.ArenaScoreDefault;
-                outMyScore = StateGetter.TryGetState(
-                    eval.OutputState,
-                    ReservedAddresses.LegacyAccount,
-                    myArenaScoreAdr,
-                    out var outputMyScoreList)
-                    ? (Integer)((List)outputMyScoreList)[1]
-                    : ArenaScore.ArenaScoreDefault;
                 (myDigest, enemyDigest) = GetArenaPlayerDigest(
                     eval.PreviousState,
                     eval.OutputState,
@@ -3109,12 +3090,13 @@ namespace Nekoyume.Blockchain
 
             prepareObserve.Subscribe(_ =>
             {
-                var hasMedalReward =
-                    tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
-                    row.ArenaType != ArenaType.OffSeason;
-                var medalItem = ItemFactory.CreateMaterial(
-                    tableSheets.MaterialItemSheet,
-                    row.MedalId);
+                // TODO: 아레나 서비스
+                // var hasMedalReward =
+                //     tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
+                //     row.ArenaType != ArenaType.OffSeason;
+                // var medalItem = ItemFactory.CreateMaterial(
+                //     tableSheets.MaterialItemSheet,
+                //     row.MedalId);
 
                 var random = new LocalRandom(eval.RandomSeed);
                 var winCount = 0;
@@ -3122,47 +3104,46 @@ namespace Nekoyume.Blockchain
                 var logs = new List<ArenaLog>();
                 var rewards = new List<ItemBase>();
                 var arenaSheets = tableSheets.GetArenaSimulatorSheets();
-                for (var i = 0; i < eval.Action.ticket; i++)
+
+                var simulator = new ArenaSimulator(random,
+                    Action.Arena.Battle.HpIncreasingModifier,
+                    States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+                var log = simulator.Simulate(
+                    myDigest.Value,
+                    enemyDigest.Value,
+                    arenaSheets,
+                    myCollectionState.GetEffects(tableSheets.CollectionSheet),
+                    enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
+                    tableSheets.BuffLimitSheet,
+                    tableSheets.BuffLinkSheet,
+                    true);
+
+                var reward = RewardSelector.Select(
+                    random,
+                    tableSheets.WeeklyArenaRewardSheet,
+                    tableSheets.MaterialItemSheet,
+                    myDigest.Value.Level,
+                    ArenaHelper.GetRewardCount(previousMyScore));
+
+                if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
-                    var simulator = new ArenaSimulator(random,
-                        Action.Battle.HpIncreasingModifier,
-                        States.Instance.GameConfigState.ShatterStrikeMaxDamage);
-                    var log = simulator.Simulate(
-                        myDigest.Value,
-                        enemyDigest.Value,
-                        arenaSheets,
-                        myCollectionState.GetEffects(tableSheets.CollectionSheet),
-                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
-                        tableSheets.BuffLimitSheet,
-                        tableSheets.BuffLinkSheet,
-                        true);
+                    // TODO: 아레나 서비스
+                    // if (hasMedalReward && medalItem is not null)
+                    // {
+                    //     reward.Add(medalItem);
+                    // }
 
-                    var reward = RewardSelector.Select(
-                        random,
-                        tableSheets.WeeklyArenaRewardSheet,
-                        tableSheets.MaterialItemSheet,
-                        myDigest.Value.Level,
-                        ArenaHelper.GetRewardCount(previousMyScore));
-
-                    if (log.Result.Equals(ArenaLog.ArenaResult.Win))
-                    {
-                        if (hasMedalReward && medalItem is not null)
-                        {
-                            reward.Add(medalItem);
-                        }
-
-                        winCount++;
-                    }
-                    else
-                    {
-                        defeatCount++;
-                    }
-
-                    log.Score = outMyScore;
-
-                    logs.Add(log);
-                    rewards.AddRange(reward);
+                    winCount++;
                 }
+                else
+                {
+                    defeatCount++;
+                }
+
+                log.Score = outMyScore;
+
+                logs.Add(log);
+                rewards.AddRange(reward);
 
                 if (!arenaBattlePreparation || !arenaBattlePreparation.IsActive())
                 {
