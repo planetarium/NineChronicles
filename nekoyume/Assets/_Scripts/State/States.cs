@@ -626,7 +626,7 @@ namespace Nekoyume.State
             // [3]: DailyRewardReceivedBlockIndex
             // [4]: Relationship
             // [5]: ClaimedGiftIds
-            // [5]: PatrolRewardClaimedBlockIndex
+            // [6]: PatrolRewardClaimedBlockIndex
             var listStates = await Task.WhenAll(
                 agent.GetStateAsync(stateRootHash, ReservedAddresses.LegacyAccount, skillStateAddress),
                 agent.GetStateAsync(stateRootHash, Addresses.Collection, avatarAddr),

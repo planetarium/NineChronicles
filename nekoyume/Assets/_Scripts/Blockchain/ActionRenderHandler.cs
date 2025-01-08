@@ -3713,7 +3713,6 @@ namespace Nekoyume.Blockchain
             {
                 // Note : AvatarState를 업데이트하지 않고도 MailBox만 사용하기 위함
                 var mailBox = StateGetter.GetMailBox(states, avatarAddr);
-
                 var sameBlockIndexMailList = mailBox
                     .OfType<UnloadFromMyGaragesRecipientMail>()
                     .Where(m => m.blockIndex == eval.BlockIndex)
