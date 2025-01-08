@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Module
         {
             patrolTimeText.text =
                 L10nManager.Localize("UI_PATROL_TIME_FORMAT", patrolTime.BlockToTimeSpan());
-            patrolTimeGauge.fillAmount = (float)(patrolTime / interval);
+            patrolTimeGauge.fillAmount = (float)patrolTime / interval;
         }
 
         private void SetIntervalText(long interval)
