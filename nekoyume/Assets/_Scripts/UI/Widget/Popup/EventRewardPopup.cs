@@ -90,7 +90,7 @@ namespace Nekoyume.UI
                 }
 
                 var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
-                return eventRewardPopupData.EventRewards.Length > 0;
+                return eventRewardPopupData.HasEvent;
             }
         }
 
@@ -154,8 +154,9 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
-            if (eventRewards.Length == 0)
+            var eventRewardData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewards = eventRewardData.EventRewards;
+            if (!eventRewardData.HasEvent)
             {
                 NcDebug.LogError("No event rewards.");
                 return;
@@ -189,8 +190,9 @@ namespace Nekoyume.UI
 
         public void ShowAsThorChain()
         {
-            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
-            if (eventRewards.Length == 0)
+            var eventRewardData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewards = eventRewardData.EventRewards;
+            if (!eventRewardData.HasEvent)
             {
                 NcDebug.LogError("No event rewards.");
                 return;
@@ -205,8 +207,9 @@ namespace Nekoyume.UI
 
         public void ShowAsPatrolReward()
         {
-            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
-            if (eventRewards.Length == 0)
+            var eventRewardData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewards = eventRewardData.EventRewards;
+            if (!eventRewardData.HasEvent)
             {
                 NcDebug.LogError("No event rewards.");
                 return;
