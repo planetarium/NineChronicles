@@ -864,7 +864,7 @@ namespace Nekoyume.Blockchain
                 PrivateKey,
                 _genesis?.Hash,
                 actions.Select(action => action.PlainValue),
-                Currencies.Mead * 1,
+                FungibleAssetValue.Parse(Currencies.Mead, "0.00001"),
                 gasLimit
             );
 
