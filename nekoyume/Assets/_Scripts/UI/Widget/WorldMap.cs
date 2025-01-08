@@ -180,7 +180,6 @@ namespace Nekoyume.UI
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            UpdateAssets();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
             Find<AdventureBossRewardPopup>().Show();
