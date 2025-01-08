@@ -654,12 +654,12 @@ namespace Nekoyume.Blockchain
                 .Subscribe(ResponseJoinArenaAsync)
                 .AddTo(_disposables);
 
-            _actionRenderer.EveryRender<BattleArena>()
+            _actionRenderer.EveryRender<Action.Battle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOn(Scheduler.ThreadPool)
-                .Select(PrepareBattleArena)
+                .Select(PrepareBattle)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBattleArenaAsync)
+                .Subscribe(ResponseBattleAsync)
                 .AddTo(_disposables);
         }
 
@@ -2000,7 +2000,7 @@ namespace Nekoyume.Blockchain
 
                         if (productMail?.Product is FavProduct favProduct)
                         {
-                            count = (int) favProduct.Asset.MajorUnit;
+                            count = (int)favProduct.Asset.MajorUnit;
                             itemName = favProduct.Asset.GetLocalizedName();
 
                             UniTask.RunOnThreadPool(() =>
@@ -2049,7 +2049,7 @@ namespace Nekoyume.Blockchain
                                 mail.id == info.ProductId) as ProductSellerMail;
                         var itemName = productMail.Product is ItemProduct itemProduct
                             ? itemProduct.TradableItem.ItemSubType.GetLocalizedString()
-                            : ((FavProduct) productMail.Product).Asset.GetLocalizedInformation();
+                            : ((FavProduct)productMail.Product).Asset.GetLocalizedInformation();
                         if (productMail.Product is ItemProduct itemProd)
                         {
                             count = itemProd.ItemCount;
@@ -3138,8 +3138,8 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private static ActionEvaluation<BattleArena> PrepareBattleArena(
-            ActionEvaluation<BattleArena> eval)
+        private static ActionEvaluation<Action.Battle> PrepareBattle(
+            ActionEvaluation<Action.Battle> eval)
         {
             UpdatePreviousAvatarState(eval.PreviousState, eval.Action.myAvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
@@ -3147,7 +3147,7 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
-        private async void ResponseBattleArenaAsync(ActionEvaluation<BattleArena> eval)
+        private async void ResponseBattleAsync(ActionEvaluation<Action.Battle> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -3262,7 +3262,7 @@ namespace Nekoyume.Blockchain
                 for (var i = 0; i < eval.Action.ticket; i++)
                 {
                     var simulator = new ArenaSimulator(random,
-                        BattleArena.HpIncreasingModifier,
+                        Action.Battle.HpIncreasingModifier,
                         States.Instance.GameConfigState.ShatterStrikeMaxDamage);
                     var log = simulator.Simulate(
                         myDigest.Value,
@@ -3317,7 +3317,6 @@ namespace Nekoyume.Blockchain
                     winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
             });
         }
-
         private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
             HashDigest<SHA256> prevStates,
             HashDigest<SHA256> outputStates,

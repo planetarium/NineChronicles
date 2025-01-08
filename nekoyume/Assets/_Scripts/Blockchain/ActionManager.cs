@@ -936,7 +936,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
-        public IObservable<ActionEvaluation<BattleArena>> BattleArena(
+        public IObservable<ActionEvaluation<Action.Battle>> BattleArena(
             Address enemyAvatarAddress,
             List<Guid> costumes,
             List<Guid> equipments,
@@ -948,7 +948,7 @@ namespace Nekoyume.Blockchain
         {
             try
             {
-                var action = new BattleArena
+                var action = new Action.Battle
                 {
                     myAvatarAddress = States.Instance.CurrentAvatarState.address,
                     enemyAvatarAddress = enemyAvatarAddress,
@@ -980,7 +980,7 @@ namespace Nekoyume.Blockchain
 
                 ProcessAction(action);
                 _lastBattleActionId = action.Id;
-                return _agent.ActionRenderer.EveryRender<BattleArena>()
+                return _agent.ActionRenderer.EveryRender<Action.Battle>()
                     .Timeout(ActionTimeout)
                     .Where(eval => eval.Action.Id.Equals(action.Id))
                     .First()
