@@ -15,9 +15,9 @@ jobs:
         with:
           script: |
             const query = `
-              query($org: String!, $projectNumber: Int!) {
+              query($org: String!) {
                 organization(login: $org) {
-                  projectV2(number: $projectNumber) {
+                  projectV2(number: 97) {
                     items(first: 50) {
                       nodes {
                         id
@@ -41,8 +41,7 @@ jobs:
             `;
 
             const variables = {
-              org: "planetarium",
-              projectNumber: 97
+              org: "planetarium"
             };
 
             const result = await github.graphql(query, variables);
