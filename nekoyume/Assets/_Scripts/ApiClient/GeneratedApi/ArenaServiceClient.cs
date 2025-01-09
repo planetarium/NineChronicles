@@ -124,7 +124,27 @@ public class ArenaServiceClient
         public int StatusCode { get; set; }
     }
 
-    public async Task GetSeasonsAvailableopponentsAsync(int seasonId, Int64 blockIndex, string Authorization, Action<AvailableOpponentsResponse> onSuccess, Action<string> onError)
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task GetSeasonsAvailableopponentsAsync(
+        int seasonId, Int64 blockIndex, string Authorization, 
+        // OK
+        Action<AvailableOpponentsResponse> on200OK = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/available-opponents";
         using (var request = new UnityWebRequest(url, "GET"))
@@ -139,14 +159,32 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 200) // OK
+                {
+                    string responseBody = request.downloadHandler.text;
+                    AvailableOpponentsResponse result = System.Text.Json.JsonSerializer.Deserialize<AvailableOpponentsResponse>(responseBody);
+                    on200OK?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                AvailableOpponentsResponse result = System.Text.Json.JsonSerializer.Deserialize<AvailableOpponentsResponse>(responseBody);
-                onSuccess?.Invoke(result);
             }
             catch (Exception ex)
             {
@@ -155,7 +193,27 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task PostSeasonsAvailableopponentsAsync(int seasonId, string Authorization, Action<string> onSuccess, Action<string> onError)
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="201">
+    /// <para>Created</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task PostSeasonsAvailableopponentsAsync(
+        int seasonId, string Authorization, 
+        // Created
+        Action<string> on201Created = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/available-opponents";
         using (var request = new UnityWebRequest(url, "POST"))
@@ -169,13 +227,31 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 201) // Created
+                {
+                    string responseBody = request.downloadHandler.text;
+                    on201Created?.Invoke(responseBody);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
             {
@@ -184,7 +260,27 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task GetSeasonsBattleTokenAsync(int seasonId, string opponentAvatarAddress, string Authorization, Action<string> onSuccess, Action<string> onError)
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task GetSeasonsBattleTokenAsync(
+        int seasonId, string opponentAvatarAddress, string Authorization, 
+        // OK
+        Action<string> on200OK = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/battle/token";
         using (var request = new UnityWebRequest(url, "GET"))
@@ -199,13 +295,31 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 200) // OK
+                {
+                    string responseBody = request.downloadHandler.text;
+                    on200OK?.Invoke(responseBody);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
             {
@@ -214,7 +328,27 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task PostSeasonsBattleRequestAsync(string txId, int logId, string seasonId, string Authorization, Action<string> onSuccess, Action<string> onError)
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task PostSeasonsBattleRequestAsync(
+        string txId, int logId, string seasonId, string Authorization, 
+        // OK
+        Action<string> on200OK = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/battle/request";
         using (var request = new UnityWebRequest(url, "POST"))
@@ -229,13 +363,31 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 200) // OK
+                {
+                    string responseBody = request.downloadHandler.text;
+                    on200OK?.Invoke(responseBody);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
             {
@@ -244,7 +396,27 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task GetSeasonsBattleAsync(int battleLogId, string seasonId, string Authorization, Action<string> onSuccess, Action<string> onError)
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task GetSeasonsBattleAsync(
+        int battleLogId, string seasonId, string Authorization, 
+        // OK
+        Action<string> on200OK = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/battle/{battleLogId}";
         using (var request = new UnityWebRequest(url, "GET"))
@@ -258,13 +430,31 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 200) // OK
+                {
+                    string responseBody = request.downloadHandler.text;
+                    on200OK?.Invoke(responseBody);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
             {
@@ -273,7 +463,24 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task GetSeasonsLeaderboardParticipantsAsync(int seasonId, string avatarAddress, Action<LeaderboardEntryResponse> onSuccess, Action<string> onError)
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task GetSeasonsLeaderboardParticipantsAsync(
+        int seasonId, string avatarAddress, 
+        // OK
+        Action<LeaderboardEntryResponse> on200OK = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/leaderboard/participants/{avatarAddress}";
         using (var request = new UnityWebRequest(url, "GET"))
@@ -286,14 +493,32 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 200) // OK
+                {
+                    string responseBody = request.downloadHandler.text;
+                    LeaderboardEntryResponse result = System.Text.Json.JsonSerializer.Deserialize<LeaderboardEntryResponse>(responseBody);
+                    on200OK?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                LeaderboardEntryResponse result = System.Text.Json.JsonSerializer.Deserialize<LeaderboardEntryResponse>(responseBody);
-                onSuccess?.Invoke(result);
             }
             catch (Exception ex)
             {
@@ -302,7 +527,32 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task PostSeasonsParticipantsAsync(int seasonId, string Authorization, ParticipateRequest requestBody, Action<string> onSuccess, Action<string> onError)
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="201">
+    /// <para>Created</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    /// <response code="409">
+    /// <para>Conflict</para>
+    /// </response>
+    public async Task PostSeasonsParticipantsAsync(
+        int seasonId, string Authorization, ParticipateRequest requestBody, 
+        // Created
+        Action<SeasonResponse> on201Created = null, 
+        // Unauthorized
+        Action<UnauthorizedHttpResult> on401Unauthorized = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        // Conflict
+        Action<StringConflict> on409Conflict = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/{seasonId}/participants";
         using (var request = new UnityWebRequest(url, "POST"))
@@ -320,13 +570,39 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 201) // Created
+                {
+                    string responseBody = request.downloadHandler.text;
+                    SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
+                    on201Created?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 401) // Unauthorized
+                {
+                    string responseBody = request.downloadHandler.text;
+                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
+                    on401Unauthorized?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 409) // Conflict
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringConflict result = System.Text.Json.JsonSerializer.Deserialize<StringConflict>(responseBody);
+                    on409Conflict?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
             {
@@ -335,7 +611,19 @@ public class ArenaServiceClient
         }
     }
 
-    public async Task GetSeasonsByblockAsync(int blockIndex, Action<SeasonResponse> onSuccess, Action<string> onError)
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
+    public async Task GetSeasonsByblockAsync(
+        int blockIndex, 
+        // OK
+        Action<SeasonResponse> on200OK = null, 
+        // Not Found
+        Action<StringNotFound> on404NotFound = null, 
+        Action<string> onError = null)
     {
         string url = $"{Url}/seasons/by-block/{blockIndex}";
         using (var request = new UnityWebRequest(url, "GET"))
@@ -348,14 +636,25 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
+                if (request.responseCode == 200) // OK
+                {
+                    string responseBody = request.downloadHandler.text;
+                    SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
+                    on200OK?.Invoke(result);
+                    return;
+                }
+                if (request.responseCode == 404) // Not Found
+                {
+                    string responseBody = request.downloadHandler.text;
+                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
+                    on404NotFound?.Invoke(result);
+                    return;
+                }
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     onError?.Invoke(request.error);
                     return;
                 }
-                string responseBody = request.downloadHandler.text;
-                SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
-                onSuccess?.Invoke(result);
             }
             catch (Exception ex)
             {
