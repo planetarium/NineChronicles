@@ -23,9 +23,7 @@ jobs:
             }
 
             const columnId = projectCard.column_id;
-
-            // Replace with your actual column ID for "QA"
-            const qaColumnId = "your_QA_column_id";
+            const qaColumnId = "e449b8e2";
 
             return columnId === qaColumnId;
 
