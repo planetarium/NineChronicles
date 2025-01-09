@@ -17,6 +17,7 @@ jobs:
         id: fetch_items
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.PROJECTS_PAT }}
           script: |
             const query = `
               query($org: String!) {
