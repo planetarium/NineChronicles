@@ -765,7 +765,10 @@ namespace Nekoyume
             switch (jsonType)
             {
                 case "string": return "string";
-                case "integer": return "int";
+                case "integer":
+                    if (jsonNode["format"]?.ToString() == "int64")
+                        return "Int64";
+                    return "int";
                 case "boolean": return "bool";
                 case "number": return "decimal";
 
