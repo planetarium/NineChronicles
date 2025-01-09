@@ -71,7 +71,7 @@ namespace Nekoyume.ApiClient
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
                 var models = new List<ArenaParticipantModel>();
 
-                await Client.GetSeasonsAvailableopponentsAsync(seasonId, jwt, result =>
+                await Client.GetSeasonsAvailableopponentsAsync(seasonId, Game.Game.instance.Agent.BlockIndex, jwt, result =>
                 {
                     models.AddRange(
                         result.AvailableOpponents.Select(opponent => new ArenaParticipantModel
@@ -94,7 +94,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<SeasonResponse> GetCurrentSeasonAsync(int blockIndex)
+        public async Task<SeasonResponse> GetSeasonByBlockAsync(Int64 blockIndex)
         {
             if (!IsInitialized)
             {
@@ -104,7 +104,8 @@ namespace Nekoyume.ApiClient
             try
             {
                 SeasonResponse currentSeason = null;
-                await Client.GetSeasonsCurrentAsync(blockIndex, result =>
+                // TODO: 아레나 서비스에서 타입변경되면 다시 수정해야함
+                await Client.GetSeasonsByblockAsync((int)blockIndex, result =>
                 {
                     currentSeason = result;
                 }, error =>
