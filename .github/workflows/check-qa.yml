@@ -5,7 +5,6 @@ on:
     - cron: "*/5 * * * *" # 5분마다 실행
   workflow_dispatch: # 수동으로 실행 가능
 env:
-  GITHUB_TOKEN: ${{ secrets.PROJECTS_PAT }}
   GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
   ACTIONS_STEP_DEBUG: true
   ACTIONS_RUNNER_DEBUG: true
@@ -39,7 +38,7 @@ jobs:
 
             const result = await github.graphql(query, variables, {
               headers: {
-                authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+                authorization: `Bearer ${process.env.GH_TOKEN}`
               }
             });
             console.log(result);
