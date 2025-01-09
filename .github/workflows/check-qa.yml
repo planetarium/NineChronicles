@@ -33,7 +33,11 @@ jobs:
               org: "planetarium"
             };
 
-            const result = await github.graphql(query, variables);
+            const result = await github.graphql(query, variables, {
+              headers: {
+                authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+              }
+            });
             console.log(result);
 
             // Filter items where status is "QA"
