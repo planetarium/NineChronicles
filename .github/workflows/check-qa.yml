@@ -17,23 +17,11 @@ jobs:
             const query = `
               query($org: String!) {
                 organization(login: $org) {
-                  projectV2(number: 97) {
-                    items(first: 50) {
-                      nodes {
-                        id
-                        fieldValues(first: 10) {
-                          nodes {
-                            ... on ProjectV2ItemFieldSingleSelectValue {
-                              name
-                            }
-                          }
-                        }
-                        content {
-                          ... on Issue {
-                            number
-                          }
-                        }
-                      }
+                  projectsV2(first: 50) {
+                    nodes {
+                      title
+                      number
+                      id
                     }
                   }
                 }
@@ -45,6 +33,7 @@ jobs:
             };
 
             const result = await github.graphql(query, variables);
+            console.log(result);
 
             // Filter items where status is "QA"
             const itemsInQA = result.organization.projectV2.items.nodes.filter(item => {
