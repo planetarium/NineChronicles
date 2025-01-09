@@ -57,6 +57,12 @@ namespace Nekoyume.State
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
         private static long _arenaInfoTupleUpdatedBlockIndex;
         private static int _currentSeasonId;
+        public static int CurrentArenaSeasonId
+        {
+            get => _currentSeasonId;
+            private set => _currentSeasonId = value;
+        }
+        
 
         public static void UpdateArenaInfoToNext()
         {

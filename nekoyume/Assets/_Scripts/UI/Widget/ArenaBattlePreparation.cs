@@ -26,6 +26,8 @@ using TMPro;
 
 namespace Nekoyume.UI
 {
+    using System.Threading.Tasks;
+    using Nekoyume.ApiClient;
     using UniRx;
 
     public class ArenaBattlePreparation : Widget
@@ -48,13 +50,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private Transform buttonStarImageTransform;
 
-        [SerializeField][Range(.5f, 3.0f)]
+        [SerializeField]
+        [Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField][Range(0f, 10f)][Tooltip("Gap between start position X and middle position X")]
+        [SerializeField]
+        [Range(0f, 10f)]
+        [Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         [SerializeField]
@@ -97,7 +102,7 @@ namespace Nekoyume.UI
             }
         }
 
-#region override
+        #region override
 
         protected override void Awake()
         {
@@ -158,7 +163,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-#endregion
+        #endregion
 
         private void ReadyToBattle()
         {
@@ -267,27 +272,42 @@ namespace Nekoyume.UI
                 _info.PortraitId,
                 _info.AvatarAddr);
 
-            try
+            var tokenTask = ApiClients.Instance.Arenaservicemanager.GetSeasonsBattleTokenAsync(RxProps.CurrentArenaSeasonId, _info.AvatarAddr.ToHex(), playerAvatar.address.ToHex());
+            tokenTask.ContinueWith(task =>
             {
-                var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
-                var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
-                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                    .GetEquippedRuneSlotInfos();
-                ActionRenderHandler.Instance.Pending = true;
-                ActionManager.Instance.BattleArena(
-                        _info.AvatarAddr,
-                        costumes,
-                        equipments,
-                        runeInfos,
-                        _roundData.ChampionshipId,
-                        _roundData.Round,
-                        ticket)
-                    .Subscribe();
-            }
-            catch(Exception e)
-            {
-                Game.Game.BackToMainAsync(e).Forget();
-            }
+                if (task.Status == TaskStatus.RanToCompletion)
+                {
+                    var token = task.Result;
+                    // 성공시 호출할 콜백
+                    try
+                    {
+                        var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+                        var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+                        var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
+                            .GetEquippedRuneSlotInfos();
+                        ActionRenderHandler.Instance.Pending = true;
+                        ActionManager.Instance.BattleArena(
+                                _info.AvatarAddr,
+                                costumes,
+                                equipments,
+                                runeInfos,
+                                _roundData.ChampionshipId,
+                                _roundData.Round,
+                                token)
+                            .Subscribe();
+                    }
+                    catch (Exception e)
+                    {
+                        Game.Game.BackToMainAsync(e).Forget();
+                    }
+                }
+                else if (task.Status == TaskStatus.Faulted)
+                {
+                    // 오류 처리
+                    NcDebug.LogError("토큰 요청에 실패했습니다. 오류: " + task.Exception?.Message);
+                    Game.Game.BackToMainAsync(task.Exception).Forget();
+                }
+            });
         }
 
         public void OnRenderBattleArena(ActionEvaluation<Action.Arena.Battle> eval)
