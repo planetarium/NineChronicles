@@ -990,15 +990,22 @@ namespace Nekoyume
                                 responseHandling.AppendLine($"                if (request.responseCode == {statusCode}) // {description}");
                                 responseHandling.AppendLine("                {");
                                 responseHandling.AppendLine("                    string responseBody = request.downloadHandler.text;");
+                                responseHandling.AppendLine($"                    if ({callbackName} != null)");
+                                responseHandling.AppendLine("                    {");
                                 if (responseType != "string")
                                 {
-                                    responseHandling.AppendLine($"                    {responseType} result = System.Text.Json.JsonSerializer.Deserialize<{responseType}>(responseBody);");
-                                    responseHandling.AppendLine($"                    {callbackName}?.Invoke(result);");
+                                    responseHandling.AppendLine($"                        {responseType} result = System.Text.Json.JsonSerializer.Deserialize<{responseType}>(responseBody);");
+                                    responseHandling.AppendLine($"                        {callbackName}(result);");
                                 }
                                 else
                                 {
-                                    responseHandling.AppendLine($"                    {callbackName}?.Invoke(responseBody);");
+                                    responseHandling.AppendLine($"                        {callbackName}(responseBody);");
                                 }
+                                responseHandling.AppendLine("                    }");
+                                responseHandling.AppendLine("                    else if (onError != null)");
+                                responseHandling.AppendLine("                    {");
+                                responseHandling.AppendLine("                        onError(responseBody);");
+                                responseHandling.AppendLine("                    }");
                                 responseHandling.AppendLine("                    return;");
                                 responseHandling.AppendLine("                }");
                             }
