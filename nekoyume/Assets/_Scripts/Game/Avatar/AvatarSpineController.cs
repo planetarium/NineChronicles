@@ -288,23 +288,42 @@ namespace Nekoyume.Game.Avatar
             _cachedAuraVFX = vfx;
         }
 
-        public void UpdateFullCostume(int index, bool isDcc)
+        /// <summary>
+        /// Updates the avatar's full costume by loading the specified SkeletonDataAsset
+        /// and refreshing the visual elements accordingly.
+        /// </summary>
+        /// <param name="index">The index of the full costume to load.</param>
+        /// <param name="isDcc">Flag indicating if Dynamic Character Customization (DCC) mode is active.</param>
+        /// <returns>True if the costume was updated successfully, otherwise false.</returns>
+        public bool UpdateFullCostume(int index, bool isDcc)
         {
+            // Activate full costume mode
             _isActiveFullCostume = true;
+
+            // Construct the resource key for the SkeletonDataAsset
             var key = $"{index}_SkeletonData";
+
+            // Load the SkeletonDataAsset using the resource key
             var asset = ResourceManager.Instance.Load<SkeletonDataAsset>(key);
 
+            // If the asset couldn't be loaded, log an error and return false
             if (asset == null)
             {
                 NcDebug.LogError($"Failed to load SkeletonDataAsset: {key}");
-                return;
+                return false;
             }
 
+            // Update the SkeletonDataAsset for the full costume part
             var isChange = UpdateSkeletonDataAsset(AvatarPartsType.full_costume, asset);
+
+            // If the asset was updated successfully, refresh the character's appearance
             if (isChange)
             {
                 Refresh(isDcc);
             }
+
+            // Return true to indicate the update was successful
+            return true;
         }
 
         public void UnequipFullCostume(bool isDcc)

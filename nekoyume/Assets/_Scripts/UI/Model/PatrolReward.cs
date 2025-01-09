@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Libplanet.Crypto;
-using Nekoyume.GraphQL;
+using Nekoyume.Blockchain;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
-using Nekoyume.UI;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
-using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.ApiClient
@@ -16,149 +13,111 @@ namespace Nekoyume.ApiClient
 
     public static class PatrolReward
     {
-        public static readonly ReactiveProperty<DateTime> LastRewardTime = new();
+        public static readonly ReactiveProperty<long> LastRewardClaimedBlockIndex = new();
         public static int NextLevel { get; private set; }
-        public static TimeSpan Interval { get; private set; }
+        public static long Interval { get; private set; }
         public static readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
-        public static readonly IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public static readonly ReactiveProperty<long> PatrolTime = new();
         public static readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        private static Address? _currentAvatarAddress = null;
+        private static Address? _currentAvatarAddress;
 
         public static bool NeedToInitialize(Address avatarAddress) =>
             !_currentAvatarAddress.HasValue || _currentAvatarAddress != avatarAddress;
 
         public static bool CanClaim =>
-            _currentAvatarAddress.HasValue && !Claiming.Value && PatrolTime.Value >= Interval;
+            _currentAvatarAddress.HasValue && !Claiming.Value && (PatrolTime.Value >= Interval || PatrolTime.Value == 0);
 
         static PatrolReward()
         {
-            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardTime, (_, lastReward) =>
-                {
-                    var timeSpan = DateTime.Now - lastReward;
-                    return timeSpan > Interval ? Interval : timeSpan;
-                })
-                .ToReactiveProperty();
-            LastRewardTime.ObserveOnMainThread()
-                .Select(lastRewardTime => lastRewardTime + Interval - DateTime.Now)
+            var agent = Game.Game.instance.Agent;
+            agent.BlockIndexSubject
+                .Subscribe(OnUpdateBlockIndex)
+                .AddTo(Game.Game.instance);
+
+            LastRewardClaimedBlockIndex.ObserveOnMainThread()
+                .Select(lastRewardTime => lastRewardTime + Interval - Game.Game.instance.Agent.BlockIndex)
                 .Subscribe(SetPushNotification);
+
+            ReactiveAvatarState.ObservablePatrolRewardClaimedBlockIndex
+                .Subscribe(blockIndex => LastRewardClaimedBlockIndex.Value = blockIndex)
+                .AddTo(Game.Game.instance);
+        }
+
+        private static void OnUpdateBlockIndex(long blockIndex)
+        {
+            var lastRewardTime = LastRewardClaimedBlockIndex.Value;
+            var patrolTime = blockIndex - lastRewardTime;
+            PatrolTime.Value = Math.Min(Interval, patrolTime);
         }
 
         // Called at CurrentAvatarState isNewlySelected
-        public static async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
+        public static void InitializeInformation(Address avatarAddress, int level,
+            long lastClaimedBlockIndex, long currentBlockIndex)
         {
-            var (avatar, policy) =
-                await PatrolRewardQuery.InitializeInformation(avatarAddress, agentAddress, level);
-            if (policy is not null)
-            {
-                SetPolicyModel(policy);
-            }
+            LoadPolicyInfo(level, currentBlockIndex);
 
-            if (avatar is not null)
-            {
-                SetAvatarModel(avatar);
-            }
+            SetAvatarModel(avatarAddress, lastClaimedBlockIndex);
 
             // for changed avatar
             Claiming.Value = false;
         }
 
-        public static async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
+        public static void LoadAvatarInfo(Address avatarAddress, long lastClaimedBlockIndex)
         {
-            var avatar = await PatrolRewardQuery.LoadAvatarInfo(avatarAddress, agentAddress);
-            if (avatar is not null)
-            {
-                SetAvatarModel(avatar);
-            }
+            SetAvatarModel(avatarAddress, lastClaimedBlockIndex);
         }
 
-        public static async Task LoadPolicyInfo(int level, bool free = true)
+        public static void LoadPolicyInfo(int level, long blockIndex)
         {
-            var policy = await PatrolRewardQuery.LoadPolicyInfo(level, free);
-            if (policy is not null)
+            var patrolRewardSheet = Game.Game.instance.TableSheets.PatrolRewardSheet;
+            var row = patrolRewardSheet.FindByLevel(level, blockIndex);
+            var rewards = new List<PatrolRewardModel>();
+            foreach (var rewardModel in row.Rewards)
             {
-                SetPolicyModel(policy);
+                rewards.Add(new PatrolRewardModel
+                {
+                    Currency = rewardModel.Ticker,
+                    ItemId = rewardModel.ItemId,
+                    PerInterval = rewardModel.Count,
+                });
             }
+            var policy = new PolicyModel
+            {
+                MinimumLevel = row.MinimumLevel,
+                MaxLevel = row.MaxLevel,
+                RequiredBlockInterval = row.Interval,
+                Rewards = rewards,
+            };
+            SetPolicyModel(policy);
         }
 
-        public static async void ClaimReward(System.Action onSuccess)
+        public static void ClaimReward(System.Action onSuccess)
         {
             Claiming.Value = true;
-
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            var txId = await PatrolRewardQuery.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
-            while (true)
-            {
-                var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
-                if (txResultResponse is null)
+            ActionManager.Instance.ClaimPatrolReward()
+                .Subscribe(_ =>
                 {
-                    NcDebug.LogError(
-                        $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
-                        NotificationCell.NotificationType.Alert);
-                    break;
-                }
-
-                var currentAvatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-                var txStatus = txResultResponse.transaction.transactionResult.txStatus;
-                if (txStatus == TxResultQuery.TxStatus.SUCCESS)
-                {
-                    if (avatarAddress != currentAvatarAddress)
-                    {
-                        return;
-                    }
-
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
-                        NotificationCell.NotificationType.Notification);
-
                     onSuccess?.Invoke();
-                    break;
-                }
-
-                if (txStatus == TxResultQuery.TxStatus.FAILURE)
-                {
-                    if (avatarAddress != currentAvatarAddress)
-                    {
-                        return;
-                    }
-
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
-                        NotificationCell.NotificationType.Alert);
-                    break;
-                }
-
-                await Task.Delay(3000);
-            }
-
-            Claiming.Value = false;
-            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+                });
         }
 
-        private static void SetAvatarModel(AvatarModel avatar)
+        private static void SetAvatarModel(Address avatarAddress, long lastClaimedBlockIndex)
         {
-            var lastClaimedAt = avatar.LastClaimedAt ?? avatar.CreatedAt;
-            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
-            _currentAvatarAddress = new Address(avatar.AvatarAddress);
+            LastRewardClaimedBlockIndex.Value = lastClaimedBlockIndex;
+            _currentAvatarAddress = avatarAddress;
         }
 
         private static void SetPolicyModel(PolicyModel policy)
         {
             NextLevel = policy.MaxLevel ?? int.MaxValue;
-            Interval = policy.MinimumRequiredInterval;
+            Interval = policy.RequiredBlockInterval;
             RewardModels.Value = policy.Rewards;
         }
 
-        private static void SetPushNotification(TimeSpan completeTime)
+        private static void SetPushNotification(long completeTime)
         {
             var prevPushIdentifier = PlayerPrefs.GetString(PatrolRewardPushIdentifierKey, string.Empty);
             if (!string.IsNullOrEmpty(prevPushIdentifier))
@@ -169,7 +128,7 @@ namespace Nekoyume.ApiClient
 
             var pushIdentifier = PushNotifier.Push(
                 L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"),
-                completeTime,
+                completeTime.BlockToTimeSpan(),
                 PushNotifier.PushType.Reward);
             PlayerPrefs.SetString(PatrolRewardPushIdentifierKey, pushIdentifier);
         }

@@ -297,6 +297,9 @@ namespace Nekoyume.Game
         public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
 
         [UsedImplicitly]
+        public PatrolRewardSheet PatrolRewardSheet { get; private set; }
+
+        [UsedImplicitly]
         public SynthesizeSheet SynthesizeSheet { get; private set; }
 
         [UsedImplicitly]

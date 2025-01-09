@@ -1,0 +1,77 @@
+name: Update Assignee on Project Status Change
+
+on:
+  workflow_dispatch: # 수동으로 실행 가능
+env:
+  GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+  ACTIONS_STEP_DEBUG: true
+  ACTIONS_RUNNER_DEBUG: true
+jobs:
+  check-project-status:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch items in QA column
+        id: fetch_items
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECTS_PAT }}
+          script: |
+            const query = `
+              query($org: String!) {
+                organization(login: $org) {
+                  projectV2(number: 97) {
+                    items(first: 50) {
+                      nodes {
+                        id
+                        fieldValues(first: 10) {
+                          nodes {
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              name
+                            }
+                          }
+                        }
+                        content {
+                          ... on Issue {
+                            number
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            
+            const variables = {
+              org: "planetarium"
+            };
+
+            const result = await github.graphql(query, variables);
+
+            // Filter items where status is "QA"
+            const itemsInQA = result.organization.projectV2.items.nodes.filter(item => {
+              const statusField = item.fieldValues.nodes.find(
+                field => field.name === "QA"
+              );
+              return !!statusField && !!item.content;
+            });
+
+            // Return issue numbers in QA
+            return itemsInQA.map(item => item.content.number);
+      - name: Add assignee to issues in QA
+        if: steps.fetch_items.outputs.result != '[]'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueNumbers = JSON.parse(process.env.ISSUE_NUMBERS || "[]");
+            for (const issueNumber of issueNumbers) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                assignees: ["Geonpyo999"]
+              });
+            }
+        env:
+          ISSUE_NUMBERS: ${{ steps.fetch_items.outputs.result }}

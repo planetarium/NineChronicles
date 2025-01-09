@@ -10919,39 +10919,9 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4575422773675835264}
-    - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: EventRewardClick
-      objectReference: {fileID: 0}
-    - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Nekoyume.UI.LobbyMenu, Nekoyume
-      objectReference: {fileID: 0}
-    - target: {fileID: 820924648165040388, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 3344316989101963230, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -11067,11 +11037,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5421218301455103924, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 32709
-      objectReference: {fileID: 0}
     - target: {fileID: 5460571289484421555, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
       propertyPath: m_Pivot.x
@@ -11177,55 +11142,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6165238753354208754, guid: 2946413b16dd45d479f36d87a099ed32,
+    - target: {fileID: 5815577113758240514, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
       propertyPath: m_SortingLayer
-      value: 32709
-      objectReference: {fileID: 0}
-    - target: {fileID: 6867932833240397727, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6867932833240397727, guid: 2946413b16dd45d479f36d87a099ed32,
+    - target: {fileID: 6977969588221364292, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
       propertyPath: m_SortingLayer
-      value: 32709
-      objectReference: {fileID: 0}
-    - target: {fileID: 7344523505993257652, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 32709
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7753112939384058779, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
       propertyPath: speechBubble
       value: 
       objectReference: {fileID: 5726702647442793415}
-    - target: {fileID: 8010885907698905305, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8010885907698905305, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 32709
-      objectReference: {fileID: 0}
-    - target: {fileID: 8011200472140009427, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8011200472140009427, guid: 2946413b16dd45d479f36d87a099ed32,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 32709
-      objectReference: {fileID: 0}
     - target: {fileID: 8424740541899140375, guid: 2946413b16dd45d479f36d87a099ed32,
         type: 3}
       propertyPath: m_Name
       value: EventRewardBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107933173464721922, guid: 2946413b16dd45d479f36d87a099ed32,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2946413b16dd45d479f36d87a099ed32, type: 3}
@@ -15668,22 +15608,22 @@ PrefabInstance:
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 29.56
       objectReference: {fileID: 0}
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 8316174926513112879, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}

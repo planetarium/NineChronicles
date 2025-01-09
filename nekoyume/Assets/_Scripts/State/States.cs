@@ -601,9 +601,6 @@ namespace Nekoyume.State
             {
                 await InitializeAvatarAndRelatedStates(agent, stateRootHash, avatarState, avatarState.address);
             });
-
-            PatrolReward.InitializeInformation(avatarState.address.ToHex(),
-                AgentState.address.ToHex(), avatarState.level).AsUniTask().Forget();
             ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             Widget.Find<CombinationSlotsPopup>().ClearSlots();
 
@@ -629,13 +626,15 @@ namespace Nekoyume.State
             // [3]: DailyRewardReceivedBlockIndex
             // [4]: Relationship
             // [5]: ClaimedGiftIds
+            // [6]: PatrolRewardClaimedBlockIndex
             var listStates = await Task.WhenAll(
                 agent.GetStateAsync(stateRootHash, ReservedAddresses.LegacyAccount, skillStateAddress),
                 agent.GetStateAsync(stateRootHash, Addresses.Collection, avatarAddr),
                 agent.GetStateAsync(stateRootHash, Addresses.ActionPoint, avatarAddr),
                 agent.GetStateAsync(stateRootHash, Addresses.DailyReward, avatarAddr),
                 agent.GetStateAsync(stateRootHash, Addresses.Relationship, avatarAddr),
-                agent.GetStateAsync(stateRootHash, Addresses.ClaimedGiftIds, avatarAddr));
+                agent.GetStateAsync(stateRootHash, Addresses.ClaimedGiftIds, avatarAddr),
+                agent.GetStateAsync(stateRootHash, Addresses.PatrolReward, avatarAddr));
             SetCrystalRandomSkillState(listStates[0] is List serialized
                 ? new CrystalRandomSkillState(skillStateAddress, serialized)
                 : null);
@@ -659,6 +658,8 @@ namespace Nekoyume.State
             SetAllCombinationSlotState(avatarAddr, allCombinationSlotState);
             SetAllRuneState(GetStateExtensions.GetAllRuneState(stateRootHash, curAvatarState.address));
 
+            var latestPatrolRewardBlock = await StateGetter.GetPatrolRewardReceivedBlockIndex(stateRootHash, curAvatarState.address);
+            ReactiveAvatarState.UpdatePatrolRewardClaimedBlockIndex(latestPatrolRewardBlock);
             await InitRuneSlotStates();
         }
 

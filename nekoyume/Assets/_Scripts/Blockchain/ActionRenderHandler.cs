@@ -211,6 +211,7 @@ namespace Nekoyume.Blockchain
 
             // Claim Items
             ClaimItems();
+            ClaimPatrolReward();
 
             // Mint Assets
             MintAssets();
@@ -4634,6 +4635,88 @@ namespace Nekoyume.Blockchain
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
             Widget.Find<CustomCraftResultPopup>().Show((Equipment)result.itemUsable);
             LoadingHelper.CustomEquipmentCraft.Value = false;
+        }
+
+
+        private void ClaimPatrolReward()
+        {
+            _actionRenderer.EveryRender<ClaimPatrolReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval =>
+                    eval.Action.AvatarAddress.Equals(States.Instance?.CurrentAvatarState?.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareClaimPatrolReward)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimPatrolReward)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<ClaimPatrolReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionClaimPatrolReward)
+                .AddTo(_disposables);
+        }
+
+        private (ActionEvaluation<ClaimPatrolReward>, PatrolRewardMail, AvatarState) PrepareClaimPatrolReward(ActionEvaluation<ClaimPatrolReward> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+            var mailBox = avatarState.mailBox;
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
+             var mail = mailBox.OfType<PatrolRewardMail>()
+                 .First(r => r.blockIndex == eval.BlockIndex);
+            foreach (var fav in mail.FungibleAssetValues)
+            {
+                var currency = fav.Currency;
+                var recipientAddress = Currencies.PickAddress(currency, agentAddr,
+                    avatarAddr);
+                var isCrystal = currency.Equals(Currencies.Crystal);
+                var balance = StateGetter.GetBalance(
+                    states,
+                    recipientAddress,
+                    currency);
+                if (isCrystal)
+                {
+                    gameStates.SetCrystalBalance(balance);
+                }
+                else
+                {
+                    gameStates.SetCurrentAvatarBalance(balance);
+                }
+            }
+            ReactiveAvatarState.UpdatePatrolRewardClaimedBlockIndex(eval.BlockIndex);
+
+            return (eval, mail, avatarState);
+        }
+
+        private void ResponseClaimPatrolReward((ActionEvaluation<ClaimPatrolReward> eval, PatrolRewardMail mail, AvatarState avatarState) prepared)
+        {
+            var eval = prepared.eval;
+            if (eval.Exception is not null)
+            {
+                NcDebug.Log(eval.Exception.Message);
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+            LocalLayerModifier.AddNewMail(prepared.avatarState, prepared.mail.id);
+            OneLineSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                NotificationCell.NotificationType.Notification);
+            PatrolReward.Claiming.Value = false;
+        }
+
+        private void ExceptionClaimPatrolReward(ActionEvaluation<ClaimPatrolReward> eval)
+        {
+            PatrolReward.Claiming.Value = false;
         }
 
         /// <summary>

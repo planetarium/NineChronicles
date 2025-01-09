@@ -1045,7 +1045,7 @@ namespace Nekoyume.Game
         {
             position = MainCanvas.instance.Canvas.worldCamera.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
-            vfx.Play();
+            vfx?.Play();
         }
 
         public void ResetStore()
