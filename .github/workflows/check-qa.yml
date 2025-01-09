@@ -25,22 +25,6 @@ jobs:
                           nodes {
                             ... on ProjectV2ItemFieldSingleSelectValue {
                               name
-                              field {
-                                name
-                              }
-                            }
-                            ... on ProjectV2ItemFieldTextValue {
-                              text
-                              field {
-                                name
-                              }
-                            }
-                            ... on ProjectV2ItemFieldNumberValue {
-                              number
-                              field {
-                                name
-                              }
-                            }
                           }
                         }
                         content {
@@ -65,7 +49,7 @@ jobs:
             // Filter items where status is "QA"
             const itemsInQA = result.organization.projectV2.items.nodes.filter(item => {
               const statusField = item.fieldValues.nodes.find(
-                field => field.field.name === "Status" && field.name === "QA"
+                field => field.name === "QA"
               );
               return !!statusField && !!item.content;
             });
