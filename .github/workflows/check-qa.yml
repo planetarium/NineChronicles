@@ -49,6 +49,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECTS_PAT }}
           ACTIONS_STEP_DEBUG: true
+          ACTIONS_RUNNER_DEBUG: true
       - name: Add assignee to issues in QA
         if: steps.fetch_items.outputs.result != '[]'
         uses: actions/github-script@v6
