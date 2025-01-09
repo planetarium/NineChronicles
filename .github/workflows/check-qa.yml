@@ -57,7 +57,8 @@ jobs:
 
             // Return issue numbers in QA
             return itemsInQA.map(item => item.content.number);
-
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
       - name: Add assignee to issues in QA
         if: steps.fetch_items.outputs.result != '[]'
         uses: actions/github-script@v6
@@ -74,3 +75,4 @@ jobs:
             }
         env:
           ISSUE_NUMBERS: ${{ steps.fetch_items.outputs.result }}
+          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
