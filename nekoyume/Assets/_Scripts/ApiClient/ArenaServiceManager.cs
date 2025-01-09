@@ -277,5 +277,58 @@ namespace Nekoyume.ApiClient
 
             return token;
         }
+
+        public async Task<string> PostSeasonsBattleRequestAsync(string txId, int logId, string seasonId, string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
+            }
+
+            string response = null;
+            string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+            try
+            {
+                await UniTask.SwitchToMainThread();
+                await Client.PostSeasonsBattleRequestAsync(txId, logId, seasonId, jwt,
+                    on200OK: result =>
+                    {
+                        response = result;
+                    },
+                    on401Unauthorized: unauthorizedResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"TxId: {txId} | " +
+                            $"LogId: {logId}");
+                    },
+                    on404NotFound: notFoundResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Not found | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"TxId: {txId} | " +
+                            $"LogId: {logId}");
+                    },
+                    onError: error =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post seasons battle request | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"TxId: {txId} | " +
+                            $"LogId: {logId} | " +
+                            $"Error: {error}");
+                    });
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[ArenaServiceManager] Exception while posting seasons battle request | " +
+                    $"SeasonId: {seasonId} | " +
+                    $"TxId: {txId} | " +
+                    $"LogId: {logId} | " +
+                    $"Error: {e.Message}");
+                throw;
+            }
+
+            return response;
+        }
     }
 }

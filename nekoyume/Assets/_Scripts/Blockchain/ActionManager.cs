@@ -35,6 +35,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.Blockchain
 {
+    using Nekoyume.ApiClient;
     using UniRx;
 
     /// <summary>
@@ -967,8 +968,20 @@ namespace Nekoyume.Blockchain
                 AirbridgeUnity.TrackEvent(evt);
 
                 ProcessAction(action);
-                _agent.TryGetTxId(action.Id, out var txId);
                 
+                _agent.TryGetTxId(action.Id, out var txId);
+                // todo: 아레나 서비스
+                // 타입변경되면 수정해야함
+                // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
+                var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToHex(), 0, RxProps.CurrentArenaSeasonId.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
+                task.ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                    {
+                        // 오류 처리
+                        NcDebug.LogError($"[ActionManager] 아레나 서비스 요청 실패: {t.Exception?.Message}");
+                    }
+                });
                 
                 _lastBattleActionId = action.Id;
                 return _agent.ActionRenderer.EveryRender<Action.Arena.Battle>()
