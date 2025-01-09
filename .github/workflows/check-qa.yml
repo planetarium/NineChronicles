@@ -1,56 +1,80 @@
-name: Assign QA on Issue Status Change
+name: Run Action When Project Status Changes to QA
 
 on:
-  issues:
+  workflow_dispatch:
+  project_card:
     types:
-      - edited
+      - moved
 
 jobs:
-  assign-qa:
+  check-project-status:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if issue state changed to QA
-        id: check_state
+      - name: Check if project status changed to QA
+        id: check_status
         uses: actions/github-script@v6
         with:
           script: |
-            // Check if the issue's state is 'QA'
-            if (context.payload.changes && context.payload.changes.labels) {
-              const oldLabels = context.payload.changes.labels.from.map(label => label.name);
-              const newLabels = context.payload.issue.labels.map(label => label.name);
+            const projectCard = context.payload.project_card;
 
-              // Return true if 'QA' label was added
-              return newLabels.includes("QA") && !oldLabels.includes("QA");
+            if (!projectCard || !projectCard.column_id) {
+              console.log("No project card or column change detected.");
+              return false;
             }
-            return false;
+
+            const columnId = projectCard.column_id;
+
+            // Replace with your actual column ID for "QA"
+            const qaColumnId = "your_QA_column_id";
+
+            return columnId === qaColumnId;
 
       - name: Get current assignees
         id: get_assignees
+        if: steps.check_status.outputs.result == 'true'
         uses: actions/github-script@v6
         with:
           script: |
-            // Fetch the current assignees of the issue
-            const assignees = context.payload.issue.assignees.map(assignee => assignee.login);
-            return assignees;
+            const issueUrl = context.payload.project_card.content_url;
 
-      - name: Assign user if state is QA
-        if: steps.check_state.outputs.result == 'true'
+            if (!issueUrl.includes('/issues/')) {
+              console.log("This card is not linked to an issue.");
+              return [];
+            }
+
+            const issueNumber = issueUrl.split('/').pop();
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            return issue.data.assignees.map(assignee => assignee.login);
+
+      - name: Assign user when status is QA
+        if: steps.check_status.outputs.result == 'true'
         uses: actions/github-script@v6
         with:
           script: |
-            // Get the current assignees
+            const issueUrl = context.payload.project_card.content_url;
+
+            if (!issueUrl.includes('/issues/')) {
+              console.log("This card is not linked to an issue.");
+              return;
+            }
+
+            const issueNumber = issueUrl.split('/').pop();
             const currentAssignees = JSON.parse(process.env.CURRENT_ASSIGNEES || "[]");
             const newAssignee = "Geonpyo999";
-
-            // Add the new assignee to the list if not already present
+            // Combine current assignees and new assignee without duplicates
             const updatedAssignees = [...new Set([...currentAssignees, newAssignee])];
 
-            // Assign the updated list to the issue
+            // Add assignees to the issue
             github.rest.issues.addAssignees({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.issue.number,
-              assignees: updatedAssignees
+              issue_number: issueNumber,
+              assignees: updatedAssignees,
             });
         env:
           CURRENT_ASSIGNEES: ${{ steps.get_assignees.outputs.result }}
