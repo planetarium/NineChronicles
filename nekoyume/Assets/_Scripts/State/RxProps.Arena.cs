@@ -153,7 +153,7 @@ namespace Nekoyume.State
             _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
             try{
-                var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetCurrentSeasonAsync((int)_arenaInfoTupleUpdatedBlockIndex);
+                var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetSeasonByBlockAsync(_arenaInfoTupleUpdatedBlockIndex);
                 _currentSeasonId = currentSeason.Id;
             }   
             catch (Exception e)
