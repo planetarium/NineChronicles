@@ -181,9 +181,11 @@ namespace Nekoyume.Blockchain
             DailyReward();
             RedeemCode();
             ChargeActionPoint();
+
             ClaimStakeReward();
             ClaimGifts();
             ClaimReward();
+            ClaimUnbonded();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -619,6 +621,16 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimUnbonded()
+        {
+            _actionRenderer.EveryRender<ClaimUnbonded>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimUnbonded)
                 .AddTo(_disposables);
         }
 
@@ -2955,6 +2967,11 @@ namespace Nekoyume.Blockchain
         }
 
         private void ResponseClaimReward(ActionEvaluation<ClaimReward> eval)
+        {
+            // Refresh Ncg and staking popup refresh
+        }
+
+        private void ResponseClaimUnbonded(ActionEvaluation<ClaimUnbonded> eval)
         {
             // Refresh Ncg and staking popup refresh
         }
