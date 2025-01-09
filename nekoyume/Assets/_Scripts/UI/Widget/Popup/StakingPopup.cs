@@ -388,7 +388,7 @@ namespace Nekoyume.UI
             if (nullableStakeState.HasValue)
             {
                 var stakeState = nullableStakeState.Value;
-                var cancellableBlockIndex = stakeState.CancellableBlockIndex;
+                var cancellableBlockIndex = stakeState.UnstakableBlockIndex;
                 if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit)
                 {
                     // before POS Staking state
