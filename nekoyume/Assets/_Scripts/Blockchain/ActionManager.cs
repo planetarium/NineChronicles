@@ -1934,6 +1934,18 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => HandleException(null, e));
         }
 
+        public IObservable<ActionEvaluation<ClaimPatrolReward>> ClaimPatrolReward()
+        {
+            var action = new ClaimPatrolReward(States.Instance.CurrentAvatarState.address);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimPatrolReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(null, e));
+        }
+
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
