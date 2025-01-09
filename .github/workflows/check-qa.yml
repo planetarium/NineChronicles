@@ -7,6 +7,7 @@ on:
 
 jobs:
   check-project-status:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Fetch items in QA column
