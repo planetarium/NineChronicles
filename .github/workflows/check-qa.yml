@@ -46,7 +46,7 @@ jobs:
 
             const result = await github.graphql(query, variables, {
               headers: {
-                authorization: Bearer ${process.env.GH_TOKEN}`
+                authorization: `Bearer ${process.env.GH_TOKEN}`
               }
             });
 
