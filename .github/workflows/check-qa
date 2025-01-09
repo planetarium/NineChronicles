@@ -1,0 +1,56 @@
+name: Assign QA on Issue Status Change
+
+on:
+  issues:
+    types:
+      - edited
+
+jobs:
+  assign-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if issue state changed to QA
+        id: check_state
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Check if the issue's state is 'QA'
+            if (context.payload.changes && context.payload.changes.labels) {
+              const oldLabels = context.payload.changes.labels.from.map(label => label.name);
+              const newLabels = context.payload.issue.labels.map(label => label.name);
+
+              // Return true if 'QA' label was added
+              return newLabels.includes("QA") && !oldLabels.includes("QA");
+            }
+            return false;
+
+      - name: Get current assignees
+        id: get_assignees
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Fetch the current assignees of the issue
+            const assignees = context.payload.issue.assignees.map(assignee => assignee.login);
+            return assignees;
+
+      - name: Assign user if state is QA
+        if: steps.check_state.outputs.result == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Get the current assignees
+            const currentAssignees = JSON.parse(process.env.CURRENT_ASSIGNEES || "[]");
+            const newAssignee = "Geonpyo999";
+
+            // Add the new assignee to the list if not already present
+            const updatedAssignees = [...new Set([...currentAssignees, newAssignee])];
+
+            // Assign the updated list to the issue
+            github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              assignees: updatedAssignees
+            });
+        env:
+          CURRENT_ASSIGNEES: ${{ steps.get_assignees.outputs.result }}
