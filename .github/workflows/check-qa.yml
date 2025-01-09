@@ -15,9 +15,9 @@ jobs:
         with:
           script: |
             const query = `
-              query($org: String!, $projectNumber: Int!) {
+              query($org: String!) {
                 organization(login: $org) {
-                  projectV2(number: $projectNumber) {
+                  projectV2(number: 97) {
                     items(first: 50) {
                       nodes {
                         id
@@ -25,9 +25,6 @@ jobs:
                           nodes {
                             ... on ProjectV2ItemFieldSingleSelectValue {
                               name
-                              field {
-                                name
-                              }
                             }
                           }
                         }
@@ -44,8 +41,7 @@ jobs:
             `;
 
             const variables = {
-              org: "planetarium",
-              projectNumber: 97
+              org: "planetarium"
             };
 
             const result = await github.graphql(query, variables);
@@ -53,14 +49,16 @@ jobs:
             // Filter items where status is "QA"
             const itemsInQA = result.organization.projectV2.items.nodes.filter(item => {
               const statusField = item.fieldValues.nodes.find(
-                field => field.field.name === "Status" && field.name === "QA"
+                field => field.name === "QA"
               );
               return !!statusField && !!item.content;
             });
 
             // Return issue numbers in QA
             return itemsInQA.map(item => item.content.number);
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECTS_PAT }}
+          ACTIONS_STEP_DEBUG: true
       - name: Add assignee to issues in QA
         if: steps.fetch_items.outputs.result != '[]'
         uses: actions/github-script@v6
@@ -77,3 +75,4 @@ jobs:
             }
         env:
           ISSUE_NUMBERS: ${{ steps.fetch_items.outputs.result }}
+          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
