@@ -29,6 +29,18 @@ jobs:
                                 name
                               }
                             }
+                            ... on ProjectV2ItemFieldTextValue {
+                              text
+                              field {
+                                name
+                              }
+                            }
+                            ... on ProjectV2ItemFieldNumberValue {
+                              number
+                              field {
+                                name
+                              }
+                            }
                           }
                         }
                         content {
