@@ -729,7 +729,7 @@ namespace Nekoyume.Blockchain
                     {
                         var popup = Widget.Find<IconAndButtonSystem>();
                         popup.Show(L10nManager.Localize("UI_ERROR"),
-                            "banned", L10nManager.Localize("UI_OK"), false);
+                            L10nManager.Localize("UI_TX_STAGE_FAILED"), L10nManager.Localize("UI_OK"));
                         popup.SetConfirmCallbackToExit();
                     }
                 })
