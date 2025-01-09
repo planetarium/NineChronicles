@@ -943,7 +943,7 @@ namespace Nekoyume.Blockchain
             List<RuneSlotInfo> runeInfos,
             int championshipId,
             int round,
-            int ticket
+            string token
         )
         {
             // TODO: 아레나 서비스
@@ -957,6 +957,7 @@ namespace Nekoyume.Blockchain
                     costumes = costumes,
                     equipments = equipments,
                     runeInfos = runeInfos,
+                    memo = token
                 };
 
                 var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
@@ -978,6 +979,9 @@ namespace Nekoyume.Blockchain
                 AirbridgeUnity.TrackEvent(evt);
 
                 ProcessAction(action);
+                _agent.TryGetTxId(action.Id, out var txId);
+                
+                
                 _lastBattleActionId = action.Id;
                 return _agent.ActionRenderer.EveryRender<Action.Arena.Battle>()
                     .Timeout(ActionTimeout)

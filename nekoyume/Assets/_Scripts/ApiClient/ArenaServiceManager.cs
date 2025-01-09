@@ -228,5 +228,54 @@ namespace Nekoyume.ApiClient
                 throw;
             }
         }
+
+        public async Task<string> GetSeasonsBattleTokenAsync(int seasonId, string opponentAvatarAddress, string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
+            }
+
+            string token = null;
+            string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+            try
+            {
+                await UniTask.SwitchToMainThread();
+                await Client.GetSeasonsBattleTokenAsync(seasonId, opponentAvatarAddress, jwt,
+                    on200OK: result =>
+                    {
+                        token = result;
+                    },
+                    on401Unauthorized: unauthorizedResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
+                    },
+                    on404NotFound: notFoundResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Not found | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
+                    },
+                    onError: error =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to get seasons battle token | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"} | " +
+                            $"Error: {error}");
+                    });
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[ArenaServiceManager] Exception while getting seasons battle token | " +
+                    $"SeasonId: {seasonId} | " +
+                    $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"} | " +
+                    $"Error: {e.Message}");
+                throw;
+            }
+
+            return token;
+        }
     }
 }
