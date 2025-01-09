@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print Global Env
-        run: echo $GITHUB_TOKEN
+        run: echo "$GITHUB_CONTEXT"
       - name: Fetch items in QA column
         id: fetch_items
         uses: actions/github-script@v6
