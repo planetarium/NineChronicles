@@ -1,78 +1,79 @@
-name: Run Action When Project Status Changes to QA
+name: Update Assignee on Project Status Change
 
 on:
-  workflow_dispatch:
-  project_card:
-    types:
-      - moved
+  schedule:
+    - cron: "*/5 * * * *" # 5분마다 실행
+  workflow_dispatch: # 수동으로 실행 가능
 
 jobs:
   check-project-status:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if project status changed to QA
-        id: check_status
+      - name: Fetch items in QA column
+        id: fetch_items
         uses: actions/github-script@v6
         with:
           script: |
-            const projectCard = context.payload.project_card;
+            const query = `
+              query($org: String!, $projectNumber: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $projectNumber) {
+                    items(first: 50) {
+                      nodes {
+                        id
+                        fieldValues(first: 10) {
+                          nodes {
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              name
+                              field {
+                                name
+                              }
+                            }
+                          }
+                        }
+                        content {
+                          ... on Issue {
+                            number
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
 
-            if (!projectCard || !projectCard.column_id) {
-              console.log("No project card or column change detected.");
-              return false;
-            }
+            const variables = {
+              org: "planetarium",
+              projectNumber: 97
+            };
 
-            const columnId = projectCard.column_id;
-            const qaColumnId = "e449b8e2";
+            const result = await github.graphql(query, variables);
 
-            return columnId === qaColumnId;
-
-      - name: Get current assignees
-        id: get_assignees
-        if: steps.check_status.outputs.result == 'true'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const issueUrl = context.payload.project_card.content_url;
-
-            if (!issueUrl.includes('/issues/')) {
-              console.log("This card is not linked to an issue.");
-              return [];
-            }
-
-            const issueNumber = issueUrl.split('/').pop();
-            const issue = await github.rest.issues.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
+            // Filter items where status is "QA"
+            const itemsInQA = result.organization.projectV2.items.nodes.filter(item => {
+              const statusField = item.fieldValues.nodes.find(
+                field => field.field.name === "Status" && field.name === "QA"
+              );
+              return !!statusField && !!item.content;
             });
 
-            return issue.data.assignees.map(assignee => assignee.login);
+            // Return issue numbers in QA
+            return itemsInQA.map(item => item.content.number);
 
-      - name: Assign user when status is QA
-        if: steps.check_status.outputs.result == 'true'
+      - name: Add assignee to issues in QA
+        if: steps.fetch_items.outputs.result != '[]'
         uses: actions/github-script@v6
         with:
           script: |
-            const issueUrl = context.payload.project_card.content_url;
-
-            if (!issueUrl.includes('/issues/')) {
-              console.log("This card is not linked to an issue.");
-              return;
+            const issueNumbers = JSON.parse(process.env.ISSUE_NUMBERS || "[]");
+            for (const issueNumber of issueNumbers) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                assignees: ["Geonpyo999"]
+              });
             }
-
-            const issueNumber = issueUrl.split('/').pop();
-            const currentAssignees = JSON.parse(process.env.CURRENT_ASSIGNEES || "[]");
-            const newAssignee = "Geonpyo999";
-            // Combine current assignees and new assignee without duplicates
-            const updatedAssignees = [...new Set([...currentAssignees, newAssignee])];
-
-            // Add assignees to the issue
-            github.rest.issues.addAssignees({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              assignees: updatedAssignees,
-            });
         env:
-          CURRENT_ASSIGNEES: ${{ steps.get_assignees.outputs.result }}
+          ISSUE_NUMBERS: ${{ steps.fetch_items.outputs.result }}
