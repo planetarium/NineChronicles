@@ -25,6 +25,7 @@ using Debug = UnityEngine.Debug;
 namespace Nekoyume.UI
 {
     using Helper;
+    using Nekoyume.ApiClient;
     using UniRx;
 
     public class ArenaJoin : Widget
@@ -108,6 +109,7 @@ namespace Nekoyume.UI
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            await RxProps.ArenaPostCurrentSeasonsParticipantsAsync();
             await UniTask.WhenAll(
                 RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash),
                 RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash));

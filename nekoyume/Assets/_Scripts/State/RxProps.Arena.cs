@@ -20,6 +20,7 @@ namespace Nekoyume.State
     using Libplanet.Common;
     using System.Security.Cryptography;
     using UniRx;
+    using static ArenaServiceClient;
 
     public static partial class RxProps
     {
@@ -60,6 +61,15 @@ namespace Nekoyume.State
         public static void UpdateArenaInfoToNext()
         {
             _arenaInfoTuple.Value = (_arenaInfoTuple.Value.next, null);
+        }
+
+        public static async UniTask<SeasonResponse> ArenaPostCurrentSeasonsParticipantsAsync()
+        {
+            var currentAvatar = _states.CurrentAvatarState;
+            var currentAvatarAddr = currentAvatar.address;
+            var portraitId = Util.GetPortraitId(BattleType.Arena);
+            var cp = Util.TotalCP(BattleType.Arena);
+            return await ApiClients.Instance.Arenaservicemanager.PostSeasonsParticipantsAsync(_currentSeasonId, currentAvatarAddr.ToString(), currentAvatar.NameWithHash, portraitId, cp, currentAvatar.level);
         }
 
         private static void StartArena()
@@ -152,16 +162,17 @@ namespace Nekoyume.State
 
             _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
-            try{
+            try
+            {
                 var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetSeasonByBlockAsync(_arenaInfoTupleUpdatedBlockIndex);
                 _currentSeasonId = currentSeason.Id;
-            }   
+            }
             catch (Exception e)
             {
                 NcDebug.LogError($"Failed to get current season: {e}");
                 return (null, null);
             }
-            
+
             var blockIndex = _agent.BlockIndex;
             var sheet = _tableSheets.ArenaSheet;
             if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
@@ -224,7 +235,7 @@ namespace Nekoyume.State
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
             var arenaInfo = new List<ArenaParticipantModel>();
-           
+
             // TODO: 신규아레나
             // var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
@@ -287,7 +298,8 @@ namespace Nekoyume.State
                 return avatarAddrAndScoresWithRank;
             }
 
-            var playerArenaInfo = arenaInfo.FirstOrDefault(p => p.AvatarAddr == currentAvatarAddr);
+            var playerArenaInfo = await ApiClients.Instance.Arenaservicemanager.GetSeasonsLeaderboardParticipantAsync(_currentSeasonId, currentAvatarAddr.ToString());
+
             if (playerArenaInfo is null)
             {
                 var maxRank = arenaInfo.Max(r => r.Rank);
@@ -298,17 +310,12 @@ namespace Nekoyume.State
             }
             else
             {
-                playerArenaInfo.Cp = cp;
                 playerArenaInfo.PortraitId = portraitId;
-                // TODO: 신규아레나
-                // 점수 추가해야함
-                // var playerScoreValue = ((List)stateBulk[playerScoreAddr])?[1];
-                // playerArenaInfo.Score = playerScoreValue == null ? 0 : (Integer)playerScoreValue;
             }
 
             // TODO: 신규아레나
-            // _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
             // _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
+            // _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
 
             SetArenaInfoOnMainThreadAsync(playerArenaInfo).Forget();
             return arenaInfo;
