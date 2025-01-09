@@ -9,14 +9,11 @@ env:
   GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
   ACTIONS_STEP_DEBUG: true
   ACTIONS_RUNNER_DEBUG: true
-  GITHUB_CONTEXT: ${{ toJSON(github) }}
 jobs:
   check-project-status:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - name: Print Global Env
-        run: echo "$GITHUB_CONTEXT"
       - name: Fetch items in QA column
         id: fetch_items
         uses: actions/github-script@v6
