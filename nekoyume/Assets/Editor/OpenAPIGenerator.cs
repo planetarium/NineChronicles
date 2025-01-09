@@ -124,6 +124,10 @@ namespace Nekoyume
                 {
                     methodParameters[i] = EditorGUILayout.IntField(paramName + " (int)", (int)methodParameters[i]);
                 }
+                else if (paramType == typeof(Int64))
+                {
+                    methodParameters[i] = EditorGUILayout.LongField(paramName + " (Int64)", (Int64)methodParameters[i]);
+                }
                 else if (paramType == typeof(float))
                 {
                     methodParameters[i] = EditorGUILayout.FloatField(paramName + " (float)", (float)methodParameters[i]);
