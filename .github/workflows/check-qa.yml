@@ -44,11 +44,7 @@ jobs:
               org: "planetarium"
             };
 
-            const result = await github.graphql(query, variables, {
-              headers: {
-                authorization: `Bearer ${process.env.GH_TOKEN}`
-              }
-            });
+            const result = await github.graphql(query, variables);
 
             // Filter items where status is "QA"
             const itemsInQA = result.organization.projectV2.items.nodes.filter(item => {
@@ -61,7 +57,8 @@ jobs:
             // Return issue numbers in QA
             return itemsInQA.map(item => item.content.number);
         env:
-          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+          GITHUB_TOKEN: ${{ secrets.PROJECTS_PAT }}
+          ACTIONS_STEP_DEBUG: 'true'
       - name: Add assignee to issues in QA
         if: steps.fetch_items.outputs.result != '[]'
         uses: actions/github-script@v6
