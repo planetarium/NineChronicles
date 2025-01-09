@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             Rune,
             Material,
             Costume,
-            FungibleAsset
+            FungibleAsset,
         }
 
         [SerializeField]
