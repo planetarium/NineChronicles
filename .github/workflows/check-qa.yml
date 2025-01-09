@@ -22,17 +22,29 @@ jobs:
             const query = `
               query($org: String!) {
                 organization(login: $org) {
-                  projectsV2(first: 50) {
-                    nodes {
-                      title
-                      number
-                      id
+                  projectV2(number: 97) {
+                    items(first: 50) {
+                      nodes {
+                        id
+                        fieldValues(first: 10) {
+                          nodes {
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              name
+                            }
+                          }
+                        }
+                        content {
+                          ... on Issue {
+                            number
+                          }
+                        }
+                      }
                     }
                   }
                 }
               }
             `;
-
+            
             const variables = {
               org: "planetarium"
             };
