@@ -25,6 +25,7 @@ jobs:
                           nodes {
                             ... on ProjectV2ItemFieldSingleSelectValue {
                               name
+                            }
                           }
                         }
                         content {
