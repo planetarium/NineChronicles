@@ -2833,8 +2833,9 @@ namespace Nekoyume.Blockchain
 
         private void ResponseStake(ActionEvaluation<Stake> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
+                Debug.LogError($"Failed to stake. {eval.Exception}");
                 return;
             }
 
