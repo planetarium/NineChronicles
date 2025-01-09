@@ -159,37 +159,66 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 200) // OK
-                {
-                    string responseBody = request.downloadHandler.text;
-                    AvailableOpponentsResponse result = System.Text.Json.JsonSerializer.Deserialize<AvailableOpponentsResponse>(responseBody);
-                    on200OK?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                GetSeasonsAvailableopponentsAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                GetSeasonsAvailableopponentsAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
+        }
+    }
+
+    private void GetSeasonsAvailableopponentsAsyncProcessResponse(UnityWebRequest webRequest, Action<AvailableOpponentsResponse> on200OK, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                AvailableOpponentsResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<AvailableOpponentsResponse>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200OK(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -227,36 +256,63 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 201) // Created
-                {
-                    string responseBody = request.downloadHandler.text;
-                    on201Created?.Invoke(responseBody);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                PostSeasonsAvailableopponentsAsyncProcessResponse(request, on201Created, on401Unauthorized, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                PostSeasonsAvailableopponentsAsyncProcessResponse(request, on201Created, on401Unauthorized, on404NotFound, onError);
             }
+        }
+    }
+
+    private void PostSeasonsAvailableopponentsAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on201Created, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 201) // Created
+        {
+            if (on201Created != null)
+            {
+                on201Created(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -295,36 +351,63 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 200) // OK
-                {
-                    string responseBody = request.downloadHandler.text;
-                    on200OK?.Invoke(responseBody);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                GetSeasonsBattleTokenAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                GetSeasonsBattleTokenAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
+        }
+    }
+
+    private void GetSeasonsBattleTokenAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200OK, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                on200OK(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -363,36 +446,63 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 200) // OK
-                {
-                    string responseBody = request.downloadHandler.text;
-                    on200OK?.Invoke(responseBody);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                PostSeasonsBattleRequestAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                PostSeasonsBattleRequestAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
+        }
+    }
+
+    private void PostSeasonsBattleRequestAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200OK, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                on200OK(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -430,36 +540,63 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 200) // OK
-                {
-                    string responseBody = request.downloadHandler.text;
-                    on200OK?.Invoke(responseBody);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                GetSeasonsBattleAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                GetSeasonsBattleAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
+        }
+    }
+
+    private void GetSeasonsBattleAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200OK, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                on200OK(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -493,37 +630,66 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 200) // OK
-                {
-                    string responseBody = request.downloadHandler.text;
-                    LeaderboardEntryResponse result = System.Text.Json.JsonSerializer.Deserialize<LeaderboardEntryResponse>(responseBody);
-                    on200OK?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                GetSeasonsLeaderboardParticipantsAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                GetSeasonsLeaderboardParticipantsAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
             }
+        }
+    }
+
+    private void GetSeasonsLeaderboardParticipantsAsyncProcessResponse(UnityWebRequest webRequest, Action<LeaderboardEntryResponse> on200OK, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                LeaderboardEntryResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<LeaderboardEntryResponse>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200OK(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -570,44 +736,81 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 201) // Created
-                {
-                    string responseBody = request.downloadHandler.text;
-                    SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
-                    on201Created?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 401) // Unauthorized
-                {
-                    string responseBody = request.downloadHandler.text;
-                    UnauthorizedHttpResult result = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseBody);
-                    on401Unauthorized?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 409) // Conflict
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringConflict result = System.Text.Json.JsonSerializer.Deserialize<StringConflict>(responseBody);
-                    on409Conflict?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                PostSeasonsParticipantsAsyncProcessResponse(request, on201Created, on401Unauthorized, on404NotFound, on409Conflict, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                PostSeasonsParticipantsAsyncProcessResponse(request, on201Created, on401Unauthorized, on404NotFound, on409Conflict, onError);
             }
+        }
+    }
+
+    private void PostSeasonsParticipantsAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonResponse> on201Created, Action<UnauthorizedHttpResult> on401Unauthorized, Action<StringNotFound> on404NotFound, Action<StringConflict> on409Conflict, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 201) // Created
+        {
+            if (on201Created != null)
+            {
+                SeasonResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on201Created(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                UnauthorizedHttpResult responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UnauthorizedHttpResult>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 409) // Conflict
+        {
+            if (on409Conflict != null)
+            {
+                StringConflict responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringConflict>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on409Conflict(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
@@ -636,30 +839,51 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                if (request.responseCode == 200) // OK
-                {
-                    string responseBody = request.downloadHandler.text;
-                    SeasonResponse result = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseBody);
-                    on200OK?.Invoke(result);
-                    return;
-                }
-                if (request.responseCode == 404) // Not Found
-                {
-                    string responseBody = request.downloadHandler.text;
-                    StringNotFound result = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseBody);
-                    on404NotFound?.Invoke(result);
-                    return;
-                }
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    onError?.Invoke(request.error);
-                    return;
-                }
+                GetSeasonsByblockAsyncProcessResponse(request, on200OK, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                onError?.Invoke(ex.Message);
+                GetSeasonsByblockAsyncProcessResponse(request, on200OK, on404NotFound, onError);
             }
+        }
+    }
+
+    private void GetSeasonsByblockAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonResponse> on200OK, Action<StringNotFound> on404NotFound, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                SeasonResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200OK(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Not Found
+        {
+            if (on404NotFound != null)
+            {
+                StringNotFound responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<StringNotFound>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on404NotFound(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
         }
     }
 
