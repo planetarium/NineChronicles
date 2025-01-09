@@ -4,12 +4,18 @@ on:
   schedule:
     - cron: "*/5 * * * *" # 5분마다 실행
   workflow_dispatch: # 수동으로 실행 가능
-
+env:
+  GITHUB_TOKEN: ${{ secrets.PROJECTS_PAT }}
+  GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+  ACTIONS_STEP_DEBUG: true
+  ACTIONS_RUNNER_DEBUG: true
 jobs:
   check-project-status:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
+      - name: Print Global Env
+        run: echo $GITHUB_TOKEN
       - name: Fetch items in QA column
         id: fetch_items
         uses: actions/github-script@v6
@@ -50,10 +56,6 @@ jobs:
 
             // Return issue numbers in QA
             return itemsInQA.map(item => item.content.number);
-        env:
-          GITHUB_TOKEN: ${{ secrets.PROJECTS_PAT }}
-          ACTIONS_STEP_DEBUG: true
-          ACTIONS_RUNNER_DEBUG: true
       - name: Add assignee to issues in QA
         if: steps.fetch_items.outputs.result != '[]'
         uses: actions/github-script@v6
@@ -70,4 +72,3 @@ jobs:
             }
         env:
           ISSUE_NUMBERS: ${{ steps.fetch_items.outputs.result }}
-          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
