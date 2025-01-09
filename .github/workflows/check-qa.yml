@@ -1,8 +1,6 @@
 name: Update Assignee on Project Status Change
 
 on:
-  schedule:
-    - cron: "*/5 * * * *" # 5분마다 실행
   workflow_dispatch: # 수동으로 실행 가능
 env:
   GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
