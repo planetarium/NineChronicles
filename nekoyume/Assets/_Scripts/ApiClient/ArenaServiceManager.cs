@@ -35,6 +35,7 @@ namespace Nekoyume.ApiClient
 
         public static string CreateJwt(PrivateKey privateKey, string avatarAddress)
         {
+            avatarAddress = "2DB02d98129DaAcBB9730E5147f3FE10505f8D65";
             avatarAddress = avatarAddress.StartsWith("0x") ? avatarAddress.Substring(2) : avatarAddress;
             var payload = new
             {
@@ -86,8 +87,18 @@ namespace Nekoyume.ApiClient
                                 Score = opponent.Score,
                             })
                     );
-                    }, onError: error =>
+                    },
+                    on404NotFound: notFoundResult =>
                     {
+                        UniTask.Void(async () => await Client.PostSeasonsAvailableopponentsAsync(seasonId, jwt));
+                        NcDebug.LogError($"[ArenaServiceManager] Not found | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | " +
+                            $"Error: {notFoundResult}");
+                    },
+                    onError: error =>
+                    {
+                        UniTask.Void(async () => await Client.PostSeasonsAvailableopponentsAsync(seasonId, jwt));
                         NcDebug.LogError($"[ArenaServiceManager] Failed to get available opponents | " +
                             $"SeasonId: {seasonId} | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
