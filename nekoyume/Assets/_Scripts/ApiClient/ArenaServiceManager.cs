@@ -35,7 +35,6 @@ namespace Nekoyume.ApiClient
 
         public static string CreateJwt(PrivateKey privateKey, string avatarAddress)
         {
-            avatarAddress = "2DB02d98129DaAcBB9730E5147f3FE10505f8D65";
             avatarAddress = avatarAddress.StartsWith("0x") ? avatarAddress.Substring(2) : avatarAddress;
             var payload = new
             {
@@ -195,7 +194,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<SeasonResponse> PostSeasonsParticipantsAsync(int seasonId, string avatarAddress, string nameWithHash, int portraitId, Int64 cp, int level)
+        public async Task<string> PostSeasonsParticipantsAsync(int seasonId, string avatarAddress, string nameWithHash, int portraitId, Int64 cp, int level)
         {
             if (!IsInitialized)
             {
@@ -213,7 +212,7 @@ namespace Nekoyume.ApiClient
                     Level = level
                 };
 
-                SeasonResponse seasonResponse = null;
+                string seasonResponse = null;
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
                 await Client.PostSeasonsParticipantsAsync(seasonId, jwt, request,
                     on201Created: result =>
@@ -240,14 +239,14 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<string> GetSeasonsBattleTokenAsync(int seasonId, string opponentAvatarAddress, string avatarAddress)
+        public async Task<BattleTokenResponse> GetSeasonsBattleTokenAsync(int seasonId, string opponentAvatarAddress, string avatarAddress)
         {
             if (!IsInitialized)
             {
                 throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
             }
 
-            string token = null;
+            BattleTokenResponse token = null;
             string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
             try
             {
@@ -289,7 +288,7 @@ namespace Nekoyume.ApiClient
             return token;
         }
 
-        public async Task<string> PostSeasonsBattleRequestAsync(string txId, int logId, string seasonId, string avatarAddress)
+        public async Task<string> PostSeasonsBattleRequestAsync(string txId, int logId, int seasonId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -340,6 +339,55 @@ namespace Nekoyume.ApiClient
             }
 
             return response;
+        }
+
+        public async Task<BattleLogResponse> GetSeasonsBattleAsync(int battleLogId, int seasonId, string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
+            }
+
+            BattleLogResponse battleLogResponse = null;
+            string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+            try
+            {
+                await UniTask.SwitchToMainThread();
+                await Client.GetSeasonsBattleAsync(battleLogId, seasonId, jwt,
+                    on200OK: result =>
+                    {
+                        battleLogResponse = result;
+                    },
+                    on401Unauthorized: unauthorizedResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"BattleLogId: {battleLogId}");
+                    },
+                    on404NotFound: notFoundResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Not found | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"BattleLogId: {battleLogId}");
+                    },
+                    onError: error =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to get seasons battle | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"BattleLogId: {battleLogId} | " +
+                            $"Error: {error}");
+                    });
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[ArenaServiceManager] Exception while getting seasons battle | " +
+                    $"SeasonId: {seasonId} | " +
+                    $"BattleLogId: {battleLogId} | " +
+                    $"Error: {e.Message}");
+                throw;
+            }
+
+            return battleLogResponse;
         }
     }
 }
