@@ -57,6 +57,8 @@ namespace Nekoyume.Blockchain
 
         public static ActionManager Instance => Game.Game.instance.ActionManager;
 
+        private List<Tuple<ActionBase,System.Action<TxId>>> _cachedPostProcessedActions = new();
+
         public static bool IsLastBattleActionId(Guid actionId)
         {
             return actionId == Instance._lastBattleActionId;
@@ -101,6 +103,12 @@ namespace Nekoyume.Blockchain
                 foreach (var gameAction in gameActions)
                 {
                     _actionIdToTxIdBridge[gameAction.Id] = (tx.Id, _agent.BlockIndex);
+                    var existingAction = _cachedPostProcessedActions.FirstOrDefault(a => ReferenceEquals(a.Item1, gameAction));
+                    if (existingAction != null)
+                    {
+                        existingAction.Item2?.Invoke(tx.Id);
+                        _cachedPostProcessedActions.Remove(existingAction);
+                    }
                 }
             }).AddTo(_disposables);
         }
@@ -969,19 +977,20 @@ namespace Nekoyume.Blockchain
 
                 ProcessAction(action);
                 
-                _agent.TryGetTxId(action.Id, out var txId);
-                // todo: 아레나 서비스
-                // 타입변경되면 수정해야함
-                // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
-                var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToHex(), 0, RxProps.CurrentArenaSeasonId.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
-                task.ContinueWith(t =>
-                {
-                    if (t.IsFaulted)
+                _cachedPostProcessedActions.Add(Tuple.Create<ActionBase, Action<TxId>>(action, (txId) => {
+                    // todo: 아레나 서비스
+                    // 타입변경되면 수정해야함
+                    // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
+                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToHex(), 0, RxProps.CurrentArenaSeasonId.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
+                    task.ContinueWith(t =>
                     {
-                        // 오류 처리
-                        NcDebug.LogError($"[ActionManager] 아레나 서비스 요청 실패: {t.Exception?.Message}");
-                    }
-                });
+                        if (t.IsFaulted)
+                        {
+                            // 오류 처리
+                            NcDebug.LogError($"[ActionManager] 아레나 서비스 요청 실패: {t.Exception?.Message}");
+                        }
+                    });
+                }));
                 
                 _lastBattleActionId = action.Id;
                 return _agent.ActionRenderer.EveryRender<Action.Arena.Battle>()
