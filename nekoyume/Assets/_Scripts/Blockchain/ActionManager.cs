@@ -37,6 +37,7 @@ namespace Nekoyume.Blockchain
 {
     using Nekoyume.ApiClient;
     using UniRx;
+    using static ArenaServiceClient;
 
     /// <summary>
     /// Creates an action of the game and puts it in the agent.
@@ -940,7 +941,7 @@ namespace Nekoyume.Blockchain
             List<RuneSlotInfo> runeInfos,
             int championshipId,
             int round,
-            string token
+            BattleTokenResponse token
         )
         {
             // TODO: 아레나 서비스
@@ -954,7 +955,7 @@ namespace Nekoyume.Blockchain
                     costumes = costumes,
                     equipments = equipments,
                     runeInfos = runeInfos,
-                    memo = token
+                    memo = token.Token
                 };
 
                 var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
@@ -981,7 +982,7 @@ namespace Nekoyume.Blockchain
                     // todo: 아레나 서비스
                     // 타입변경되면 수정해야함
                     // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
-                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToHex(), 0, RxProps.CurrentArenaSeasonId.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
+                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleLogId, RxProps.CurrentArenaSeasonId, States.Instance.CurrentAvatarState.address.ToHex());
                     task.ContinueWith(t =>
                     {
                         if (t.IsFaulted)

@@ -2,19 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using static ArenaServiceClient;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
 
 namespace Nekoyume.Game.Battle
@@ -117,7 +122,15 @@ namespace Nekoyume.Game.Battle
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
-            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
+
+            // todo: 아레나 서비스
+            // 서비스에서 데이터가 갱신안되어있을수있어서 폴링처리 진행해야함.
+            yield return new WaitForSeconds(5.0f);
+            var battleResponseTask = ApiClients.Instance.Arenaservicemanager.GetSeasonsBattleAsync(RxProps.LastBattleLogId, RxProps.CurrentArenaSeasonId, myAvatarAddress.ToHex());
+            yield return battleResponseTask.AsCoroutine();
+            var battleResponse = battleResponseTask.Result;
+
+            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount, battleResponse));
         }
 
         private IEnumerator CoStart(
@@ -145,7 +158,8 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoEnd(
             ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
-            (int, int)? winDefeatCount = null)
+            (int, int)? winDefeatCount = null,
+            BattleLogResponse battleLogResponse = null)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             ActionRenderHandler.Instance.Pending = false;
@@ -161,7 +175,7 @@ namespace Nekoyume.Game.Battle
             arenaCharacter.ShowSpeech("PLAYER_WIN");
             arenaCharacter.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
             Widget.Find<ArenaBattle>().Close();
-            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount);
+            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount, battleLogResponse);
             yield return null;
         }
 

@@ -18,6 +18,7 @@ using Nekoyume.UI.Model;
 namespace Nekoyume.State
 {
     using Libplanet.Common;
+    using Libplanet.Types.Tx;
     using System.Security.Cryptography;
     using UniRx;
     using static ArenaServiceClient;
@@ -57,10 +58,18 @@ namespace Nekoyume.State
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
         private static long _arenaInfoTupleUpdatedBlockIndex;
         private static int _currentSeasonId;
+        private static int _lastBattleLogId;
+
         public static int CurrentArenaSeasonId
         {
             get => _currentSeasonId;
             private set => _currentSeasonId = value;
+        }
+
+        public static int LastBattleLogId
+        {
+            get => _lastBattleLogId;
+            set => _lastBattleLogId = value;
         }
         
 
@@ -69,7 +78,7 @@ namespace Nekoyume.State
             _arenaInfoTuple.Value = (_arenaInfoTuple.Value.next, null);
         }
 
-        public static async UniTask<SeasonResponse> ArenaPostCurrentSeasonsParticipantsAsync()
+        public static async UniTask<string> ArenaPostCurrentSeasonsParticipantsAsync()
         {
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
