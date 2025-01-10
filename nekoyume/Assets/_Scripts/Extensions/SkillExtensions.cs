@@ -87,7 +87,6 @@ namespace Nekoyume
                         {
                             return $"{actionBuffSheetRow.Chance}%";
                         }
-
                         break;
                     default:
                         break;
@@ -103,6 +102,17 @@ namespace Nekoyume
                 var buffRow = sheets.StatBuffSheet[firstBuffId];
                 power += buffRow.Value;
                 showPercent = buffRow.OperationType == StatModifier.OperationType.Percentage;
+            }
+
+            if (skillSheetRow != null)
+            {
+                switch (skillSheetRow.SkillCategory)
+                {
+                    case SkillCategory.CriticalDamageBuff:
+                        return $"({power / 100}%)";
+                    default:
+                        break;
+                }
             }
 
             var valueText = power.ToString();
