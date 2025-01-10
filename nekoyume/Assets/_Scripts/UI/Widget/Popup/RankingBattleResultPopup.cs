@@ -8,6 +8,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using static ArenaServiceClient;
 
 namespace Nekoyume.UI
 {
@@ -53,7 +54,8 @@ namespace Nekoyume.UI
             ArenaLog log,
             IReadOnlyList<ItemBase> rewardItems,
             System.Action onClose,
-            (int win, int defeat)? winDefeatCount = null)
+            (int win, int defeat)? winDefeatCount = null,
+            BattleLogResponse battleLogResponse = null)
         {
             base.Show();
 
@@ -70,7 +72,16 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
-            scoreText.text = $"{log.Score}";
+            NcDebug.Log($"battleLogResponse: {battleLogResponse}");
+            NcDebug.Log($"log.Score: {log.Score}");
+            if (battleLogResponse != null)
+            {
+                scoreText.text = $"{battleLogResponse.ParticipantScore - battleLogResponse.ParticipantScoreChange} + {battleLogResponse.ParticipantScoreChange}";
+            }
+            else
+            {
+                scoreText.text = $"{log.Score}";
+            }
             winLoseCountText.text = winDefeatCount.HasValue
                 ? $"Win {winDefeatCount.Value.win} Lose {winDefeatCount.Value.defeat}"
                 : string.Empty;

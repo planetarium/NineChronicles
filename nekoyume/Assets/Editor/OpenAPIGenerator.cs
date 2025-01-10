@@ -793,13 +793,13 @@ namespace Nekoyume
 
             switch (jsonType)
             {
-                case "string": return "string";
+                case "string": return "string" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
                 case "integer":
                     if (jsonNode["format"]?.ToString() == "int64")
-                        return "Int64";
-                    return "int";
-                case "boolean": return "bool";
-                case "number": return "decimal";
+                        return "Int64" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                    return "int" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                case "boolean": return "bool" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                case "number": return "decimal" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
 
                 default: return "object";
             }
