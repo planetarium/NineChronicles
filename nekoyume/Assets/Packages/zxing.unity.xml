@@ -9523,7 +9523,7 @@
         </member>
         <member name="M:ZXing.PDF417.Internal.PDF417ScanningDecoder.verifyCodewordCount(System.Int32[],System.Int32)">
             <summary>
-            Verifies that all is well with the the codeword array.
+            Verifies that all is well with the codeword array.
             </summary>
             <param name="codewords">Codewords.</param>
             <param name="numECCodewords">Number EC codewords.</param>

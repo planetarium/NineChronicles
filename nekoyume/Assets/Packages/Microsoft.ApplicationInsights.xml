@@ -3733,7 +3733,7 @@
         </member>
         <member name="M:Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing.IHeartbeatDefaultPayloadProvider.SetDefaultPayload(System.Collections.Generic.IEnumerable{System.String},Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing.IHeartbeatProvider)">
             <summary>
-            Call to initiate the setting of properties in the the given heartbeat provider.
+            Call to initiate the setting of properties in the given heartbeat provider.
             </summary>
             <param name="disabledFields">List of any default heartbeat payload field names that the user has specified as being disabled.</param>
             <param name="provider">The heartbeat provider to set the values into.</param>
