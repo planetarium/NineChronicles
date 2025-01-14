@@ -24,9 +24,9 @@ jobs:
         id: check_milestone
         run: |
           if [ "${{ github.event_name }}" == "issues" ]; then
-            NUMBER=$(( ${{ github.event.issue.number }} ))
+            NUMBER=${{ github.event.issue.number }}
           else
-            NUMBER=$((${{ github.event.pull_request.number }} ))
+            NUMBER=${{ github.event.pull_request.number }}
           fi
 
           MILESTONE=$(gh api graphql -f query='query($number: Int!, $owner: String!, $repo: String!) {
@@ -44,7 +44,7 @@ jobs:
                 }
               }
             }
-          }' -f number=$NUMBER -f owner=planetarium -f repo=NineChronicles --jq '.data.repository.issueOrPullRequest.milestone.title')
+          }' -F number=$NUMBER -f owner=planetarium -f repo=NineChronicles --jq '.data.repository.issueOrPullRequest.milestone.title')
 
           echo "milestone=$MILESTONE" >> $GITHUB_ENV
           if [ -z "$MILESTONE" ]; then
