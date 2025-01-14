@@ -127,7 +127,14 @@ namespace Nekoyume.UI
                     iconImage.sprite = SpriteHelper.GetItemIcon(model.CostumeRow.Id);
                 }
                 recipeOptionView.SetOptions(model.CostumeStatRows);
-                combatPointText.text = $"CP {costumeSheet.GetCP(model.CostumeRow.Id)}";
+
+                var statsMap = new StatsMap();
+                foreach (var r in costumeSheet.OrderedList.Where(r => r.CostumeId == model.CostumeRow.Id))
+                {
+                    statsMap.AddStatValue(r.StatType, r.Stat);
+                }
+                var cp = CPHelper.DecimalToInt(CPHelper.GetStatsCP(statsMap));
+                combatPointText.text = $"CP {cp}";
 
                 skillTooltip.gameObject.SetActive(true);
                 foreach (Transform child in skillTooltip.transform)
