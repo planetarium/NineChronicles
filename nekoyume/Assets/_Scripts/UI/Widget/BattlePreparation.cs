@@ -18,7 +18,6 @@ using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
 using EventType = Nekoyume.EnumType.EventType;

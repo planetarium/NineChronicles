@@ -61,6 +61,7 @@ namespace Nekoyume.UI.Module
         private RectTransform tooltipSocket;
 
         private readonly Dictionary<ItemSubType, List<InventoryItem>> _equipments = new();
+        private readonly List<InventoryItem> _allEquipments = new();
         private readonly List<InventoryItem> _consumables = new();
         private readonly List<InventoryItem> _materials = new();
         private readonly List<InventoryItem> _costumes = new();
@@ -180,6 +181,7 @@ namespace Nekoyume.UI.Module
             bool reverseOrder = false)
         {
             _equipments.Clear();
+            _allEquipments.Clear();
             _consumables.Clear();
             _materials.Clear();
             _costumes.Clear();
@@ -192,8 +194,7 @@ namespace Nekoyume.UI.Module
             }
 
             _selectedModel = null;
-            foreach (var item in
-                inventory.Items.OrderByDescending(x => x.item is ITradableItem))
+            foreach (var item in inventory.Items)
             {
                 if (item.Locked)
                 {
@@ -213,6 +214,15 @@ namespace Nekoyume.UI.Module
                 _fungibleAssets.Add(new InventoryItem(fav));
             }
 
+            var itemSlotState = States.Instance.CurrentItemSlotStates[battleType];
+            UpdateEquipmentEquipped(itemSlotState.Equipments);
+            UpdateCostumes(itemSlotState.Costumes);
+            var equippedRuneState = States.Instance.GetEquippedRuneStates(battleType);
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            UpdateRuneEquipped(equippedRuneState, battleType, runeListSheet);
+            UpdateRuneNotification(GetBestRunes(battleType));
+
+            SortItems();
             var models = GetModels(_activeTabType);
             if (reverseOrder)
             {
@@ -221,14 +231,6 @@ namespace Nekoyume.UI.Module
 
             scroll.UpdateData(models, resetScrollOnEnable);
             onUpdateInventory?.Invoke(this, inventory);
-
-            var itemSlotState = States.Instance.CurrentItemSlotStates[battleType];
-            UpdateEquipmentEquipped(itemSlotState.Equipments);
-            UpdateCostumes(itemSlotState.Costumes);
-            var equippedRuneState = States.Instance.GetEquippedRuneStates(battleType);
-            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            UpdateRuneEquipped(equippedRuneState, battleType, runeListSheet);
-            UpdateRuneNotification(GetBestRunes(battleType));
         }
 
         private void AddItem(ItemBase itemBase, int count = 1)
@@ -258,7 +260,6 @@ namespace Nekoyume.UI.Module
                             !Util.IsUsableItem(itemBase));
                         _consumables.Add(inventoryItem);
                     }
-
                     break;
                 case ItemType.Costume:
                     inventoryItem = CreateInventoryItem(
@@ -279,6 +280,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     _equipments[itemBase.ItemSubType].Add(inventoryItem);
+                    _allEquipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
                     var material = (Material)itemBase;
@@ -299,6 +301,127 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+#region Sort Items
+
+        private void SortItems()
+        {
+            _consumables.Sort((x, y) =>
+            {
+                if (x == y)
+                {
+                    return 0;
+                }
+
+                var xIsTradable = x?.ItemBase is ITradableItem;
+                var yIsTradable = y?.ItemBase is ITradableItem;
+                var compareTradable = xIsTradable.CompareTo(yIsTradable);
+                if (compareTradable != 0)
+                {
+                    return compareTradable * -1;
+                }
+
+                var xGrade = x.ItemBase.Grade;
+                var yGrade = y.ItemBase.Grade;
+                return yGrade.CompareTo(xGrade);
+            });
+
+            _costumes.Sort((x, y) =>
+            {
+                if (x == y)
+                {
+                    return 0;
+                }
+
+                var xIsTradable = x?.ItemBase is ITradableItem;
+                var yIsTradable = y?.ItemBase is ITradableItem;
+                var compareTradable = xIsTradable.CompareTo(yIsTradable);
+                if (compareTradable != 0)
+                {
+                    return compareTradable * -1;
+                }
+
+                var xGrade = x.ItemBase.Grade;
+                var yGrade = y.ItemBase.Grade;
+                return yGrade.CompareTo(xGrade);
+            });
+
+            SortEquipments();
+            SortMaterials();
+            _runes.Sort((x, y) => x.DimObjectEnabled.Value.CompareTo(y.DimObjectEnabled.Value));
+        }
+
+        private void SortEquipments()
+        {
+            var bestItems = GetUsableBestEquipments();
+            UpdateEquipmentNotification(bestItems);
+
+            _allEquipments.Sort((x, y) =>
+            {
+                if (x.ItemBase is null || y.ItemBase is null)
+                {
+                    return 0;
+                }
+
+                var compareEquipped = y.Equipped.Value.CompareTo(x.Equipped.Value);
+                if (compareEquipped != 0)
+                {
+                    return compareEquipped;
+                }
+
+                var xIsBestItem = bestItems.Exists(bestItem => bestItem.Equals(x));
+                var yIsBestItem = bestItems.Exists(bestItem => bestItem.Equals(y));
+                var compareBestItems = yIsBestItem.CompareTo(xIsBestItem);
+                if (compareBestItems != 0)
+                {
+                    return compareBestItems;
+                }
+
+                var xSubType = x.ItemBase.ItemSubType == ItemSubType.Aura ? 0 : (int)x.ItemBase.ItemSubType;
+                var ySubType = y.ItemBase.ItemSubType == ItemSubType.Aura ? 0 : (int)y.ItemBase.ItemSubType;
+                var compareSubType = xSubType.CompareTo(ySubType);
+                if (compareSubType != 0)
+                {
+                    return compareSubType;
+                }
+
+                var xUsable = Util.IsUsableItem(x.ItemBase);
+                var yUsable = Util.IsUsableItem(y.ItemBase);
+                var compareUsable = yUsable.CompareTo(xUsable);
+                if (compareUsable != 0)
+                {
+                    return compareUsable;
+                }
+
+                var xCp = CPHelper.GetCP(x.ItemBase as Equipment);
+                var yCp = CPHelper.GetCP(y.ItemBase as Equipment);
+                return yCp.CompareTo(xCp);
+            });
+        }
+
+        private void SortMaterials()
+        {
+            _materials.Sort((x, y) =>
+            {
+                if (x.ItemBase is null || y.ItemBase is null)
+                {
+                    return 0;
+                }
+
+                var priorityComparison = (x.ItemBase as Material).GetMaterialPriority()
+                    .CompareTo((y.ItemBase as Material).GetMaterialPriority());
+                if (priorityComparison != 0)
+                {
+                    return priorityComparison;
+                }
+
+                var xIsTradable = x.ItemBase is ITradableItem;
+                var yIsTradable = y.ItemBase is ITradableItem;
+                return xIsTradable.CompareTo(yIsTradable);
+            });
+        }
+
+#endregion Sort Items
 
         private bool TryGetMaterial(Material material, bool isTradable, out InventoryItem model)
         {
@@ -359,10 +482,10 @@ namespace Nekoyume.UI.Module
             {
                 InventoryTabType.Consumable => _consumables,
                 InventoryTabType.Costume => _costumes,
-                InventoryTabType.Equipment => GetOrganizedEquipments(),
-                InventoryTabType.Material => GetOrganizedMaterials(),
-                InventoryTabType.Rune => GetOrganizedRunes(),
-                InventoryTabType.FungibleAsset => GetOrganizedFungibleAssets(),
+                InventoryTabType.Equipment => _allEquipments,
+                InventoryTabType.Material => _materials,
+                InventoryTabType.Rune => _runes,
+                InventoryTabType.FungibleAsset => _fungibleAssets,
                 _ => throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null)
             };
         }
@@ -373,8 +496,8 @@ namespace Nekoyume.UI.Module
             {
                 ItemType.Consumable => _consumables,
                 ItemType.Costume => _costumes,
-                ItemType.Equipment => GetOrganizedEquipments(),
-                ItemType.Material => GetOrganizedMaterials(),
+                ItemType.Equipment => _allEquipments,
+                ItemType.Material => _materials,
                 _ => throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null)
             };
         }
@@ -389,52 +512,6 @@ namespace Nekoyume.UI.Module
             _selectedModel?.Selected.SetValueAndForceNotify(false);
             _selectedModel = null;
             _onDoubleClickItem?.Invoke(item);
-        }
-
-        private List<InventoryItem> GetOrganizedEquipments()
-        {
-            var bestItems = GetUsableBestEquipments();
-            UpdateEquipmentNotification(bestItems);
-            var result = new List<InventoryItem>();
-            foreach (var pair in _equipments)
-            {
-                result.AddRange(pair.Value);
-            }
-
-            result = result
-                .OrderByDescending(x => x.Equipped.Value)
-                .ThenByDescending(x => bestItems.Exists(y => y.Equals(x)))
-                .ThenBy(x =>
-                {
-                    if (x.ItemBase.ItemSubType == ItemSubType.Aura)
-                    {
-                        return 0;
-                    }
-
-                    return (int)x.ItemBase.ItemSubType;
-                })
-                .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
-                .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
-                .ToList();
-
-            return result;
-        }
-
-        private List<InventoryItem> GetOrganizedMaterials()
-        {
-            return _materials
-                .OrderBy(x => (x.ItemBase as Material).GetMaterialPriority())
-                .ThenBy(x => x.ItemBase is ITradableItem).ToList();
-        }
-
-        private List<InventoryItem> GetOrganizedRunes()
-        {
-            return _runes.OrderBy(x => x.DimObjectEnabled.Value).ToList();
-        }
-
-        private List<InventoryItem> GetOrganizedFungibleAssets()
-        {
-            return _fungibleAssets;
         }
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
@@ -755,13 +832,10 @@ namespace Nekoyume.UI.Module
                 equipments.AddRange(States.Instance.CurrentItemSlotStates[battleType].Equipments);
             }
 
-            foreach (var eps in _equipments.Values)
+            foreach (var equipment in _allEquipments)
             {
-                foreach (var equipment in eps)
-                {
-                    var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
-                    equipment.Equipped.SetValueAndForceNotify(equipped);
-                }
+                var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
+                equipment.Equipped.SetValueAndForceNotify(equipped);
             }
         }
 
@@ -846,13 +920,10 @@ namespace Nekoyume.UI.Module
 
         private void UpdateEquipmentEquipped(List<Guid> equipments)
         {
-            foreach (var eps in _equipments.Values)
+            foreach (var equipment in _allEquipments)
             {
-                foreach (var equipment in eps)
-                {
-                    var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
-                    equipment.Equipped.Value = equipped;
-                }
+                var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
+                equipment.Equipped.Value = equipped;
             }
         }
 
