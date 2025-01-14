@@ -19,7 +19,46 @@ jobs:
         with:
           project-url: https://github.com/orgs/planetarium/projects/97
           github-token: ${{ secrets.PROJECTS_PAT }}
+
+      - name: Check if milestone is empty
+        id: check_milestone
+        run: |
+          if [ "${{ github.event_name }}" == "issues" ]; then
+            NUMBER=${{ github.event.issue.number }}
+          else
+            NUMBER=${{ github.event.pull_request.number }}
+          fi
+
+          MILESTONE=$(gh api graphql -f query='query($number: Int!, $owner: String!, $repo: String!) {
+            repository(owner: $owner, name: $repo) {
+              issueOrPullRequest(number: $number) {
+                ... on Issue {
+                  milestone {
+                    title
+                  }
+                }
+                ... on PullRequest {
+                  milestone {
+                    title
+                  }
+                }
+              }
+            }
+          }' -F number=$NUMBER -f owner=planetarium -f repo=NineChronicles --jq '.data.repository.issueOrPullRequest.milestone.title')
+
+          echo "milestone=$MILESTONE" >> $GITHUB_ENV
+          if [ -z "$MILESTONE" ]; then
+            echo "Milestone is empty"
+            echo "set_milestone=true" >> $GITHUB_ENV
+          else
+            echo "Milestone is already set"
+            echo "set_milestone=false" >> $GITHUB_ENV
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+
       - name: Set milestone env
+        if: env.set_milestone == 'true'
         run: |
           echo "CURRENT_MILESTONE=$(gh api graphql -f query='query($name: String!, $owner: String!) {
           repository(name: $name, owner: $owner) {
@@ -35,7 +74,9 @@ jobs:
           }}' -f name=NineChronicles -f owner=planetarium --jq '.data.repository.milestones.nodes.[0].title')" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+
       - name: Set milestone field
+        if: env.set_milestone == 'true'
         uses: Julexar/Milestone-Assigner@v1.0
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"

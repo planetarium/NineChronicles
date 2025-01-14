@@ -275,7 +275,7 @@ namespace Nekoyume.UI
 
         public virtual void Show(bool ignoreShowAnimation = false)
         {
-            NcDebug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.", "Widget");
+            NcDebug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.", NcDebug.ChannelWidget);
             if (_coClose is not null)
             {
                 StopCoroutine(_coClose);
@@ -314,7 +314,7 @@ namespace Nekoyume.UI
 
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
-            NcDebug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.", "Widget");
+            NcDebug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.", NcDebug.ChannelWidget);
             if (WidgetStack.Count > 0 &&
                 WidgetStack.Peek() == gameObject)
             {
