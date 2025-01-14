@@ -15,51 +15,6 @@ on:
 name: Build-misc
 
 jobs:
-  build_9c:
-    name: build_lib9c
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    steps:
-    - uses: actions/checkout@master
-      with:
-        submodules: recursive
-    - run: hooks/pre-commit
-    - uses: unsplash/comment-on-pr@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        msg: >
-          @${{ github.actor }} Your pull request does not pass lint checks.
-          You probably haven't configured hooks in your local Git repository.
-          Please configure Git hooks in your local repository using the below
-          command:
-
-
-              git config core.hooksPath hooks
-      if: failure() && github.event_name == 'pull_request'
-    - run: sudo apt install libimage-exiftool-perl
-    - id: clv
-      run: .github/bin/check-libplanet-version.sh
-    - uses: unsplash/comment-on-pr@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: failure() && github.event_name == 'pull_request'
-      with:
-        msg: >
-          @${{ github.actor }} The versions of bundled Libplanet assemblies and
-          Libplanet submodule vendored by Lib9c apparently do not match:
-
-          - Libplanet submdoule: ${{ steps.clv.outputs.submodule_version }}
-
-          ${{ join(fromJSON(steps.clv.outputs.unmatches), fromJSON('"\n"')) }}
-
-
-          Leave a comment in this pull_request with the following command to
-          let the bot upgrade bundled Libplanet assemblies:
-
-          > /update-libplanet-dlls
-      # The action for command /update-libplanet-dlls is implemented below.
-
   update-libplanet-dlls:
     runs-on: ubuntu-20.04
     name: Update bundled Libplanet assemblies
