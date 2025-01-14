@@ -421,15 +421,6 @@ namespace Nekoyume.UI
                 }
                 case StageType.Mimisbrunnr:
                 {
-                    if (!CheckEquipmentElementalType())
-                    {
-                        NotificationSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
-                            NotificationCell.NotificationType.UnlockCondition);
-                        return;
-                    }
-
                     StartCoroutine(CoBattleStart(
                         _stageType,
                         CostType.ActionPoint));
@@ -520,15 +511,6 @@ namespace Nekoyume.UI
 
         private void ShowBoosterPopup()
         {
-            if (_stageType == StageType.Mimisbrunnr && !CheckEquipmentElementalType())
-            {
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
-                    NotificationCell.NotificationType.UnlockCondition);
-                return;
-            }
-
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
@@ -715,14 +697,6 @@ namespace Nekoyume.UI
             return maxActionPoint / stage.CostAP;
         }
 
-        private bool CheckEquipmentElementalType()
-        {
-            var (equipments, _) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var elementalTypes = GetElementalTypes();
-            return equipments.All(x =>
-                elementalTypes.Contains(x.ElementalType));
-        }
-
         private void UpdateStartButton()
         {
             startButton.UpdateObjects();
@@ -765,19 +739,6 @@ namespace Nekoyume.UI
             }
 
             blockStartingTextObject.SetActive(!canBattle);
-        }
-
-        public List<ElementalType> GetElementalTypes()
-        {
-            if (_stageType != StageType.Mimisbrunnr)
-            {
-                return ElementalTypeExtension.GetAllTypes();
-            }
-
-            var mimisbrunnrSheet = TableSheets.Instance.MimisbrunnrSheet;
-            return mimisbrunnrSheet.TryGetValue(_stageId, out var mimisbrunnrSheetRow)
-                ? mimisbrunnrSheetRow.ElementalTypes
-                : ElementalTypeExtension.GetAllTypes();
         }
 
         public void TutorialActionClickBattlePreparationFirstInventoryCellView()
