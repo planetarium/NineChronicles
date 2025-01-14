@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Nekoyume.Action;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.LiveAsset;
@@ -493,8 +494,10 @@ namespace Nekoyume.UI.Module
             return toggleTransform ? toggleTransform : null;
         }
 
-        public void UpdateAssets(AssetVisibleState state)
+        public void UpdateAssets(AssetVisibleState state, [CallerMemberName] string caller = "")
         {
+            NcDebug.Log($"[{nameof(HeaderMenuStatic)}] UpdateAssets: {state} from {caller}", NcDebug.ChannelWidget);
+
             switch (state)
             {
                 case AssetVisibleState.Main:
