@@ -2,12 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -76,9 +74,6 @@ namespace Nekoyume.UI.Module
         private readonly List<InventoryItem> _cachedNotificationCostumes = new();
         private readonly List<InventoryItem> _cachedNotificationRunes = new();
         private readonly List<InventoryItem> _cachedFocusItems = new();
-        private readonly List<ElementalType> _elementalTypes = new();
-
-        private readonly Dictionary<ItemType, List<Predicate<InventoryItem>>> _dimConditionFuncsByItemType = new();
 
         private static readonly ItemType[] ItemTypes = Enum.GetValues(typeof(ItemType)) as ItemType[];
 
@@ -117,11 +112,6 @@ namespace Nekoyume.UI.Module
             fungibleAssetButton.OnClick
                 .Subscribe(button => OnTabButtonClick(button, InventoryTabType.FungibleAsset))
                 .AddTo(gameObject);
-
-            foreach (var type in ItemTypes)
-            {
-                _dimConditionFuncsByItemType[type] = new List<Predicate<InventoryItem>>();
-            }
         }
 
         private void OnTabButtonClick(IToggleable toggleable, InventoryTabType tabType)
@@ -150,21 +140,12 @@ namespace Nekoyume.UI.Module
         }
 
         private void SetInventoryTab(
-            List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             BattleType battleType = BattleType.Adventure,
             bool useConsumable = false,
             bool reverseOrder = false)
         {
             _disposablesOnSet.DisposeAllAndClear();
-            foreach (var type in ItemTypes)
-            {
-                _dimConditionFuncsByItemType[type]?.Clear();
-            }
-
-            itemSetDimPredicates?.ForEach(tuple =>
-                _dimConditionFuncsByItemType[tuple.type]?.Add(tuple.predicate));
-
             ReactiveAvatarState.Inventory
                 .Subscribe(e => { SetInventory(e, onUpdateInventory, battleType, reverseOrder); })
                 .AddTo(_disposablesOnSet);
@@ -186,8 +167,6 @@ namespace Nekoyume.UI.Module
         {
             _activeTabType = tabType;
             scroll.UpdateData(GetModels(tabType), !toggle.IsToggledOn);
-            UpdateDimmedInventoryItem();
-
             ClearFocus();
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
@@ -241,7 +220,6 @@ namespace Nekoyume.UI.Module
             }
 
             scroll.UpdateData(models, resetScrollOnEnable);
-            UpdateDimmedInventoryItem();
             onUpdateInventory?.Invoke(this, inventory);
 
             var itemSlotState = States.Instance.CurrentItemSlotStates[battleType];
@@ -439,12 +417,6 @@ namespace Nekoyume.UI.Module
                 .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
                 .ToList();
 
-            if (_elementalTypes.Any())
-            {
-                result = result.OrderByDescending(x =>
-                    _elementalTypes.Exists(y => y.Equals(x.ItemBase.ElementalType))).ToList();
-            }
-
             return result;
         }
 
@@ -554,34 +526,7 @@ namespace Nekoyume.UI.Module
                 UnlockHelper.GetAvailableEquipmentSlots(level, States.Instance.GameConfigState);
 
             var bestItems = new List<InventoryItem>();
-            var selectedEquipments = new Dictionary<ItemSubType, List<InventoryItem>>();
-            if (_elementalTypes.Any())
-            {
-                foreach (var pair in _equipments)
-                {
-                    foreach (var item in pair.Value)
-                    {
-                        if (!_elementalTypes.Exists(x => x.Equals(item.ItemBase.ElementalType)))
-                        {
-                            continue;
-                        }
-
-                        if (!selectedEquipments.ContainsKey(item.ItemBase.ItemSubType))
-                        {
-                            selectedEquipments.Add(item.ItemBase.ItemSubType,
-                                new List<InventoryItem>());
-                        }
-
-                        selectedEquipments[item.ItemBase.ItemSubType].Add(item);
-                    }
-                }
-            }
-            else
-            {
-                selectedEquipments = _equipments;
-            }
-
-            foreach (var pair in selectedEquipments)
+            foreach (var pair in _equipments)
             {
                 var (_, slotCount) = availableSlots.FirstOrDefault(x => x.Item1.Equals(pair.Key));
                 var item = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
@@ -626,29 +571,6 @@ namespace Nekoyume.UI.Module
             }
 
             return best;
-        }
-
-        private void UpdateDimmedInventoryItem()
-        {
-            foreach (var itemType in ItemTypes)
-            {
-                if (_dimConditionFuncsByItemType[itemType].Any())
-                {
-                    foreach (var inventoryItem in itemType switch
-                        {
-                            ItemType.Consumable => _consumables,
-                            ItemType.Costume => _costumes,
-                            ItemType.Equipment => _equipments.SelectMany(pair => pair.Value),
-                            ItemType.Material => _materials,
-                            _ => throw new ArgumentOutOfRangeException()
-                        })
-                    {
-                        inventoryItem.DimObjectEnabled.Value =
-                            _dimConditionFuncsByItemType[itemType]
-                                .Any(predicate => predicate.Invoke(inventoryItem));
-                    }
-                }
-            }
         }
 
         public bool HasNotification()
@@ -787,21 +709,12 @@ namespace Nekoyume.UI.Module
             Action<InventoryItem> clickItem,
             Action<InventoryItem> doubleClickItem,
             Action<InventoryTabType> onClickTab,
-            IEnumerable<ElementalType> elementalTypes,
             BattleType battleType,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             bool useConsumable = false)
         {
-            _elementalTypes.Clear();
-            _elementalTypes.AddRange(elementalTypes);
             SetAction(clickItem, doubleClickItem, onClickTab);
-            var predicateByElementalType =
-                InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
-            var predicateList = predicateByElementalType != null
-                ? new List<(ItemType type, Predicate<InventoryItem>)>
-                    { (ItemType.Equipment, predicateByElementalType) }
-                : null;
-            SetInventoryTab(predicateList, onUpdateInventory, battleType, useConsumable);
+            SetInventoryTab(onUpdateInventory, battleType, useConsumable);
             _toggleGroup.DisabledFunc = () => false;
         }
 
@@ -819,7 +732,7 @@ namespace Nekoyume.UI.Module
             bool reverseOrder)
         {
             SetAction(clickItem);
-            SetInventoryTab(predicateList, onUpdateInventory, reverseOrder: reverseOrder);
+            SetInventoryTab(onUpdateInventory, reverseOrder: reverseOrder);
             _toggleGroup.DisabledFunc = () => true;
             StartCoroutine(CoUpdateEquipped());
         }
@@ -943,10 +856,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Focus(
-            ItemType itemType,
-            ItemSubType subType,
-            List<ElementalType> elementalTypes)
+        public void Focus(ItemType itemType, ItemSubType subType)
         {
             switch (itemType)
             {
@@ -965,29 +875,10 @@ namespace Nekoyume.UI.Module
             {
                 if (model.ItemBase.ItemSubType.Equals(subType))
                 {
-                    if (model.ItemBase.ItemType == ItemType.Equipment)
+                    model.Focused.Value = !model.Focused.Value;
+                    if (model.Focused.Value)
                     {
-                        if (elementalTypes.Exists(x =>
-                            x.Equals(model.ItemBase.ElementalType)))
-                        {
-                            model.Focused.Value = !model.Focused.Value;
-                            if (model.Focused.Value)
-                            {
-                                _cachedFocusItems.Add(model);
-                            }
-                        }
-                        else
-                        {
-                            model.Focused.Value = false;
-                        }
-                    }
-                    else
-                    {
-                        model.Focused.Value = !model.Focused.Value;
-                        if (model.Focused.Value)
-                        {
-                            _cachedFocusItems.Add(model);
-                        }
+                        _cachedFocusItems.Add(model);
                     }
                 }
                 else

@@ -130,12 +130,10 @@ namespace Nekoyume.UI.Module
         {
             _compareCp = compareCp;
             _consumableIds.Clear();
-            var elementalTypes = GetElementalTypes();
             inventory.SetAvatarInformation(
                 OnClickInventoryItem,
                 model => EquipOrUnequip(model),
                 OnClickTab,
-                elementalTypes,
                 _battleType);
 
             StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
@@ -373,7 +371,7 @@ namespace Nekoyume.UI.Module
         {
             if (slot.IsEmpty)
             {
-                inventory.Focus(slot.ItemType, slot.ItemSubType, GetElementalTypes());
+                inventory.Focus(slot.ItemType, slot.ItemSubType);
             }
             else
             {
@@ -1022,15 +1020,6 @@ namespace Nekoyume.UI.Module
 
             var cpScreen = Widget.Find<CPScreen>();
             cpScreen.Show(_previousCp, _currentCp);
-        }
-
-        private static List<ElementalType> GetElementalTypes()
-        {
-            var bp = Widget.Find<BattlePreparation>();
-            var elementalTypes = bp.isActiveAndEnabled
-                ? bp.GetElementalTypes()
-                : ElementalTypeExtension.GetAllTypes();
-            return elementalTypes;
         }
     }
 }
