@@ -95,6 +95,14 @@ namespace Nekoyume.Blockchain
 
         Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
 
+        Task<List> GetDelegationInfoByBlockHashAsync(Address address);
+
+        Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
+
+        Task<FungibleAssetValue> GetStakedByBlockHashAsync(Address address);
+
+        Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
+
         Task<AgentState> GetAgentStateAsync(Address address);
 
         Task<AgentState> GetAgentStateAsync(

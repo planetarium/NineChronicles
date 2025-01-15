@@ -450,6 +450,26 @@ namespace Nekoyume.Blockchain
             throw new NotImplementedException();
         }
 
+        public async Task<List> GetDelegationInfoByBlockHashAsync(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<FungibleAssetValue> GetStakedByBlockHashAsync(Address address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            throw new NotImplementedException();
+        }
+
         // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
         // since using BlockChain.GetNextWorldState() is not recommended.
         // These have to be done by render from constructor of BlockChain in the future.
