@@ -50,7 +50,7 @@ namespace Nekoyume.Blockchain
             Action<bool> callback
         );
 
-        void EnqueueAction(ActionBase actionBase);
+        void EnqueueAction(ActionBase actionBase, Func<TxId, Task<bool>> onTxIdReceived = null);
 
         IValue GetState(Address accountAddress, Address address);
         IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address);

@@ -294,8 +294,7 @@ namespace Nekoyume.UI
                                 runeInfos,
                                 _roundData.ChampionshipId,
                                 _roundData.Round,
-                                token)
-                            .Subscribe();
+                                token);
                     }
                     catch (Exception e)
                     {
