@@ -52,6 +52,7 @@ using Random = UnityEngine.Random;
 using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
+using Nekoyume.Module.Guild;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -284,6 +285,27 @@ namespace Nekoyume.Game
                         Debug.Log($"ClaimableRewardsByBlockHash: {fav}");
                     }).Forget();
                 }
+            }
+            if (Input.GetKeyDown("2"))
+            {
+                if (Agent is RPCAgent rpcAgent)
+                {
+                    UniTask.Run(async () =>
+                    {
+                        var rawValue = await rpcAgent.GetDelegationInfoByBlockHashAsync(States.Instance.AgentState.address);
+                        var userShared = rawValue[0].ToBigInteger();
+                        var allShared = rawValue[1].ToBigInteger();
+                        var delegateGuildGold = rawValue[2].ToFungibleAssetValue();
+                        var delegatedNcg = GuildModule.ConvertCurrency(delegateGuildGold,
+                            States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
+                        Debug.Log($"DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
+                    }).Forget();
+                }
+            }
+
+            if (Input.GetKeyDown("3"))
+            {
+                ActionManager.Instance.ClaimUnbonded();
             }
         }
 
