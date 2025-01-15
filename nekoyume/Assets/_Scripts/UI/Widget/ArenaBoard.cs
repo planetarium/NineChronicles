@@ -241,5 +241,18 @@ namespace Nekoyume.UI
 
             return (scrollData, 0);
         }
+
+        private async UniTask RefreshArenaBoardAsync()
+        {
+            // todo: 갱신가능한지 확인후 필요한 경우에만 갱신하도록 추가해야함.
+            // 로딩관련 처리 추가해야함.
+            await RxProps.ArenaPostCurrentSeasonsParticipantsAsync();
+            await RxProps.ArenaInformationOrderedWithScore.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash);
+        }
+
+        public void RefreshArenaBoard()
+        {
+            RefreshArenaBoardAsync().Forget();
+        }
     }
 }
