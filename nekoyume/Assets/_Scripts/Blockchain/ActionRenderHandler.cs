@@ -2888,7 +2888,7 @@ namespace Nekoyume.Blockchain
                 var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
                 var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
                 var stakingLevel = States.Instance.StakingLevel;
-                var stakedNcg = States.Instance.StakedBalanceState.Gold;
+                var stakedNcg = States.Instance.StakedBalance;
                 var itemSheet = TableSheets.Instance.ItemSheet;
                 // The first reward is given at the claimable block index.
                 var rewardSteps = prevStakeState.ClaimableBlockIndex == eval.BlockIndex

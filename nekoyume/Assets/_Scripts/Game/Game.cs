@@ -833,8 +833,7 @@ namespace Nekoyume.Game
             // NOTE: Initialize staking states after setting GameConfigState.
             var stakeAddr = Model.Stake.StakeState.DeriveAddress(Agent.Address);
             var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
-            var goldCurrency = States.GoldBalanceState.Gold.Currency;
-            var balance = goldCurrency * 0;
+            var balance = await Agent.GetStakedByBlockHashAsync(States.Instance.AgentState.address);
             var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
             var stakeRegularRewardSheet = new StakeRegularRewardSheet();
             var policySheet = TableSheets.StakePolicySheet;
@@ -867,7 +866,6 @@ namespace Nekoyume.Game
             else
             {
                 stakeState = stakeStateV2;
-                balance = await Agent.GetBalanceAsync(stakeAddr, goldCurrency);
                 if (Agent is RPCAgent)
                 {
                     sheetAddr = new[]
@@ -900,7 +898,7 @@ namespace Nekoyume.Game
                 : 0;
             States.Instance.SetStakeState(
                 stakeState,
-                new GoldBalanceState(stakeAddr, balance),
+                balance,
                 level,
                 stakeRegularFixedRewardSheet,
                 stakeRegularRewardSheet);

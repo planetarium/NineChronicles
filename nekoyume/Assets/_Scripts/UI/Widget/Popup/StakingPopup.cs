@@ -143,7 +143,7 @@ namespace Nekoyume.UI
             stakingNcgInputField.onEndEdit.AddListener(value =>
             {
                 var totalDeposit = (States.Instance.GoldBalanceState.Gold +
-                        States.Instance.StakedBalanceState.Gold)
+                        States.Instance.StakedBalance)
                     .MajorUnit;
                 stakingNcgInputField.textComponent.color =
                     BigInteger.TryParse(value, out var inputBigInt) && totalDeposit < inputBigInt
@@ -211,7 +211,7 @@ namespace Nekoyume.UI
 
         public void SetView()
         {
-            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var deposit = States.Instance.StakedBalance.MajorUnit;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
             OnDepositSet(deposit);
@@ -335,7 +335,7 @@ namespace Nekoyume.UI
             var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Application.OpenURL(linkInfo.GetLinkID()); });
             confirmUI.ConfirmCallback = () =>
             {
-                var majorUnit = States.Instance.StakedBalanceState.Gold.MajorUnit;
+                var majorUnit = States.Instance.StakedBalance.MajorUnit;
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 disposable.Dispose();
@@ -355,7 +355,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inputBigInt == States.Instance.StakedBalanceState.Gold.MajorUnit)
+            if (inputBigInt == States.Instance.StakedBalance.MajorUnit)
             {
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("UI_REQUIRE_DIFF_VALUE_WITH_EXIST"),
@@ -372,7 +372,7 @@ namespace Nekoyume.UI
             }
 
             var totalDepositNcg = States.Instance.GoldBalanceState.Gold +
-                States.Instance.StakedBalanceState.Gold;
+                States.Instance.StakedBalance;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
                 Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);
@@ -389,7 +389,7 @@ namespace Nekoyume.UI
             {
                 var stakeState = nullableStakeState.Value;
                 var cancellableBlockIndex = stakeState.ReceivedBlockIndex;
-                if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit)
+                if (inputBigInt < States.Instance.StakedBalance.MajorUnit)
                 {
                     if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
                     {
@@ -443,7 +443,7 @@ namespace Nekoyume.UI
                 apUsingPercent = apRow.Coefficient;
             }
 
-            var totalDepositNcg = states.StakedBalanceState.Gold + states.GoldBalanceState.Gold;
+            var totalDepositNcg = states.StakedBalance + states.GoldBalanceState.Gold;
             depositText.text = $"<Style=G0>{totalDepositNcg.GetQuantityString()}";
             stakedNcgValueText.text = stakedDeposit.ToString();
 
@@ -462,7 +462,7 @@ namespace Nekoyume.UI
         {
             var states = States.Instance;
             var level = states.StakingLevel;
-            var deposit = states.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var deposit = states.StakedBalance.MajorUnit;
             var regularSheet = states.StakeRegularRewardSheet;
             var regularFixedSheet = states.StakeRegularFixedRewardSheet;
             var stakeStateV2 = states.StakeStateV2;
