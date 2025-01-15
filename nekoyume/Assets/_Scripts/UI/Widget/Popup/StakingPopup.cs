@@ -388,10 +388,9 @@ namespace Nekoyume.UI
             if (nullableStakeState.HasValue)
             {
                 var stakeState = nullableStakeState.Value;
-                var cancellableBlockIndex = stakeState.UnstakableBlockIndex;
+                var cancellableBlockIndex = stakeState.ReceivedBlockIndex;
                 if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit)
                 {
-                    // before POS Staking state
                     if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
                     {
                         OneLineSystem.Push(MailType.System,
@@ -400,9 +399,6 @@ namespace Nekoyume.UI
                             NotificationCell.NotificationType.UnlockCondition);
                         return;
                     }
-
-                    // after POS Staking state
-                    // TODO: refundinterval, lockup refund ncg interval check
 
                     confirmTitle = "UI_CAUTION";
                     confirmContent = "UI_WARNING_STAKING_REDUCE";
