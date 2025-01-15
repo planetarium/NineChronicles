@@ -8,10 +8,16 @@ ci-out() {
 
 root="$(dirname "$0")/../.."
 packages="$root/nekoyume/Assets/Packages"
-submodule="$root/nekoyume/Assets/_Scripts/Lib9c/lib9c/.Libplanet"
+lib9c_props_path="$root/nekoyume/Assets/_Scripts/Lib9c/lib9c/Directory.Build.props"
+version_pattern="<LibplanetVersion>(.*)<\/LibplanetVersion>"
 
-git -C "$submodule" fetch --tags --depth=2147483647
-submodule_version="$(git -C "$submodule" describe --tags --abbrev=0)"
+if grep -qE "$version_pattern" "$lib9c_props_path"; then
+  sed_pattern="s/.*$version_pattern.*/\\1/p"
+  submodule_version="$(cat $lib9c_props_path | sed -nE $sed_pattern)"
+else
+  echo >&2 "The version of Libplanet is not specified in $lib9c_props_path."
+  exit 1
+fi
 
 echo >&2 "The version of Libplanet submodule vendored by Lib9c is:"
 echo "$submodule_version"

@@ -98,6 +98,8 @@ namespace Nekoyume.Blockchain
 
         public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new();
 
+        public readonly Subject<bool> OnTxStageEnded = new ();
+
         public BlockHash BlockTipHash { get; private set; }
 
         public HashDigest<SHA256> BlockTipStateRootHash { get; private set; }
@@ -762,6 +764,19 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe()
                 .AddTo(_disposables);
+            OnTxStageEnded
+                .ObserveOnMainThread()
+                .Subscribe(result =>
+                {
+                    if (!result)
+                    {
+                        var popup = Widget.Find<IconAndButtonSystem>();
+                        popup.Show(L10nManager.Localize("UI_ERROR"),
+                            L10nManager.Localize("UI_TX_STAGE_FAILED"), L10nManager.Localize("UI_OK"));
+                        popup.SetConfirmCallbackToExit();
+                    }
+                })
+                .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
 
             cancellationTokenSource = new CancellationTokenSource();
@@ -907,7 +922,7 @@ namespace Nekoyume.Blockchain
                 PrivateKey,
                 _genesis?.Hash,
                 actions.Select(action => action.PlainValue),
-                Currencies.Mead * 1,
+                FungibleAssetValue.Parse(Currencies.Mead, "0.00001"),
                 gasLimit
             );
 
@@ -929,7 +944,8 @@ namespace Nekoyume.Blockchain
                 $" Actions=[{actionsText}]");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
-            await _service.PutTransaction(tx.Serialize());
+            var result = await _service.PutTransaction(tx.Serialize());
+            OnTxStageEnded.OnNext(result);
             foreach (var action in actions)
             {
                 if (action is GameAction gameAction)
