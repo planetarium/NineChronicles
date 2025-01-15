@@ -326,8 +326,7 @@ namespace Nekoyume.Blockchain
 
         protected async UniTask UpdateStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var (
-                    stakeAddr,
+            var (stakeAddr,
                     stakeState,
                     deposit,
                     stakingLevel,
