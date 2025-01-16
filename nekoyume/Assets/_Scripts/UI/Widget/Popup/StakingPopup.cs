@@ -157,7 +157,7 @@ namespace Nekoyume.UI
                 ActionManager.Instance
                     .ClaimReward()
                     .Subscribe();
-                ncgArchiveButton.UpdateObjects();
+                SetNcgArchiveButtonLoading(true);
             }).AddTo(gameObject);
         }
 
@@ -187,21 +187,37 @@ namespace Nekoyume.UI
             CheckClaimNcgReward().Forget();
         }
 
-        private async UniTask CheckClaimNcgReward()
+        public async UniTask CheckClaimNcgReward()
         {
             var agent = Game.Game.instance.Agent;
             rewardNcgText.gameObject.SetActive(false);
             ncgLoadingIndicator.SetActive(true);
 
+            if (ncgArchiveButton.CurrentState.Value ==
+                ConditionalButton.State.Conditional)
+            {
+                return;
+            }
+
+            ncgArchiveButton.Interactable = false;
+            ncgArchiveButton.UpdateObjects();
+
             var claimableRewards = await agent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
             var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
             var claimableQuantity = fungibleAssetValue.RawValue;
 
-            ncgArchiveButton.SetCondition(() => claimableQuantity >= 1);
+            ncgArchiveButton.Interactable = claimableQuantity >= 1;
+            ncgArchiveButton.UpdateObjects();
 
             rewardNcgText.text = $"+{fungibleAssetValue.GetQuantityString()}";
             rewardNcgText.gameObject.SetActive(true);
             ncgLoadingIndicator.gameObject.SetActive(false);
+        }
+
+        public void SetNcgArchiveButtonLoading(bool loading)
+        {
+            ncgArchiveButton.SetCondition(() => !loading);
+            ncgArchiveButton.UpdateObjects();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

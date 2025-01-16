@@ -2968,12 +2968,53 @@ namespace Nekoyume.Blockchain
 
         private void ResponseClaimReward(ActionEvaluation<ClaimReward> eval)
         {
-            // Refresh Ncg and staking popup refresh
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to stake. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+
+                await UniTask.SwitchToMainThread();
+
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                    NotificationCell.NotificationType.Information);
+
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.SetNcgArchiveButtonLoading(false);
+                await stakingPopup.CheckClaimNcgReward();
+            });
         }
 
         private void ResponseClaimUnbonded(ActionEvaluation<ClaimUnbonded> eval)
         {
-            // Refresh Ncg and staking popup refresh
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to stake. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                    NotificationCell.NotificationType.Information);
+
+                Widget.Find<StakingPopup>().SetView();
+            });
         }
 
         internal class LocalRandom : System.Random, IRandom
