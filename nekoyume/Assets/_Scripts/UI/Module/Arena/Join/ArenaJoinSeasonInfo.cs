@@ -20,7 +20,8 @@ namespace Nekoyume.UI.Module.Arena.Join
             Medal = 1,
             NCG = 2,
             Food = 4,
-            Costume = 8
+            Costume = 8,
+            Courage = 16,
         }
 
         [SerializeField]
@@ -47,6 +48,8 @@ namespace Nekoyume.UI.Module.Arena.Join
         [SerializeField]
         private GameObject _costumeReward;
 
+        [SerializeField]
+        private GameObject _courageReward;
         [SerializeField]
         private List<Image> _currentRoundMedalImages;
 
@@ -143,6 +146,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             _medalReward.SetActive(false);
             _ncgReward.SetActive(false);
             _foodReward.SetActive(false);
+            _courageReward.SetActive(false);
 
             if (rewardType == RewardType.None)
             {
@@ -167,6 +171,11 @@ namespace Nekoyume.UI.Module.Arena.Join
             if ((rewardType & RewardType.Costume) == RewardType.Costume)
             {
                 _costumeReward.SetActive(true);
+            }
+
+            if ((rewardType & RewardType.Courage) == RewardType.Courage)
+            {
+                _courageReward.SetActive(true);
             }
         }
 

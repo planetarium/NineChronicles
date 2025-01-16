@@ -627,13 +627,13 @@ namespace Nekoyume.UI
 
             return data.RoundData.ArenaType switch
             {
-                ArenaType.OffSeason => ArenaJoinSeasonInfo.RewardType.Food,
+                ArenaType.OffSeason => ArenaJoinSeasonInfo.RewardType.None,
                 ArenaType.Season =>
-                    ArenaJoinSeasonInfo.RewardType.Food |
+                    ArenaJoinSeasonInfo.RewardType.Courage |
                     ArenaJoinSeasonInfo.RewardType.Medal |
                     ArenaJoinSeasonInfo.RewardType.NCG,
                 ArenaType.Championship =>
-                    ArenaJoinSeasonInfo.RewardType.Food |
+                    ArenaJoinSeasonInfo.RewardType.Courage |
                     ArenaJoinSeasonInfo.RewardType.Medal |
                     ArenaJoinSeasonInfo.RewardType.NCG,
                 // NOTE: Enable costume when championship rewards contains one.
