@@ -42,14 +42,17 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI depositText; // it shows having NCG, not staked.
         [SerializeField] private TextMeshProUGUI stakedNcgValueText; // it shows staked NCG, not having.
         [SerializeField] private Button closeButton;
-        [SerializeField] private Button ncgEditButton;
         [SerializeField] private Button migrateButton;
         [SerializeField] private Button stakingStartButton;
-        [SerializeField] private Button editCancelButton;
-        [SerializeField] private Button editSaveButton;
         [SerializeField] private GameObject editingUIParent;
         [SerializeField] private GameObject defaultUIParent;
         [SerializeField] private TMP_InputField stakingNcgInputField;
+
+        [Header("Editing")]
+        [SerializeField] private Button ncgEditButton;
+        [SerializeField] private Button editCancelButton;
+        [SerializeField] private ConditionalButton editSaveButton;
+        [SerializeField] private ConditionalButton unbondButton;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -93,6 +96,8 @@ namespace Nekoyume.UI
         private bool _benefitListViewsInitialized;
 
         private int[] _tempArenaBonusValues = { 0, 0, 100, 200, 200, 200, 200, 200, 200 };
+
+        private long _getUnbondClaimableHeight = -1;
 
         protected override void Awake()
         {
@@ -138,7 +143,18 @@ namespace Nekoyume.UI
                 LoadingHelper.ClaimStakeReward.Value = true;
                 archiveButton.UpdateObjects();
             }).AddTo(gameObject);
-            editSaveButton.onClick.AddListener(OnClickSaveButton);
+            editSaveButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                OnClickSaveButton();
+            });
+            unbondButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                ActionManager.Instance.ClaimUnbonded();
+                unbondButton.SetCondition(() => false);
+                unbondButton.UpdateObjects();
+            });
             editCancelButton.onClick.AddListener(() => { OnChangeEditingState(false); });
             informationBg.OnClick = () => { stakingInformationObject.SetActive(false); };
             stakingNcgInputField.onEndEdit.AddListener(value =>
@@ -185,6 +201,34 @@ namespace Nekoyume.UI
             }
 
             CheckClaimNcgReward().Forget();
+        }
+
+        private async UniTask CheckUnbondBlock()
+        {
+            var agent = Game.Game.instance.Agent;
+            editSaveButton.SetCondition(() => false);
+            editSaveButton.UpdateObjects();
+            unbondButton.SetCondition(() => false);
+            unbondButton.UpdateObjects();
+
+            var value = await agent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+            editSaveButton.SetCondition(() => true);
+            editSaveButton.UpdateObjects();
+
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            unbondButton.SetCondition(() => true);
+            unbondButton.Interactable = value != -1 && value <= blockIndex;
+            unbondButton.UpdateObjects();
+
+            _getUnbondClaimableHeight = value;
+        }
+
+        public void OnRenderClaimUnbonded()
+        {
+            unbondButton.SetCondition(() => false);
+            unbondButton.Interactable = false;
+            unbondButton.UpdateObjects();
+            _getUnbondClaimableHeight = -1;
         }
 
         public async UniTask CheckClaimNcgReward(bool callByActionRender = false)
@@ -323,6 +367,8 @@ namespace Nekoyume.UI
             currentBenefitsTabButton.SetToggledOff();
             levelBenefitsTabButton.OnClick.OnNext(levelBenefitsTabButton);
             levelBenefitsTabButton.SetToggledOn();
+
+            CheckUnbondBlock().Forget();
         }
 
         private void OnClickMigrateButton()
@@ -417,6 +463,16 @@ namespace Nekoyume.UI
                 {
                     if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
                     {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
+                                cancellableBlockIndex),
+                            NotificationCell.NotificationType.UnlockCondition);
+                        return;
+                    }
+
+                    if (_getUnbondClaimableHeight != -1)
+                    {
+                        // TODO: unbond 기달리라고 말하기
                         OneLineSystem.Push(MailType.System,
                             L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
                                 cancellableBlockIndex),

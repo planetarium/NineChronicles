@@ -2970,7 +2970,7 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
-                Debug.LogError($"Failed to stake. {eval.Exception}");
+                Debug.LogError($"Failed to claim reward. {eval.Exception}");
                 return;
             }
 
@@ -2982,6 +2982,7 @@ namespace Nekoyume.Blockchain
 
                 await UniTask.SwitchToMainThread();
 
+                // TODO: 문구 변경
                 NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
@@ -2997,7 +2998,7 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
-                Debug.LogError($"Failed to stake. {eval.Exception}");
+                Debug.LogError($"Failed to claim unbonded. {eval.Exception}");
                 return;
             }
 
@@ -3006,14 +3007,17 @@ namespace Nekoyume.Blockchain
                 await UpdateStakeStateAsync(eval);
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
+
+                await UniTask.SwitchToMainThread();
+
+                // TODO: 문구 변경
                 NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                     NotificationCell.NotificationType.Information);
 
-                Widget.Find<StakingPopup>().SetView();
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.OnRenderClaimUnbonded();
             });
         }
 

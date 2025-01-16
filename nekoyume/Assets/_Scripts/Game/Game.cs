@@ -263,50 +263,22 @@ namespace Nekoyume.Game
 
         private void Update()
         {
-            if (Input.GetKeyDown("["))
-            {
-                if (Agent is RPCAgent rpcAgent)
-                {
-                    UniTask.Run(async () =>
-                    {
-                        var value = await rpcAgent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
-                        Debug.Log($"UnbondClaimableHeightByBlockHash: {value}");
-                    }).Forget();
-                }
-            }
-            if (Input.GetKeyDown("]"))
-            {
-                if (Agent is RPCAgent rpcAgent)
-                {
-                    UniTask.Run(async () =>
-                    {
-                        var rawValue = await rpcAgent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
-                        var fav = new FungibleAssetValue(rawValue[0]);
-                        Debug.Log($"ClaimableRewardsByBlockHash: {fav}");
-                    }).Forget();
-                }
-            }
-            if (Input.GetKeyDown("2"))
-            {
-                if (Agent is RPCAgent rpcAgent)
-                {
-                    UniTask.Run(async () =>
-                    {
-                        var rawValue = await rpcAgent.GetDelegationInfoByBlockHashAsync(States.Instance.AgentState.address);
-                        var userShared = rawValue[0].ToBigInteger();
-                        var allShared = rawValue[1].ToBigInteger();
-                        var delegateGuildGold = rawValue[2].ToFungibleAssetValue();
-                        var delegatedNcg = GuildModule.ConvertCurrency(delegateGuildGold,
-                            States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
-                        Debug.Log($"DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
-                    }).Forget();
-                }
-            }
-
-            if (Input.GetKeyDown("3"))
-            {
-                ActionManager.Instance.ClaimUnbonded();
-            }
+            // if (Input.GetKeyDown("2"))
+            // {
+            //     if (Agent is RPCAgent rpcAgent)
+            //     {
+            //         UniTask.Run(async () =>
+            //         {
+            //             var rawValue = await rpcAgent.GetDelegationInfoByBlockHashAsync(States.Instance.AgentState.address);
+            //             var userShared = rawValue[0].ToBigInteger();
+            //             var allShared = rawValue[1].ToBigInteger();
+            //             var delegateGuildGold = rawValue[2].ToFungibleAssetValue();
+            //             var delegatedNcg = GuildModule.ConvertCurrency(delegateGuildGold,
+            //                 States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
+            //             Debug.Log($"DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
+            //         }).Forget();
+            //     }
+            // }
         }
 
         public void SetActionManager()
