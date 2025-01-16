@@ -116,6 +116,44 @@ namespace Nekoyume.ApiClient
             }
         }
 
+        public async Task<bool> PostSeasonsAvailableOpponentsAsync(int seasonId, string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
+            }
+
+            try
+            {
+                await UniTask.SwitchToMainThread();
+                string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+                bool response = false;
+
+                await Client.PostSeasonsAvailableopponentsAsync(seasonId, jwt,
+                    on201Created: result =>
+                    {
+                        response = true;
+                    },
+                    onError: error =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post available opponents | " +
+                            $"SeasonId: {seasonId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | " +
+                            $"Error: {error}");
+                    });
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[ArenaServiceManager] Exception while posting available opponents | " +
+                    $"SeasonId: {seasonId} | " +
+                    $"AvatarAddress: {avatarAddress ?? "null"} | " +
+                    $"Error: {e.Message}");
+                throw;
+            }
+        }
+        
         public async Task<ArenaParticipantModel> GetSeasonsLeaderboardParticipantAsync(int seasonId, string avatarAddress)
         {
             if (!IsInitialized)
