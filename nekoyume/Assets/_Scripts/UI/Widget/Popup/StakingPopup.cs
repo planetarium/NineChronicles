@@ -187,7 +187,7 @@ namespace Nekoyume.UI
             CheckClaimNcgReward().Forget();
         }
 
-        public async UniTask CheckClaimNcgReward()
+        public async UniTask CheckClaimNcgReward(bool callByActionRender = false)
         {
             var agent = Game.Game.instance.Agent;
             rewardNcgText.gameObject.SetActive(false);
@@ -205,6 +205,12 @@ namespace Nekoyume.UI
             var claimableRewards = await agent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
             var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
             var claimableQuantity = fungibleAssetValue.RawValue;
+
+            // action render시점에서 claimableQuantity가 이전 값을 갖고 있어 강제로 0으로 설정
+            if (callByActionRender)
+            {
+                claimableQuantity = 0;
+            }
 
             ncgArchiveButton.Interactable = claimableQuantity >= 1;
             ncgArchiveButton.UpdateObjects();

@@ -2989,7 +2989,7 @@ namespace Nekoyume.Blockchain
 
                 var stakingPopup = Widget.Find<StakingPopup>();
                 stakingPopup.SetNcgArchiveButtonLoading(false);
-                await stakingPopup.CheckClaimNcgReward();
+                await stakingPopup.CheckClaimNcgReward(true);
             });
         }
 
