@@ -591,7 +591,10 @@ namespace Nekoyume
                     if (!string.IsNullOrEmpty(classDescription))
                     {
                         sb.AppendLine("    /// <summary>");
-                        sb.AppendLine($"    /// <para>{classDescription}</para>");
+                        string processedDescription = classDescription
+                            .Replace("\r\n", "\r\n    /// ")
+                            .Replace("\n", "\n    /// ");
+                        sb.AppendLine($"    /// <para>{processedDescription}</para>");
                         sb.AppendLine("    /// </summary>");
                     }
 
@@ -604,7 +607,7 @@ namespace Nekoyume
                         var enumMapping = new Dictionary<string, string>();
 
                         var enumType = schema.Value["type"]?.ToString();
-                        if (enumType != "string")
+                        if (enumType != "string" && classDescription != null)
                         {
                             foreach (var line in classDescription.Split('\n'))
                             {
@@ -739,7 +742,10 @@ namespace Nekoyume
                             if (!string.IsNullOrEmpty(propertyDescription))
                             {
                                 sb.AppendLine("        /// <summary>");
-                                sb.AppendLine($"        /// <para>{propertyDescription}</para>");
+                                string processedDescription = propertyDescription
+                                    .Replace("\r\n", "\r\n    /// ")
+                                    .Replace("\n", "\n    /// ");
+                                sb.AppendLine($"        /// <para>{processedDescription}</para>");
                                 sb.AppendLine("        /// </summary>");
                             }
 
@@ -1032,9 +1038,9 @@ namespace Nekoyume
                         {
                             sb.AppendLine("    /// <summary>");
                             if (!string.IsNullOrEmpty(operationSummary))
-                                sb.AppendLine($"    /// <para>{operationSummary}</para>");
+                                sb.AppendLine($"    /// <para>{operationSummary.Replace("\r\n", "\r\n    /// ").Replace("\n", "\n    /// ")}</para>");
                             if (!string.IsNullOrEmpty(operationDescription))
-                                sb.AppendLine($"    /// <para>{operationDescription}</para>");
+                                sb.AppendLine($"    /// <para>{operationDescription.Replace("\r\n", "\r\n    /// ").Replace("\n", "\n    /// ")}</para>");
                             sb.AppendLine("    /// </summary>");
                         }
 
@@ -1097,7 +1103,7 @@ namespace Nekoyume
                         sb.AppendLine("        }");
                         sb.AppendLine("    }");
                         sb.AppendLine();
-                        
+
                         // ProcessResponse 메서드 생성
                         sb.AppendLine($"    private void {methodName}ProcessResponse(UnityWebRequest webRequest, {GetCallbackParameters(responses)}, Action<string> onError)");
                         sb.AppendLine("    {");
