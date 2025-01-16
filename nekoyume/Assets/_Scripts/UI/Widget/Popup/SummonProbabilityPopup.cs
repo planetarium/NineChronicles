@@ -57,6 +57,8 @@ namespace Nekoyume.UI
             var equipmentItemRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
             var runeSheet = tableSheets.RuneSheet;
             var equipmentItemSubRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
+            var costumeItemSheet = tableSheets.CostumeItemSheet;
+            var costumeStatSheet = tableSheets.CostumeStatSheet;
             var modelDict = new Dictionary<int,SummonDetailCell.Model>();
             foreach (var row in summonRows)
             {
@@ -85,6 +87,12 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    List<CostumeStatSheet.Row> costumeStatRows = new List<CostumeStatSheet.Row>();
+                    if (costumeItemSheet.TryGetValue(recipeId, out var costumeRow))
+                    {
+                        costumeStatRows = costumeStatSheet.OrderedList.Where(row => row.CostumeId == costumeRow.Id)?.ToList();
+                    }
+
                     var costType = (CostType)row.CostMaterial;
                     _dustObjectDict[costType].SetActive(true);
                     scroll.ContainedCostType.Add(costType);
@@ -100,6 +108,8 @@ namespace Nekoyume.UI
                         var cellModel = new SummonDetailCell.Model
                         {
                             EquipmentRow = equipmentRow,
+                            CostumeRow = costumeRow,
+                            CostumeStatRows = costumeStatRows,
                             EquipmentOptions = equipmentOptions,
                             RuneTicker = runeTicker,
                             RuneOptionInfo = runeOptionInfo,

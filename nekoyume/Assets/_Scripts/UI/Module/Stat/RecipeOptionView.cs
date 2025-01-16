@@ -137,6 +137,31 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void SetOptions(List<CostumeStatSheet.Row> costumeStatRows)
+        {
+            foreach (var optionView in optionViews)
+            {
+                optionView.parentObject.SetActive(false);
+            }
+
+            foreach (var view in skillViews)
+            {
+                view.parentObject.SetActive(false);
+            }
+
+            var siblingIndex = 1; // 0 is for the main option
+            foreach (var statRow in costumeStatRows)
+            {
+                var optionView = optionViews.First(x => !x.parentObject.activeSelf);
+                optionView.optionText.text = $"{statRow.StatType} {statRow.StatType.ValueToString(statRow.Stat)}";
+                optionView.percentageSlider.value = optionView.percentageSlider.maxValue;
+                optionView.sliderFillImage.color = BaseColor;
+                optionView.parentObject.transform.SetSiblingIndex(siblingIndex);
+                optionView.parentObject.SetActive(true);
+                siblingIndex++;
+            }
+        }
+
         public void SetOptions(RuneOptionSheet.Row.RuneOptionInfo option)
         {
             foreach (var optionView in optionViews)

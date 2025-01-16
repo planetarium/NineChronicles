@@ -575,6 +575,12 @@ namespace Nekoyume
                 : $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>{name}</color>";
         }
 
+        public static string GetLocalizedName(this CostumeItemSheet.Row costumeRow)
+        {
+            var name = L10nManager.LocalizeItemName(costumeRow.Id);
+            return $"<color=#{GetColorHexByGrade(costumeRow.Grade)}>{name}</color>";
+        }
+
         public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow,
             bool hasColor = true)
         {
