@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module.Lobby
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(OnEveryUpdateBlockIndex)
                 .AddTo(_disposables);
             OnUpdateStakingLevel(States.Instance.StakingLevel);
-            OnUpdateStakedBalance(States.Instance.StakedBalanceState.Gold);
+            OnUpdateStakedBalance(States.Instance.StakedBalance);
             OnEveryUpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
         }
 

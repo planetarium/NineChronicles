@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -31,6 +29,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
+using Nekoyume.Action.Guild;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
@@ -55,7 +54,6 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
-    using Data;
     using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
@@ -193,8 +191,11 @@ namespace Nekoyume.Blockchain
             DailyReward();
             RedeemCode();
             ChargeActionPoint();
+
             ClaimStakeReward();
             ClaimGifts();
+            ClaimReward();
+            ClaimUnbonded();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -620,6 +621,26 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsTerminated)
                 .ObserveOnMainThread()
                 .Subscribe(ExceptionClaimGifts)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimReward()
+        {
+            _actionRenderer.EveryRender<ClaimReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimUnbonded()
+        {
+            _actionRenderer.EveryRender<ClaimUnbonded>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimUnbonded)
                 .AddTo(_disposables);
         }
 
@@ -2834,8 +2855,9 @@ namespace Nekoyume.Blockchain
 
         private void ResponseStake(ActionEvaluation<Stake> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
+                Debug.LogError($"Failed to stake. {eval.Exception}");
                 return;
             }
 
@@ -2844,6 +2866,8 @@ namespace Nekoyume.Blockchain
                 await UpdateStakeStateAsync(eval);
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCrystalBalance(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 NotificationSystem.Push(
@@ -2876,7 +2900,7 @@ namespace Nekoyume.Blockchain
                 var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
                 var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
                 var stakingLevel = States.Instance.StakingLevel;
-                var stakedNcg = States.Instance.StakedBalanceState.Gold;
+                var stakedNcg = States.Instance.StakedBalance;
                 var itemSheet = TableSheets.Instance.ItemSheet;
                 // The first reward is given at the claimable block index.
                 var rewardSteps = prevStakeState.ClaimableBlockIndex == eval.BlockIndex
@@ -2954,6 +2978,57 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Alert);
         }
 
+        private void ResponseClaimReward(ActionEvaluation<ClaimReward> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim reward. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+
+                await UniTask.SwitchToMainThread();
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CLAIM_NCG_REWARD_SUCCESS"),
+                    NotificationCell.NotificationType.Information);
+
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.SetNcgArchiveButtonLoading(false);
+                await stakingPopup.CheckClaimNcgReward(true);
+            });
+        }
+
+        private void ResponseClaimUnbonded(ActionEvaluation<ClaimUnbonded> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim unbonded. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+
+                await UniTask.SwitchToMainThread();
+
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CLAIM_UNBONDED_REWARD_SUCCESS"),
+                    NotificationCell.NotificationType.Information);
+
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.OnRenderClaimUnbonded();
+            });
+        }
 
         internal class LocalRandom : System.Random, IRandom
         {

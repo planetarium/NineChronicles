@@ -26,6 +26,8 @@ using Nekoyume.UI.Scroller;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
+using Nekoyume.Action.Guild;
+using Nekoyume.Action.ValidatorDelegation;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module;
 
@@ -1762,10 +1764,9 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
-        public IObservable<ActionEvaluation<Stake>> Stake(
-            BigInteger amount)
+        public IObservable<ActionEvaluation<Stake>> Stake(BigInteger amount, Address avatarAddress)
         {
-            var action = new Stake(amount);
+            var action = new Stake(amount, avatarAddress);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<Stake>()
                 .Timeout(ActionTimeout)
@@ -1775,12 +1776,37 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionEvaluation<ClaimStakeReward>> ClaimStakeReward(
-            Address avatarAddress)
+        public IObservable<ActionEvaluation<ClaimStakeReward>> ClaimStakeReward(Address avatarAddress)
         {
             var action = new ClaimStakeReward(avatarAddress);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ClaimStakeReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<ClaimUnbonded>> ClaimUnbonded()
+        {
+            var action = new ClaimUnbonded();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimUnbonded>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<ClaimReward>> ClaimReward()
+        {
+            var action = new ClaimReward();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimReward>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()

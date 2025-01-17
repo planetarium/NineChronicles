@@ -2,22 +2,18 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
-using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Action.State;
 using Libplanet.Common;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Debug = UnityEngine.Debug;
-using static Lib9c.SerializeKeys;
 using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
@@ -46,8 +42,7 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
-        // NOTE: Staking Properties
-        public GoldBalanceState StakedBalanceState { get; private set; }
+        public FungibleAssetValue StakedBalance { get; private set; }
         public StakeState? StakeStateV2 { get; private set; }
         public int StakingLevel { get; private set; }
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
@@ -429,12 +424,12 @@ namespace Nekoyume.State
 
         public void SetStakeState(
             StakeState? stakeStateV2,
-            GoldBalanceState stakedBalanceState,
+            FungibleAssetValue stakedBalance,
             int stakingLevel,
             [CanBeNull] StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
             [CanBeNull] StakeRegularRewardSheet stakeRegularRewardSheet)
         {
-            StakedBalanceState = stakedBalanceState;
+            StakedBalance = stakedBalance;
             StakingLevel = stakingLevel;
             StakeStateV2 = stakeStateV2;
             StakeRegularFixedRewardSheet = stakeRegularFixedRewardSheet;
@@ -446,10 +441,7 @@ namespace Nekoyume.State
                 StakingSubject.OnNextStakeStateV2(StakeStateV2);
             }
 
-            if (StakedBalanceState is not null)
-            {
-                StakingSubject.OnNextStakedNCG(StakedBalanceState.Gold);
-            }
+            StakingSubject.OnNextStakedNCG(stakedBalance);
 
             if (StakeRegularRewardSheet is not null &&
                 StakeRegularFixedRewardSheet is not null)

@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Lib9c;
+using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
@@ -26,6 +28,13 @@ namespace Nekoyume.UI
 
     public class StakingPopup : PopupWidget
     {
+        [Serializable]
+        private struct CurrencyView
+        {
+            public GameObject view;
+            public TMP_Text amountText;
+        }
+
         [Header("Top")]
         [SerializeField] private Image levelIconImage;
 
@@ -33,21 +42,35 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI depositText; // it shows having NCG, not staked.
         [SerializeField] private TextMeshProUGUI stakedNcgValueText; // it shows staked NCG, not having.
         [SerializeField] private Button closeButton;
-        [SerializeField] private Button ncgEditButton;
         [SerializeField] private Button migrateButton;
         [SerializeField] private Button stakingStartButton;
-        [SerializeField] private Button editCancelButton;
-        [SerializeField] private Button editSaveButton;
         [SerializeField] private GameObject editingUIParent;
         [SerializeField] private GameObject defaultUIParent;
         [SerializeField] private TMP_InputField stakingNcgInputField;
 
+        [Header("Editing")]
+        [SerializeField] private Button ncgEditButton;
+        [SerializeField] private Button editCancelButton;
+        [SerializeField] private ConditionalButton editSaveButton;
+        [SerializeField] private ConditionalButton unbondButton;
+        [SerializeField] private TMP_Text unbondBlockText;
+
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
+        [SerializeField] private GameObject currentBenefitsTab;
+        [SerializeField] private GameObject levelBenefitsTab;
 
+        [Space]
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
+
+        [Space]
+        [SerializeField] private TMP_Text rewardNcgText;
+        [SerializeField] private ConditionalButton ncgArchiveButton;
+        [SerializeField] private GameObject ncgLoadingIndicator;
+
+        [Space]
         [SerializeField] private RectTransform scrollableRewardsRectTransform;
         [SerializeField] private Image stakingLevelImage;
         [SerializeField] private Image stakingRewardImage;
@@ -55,11 +78,9 @@ namespace Nekoyume.UI
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
-
         [SerializeField] private CategoryTabButton levelBenefitsTabButton;
-        [SerializeField] private GameObject currentBenefitsTab;
-        [SerializeField] private GameObject levelBenefitsTab;
 
+        [Header("etc")]
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
         [SerializeField] private GameObject stakingInformationObject;
         [SerializeField] private UIBackground informationBg;
@@ -76,6 +97,8 @@ namespace Nekoyume.UI
         private bool _benefitListViewsInitialized;
 
         private int[] _tempArenaBonusValues = { 0, 0, 100, 200, 200, 200, 200, 200, 200 };
+
+        private long _getUnbondClaimableHeight = -1;
 
         protected override void Awake()
         {
@@ -121,19 +144,38 @@ namespace Nekoyume.UI
                 LoadingHelper.ClaimStakeReward.Value = true;
                 archiveButton.UpdateObjects();
             }).AddTo(gameObject);
-            editSaveButton.onClick.AddListener(OnClickSaveButton);
+            editSaveButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                OnClickSaveButton();
+            });
+            unbondButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                ActionManager.Instance.ClaimUnbonded();
+                unbondButton.SetCondition(() => false);
+                unbondButton.UpdateObjects();
+            });
             editCancelButton.onClick.AddListener(() => { OnChangeEditingState(false); });
             informationBg.OnClick = () => { stakingInformationObject.SetActive(false); };
             stakingNcgInputField.onEndEdit.AddListener(value =>
             {
                 var totalDeposit = (States.Instance.GoldBalanceState.Gold +
-                        States.Instance.StakedBalanceState.Gold)
+                        States.Instance.StakedBalance)
                     .MajorUnit;
                 stakingNcgInputField.textComponent.color =
                     BigInteger.TryParse(value, out var inputBigInt) && totalDeposit < inputBigInt
                         ? Palette.GetColor(ColorType.TextDenial)
                         : _normalInputFieldColor;
             });
+            ncgArchiveButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                ActionManager.Instance
+                    .ClaimReward()
+                    .Subscribe();
+                SetNcgArchiveButtonLoading(true);
+            }).AddTo(gameObject);
         }
 
         public override void Initialize()
@@ -158,6 +200,87 @@ namespace Nekoyume.UI
             {
                 stakingInformationObject.SetActive(true);
             }
+
+            CheckClaimNcgReward().Forget();
+        }
+
+        private async UniTask CheckUnbondBlock()
+        {
+            var agent = Game.Game.instance.Agent;
+            editSaveButton.SetCondition(() => false);
+            editSaveButton.UpdateObjects();
+            unbondButton.SetCondition(() => false);
+            unbondButton.UpdateObjects();
+            unbondButton.gameObject.SetActive(false);
+            unbondBlockText.gameObject.SetActive(false);
+            var agentAddress = States.Instance.AgentState.address;
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            var value = await agent.GetUnbondClaimableHeightByStateRootHashAsync(blockTipStateRootHash, agentAddress);
+            editSaveButton.SetCondition(() => true);
+            editSaveButton.UpdateObjects();
+
+            var enableUnbondItems = value != -1;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            unbondButton.SetCondition(() => true);
+            unbondButton.gameObject.SetActive(enableUnbondItems && value <= blockIndex);
+            unbondButton.Interactable = true;
+            unbondButton.UpdateObjects();
+
+            unbondBlockText.gameObject.SetActive(value > blockIndex);
+            unbondBlockText.text =
+                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value);
+
+            _getUnbondClaimableHeight = value;
+        }
+
+        public void OnRenderClaimUnbonded()
+        {
+            unbondButton.SetCondition(() => false);
+            unbondButton.Interactable = false;
+            unbondButton.UpdateObjects();
+            _getUnbondClaimableHeight = -1;
+        }
+
+        public async UniTask CheckClaimNcgReward(bool callByActionRender = false)
+        {
+            var agent = Game.Game.instance.Agent;
+            rewardNcgText.gameObject.SetActive(false);
+            ncgLoadingIndicator.SetActive(true);
+
+            if (ncgArchiveButton.CurrentState.Value ==
+                ConditionalButton.State.Conditional)
+            {
+                return;
+            }
+
+            ncgArchiveButton.Interactable = false;
+            ncgArchiveButton.UpdateObjects();
+
+            var agentAddress = States.Instance.AgentState.address;
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            var claimableRewards = await agent.GetClaimableRewardsByStateRootHashAsync(blockTipStateRootHash, agentAddress);
+            var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
+            var claimableQuantity = fungibleAssetValue.RawValue;
+
+            // action render시점에서 claimableQuantity가 이전 값을 갖고 있어 강제로 0으로 설정
+            if (callByActionRender)
+            {
+                claimableQuantity = 0;
+            }
+
+            ncgArchiveButton.Interactable = claimableQuantity >= 100;
+            ncgArchiveButton.UpdateObjects();
+
+            var quantityString = callByActionRender ? "0" : fungibleAssetValue.GetQuantityString();
+            rewardNcgText.text = $"+{quantityString}";
+            rewardNcgText.gameObject.SetActive(true);
+            ncgLoadingIndicator.gameObject.SetActive(false);
+        }
+
+        public void SetNcgArchiveButtonLoading(bool loading)
+        {
+            ncgArchiveButton.SetCondition(() => !loading);
+            ncgArchiveButton.UpdateObjects();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -169,7 +292,7 @@ namespace Nekoyume.UI
 
         public void SetView()
         {
-            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var deposit = States.Instance.StakedBalance.MajorUnit;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
             OnDepositSet(deposit);
@@ -257,6 +380,8 @@ namespace Nekoyume.UI
             currentBenefitsTabButton.SetToggledOff();
             levelBenefitsTabButton.OnClick.OnNext(levelBenefitsTabButton);
             levelBenefitsTabButton.SetToggledOn();
+
+            CheckUnbondBlock().Forget();
         }
 
         private void OnClickMigrateButton()
@@ -293,8 +418,9 @@ namespace Nekoyume.UI
             var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Application.OpenURL(linkInfo.GetLinkID()); });
             confirmUI.ConfirmCallback = () =>
             {
-                ActionManager.Instance.Stake(States.Instance.StakedBalanceState.Gold.MajorUnit)
-                    .Subscribe();
+                var majorUnit = States.Instance.StakedBalance.MajorUnit;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 disposable.Dispose();
                 OnChangeEditingState(false);
             };
@@ -312,7 +438,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inputBigInt == States.Instance.StakedBalanceState.Gold.MajorUnit)
+            if (inputBigInt == States.Instance.StakedBalance.MajorUnit)
             {
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("UI_REQUIRE_DIFF_VALUE_WITH_EXIST"),
@@ -329,7 +455,7 @@ namespace Nekoyume.UI
             }
 
             var totalDepositNcg = States.Instance.GoldBalanceState.Gold +
-                States.Instance.StakedBalanceState.Gold;
+                States.Instance.StakedBalance;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
                 Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);
@@ -345,15 +471,23 @@ namespace Nekoyume.UI
             if (nullableStakeState.HasValue)
             {
                 var stakeState = nullableStakeState.Value;
-                var cancellableBlockIndex =
-                    stakeState.CancellableBlockIndex;
-                if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit)
+                var cancellableBlockIndex = stakeState.ReceivedBlockIndex;
+                if (inputBigInt < States.Instance.StakedBalance.MajorUnit)
                 {
                     if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
                     {
                         OneLineSystem.Push(MailType.System,
                             L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
                                 cancellableBlockIndex),
+                            NotificationCell.NotificationType.UnlockCondition);
+                        return;
+                    }
+
+                    if (_getUnbondClaimableHeight != -1)
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
+                                _getUnbondClaimableHeight),
                             NotificationCell.NotificationType.UnlockCondition);
                         return;
                     }
@@ -367,8 +501,9 @@ namespace Nekoyume.UI
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize: true, type: confirmIcon);
             confirmUI.ConfirmCallback = () =>
             {
-                ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
-                    .Subscribe();
+                var majorUnit = BigInteger.Parse(stakingNcgInputField.text);
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                ActionManager.Instance.Stake(majorUnit, avatarAddress).Subscribe();
                 OnChangeEditingState(false);
             };
         }
@@ -400,7 +535,7 @@ namespace Nekoyume.UI
                 apUsingPercent = apRow.Coefficient;
             }
 
-            var totalDepositNcg = states.StakedBalanceState.Gold + states.GoldBalanceState.Gold;
+            var totalDepositNcg = states.StakedBalance + states.GoldBalanceState.Gold;
             depositText.text = $"<Style=G0>{totalDepositNcg.GetQuantityString()}";
             stakedNcgValueText.text = stakedDeposit.ToString();
 
@@ -419,7 +554,7 @@ namespace Nekoyume.UI
         {
             var states = States.Instance;
             var level = states.StakingLevel;
-            var deposit = states.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var deposit = states.StakedBalance.MajorUnit;
             var regularSheet = states.StakeRegularRewardSheet;
             var regularFixedSheet = states.StakeRegularFixedRewardSheet;
             var stakeStateV2 = states.StakeStateV2;
