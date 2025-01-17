@@ -3124,12 +3124,12 @@ namespace Nekoyume.Blockchain
                 eval.Action.round == currentRound.Round)
             {
                 await UniTask.WhenAll(
-                    RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
+                    RxProps.ArenaInfo.UpdateAsync(eval.OutputState),
                     RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
             }
             else
             {
-                await RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState);
+                await RxProps.ArenaInfo.UpdateAsync(eval.OutputState);
             }
 
             if (arenaJoin && arenaJoin.IsActive())
@@ -3169,7 +3169,7 @@ namespace Nekoyume.Blockchain
             }
 
             // NOTE: Start cache some arena info which will be used after battle ends.
-            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
+            await UniTask.WhenAll(RxProps.ArenaInfo.UpdateAsync(eval.OutputState),
                 RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
 
             void OnBattleEnd()

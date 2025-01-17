@@ -96,7 +96,7 @@ namespace Nekoyume.UI
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
             await RxProps.ArenaPostCurrentSeasonsParticipantsAsync();
             await UniTask.WhenAll(
-                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash),
+                RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash),
                 RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash));
             await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
 
@@ -125,7 +125,7 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
-            RxProps.ArenaInfoTuple
+            RxProps.ArenaInfo
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
             baseArenaJoinObject.SetActive(true);
@@ -266,8 +266,8 @@ namespace Nekoyume.UI
             void OnClickJoinButton()
             {
                 AudioController.PlayClick();
-                if (RxProps.ArenaInfoTuple.HasValue &&
-                    RxProps.ArenaInfoTuple.Value.current is not null)
+                if (RxProps.ArenaInfo.HasValue &&
+                    RxProps.ArenaInfo.Value is not null)
                 {
                     Close();
                     Find<ArenaBoard>().Show(
@@ -319,7 +319,7 @@ namespace Nekoyume.UI
                     {
                         if (isOpened)
                         {
-                            if (RxProps.ArenaInfoTuple.Value.current is null)
+                            if (RxProps.ArenaInfo.Value is null)
                             {
                                 _joinButton.gameObject.SetActive(false);
                                 if (arenaType == ArenaType.CHAMPIONSHIP &&

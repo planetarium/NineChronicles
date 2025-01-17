@@ -6,14 +6,12 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Board;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI
 {
@@ -68,7 +66,7 @@ namespace Nekoyume.UI
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
             await UniTask.WhenAll(
                 RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash),
-                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash));
+                RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash));
             loading.Close();
             Show(RxProps.ArenaInformationOrderedWithScore.Value,
                 ignoreShowAnimation);
@@ -128,20 +126,20 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!RxProps.ArenaInfoTuple.HasValue)
+            if (!RxProps.ArenaInfo.HasValue)
             {
-                NcDebug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
+                NcDebug.Log($"{nameof(RxProps.ArenaInfo)} is null");
                 _billboard.SetData();
                 return;
             }
 
             var win = 0;
             var lose = 0;
-            var currentInfo = RxProps.ArenaInfoTuple.Value.current;
+            var currentInfo = RxProps.ArenaInfo.Value;
             if (currentInfo is not null)
             {
-                win = currentInfo.Win;
-                lose = currentInfo.Lose;
+                win = currentInfo.TotalWin;
+                lose = currentInfo.TotalLose;
             }
 
             var cp = player.Cp;

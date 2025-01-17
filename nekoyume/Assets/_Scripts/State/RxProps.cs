@@ -81,7 +81,7 @@ namespace Nekoyume.State
                 avatarState,
                 forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
-                ArenaInfoTuple.UpdateAsync(stateRootHash),
+                ArenaInfo.UpdateAsync(stateRootHash),
                 EventDungeonInfo.UpdateAsync(stateRootHash),
                 WorldBossStates.Set(
                     stateRootHash,
@@ -101,7 +101,7 @@ namespace Nekoyume.State
                 stateRootHash,
                 forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
-                ArenaInfoTuple.UpdateAsync(stateRootHash),
+                ArenaInfo.UpdateAsync(stateRootHash),
                 EventDungeonInfo.UpdateAsync(stateRootHash),
                 WorldBossStates.Set(
                     stateRootHash,
