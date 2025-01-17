@@ -28,13 +28,6 @@ namespace Nekoyume.UI
 
     public class ArenaJoin : Widget
     {
-        private enum InnerState
-        {
-            Idle,
-            EarlyRegistration,
-            RegistrationAndTransitionToArenaBoard
-        }
-
         private static int _barScrollCellCount;
         private static int BarScrollIndexOffset => (int)math.ceil(_barScrollCellCount / 2f) - 1;
 
@@ -74,7 +67,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject baseArenaJoinObject;
 
-        private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new();
         private int _totalMedalCountForThisChampionship = 0;
 
@@ -132,7 +124,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _innerState = InnerState.Idle;
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
             UpdateScrolls();
@@ -154,52 +145,7 @@ namespace Nekoyume.UI
 
         public void OnRenderJoinArena(ActionEvaluation<JoinArena> eval)
         {
-            if (eval.Exception is not null)
-            {
-                _innerState = InnerState.Idle;
-                Find<LoadingScreen>().Close();
-                return;
-            }
-
-            switch (_innerState)
-            {
-                case InnerState.EarlyRegistration:
-                    _innerState = InnerState.Idle;
-                    UpdateBottomButtons();
-                    Find<LoadingScreen>().Close();
-                    Find<HeaderMenuStatic>()
-                        .Show(HeaderMenuStatic.AssetVisibleState.Arena);
-                    return;
-                case InnerState.RegistrationAndTransitionToArenaBoard:
-                    _innerState = InnerState.Idle;
-                    var selectedRound = _scroll.SelectedItemData.SeasonData;
-                    if (eval.Action.championshipId != selectedRound.Id ||
-                        eval.Action.round != selectedRound.Id)
-                    {
-                        UpdateBottomButtons();
-                        Find<LoadingScreen>().Close();
-                        Find<HeaderMenuStatic>()
-                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
-
-                        NotificationSystem.Push(
-                            MailType.System,
-                            "The round which is you want to join is ended.",
-                            NotificationCell.NotificationType.Information);
-                        return;
-                    }
-
-                    Close();
-                    Find<LoadingScreen>().Close();
-                    Find<ArenaBoard>().Show(
-                        _scroll.SelectedItemData.SeasonData,
-                        RxProps.ArenaInformationOrderedWithScore.Value);
-                    return;
-                case InnerState.Idle:
-                    UpdateBottomButtons();
-                    return;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+        // 메모: 이 함수는 더 이상 사용되지 않으므로 삭제 예정입니다.
         }
 
         /// <summary>
@@ -334,20 +280,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
-                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
-                var selectedRoundData = _scroll.SelectedItemData.SeasonData;
-                var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
-                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                    .GetEquippedRuneSlotInfos();
-                ActionManager.Instance
-                    .JoinArena(
-                        itemSlotState.Costumes,
-                        itemSlotState.Equipments,
-                        runeInfos,
-                        selectedRoundData.Id,
-                        selectedRoundData.Id)
-                    .Subscribe();
+                Find<ArenaBoard>().ShowAsync().Forget();
             }
 
             _joinButton.SetState(ConditionalButton.State.Normal);
