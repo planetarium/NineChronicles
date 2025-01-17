@@ -20,6 +20,7 @@ namespace Nekoyume.State
 {
     using Libplanet.Common;
     using Libplanet.Types.Tx;
+    using System.Reactive.Linq;
     using System.Security.Cryptography;
     using UniRx;
 
@@ -40,6 +41,8 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
         private static readonly ReactiveProperty<ArenaTicketProgress>
             _arenaTicketsProgress = new(new ArenaTicketProgress());
+        
+        private static readonly ReactiveProperty<List<SeasonResponse>> _arenaSeasonResponses = new(new List<SeasonResponse>());
         #endregion RxPropInternal
 
         #region RxPropObservable
@@ -53,6 +56,8 @@ namespace Nekoyume.State
             ArenaTicketsProgress => _arenaTicketsProgress;
         public static IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
+
+        public static IReadOnlyReactiveProperty<List<SeasonResponse>> ArenaSeasonResponses => _arenaSeasonResponses;
         #endregion RxPropObservable
 
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
@@ -72,10 +77,49 @@ namespace Nekoyume.State
             set => _lastBattleLogId = value;
         }
         
+        public static List<int> GetSeasonNumbersOfChampionship(){
+            return ArenaSeasonResponses.Value
+                    .Where(seasonResponse => seasonResponse.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON)
+                    .Select(seasonResponse => seasonResponse.Id)
+                    .ToList();
+        }
+
+        public static SeasonResponse GetSeasonResponseByBlockIndex(long blockIndex){
+            return ArenaSeasonResponses.Value.Where(seasonResponse => seasonResponse.StartBlockIndex< blockIndex && blockIndex <= seasonResponse.EndBlockIndex).FirstOrDefault();
+        }
+
+        public static SeasonResponse GetNextSeasonResponseByBlockIndex(long blockIndex)
+        {
+            return ArenaSeasonResponses.Value
+                .Where(seasonResponse => seasonResponse.StartBlockIndex > blockIndex)
+                .OrderBy(seasonResponse => seasonResponse.StartBlockIndex)
+                .FirstOrDefault();
+        }
 
         public static void UpdateArenaInfoToNext()
         {
             _arenaInfoTuple.Value = (_arenaInfoTuple.Value.next, null);
+        }
+
+        private static bool _isUpdatingSeasonResponses = false;
+        public static async UniTask UpdateSeasonResponsesAsync(long blockIndex)
+        {
+            if (_isUpdatingSeasonResponses) return;
+
+            _isUpdatingSeasonResponses = true;
+
+            await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
+                on200OK: response =>
+                {
+                    _arenaSeasonResponses.SetValueAndForceNotify(response.OrderBy(season => season.StartBlockIndex).ToList());
+                    _isUpdatingSeasonResponses = false;
+                },
+                onError: error =>
+                {
+                    // Handle error case
+                    NcDebug.LogError($"Error fetching seasons: {error}");
+                    _isUpdatingSeasonResponses = false;
+                });
         }
 
         public static async UniTask<string> ArenaPostCurrentSeasonsParticipantsAsync()

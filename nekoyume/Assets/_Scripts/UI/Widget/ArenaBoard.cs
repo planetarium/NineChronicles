@@ -17,6 +17,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI
 {
+    using GeneratedApiNamespace.ArenaServiceClient;
     using UniRx;
 
     public class ArenaBoard : Widget
@@ -41,7 +42,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button _backButton;
 
-        private ArenaSheet.RoundData _roundData;
+        private SeasonResponse _seasonData;
         private List<ArenaParticipantModel> _boundedData;
 
         protected override void Awake()
@@ -79,17 +80,17 @@ namespace Nekoyume.UI
             List<ArenaParticipantModel> arenaParticipants,
             bool ignoreShowAnimation = false)
         {
-            Show(_roundData,
+            Show(_seasonData,
                 arenaParticipants,
                 ignoreShowAnimation);
         }
 
         public void Show(
-            ArenaSheet.RoundData roundData,
+            SeasonResponse roundData,
             List<ArenaParticipantModel> arenaParticipants,
             bool ignoreShowAnimation = false)
         {
-            _roundData = roundData;
+            _seasonData = roundData;
             _boundedData = arenaParticipants;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
@@ -189,7 +190,7 @@ namespace Nekoyume.UI
                     var data = _boundedData[index];
                     Close();
                     Find<ArenaBattlePreparation>().Show(
-                        _roundData,
+                        _seasonData,
                         _boundedData[index],
                         data.Cp);
                 })

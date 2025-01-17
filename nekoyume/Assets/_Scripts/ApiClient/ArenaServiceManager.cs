@@ -406,3 +406,15 @@ namespace Nekoyume.ApiClient
         }
     }
 }
+public static class ArenaServiceExtentions
+{
+    public static (long beginning, long end, long current) GetSeasonProgress(
+        this SeasonResponse seasonData,
+        long blockIndex)
+    {
+        return (
+            seasonData?.StartBlockIndex ?? 0,
+            seasonData?.EndBlockIndex ?? 0,
+            blockIndex);
+    }
+}

@@ -6,6 +6,7 @@ using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using GeneratedApiNamespace.ArenaServiceClient;
 
 namespace Nekoyume.UI.Module.Arena.Join
 {
@@ -55,7 +56,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private readonly List<IDisposable> _disposablesFromOnEnable = new();
 
-        private ArenaSheet.RoundData _roundData;
+        private SeasonResponse _seasonData;
 
         private readonly Subject<Unit> _onSeasonBeginning = new();
         public IObservable<Unit> OnSeasonBeginning => _onSeasonBeginning;
@@ -67,7 +68,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(blockIndex =>
-                    SetSliderAndText(_roundData.GetSeasonProgress(blockIndex)))
+                    SetSliderAndText(_seasonData.GetSeasonProgress(blockIndex)))
                 .AddTo(_disposablesFromOnEnable);
         }
 
@@ -77,7 +78,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         }
 
         /// <param name="title">Season Name</param>
-        /// <param name="roundData"></param>
+        /// <param name="seasonData"></param>
         /// <param name="rewardType">
         ///   Reward types.
         ///   (e.g., RewardType.None or RewardType.Medal | RewardType.NCG)
@@ -85,15 +86,15 @@ namespace Nekoyume.UI.Module.Arena.Join
         /// <param name="medalItemId">Season Medal ItemId on ItemSheet</param>
         public void SetData(
             string title,
-            ArenaSheet.RoundData roundData,
+            SeasonResponse seasonData,
             RewardType rewardType,
             int? medalItemId)
         {
             _titleText.text = title;
-            _roundData = roundData;
+            _seasonData = seasonData;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            SetSliderAndText(_roundData.GetSeasonProgress(blockIndex));
+            SetSliderAndText(_seasonData.GetSeasonProgress(blockIndex));
             SetRewards(rewardType);
             SetMedalImages(medalItemId);
         }

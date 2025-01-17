@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
-            _championshipId.text = itemData.RoundData.ChampionshipId.ToString();
+            _championshipId.text = itemData.SeasonData.Id.ToString();
             for (var i = 0; i < _seasonEmblems.Length; i++)
             {
                 var _seasonEmblem = _seasonEmblems[i];
