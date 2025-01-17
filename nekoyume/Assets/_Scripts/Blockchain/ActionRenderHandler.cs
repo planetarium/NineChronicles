@@ -2983,11 +2983,9 @@ namespace Nekoyume.Blockchain
                 await UpdateCurrentAvatarStateAsync(eval);
 
                 await UniTask.SwitchToMainThread();
-
-                // TODO: 문구 변경
                 NotificationSystem.Push(
                     MailType.System,
-                    L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                    L10nManager.Localize("UI_CLAIM_NCG_REWARD_SUCCESS"),
                     NotificationCell.NotificationType.Information);
 
                 var stakingPopup = Widget.Find<StakingPopup>();
@@ -3012,10 +3010,9 @@ namespace Nekoyume.Blockchain
 
                 await UniTask.SwitchToMainThread();
 
-                // TODO: 문구 변경
                 NotificationSystem.Push(
                     MailType.System,
-                    L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                    L10nManager.Localize("UI_CLAIM_UNBONDED_REWARD_SUCCESS"),
                     NotificationCell.NotificationType.Information);
 
                 var stakingPopup = Widget.Find<StakingPopup>();

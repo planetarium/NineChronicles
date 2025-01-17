@@ -53,6 +53,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button editCancelButton;
         [SerializeField] private ConditionalButton editSaveButton;
         [SerializeField] private ConditionalButton unbondButton;
+        [SerializeField] private TMP_Text unbondBlockText;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -210,15 +211,23 @@ namespace Nekoyume.UI
             editSaveButton.UpdateObjects();
             unbondButton.SetCondition(() => false);
             unbondButton.UpdateObjects();
+            unbondButton.gameObject.SetActive(false);
+            unbondBlockText.gameObject.SetActive(false);
 
             var value = await agent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
             editSaveButton.SetCondition(() => true);
             editSaveButton.UpdateObjects();
 
+            var enableUnbondItems = value != -1;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             unbondButton.SetCondition(() => true);
-            unbondButton.Interactable = value != -1 && value <= blockIndex;
+            unbondButton.gameObject.SetActive(enableUnbondItems && value <= blockIndex);
+            unbondButton.Interactable = true;
             unbondButton.UpdateObjects();
+
+            unbondBlockText.gameObject.SetActive(value > blockIndex);
+            unbondBlockText.text =
+                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value);
 
             _getUnbondClaimableHeight = value;
         }
