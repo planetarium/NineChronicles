@@ -52,6 +52,10 @@ namespace Nekoyume.UI
             var showCharacterSpine = model.EquipmentRow != null && model.EquipmentRow.ItemSubType == ItemSubType.Aura;
             spineView.SetActive(showCharacterSpine);
             iconView.SetActive(!showCharacterSpine);
+            foreach (Transform child in skillTooltip.transform)
+            {
+                child.gameObject.SetActive(true);
+            }
 
             if (model.EquipmentRow is not null)
             {
@@ -109,6 +113,44 @@ namespace Nekoyume.UI
                 }
             }
 
+            if (model.CostumeRow is not null)
+            {
+                spineView.SetActive(true);
+                iconView.SetActive(false);
+                SetCostume(model.CostumeRow);
+
+                mainStatTexts[0].text = string.Empty;
+                var costumeSheet = TableSheets.Instance.CostumeStatSheet;
+                titleText.SetText(model.CostumeRow.GetLocalizedName());
+                foreach (var iconImage in iconImages)
+                {
+                    iconImage.sprite = SpriteHelper.GetItemIcon(model.CostumeRow.Id);
+                }
+                recipeOptionView.SetOptions(model.CostumeStatRows);
+
+                var statsMap = new StatsMap();
+                foreach (var r in costumeSheet.OrderedList.Where(r => r.CostumeId == model.CostumeRow.Id))
+                {
+                    statsMap.AddStatValue(r.StatType, r.Stat);
+                }
+                var cp = CPHelper.DecimalToInt(CPHelper.GetStatsCP(statsMap));
+                combatPointText.text = $"CP {cp}";
+
+                skillTooltip.gameObject.SetActive(true);
+                foreach (Transform child in skillTooltip.transform)
+                {
+                    if (child.name == "Content")
+                    {
+                        child.gameObject.SetActive(true);
+                        child.GetComponent<TextMeshProUGUI>().text = model.CostumeRow.GetLocalizedDescription();
+                    }
+                    else
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                }
+            }
+
             if (!string.IsNullOrEmpty(model.RuneTicker))
             {
                 mainStatTexts[0].text = string.Empty;
@@ -134,6 +176,17 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+        }
+
+        private static void SetCostume(CostumeItemSheet.Row costumeRow)
+        {
+            var game = Game.Game.instance;
+            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
+            costumes.RemoveAll(costume => costume.ItemSubType == ItemSubType.FullCostume);
+            var resultItem = ItemFactory.CreateCostume(costumeRow, Guid.NewGuid());
+            costumes.Add(resultItem);
+            var avatarState = game.States.CurrentAvatarState;
+            game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
         }
 
         private static void SetCharacter(EquipmentItemSheet.Row equipmentRow)

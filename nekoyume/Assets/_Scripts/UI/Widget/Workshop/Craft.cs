@@ -370,7 +370,7 @@ namespace Nekoyume.UI
             Assert.True(equipmentToggle.isOn);
             equipmentSubRecipeView.ResetSelectedIndex();
             eventEquipmentSubRecipeView.ResetSelectedIndex();
-            recipeScroll.ShowAsEquipment(ItemSubType.EquipmentMaterial, true);
+            recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
             SharedModel.SelectedRow.Value = null;
             _canPlayToggleAnimation = true;
         }

@@ -96,6 +96,16 @@ namespace Nekoyume.Blockchain
             _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ => { NcDebug.Log($"[{nameof(BlockRenderHandler)}] Render actions end"); }).AddTo(_disposables);
             _actionRenderer.ActionRenderSubject.ObserveOnMainThread().Subscribe(eval =>
             {
+                if (eval.Exception is {} exc)
+                {
+                    NcDebug.LogException(exc);
+
+                    if (exc.InnerException is { } inner)
+                    {
+                        NcDebug.LogException(inner);
+                    }
+                }
+
                 if (eval.Action is not GameAction gameAction)
                 {
                     return;

@@ -3270,8 +3270,13 @@ MonoBehaviour:
     - {fileID: 3095810823935262297}
     bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
     descL10nKey: UI_SUMMON_RUNE_PHRASE_NEW
+  - summonResult: 3
+    tabToggle: {fileID: 4566942275292129215}
+    enableObj:
+    - {fileID: 2986407614643378023}
+    bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
+    descL10nKey: UI_SUMMON_FULLCOSTUME_PHRASE_NEW
   closeButton: {fileID: 241345997775891456}
-  catRectTransform: {fileID: 6939644925556165784}
   countToggles:
   - {fileID: 7304620260917869337}
   - {fileID: 4403768214894282462}
@@ -8090,7 +8095,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 2
-  l10nKey: UI_RUNE
+  l10nKey: UI_FULLCOSTUME
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -8122,7 +8127,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6320022928483252509
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8140,9 +8145,9 @@ RectTransform:
   m_Father: {fileID: 320794151383045704}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 103, y: -189}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8963855504264859806
@@ -17740,7 +17745,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_RUNE
+  l10nKey: UI_FULLCOSTUME
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

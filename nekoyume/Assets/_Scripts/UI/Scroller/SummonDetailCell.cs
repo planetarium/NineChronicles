@@ -17,6 +17,8 @@ namespace Nekoyume.UI.Scroller
         public class Model
         {
             public EquipmentItemSheet.Row EquipmentRow;
+            public CostumeItemSheet.Row CostumeRow;
+            public List<CostumeStatSheet.Row> CostumeStatRows;
             public List<EquipmentItemSubRecipeSheetV2.OptionInfo> EquipmentOptions;
             public string RuneTicker;
             public RuneOptionSheet.Row.RuneOptionInfo RuneOptionInfo;
@@ -43,7 +45,7 @@ namespace Nekoyume.UI.Scroller
 
         private readonly List<IDisposable> _disposables = new();
 
-        private static readonly List<CostType> DustTypes = new ()
+        private static readonly List<CostType> DustTypes = new()
             {CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust};
 
         public override void UpdateContent(Model itemData)
@@ -114,6 +116,19 @@ namespace Nekoyume.UI.Scroller
                     skillObject.SetActive(true);
                     skillText.gameObject.SetActive(true);
                     skillText.SetText(skillRow.GetLocalizedName());
+                }
+            }
+
+            if (itemData.CostumeRow is not null)
+            {
+                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.CostumeRow.Id);
+                nameText.text = itemData.CostumeRow.GetLocalizedName();
+                var statIndex = 0;
+                foreach (var statRow in itemData.CostumeStatRows)
+                {
+                    statObjects[statIndex].SetActive(true);
+                    statTexts[statIndex].SetText(statRow.StatType.ToString());
+                    statIndex++;
                 }
             }
 
