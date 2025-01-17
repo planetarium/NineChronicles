@@ -261,26 +261,6 @@ namespace Nekoyume.Game
             PortalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
         }
 
-        private void Update()
-        {
-            // if (Input.GetKeyDown("2"))
-            // {
-            //     if (Agent is RPCAgent rpcAgent)
-            //     {
-            //         UniTask.Run(async () =>
-            //         {
-            //             var rawValue = await rpcAgent.GetDelegationInfoByBlockHashAsync(States.Instance.AgentState.address);
-            //             var userShared = rawValue[0].ToBigInteger();
-            //             var allShared = rawValue[1].ToBigInteger();
-            //             var delegateGuildGold = rawValue[2].ToFungibleAssetValue();
-            //             var delegatedNcg = GuildModule.ConvertCurrency(delegateGuildGold,
-            //                 States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
-            //             Debug.Log($"DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
-            //         }).Forget();
-            //     }
-            // }
-        }
-
         public void SetActionManager()
         {
             ActionManager = new ActionManager(Agent);
