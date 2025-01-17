@@ -417,7 +417,6 @@ namespace Nekoyume
             var window = GetWindow(typeof(OpenApiGenerator));
             window.Show();
         }
-
         private void OnGUI()
         {
             RefreshGeneratedInfo();
@@ -566,19 +565,8 @@ namespace Nekoyume
 
             sb.AppendLine();
 
-            sb.AppendLine($"public class {rootClassName}");
-            sb.AppendLine("{");
-            sb.AppendLine("    private string Url;");
-            sb.AppendLine();
-            sb.AppendLine($"    public {rootClassName}(string url)");
-            sb.AppendLine("    {");
-            sb.AppendLine($"        Url = url;");
-            sb.AppendLine("    }");
-            sb.AppendLine();
-            sb.AppendLine("    public void Dispose()");
-            sb.AppendLine("    {");
-            sb.AppendLine("    }");
-            sb.AppendLine();
+            // 네임스페이스 추가
+            sb.AppendLine($"namespace GeneratedApiNamespace.{rootClassName}{{");
 
             if (rootNode["components"]?["schemas"] is JsonObject schemas)
             {
@@ -773,9 +761,23 @@ namespace Nekoyume
                 }
             }
 
+            sb.AppendLine($"public class {rootClassName}");
+            sb.AppendLine("{");
+            sb.AppendLine("    private string Url;");
+            sb.AppendLine();
+            sb.AppendLine($"    public {rootClassName}(string url)");
+            sb.AppendLine("    {");
+            sb.AppendLine($"        Url = url;");
+            sb.AppendLine("    }");
+            sb.AppendLine();
+            sb.AppendLine("    public void Dispose()");
+            sb.AppendLine("    {");
+            sb.AppendLine("    }");
+            sb.AppendLine();
+
             var paths = rootNode["paths"];
             AppendWebRequestsFromPaths(sb, paths);
-            sb.AppendLine("}");
+            sb.AppendLine("}}");
 
             return sb.ToString();
         }
