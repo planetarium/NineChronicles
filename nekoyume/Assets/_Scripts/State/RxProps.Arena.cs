@@ -5,10 +5,7 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
-using Libplanet.Crypto;
-using Nekoyume.Action;
 using Nekoyume.ApiClient;
-using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
@@ -19,7 +16,6 @@ using GeneratedApiNamespace.ArenaServiceClient;
 namespace Nekoyume.State
 {
     using Libplanet.Common;
-    using Libplanet.Types.Tx;
     using System.Reactive.Linq;
     using System.Security.Cryptography;
     using UniRx;
@@ -29,8 +25,8 @@ namespace Nekoyume.State
         #region RxPropInternal
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
-            AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            _arenaInfoTuple = new(UpdateArenaInfoTupleAsync);
+            AsyncUpdatableRxProp<ArenaInfoResponse>
+            _arenaInfo = new(UpdateArenaInfoAsync);
         private static readonly AsyncUpdatableRxProp<List<ArenaParticipantModel>>
             _arenaInformationOrderedWithScore = new(
                 new List<ArenaParticipantModel>(),
@@ -54,8 +50,8 @@ namespace Nekoyume.State
             ArenaInformationOrderedWithScore => _arenaInformationOrderedWithScore;
         public static IReadOnlyReactiveProperty<ArenaTicketProgress>
             ArenaTicketsProgress => _arenaTicketsProgress;
-        public static IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            ArenaInfoTuple => _arenaInfoTuple;
+        public static IReadOnlyAsyncUpdatableRxProp<ArenaInfoResponse>
+            ArenaInfo => _arenaInfo;
 
         public static IReadOnlyReactiveProperty<List<SeasonResponse>> ArenaSeasonResponses => _arenaSeasonResponses;
         #endregion RxPropObservable
@@ -98,7 +94,8 @@ namespace Nekoyume.State
 
         public static void UpdateArenaInfoToNext()
         {
-            _arenaInfoTuple.Value = (_arenaInfoTuple.Value.next, null);
+            // todo : 아레나 서비스
+            // 시즌종료시 처리
         }
 
         private static bool _isUpdatingSeasonResponses = false;
@@ -139,7 +136,7 @@ namespace Nekoyume.State
             OnBlockIndexArena(_agent.BlockIndex);
             OnAvatarChangedArena();
 
-            ArenaInfoTuple
+            ArenaInfo
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
 
@@ -171,10 +168,11 @@ namespace Nekoyume.State
 
         private static void UpdateArenaTicketProgress(long blockIndex)
         {
-            const int maxTicketCount = ArenaInformation.MaxTicketCount;
-            var ticketResetInterval = States.Instance.GameConfigState.DailyArenaInterval;
-            var currentArenaInfo = _arenaInfoTuple.HasValue
-                ? _arenaInfoTuple.Value.current
+            var currentSeason = GetSeasonResponseByBlockIndex(blockIndex);
+            int maxTicketCount = currentSeason.MaxTotalTicketsPerRound;
+            var ticketResetInterval = GetSeasonResponseByBlockIndex(blockIndex).Interval;
+            var currentArenaInfo = _arenaInfo.HasValue
+                ? _arenaInfo.Value
                 : null;
             if (currentArenaInfo is null)
             {
@@ -184,16 +182,7 @@ namespace Nekoyume.State
             }
 
             var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var currentTicketCount = currentArenaInfo.GetTicketCount(
-                blockIndex,
-                currentRoundData.StartBlockIndex,
-                ticketResetInterval);
-            var purchasedCount = PurchasedDuringInterval.Value;
-            var purchasedCountDuringInterval = currentArenaInfo.GetPurchasedCountInInterval(
-                blockIndex,
-                currentRoundData.StartBlockIndex,
-                ticketResetInterval,
-                purchasedCount);
+            var currentTicketCount = currentArenaInfo.RemainingTicketsPerRound;
             var progressedBlockRange =
                 (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
             _arenaTicketsProgress.Value.Reset(
@@ -201,75 +190,39 @@ namespace Nekoyume.State
                 maxTicketCount,
                 (int)progressedBlockRange,
                 ticketResetInterval,
-                purchasedCountDuringInterval);
+                currentArenaInfo.RemainingPurchasableTicketsPerRound);
             _arenaTicketsProgress.SetValueAndForceNotify(
                 _arenaTicketsProgress.Value);
         }
 
-        private static async Task<(ArenaInformation current, ArenaInformation next)>
-            UpdateArenaInfoTupleAsync(
-                (ArenaInformation current, ArenaInformation next) previous, HashDigest<SHA256> stateRootHash)
+        private static async Task<ArenaInfoResponse>
+            UpdateArenaInfoAsync(
+                ArenaInfoResponse arenaInfo, HashDigest<SHA256> stateRootHash)
         {
             var avatarAddress = _states.CurrentAvatarState?.address;
             if (!avatarAddress.HasValue)
             {
-                return (null, null);
+                return null;
             }
 
             if (_arenaInfoTupleUpdatedBlockIndex == _agent.BlockIndex)
             {
-                return previous;
+                return arenaInfo;
             }
 
             _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
             try
             {
-                var currentSeason = await ApiClients.Instance.Arenaservicemanager.GetSeasonByBlockAsync(_arenaInfoTupleUpdatedBlockIndex);
-                _currentSeasonId = currentSeason.Id;
+                var currentArenaInfo = await ApiClients.Instance.Arenaservicemanager.GetArenaInfoAsync(avatarAddress.ToString());
+                _currentSeasonId = currentArenaInfo.SeasonId;
+                return currentArenaInfo;
             }
             catch (Exception e)
             {
                 NcDebug.LogError($"Failed to get current season: {e}");
-                return (null, null);
+                return null;
             }
-
-            var blockIndex = _agent.BlockIndex;
-            var sheet = _tableSheets.ArenaSheet;
-            if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
-            {
-                NcDebug.Log($"Failed to get current round data. block index({blockIndex})");
-                return previous;
-            }
-
-            var currentArenaInfoAddress = ArenaInformation.DeriveAddress(
-                avatarAddress.Value,
-                currentRoundData.ChampionshipId,
-                currentRoundData.Round);
-            var nextArenaInfoAddress = sheet.TryGetNextRound(blockIndex, out var nextRoundData)
-                ? ArenaInformation.DeriveAddress(
-                    avatarAddress.Value,
-                    nextRoundData.ChampionshipId,
-                    nextRoundData.Round)
-                : default;
-            var dict = await _agent.GetStateBulkAsync(
-                stateRootHash,
-                ReservedAddresses.LegacyAccount,
-                new[]
-                {
-                    currentArenaInfoAddress,
-                    nextArenaInfoAddress
-                }
-            );
-            var currentArenaInfo =
-                dict[currentArenaInfoAddress] is List currentList
-                    ? new ArenaInformation(currentList)
-                    : null;
-            var nextArenaInfo =
-                dict[nextArenaInfoAddress] is List nextList
-                    ? new ArenaInformation(nextList)
-                    : null;
-            return (currentArenaInfo, nextArenaInfo);
         }
 
         private static async Task<List<ArenaParticipantModel>>
@@ -306,12 +259,6 @@ namespace Nekoyume.State
             catch (Exception e)
             {
                 NcDebug.LogException(e);
-                // TODO: this is temporary code for local testing.
-                arenaInfo.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
-                {
-                    AvatarAddr = avatar.address,
-                    NameWithHash = avatar.NameWithHash
-                }));
             }
 
             string playerGuildName = null;
@@ -367,7 +314,6 @@ namespace Nekoyume.State
                 var firstMaxRankIndex = arenaInfo.FindIndex(info => info.Rank == maxRank);
                 playerArenaInf.Rank = maxRank;
                 playerArenaInfo = playerArenaInf;
-                arenaInfo.Insert(firstMaxRankIndex, playerArenaInfo);
             }
             else
             {

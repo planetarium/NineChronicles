@@ -404,6 +404,46 @@ namespace Nekoyume.ApiClient
 
             return battleLogResponse;
         }
+        public async Task<ArenaInfoResponse> GetArenaInfoAsync(string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
+            }
+
+            ArenaInfoResponse arenaInfoResponse = null;
+            string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+            try
+            {
+                await UniTask.SwitchToMainThread();
+                // todo : 아레나서비스
+                // 인터페이스 수정후 작업해야함
+                await Client.GetInfoAsync(/*jwt, */
+                    on200ArenaInfoResponse: result =>
+                    {
+                        arenaInfoResponse = result;
+                    },
+                    on401Status401Unauthorized: unauthorizedResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | AvatarAddress: {avatarAddress}");
+                    },
+                    on404Status404NotFound: notFoundResult =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Not found | AvatarAddress: {avatarAddress}");
+                    },
+                    onError: error =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to get arena info | AvatarAddress: {avatarAddress} | Error: {error}");
+                    });
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[ArenaServiceManager] Exception while getting arena info | AvatarAddress: {avatarAddress} | Error: {e.Message}");
+                throw;
+            }
+
+            return arenaInfoResponse;
+        }
     }
 }
 public static class ArenaServiceExtentions
