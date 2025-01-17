@@ -5,16 +5,12 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Nekoyume.Action;
-using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -425,23 +421,6 @@ namespace Nekoyume.UI
                 // ArenaJoinSeasonInfo.RewardType.Costume,
                 _ => throw new ArgumentOutOfRangeException()
             };
-        }
-
-        private void JoinArenaAction()
-        {
-            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
-            var selectedRoundData = _scroll.SelectedItemData.SeasonData;
-            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
-            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                .GetEquippedRuneSlotInfos();
-            ActionManager.Instance
-                .JoinArena(
-                    itemSlotState.Costumes,
-                    itemSlotState.Equipments,
-                    runeInfos,
-                    selectedRoundData.Id,
-                    selectedRoundData.Id)
-                .Subscribe();
         }
 
         public void TutorialActionSeasonPassGuidePopup()
