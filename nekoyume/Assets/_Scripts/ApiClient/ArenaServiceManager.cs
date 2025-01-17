@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Nekoyume.UI.Model;
 using System.Linq;
-using static ArenaServiceClient;
+using GeneratedApiNamespace.ArenaServiceClient;
 using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.ApiClient
@@ -60,7 +60,12 @@ namespace Nekoyume.ApiClient
             return $"Bearer {headerBase64}.{payloadBase64}.{signatureBase64}";
         }
 
-        public async Task<List<ArenaParticipantModel>> GetSeasonsAvailableOpponentsAsync(int seasonId, string avatarAddress)
+        public static string CreateCurrentJwt()
+        {
+            return CreateJwt(Game.Game.instance.Agent.PrivateKey, Game.Game.instance.States.CurrentAvatarState.address.ToHex());
+        }
+
+        public async Task<List<ArenaParticipantModel>> GetAvailableopponentsAsync(int seasonId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -72,8 +77,8 @@ namespace Nekoyume.ApiClient
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
                 var models = new List<ArenaParticipantModel>();
                 await UniTask.SwitchToMainThread();
-                await Client.GetSeasonsAvailableopponentsAsync(seasonId, Game.Game.instance.Agent.BlockIndex, jwt,
-                    on200OK: result =>
+                await Client.GetAvailableopponentsAsync(jwt,
+                    on200AvailableOpponents: result =>
                     {
                         models.AddRange(
                             result.AvailableOpponents.Select(opponent => new ArenaParticipantModel
@@ -87,17 +92,8 @@ namespace Nekoyume.ApiClient
                             })
                     );
                     },
-                    on404NotFound: notFoundResult =>
-                    {
-                        UniTask.Void(async () => await Client.PostSeasonsAvailableopponentsAsync(seasonId, jwt));
-                        NcDebug.LogError($"[ArenaServiceManager] Not found | " +
-                            $"SeasonId: {seasonId} | " +
-                            $"AvatarAddress: {avatarAddress ?? "null"} | " +
-                            $"Error: {notFoundResult}");
-                    },
                     onError: error =>
                     {
-                        UniTask.Void(async () => await Client.PostSeasonsAvailableopponentsAsync(seasonId, jwt));
                         NcDebug.LogError($"[ArenaServiceManager] Failed to get available opponents | " +
                             $"SeasonId: {seasonId} | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
@@ -116,7 +112,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<bool> PostSeasonsAvailableOpponentsAsync(int seasonId, string avatarAddress)
+        public async Task<bool> PostSeasonsAvailableOpponentsAsync(string txId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -129,15 +125,15 @@ namespace Nekoyume.ApiClient
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
                 bool response = false;
 
-                await Client.PostSeasonsAvailableopponentsAsync(seasonId, jwt,
-                    on201Created: result =>
+                await Client.PostAvailableopponentsRefreshAsync(txId, jwt,
+                    on200OK: result =>
                     {
                         response = true;
                     },
                     onError: error =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Failed to post available opponents | " +
-                            $"SeasonId: {seasonId} | " +
+                            $"TxId: {txId} | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
                             $"Error: {error}");
                     });
@@ -147,13 +143,13 @@ namespace Nekoyume.ApiClient
             catch (Exception e)
             {
                 NcDebug.LogError($"[ArenaServiceManager] Exception while posting available opponents | " +
-                    $"SeasonId: {seasonId} | " +
+                    $"TxId: {txId} | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
                 throw;
             }
         }
-        
+
         public async Task<ArenaParticipantModel> GetSeasonsLeaderboardParticipantAsync(int seasonId, string avatarAddress)
         {
             if (!IsInitialized)
@@ -232,7 +228,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<string> PostSeasonsParticipantsAsync(int seasonId, string avatarAddress, string nameWithHash, int portraitId, Int64 cp, int level)
+        public async Task<string> PostUsersAsync(string avatarAddress, string nameWithHash, int portraitId, Int64 cp, int level)
         {
             if (!IsInitialized)
             {
@@ -242,7 +238,7 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                var request = new ParticipateRequest
+                var request = new UserRegisterRequest
                 {
                     NameWithHash = nameWithHash,
                     PortraitId = portraitId,
@@ -252,15 +248,14 @@ namespace Nekoyume.ApiClient
 
                 string seasonResponse = null;
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
-                await Client.PostSeasonsParticipantsAsync(seasonId, jwt, request,
+                await Client.PostUsersAsync(jwt, request,
                     on201Created: result =>
                     {
                         seasonResponse = result;
                     },
                     onError: error =>
                     {
-                        NcDebug.LogError($"[ArenaServiceManager] Failed to post seasons participants | " +
-                            $"SeasonId: {seasonId} | " +
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post users | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
                             $"Error: {error}");
                     });
@@ -269,15 +264,14 @@ namespace Nekoyume.ApiClient
             }
             catch (Exception e)
             {
-                NcDebug.LogError($"[ArenaServiceManager] Failed to post seasons participants | " +
-                    $"SeasonId: {seasonId} | " +
+                NcDebug.LogError($"[ArenaServiceManager] Failed to post users | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
                 throw;
             }
         }
 
-        public async Task<BattleTokenResponse> GetSeasonsBattleTokenAsync(int seasonId, string opponentAvatarAddress, string avatarAddress)
+        public async Task<BattleTokenResponse> GetBattleTokenAsync(string opponentAvatarAddress, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -289,35 +283,26 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                await Client.GetSeasonsBattleTokenAsync(seasonId, opponentAvatarAddress, jwt,
-                    on200OK: result =>
+                await Client.GetBattleTokenAsync(opponentAvatarAddress, jwt,
+                    on201Created: result =>
                     {
                         token = result;
                     },
-                    on401Unauthorized: unauthorizedResult =>
+                    on401Unauthorized: _ =>
                     {
-                        NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
-                            $"SeasonId: {seasonId} | " +
-                            $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
-                    },
-                    on404NotFound: notFoundResult =>
-                    {
-                        NcDebug.LogError($"[ArenaServiceManager] Not found | " +
-                            $"SeasonId: {seasonId} | " +
+                        NcDebug.LogError($"[ArenaServiceManager] Authentication failed | " +
                             $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
                     },
                     onError: error =>
                     {
-                        NcDebug.LogError($"[ArenaServiceManager] Failed to get seasons battle token | " +
-                            $"SeasonId: {seasonId} | " +
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to retrieve season battle token | " +
                             $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"} | " +
-                            $"Error: {error}");
+                            $"error: {error}");
                     });
             }
             catch (Exception e)
             {
-                NcDebug.LogError($"[ArenaServiceManager] Exception while getting seasons battle token | " +
-                    $"SeasonId: {seasonId} | " +
+                NcDebug.LogError($"[ArenaServiceManager] Exception while getting battle token | " +
                     $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
                 throw;
@@ -326,7 +311,7 @@ namespace Nekoyume.ApiClient
             return token;
         }
 
-        public async Task<string> PostSeasonsBattleRequestAsync(string txId, int logId, int seasonId, string avatarAddress)
+        public async Task<string> PostSeasonsBattleRequestAsync(string txId, int logId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -338,7 +323,7 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                await Client.PostSeasonsBattleRequestAsync(txId, logId, seasonId, jwt,
+                await Client.PostBattleRequestAsync(logId, jwt, txId,
                     on200OK: result =>
                     {
                         response = result;
@@ -346,21 +331,18 @@ namespace Nekoyume.ApiClient
                     on401Unauthorized: unauthorizedResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
-                            $"SeasonId: {seasonId} | " +
                             $"TxId: {txId} | " +
                             $"LogId: {logId}");
                     },
                     on404NotFound: notFoundResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Not found | " +
-                            $"SeasonId: {seasonId} | " +
                             $"TxId: {txId} | " +
                             $"LogId: {logId}");
                     },
                     onError: error =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Failed to post seasons battle request | " +
-                            $"SeasonId: {seasonId} | " +
                             $"TxId: {txId} | " +
                             $"LogId: {logId} | " +
                             $"Error: {error}");
@@ -369,7 +351,6 @@ namespace Nekoyume.ApiClient
             catch (Exception e)
             {
                 NcDebug.LogError($"[ArenaServiceManager] Exception while posting seasons battle request | " +
-                    $"SeasonId: {seasonId} | " +
                     $"TxId: {txId} | " +
                     $"LogId: {logId} | " +
                     $"Error: {e.Message}");
@@ -379,7 +360,7 @@ namespace Nekoyume.ApiClient
             return response;
         }
 
-        public async Task<BattleLogResponse> GetSeasonsBattleAsync(int battleLogId, int seasonId, string avatarAddress)
+        public async Task<BattleLogResponse> GetBattleAsync(int battleLogId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -391,7 +372,7 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                await Client.GetSeasonsBattleAsync(battleLogId, seasonId, jwt,
+                await Client.GetBattleAsync(battleLogId, jwt,
                     on200OK: result =>
                     {
                         battleLogResponse = result;
@@ -399,19 +380,16 @@ namespace Nekoyume.ApiClient
                     on401Unauthorized: unauthorizedResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
-                            $"SeasonId: {seasonId} | " +
                             $"BattleLogId: {battleLogId}");
                     },
                     on404NotFound: notFoundResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Not found | " +
-                            $"SeasonId: {seasonId} | " +
                             $"BattleLogId: {battleLogId}");
                     },
                     onError: error =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Failed to get seasons battle | " +
-                            $"SeasonId: {seasonId} | " +
                             $"BattleLogId: {battleLogId} | " +
                             $"Error: {error}");
                     });
@@ -419,7 +397,6 @@ namespace Nekoyume.ApiClient
             catch (Exception e)
             {
                 NcDebug.LogError($"[ArenaServiceManager] Exception while getting seasons battle | " +
-                    $"SeasonId: {seasonId} | " +
                     $"BattleLogId: {battleLogId} | " +
                     $"Error: {e.Message}");
                 throw;

@@ -8,7 +8,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using static ArenaServiceClient;
+using GeneratedApiNamespace.ArenaServiceClient;
 
 namespace Nekoyume.UI
 {

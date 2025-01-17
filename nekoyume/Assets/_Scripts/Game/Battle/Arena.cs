@@ -19,7 +19,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
-using static ArenaServiceClient;
+using GeneratedApiNamespace.ArenaServiceClient;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
 
 namespace Nekoyume.Game.Battle
@@ -126,7 +126,7 @@ namespace Nekoyume.Game.Battle
             // todo: 아레나 서비스
             // 서비스에서 데이터가 갱신안되어있을수있어서 폴링처리 진행해야함.
             yield return new WaitForSeconds(5.0f);
-            var battleResponseTask = ApiClients.Instance.Arenaservicemanager.GetSeasonsBattleAsync(RxProps.LastBattleLogId, RxProps.CurrentArenaSeasonId, myAvatarAddress.ToHex());
+            var battleResponseTask = ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleLogId, myAvatarAddress.ToHex());
             yield return battleResponseTask.AsCoroutine();
             var battleResponse = battleResponseTask.Result;
 

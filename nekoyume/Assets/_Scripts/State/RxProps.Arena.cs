@@ -14,6 +14,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
+using GeneratedApiNamespace.ArenaServiceClient;
 
 namespace Nekoyume.State
 {
@@ -21,7 +22,6 @@ namespace Nekoyume.State
     using Libplanet.Types.Tx;
     using System.Security.Cryptography;
     using UniRx;
-    using static ArenaServiceClient;
 
     public static partial class RxProps
     {
@@ -84,7 +84,7 @@ namespace Nekoyume.State
             var currentAvatarAddr = currentAvatar.address;
             var portraitId = Util.GetPortraitId(BattleType.Arena);
             var cp = Util.TotalCP(BattleType.Arena);
-            return await ApiClients.Instance.Arenaservicemanager.PostSeasonsParticipantsAsync(_currentSeasonId, currentAvatarAddr.ToString(), currentAvatar.NameWithHash, portraitId, cp, currentAvatar.level);
+            return await ApiClients.Instance.Arenaservicemanager.PostUsersAsync(currentAvatarAddr.ToString(), currentAvatar.NameWithHash, portraitId, cp, currentAvatar.level);
         }
 
         private static void StartArena()
@@ -255,7 +255,7 @@ namespace Nekoyume.State
             // var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                arenaInfo = await ApiClients.Instance.Arenaservicemanager.GetSeasonsAvailableOpponentsAsync(_currentSeasonId, currentAvatarAddr.ToString());
+                arenaInfo = await ApiClients.Instance.Arenaservicemanager.GetAvailableopponentsAsync(_currentSeasonId, currentAvatarAddr.ToString());
             }
             catch (Exception e)
             {

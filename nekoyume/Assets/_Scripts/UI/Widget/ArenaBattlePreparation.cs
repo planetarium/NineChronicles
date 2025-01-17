@@ -272,7 +272,7 @@ namespace Nekoyume.UI
                 _info.PortraitId,
                 _info.AvatarAddr);
 
-            var tokenTask = ApiClients.Instance.Arenaservicemanager.GetSeasonsBattleTokenAsync(RxProps.CurrentArenaSeasonId, _info.AvatarAddr.ToHex(), playerAvatar.address.ToHex());
+            var tokenTask = ApiClients.Instance.Arenaservicemanager.GetBattleTokenAsync(_info.AvatarAddr.ToHex(), playerAvatar.address.ToHex());
             tokenTask.ContinueWith(task =>
             {
                 if (task.Status == TaskStatus.RanToCompletion)
