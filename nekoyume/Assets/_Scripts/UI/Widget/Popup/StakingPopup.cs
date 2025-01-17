@@ -256,10 +256,11 @@ namespace Nekoyume.UI
                 claimableQuantity = 0;
             }
 
-            ncgArchiveButton.Interactable = claimableQuantity >= 1;
+            ncgArchiveButton.Interactable = claimableQuantity >= 100;
             ncgArchiveButton.UpdateObjects();
 
-            rewardNcgText.text = $"+{fungibleAssetValue.GetQuantityString()}";
+            var quantityString = callByActionRender ? "0" : fungibleAssetValue.GetQuantityString();
+            rewardNcgText.text = $"+{quantityString}";
             rewardNcgText.gameObject.SetActive(true);
             ncgLoadingIndicator.gameObject.SetActive(false);
         }
