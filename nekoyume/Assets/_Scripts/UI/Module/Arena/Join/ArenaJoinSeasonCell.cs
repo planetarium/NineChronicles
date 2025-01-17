@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.Model.EnumType;
-using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 using GeneratedApiNamespace.ArenaServiceClient;

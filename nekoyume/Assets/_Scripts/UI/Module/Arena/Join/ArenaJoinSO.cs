@@ -56,23 +56,6 @@ namespace Nekoyume.UI.Module.Arena.Join
                 MaxPurchaseCount = maxPurchaseCount;
                 MaxPurchaseCountWithInterval = maxPurchaseCountWithInterval;
             }
-
-            public ArenaSheet.RoundData ToRoundData()
-            {
-                return new ArenaSheet.RoundData(
-                    ChampionshipId,
-                    Round,
-                    ArenaType,
-                    StartBlockIndex,
-                    EndBlockIndex,
-                    RequiredMedalCount,
-                    EntranceFee,
-                    TicketPrice,
-                    AdditionalTicketPrice,
-                    MaxPurchaseCount,
-                    MaxPurchaseCountWithInterval
-                );
-            }
         }
 
         [SerializeField]
