@@ -807,7 +807,8 @@ namespace Nekoyume.Game
             // NOTE: Initialize staking states after setting GameConfigState.
             var stakeAddr = Model.Stake.StakeState.DeriveAddress(Agent.Address);
             var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
-            var balance = await Agent.GetStakedByBlockHashAsync(States.Instance.AgentState.address);
+            var balance = await Agent.GetStakedByStateRootHashAsync(Agent.BlockTipStateRootHash,
+                States.Instance.AgentState.address);
             var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
             var stakeRegularRewardSheet = new StakeRegularRewardSheet();
             var policySheet = TableSheets.StakePolicySheet;

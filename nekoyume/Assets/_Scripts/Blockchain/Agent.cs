@@ -430,17 +430,7 @@ namespace Nekoyume.Blockchain
             return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
         }
 
-        public async Task<Integer> GetUnbondClaimableHeightByBlockHashAsync(Address address)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List> GetClaimableRewardsByBlockHashAsync(Address address)
         {
             throw new NotImplementedException();
         }
@@ -450,17 +440,7 @@ namespace Nekoyume.Blockchain
             throw new NotImplementedException();
         }
 
-        public async Task<List> GetDelegationInfoByBlockHashAsync(Address address)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<FungibleAssetValue> GetStakedByBlockHashAsync(Address address)
         {
             throw new NotImplementedException();
         }
@@ -700,7 +680,7 @@ namespace Nekoyume.Blockchain
 
         private void StartNullableCoroutine(IEnumerator routine)
         {
-            if (!(routine is null))
+            if (routine is not null)
             {
                 StartCoroutine(routine);
             }

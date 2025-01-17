@@ -213,8 +213,9 @@ namespace Nekoyume.UI
             unbondButton.UpdateObjects();
             unbondButton.gameObject.SetActive(false);
             unbondBlockText.gameObject.SetActive(false);
-
-            var value = await agent.GetUnbondClaimableHeightByBlockHashAsync(States.Instance.AgentState.address);
+            var agentAddress = States.Instance.AgentState.address;
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            var value = await agent.GetUnbondClaimableHeightByStateRootHashAsync(blockTipStateRootHash, agentAddress);
             editSaveButton.SetCondition(() => true);
             editSaveButton.UpdateObjects();
 
@@ -255,7 +256,9 @@ namespace Nekoyume.UI
             ncgArchiveButton.Interactable = false;
             ncgArchiveButton.UpdateObjects();
 
-            var claimableRewards = await agent.GetClaimableRewardsByBlockHashAsync(States.Instance.AgentState.address);
+            var agentAddress = States.Instance.AgentState.address;
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            var claimableRewards = await agent.GetClaimableRewardsByStateRootHashAsync(blockTipStateRootHash, agentAddress);
             var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
             var claimableQuantity = fungibleAssetValue.RawValue;
 

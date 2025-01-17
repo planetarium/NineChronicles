@@ -432,33 +432,12 @@ namespace Nekoyume.Blockchain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
-        public async Task<Integer> GetUnbondClaimableHeightByBlockHashAsync(Address address)
-        {
-            var raw = await _service.GetUnbondClaimableHeightByBlockHash(
-                BlockTipHash.ToByteArray(),
-                address.ToByteArray());
-            return (Integer)_codec.Decode(raw);
-        }
-
         public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
         {
             var raw = await _service.GetUnbondClaimableHeightByStateRootHash(
                 stateRootHash.ToByteArray(),
                 address.ToByteArray());
             return (Integer)_codec.Decode(raw);
-        }
-
-        /// <summary>
-        /// Need Convert to FungibleAssetValue
-        /// </summary>
-        /// <param name="address">agentAddress</param>
-        /// <returns>raw value list of fav</returns>
-        public async Task<List> GetClaimableRewardsByBlockHashAsync(Address address)
-        {
-            var raw = await _service.GetClaimableRewardsByBlockHash(
-                BlockTipHash.ToByteArray(),
-                address.ToByteArray());
-            return (List)_codec.Decode(raw);
         }
 
         /// <summary>
@@ -482,24 +461,6 @@ namespace Nekoyume.Blockchain
         /// [2]: FungibleAssetValue - 총 위임값 (GuildGold로 표시)
         /// 총 위임값을 NCG로 환산하려면 Lib9c.GuildModule의 ConvertCurrency를 사용하세요.
         /// </summary>
-        /// <param name="address">agentAddress</param>
-        /// <returns>summary에 설명된 데이터가 담긴 List</returns>
-        public async Task<List> GetDelegationInfoByBlockHashAsync(Address address)
-        {
-            var raw = await _service.GetDelegationInfoByBlockHash(
-                BlockTipHash.ToByteArray(),
-                address.ToByteArray());
-            return (List)_codec.Decode(raw);
-        }
-
-
-        /// <summary>
-        /// List로 디코딩 후 3개의 정보로 분리됩니다:
-        /// [0]: BigInteger - 유저의 지분값
-        /// [1]: BigInteger - 총 지분값
-        /// [2]: FungibleAssetValue - 총 위임값 (GuildGold로 표시)
-        /// 총 위임값을 NCG로 환산하려면 Lib9c.GuildModule의 ConvertCurrency를 사용하세요.
-        /// </summary>
         /// <param name="stateRootHash">stateRootHash</param>
         /// <param name="address">agentAddress</param>
         /// <returns>summary에 설명된 데이터가 담긴 List</returns>
@@ -509,17 +470,6 @@ namespace Nekoyume.Blockchain
                 stateRootHash.ToByteArray(),
                 address.ToByteArray());
             return (List)_codec.Decode(raw);
-        }
-
-        public async Task<FungibleAssetValue> GetStakedByBlockHashAsync(Address address)
-        {
-            var raw = await _service.GetStakedByBlockHash(
-                BlockTipHash.ToByteArray(),
-                address.ToByteArray());
-            var serialized = (List)_codec.Decode(raw);
-            return FungibleAssetValue.FromRawValue(
-                new Currency(serialized.ElementAt(0)),
-                serialized.ElementAt(1).ToBigInteger());
         }
 
         public async Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
