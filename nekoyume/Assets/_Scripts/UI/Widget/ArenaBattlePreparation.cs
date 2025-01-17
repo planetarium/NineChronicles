@@ -27,6 +27,8 @@ using TMPro;
 namespace Nekoyume.UI
 {
     using System.Threading.Tasks;
+    using GeneratedApiNamespace.ArenaServiceClient;
+    using Libplanet.Types.Assets;
     using Nekoyume.ApiClient;
     using UniRx;
 
@@ -74,7 +76,7 @@ namespace Nekoyume.UI
         private GameObject _cachedCharacterTitle;
 
         private const int TicketCountToUse = 1;
-        private ArenaSheet.RoundData _roundData;
+        private SeasonResponse _seasonData;
         private ArenaParticipantModel _info;
 
         private readonly List<IDisposable> _disposables = new();
@@ -134,13 +136,13 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            ArenaSheet.RoundData roundData,
+            SeasonResponse seasonData,
             ArenaParticipantModel info,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            _roundData = roundData;
+            _seasonData = seasonData;
             _info = info;
 
             _chooseAvatarCp = chooseAvatarCp;
@@ -207,21 +209,17 @@ namespace Nekoyume.UI
 
             var balance = States.Instance.GoldBalanceState.Gold;
             var currentArenaInfo = RxProps.ArenaInfoTuple.Value.current;
-            var cost = ArenaHelper.GetTicketPrice(
-                _roundData,
-                currentArenaInfo,
-                balance.Currency);
 
             Find<ArenaTicketPurchasePopup>().Show(
                 CostType.ArenaTicket,
                 CostType.NCG,
                 balance,
-                cost,
+                new FungibleAssetValue(),
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
                 currentArenaInfo.PurchasedTicketCount,
-                _roundData.MaxPurchaseCount,
+                _seasonData.MaxTotalTicketsPerRound,
                 RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
-                _roundData.MaxPurchaseCountWithInterval
+                _seasonData.MaxPurchasableTicketsPerRound
             );
         }
 
@@ -292,8 +290,8 @@ namespace Nekoyume.UI
                                 costumes,
                                 equipments,
                                 runeInfos,
-                                _roundData.ChampionshipId,
-                                _roundData.Round,
+                                _seasonData.Id,
+                                _seasonData.Id,
                                 token);
                     }
                     catch (Exception e)
@@ -354,7 +352,7 @@ namespace Nekoyume.UI
             startButton.gameObject.SetActive(canBattle);
             blockStartingText.gameObject.SetActive(!canBattle);
             repeatPopupButton.gameObject.SetActive(canBattle &&
-                _roundData.ArenaType == ArenaType.OffSeason);
+                _seasonData.ArenaType == ArenaType.OFF_SEASON);
 
             if (!canBattle)
             {
