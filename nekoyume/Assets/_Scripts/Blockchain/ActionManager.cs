@@ -28,6 +28,7 @@ using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module;
+using GeneratedApiNamespace.ArenaServiceClient;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -38,7 +39,6 @@ namespace Nekoyume.Blockchain
     using System.Threading.Tasks;
     using Nekoyume.ApiClient;
     using UniRx;
-    using static ArenaServiceClient;
 
     /// <summary>
     /// Creates an action of the game and puts it in the agent.
@@ -982,7 +982,7 @@ namespace Nekoyume.Blockchain
                     // todo: 아레나 서비스
                     // 타입변경되면 수정해야함
                     // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
-                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleLogId, RxProps.CurrentArenaSeasonId, States.Instance.CurrentAvatarState.address.ToHex());
+                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleLogId, States.Instance.CurrentAvatarState.address.ToHex());
                     return task.ContinueWith(t =>
                     {
                         if (t.IsFaulted)
