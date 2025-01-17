@@ -485,10 +485,9 @@ namespace Nekoyume.UI
 
                     if (_getUnbondClaimableHeight != -1)
                     {
-                        // TODO: unbond 기달리라고 말하기
                         OneLineSystem.Push(MailType.System,
                             L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
-                                cancellableBlockIndex),
+                                _getUnbondClaimableHeight),
                             NotificationCell.NotificationType.UnlockCondition);
                         return;
                     }
