@@ -106,6 +106,8 @@ namespace Nekoyume.State
         {
             if (_isUpdatingSeasonResponses) return;
 
+            if (_arenaSeasonResponses.Value.Count != 0 && _arenaSeasonResponses.Value.Last().EndBlockIndex > blockIndex) return;
+
             _isUpdatingSeasonResponses = true;
 
             await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
