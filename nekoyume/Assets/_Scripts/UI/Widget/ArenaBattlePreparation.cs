@@ -77,7 +77,7 @@ namespace Nekoyume.UI
 
         private const int TicketCountToUse = 1;
         private SeasonResponse _seasonData;
-        private ArenaParticipantModel _info;
+        private AvailableOpponentResponse _info;
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -130,15 +130,14 @@ namespace Nekoyume.UI
 
         public void Show(
             SeasonResponse seasonData,
-            ArenaParticipantModel info,
-            int chooseAvatarCp,
+            AvailableOpponentResponse info,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             _seasonData = seasonData;
             _info = info;
 
-            _chooseAvatarCp = chooseAvatarCp;
+            _chooseAvatarCp = (int)info.Cp;
             enemyCp.text = _chooseAvatarCp.ToString();
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, _chooseAvatarCp);
@@ -261,9 +260,9 @@ namespace Nekoyume.UI
                 _info.NameWithHash,
                 _info.Level,
                 _info.PortraitId,
-                _info.AvatarAddr);
+                new Libplanet.Crypto.Address(_info.AvatarAddress));
 
-            var tokenTask = ApiClients.Instance.Arenaservicemanager.GetBattleTokenAsync(_info.AvatarAddr.ToHex(), playerAvatar.address.ToHex());
+            var tokenTask = ApiClients.Instance.Arenaservicemanager.GetBattleTokenAsync(_info.AvatarAddress, playerAvatar.address.ToHex());
             tokenTask.ContinueWith(task =>
             {
                 if (task.Status == TaskStatus.RanToCompletion)
@@ -279,7 +278,7 @@ namespace Nekoyume.UI
                             .GetEquippedRuneSlotInfos();
                         ActionRenderHandler.Instance.Pending = true;
                         ActionManager.Instance.BattleArena(
-                                _info.AvatarAddr,
+                                new Libplanet.Crypto.Address(_info.AvatarAddress),
                                 costumes,
                                 equipments,
                                 runeInfos,

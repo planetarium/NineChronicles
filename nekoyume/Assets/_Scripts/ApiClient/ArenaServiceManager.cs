@@ -112,7 +112,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<bool> PostSeasonsAvailableOpponentsAsync(string txId, string avatarAddress)
+        public async Task<bool> PostAvailableOpponentsAsync(string txId, string avatarAddress)
         {
             if (!IsInitialized)
             {
