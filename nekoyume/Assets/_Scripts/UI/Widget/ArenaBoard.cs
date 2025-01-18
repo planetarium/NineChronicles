@@ -16,6 +16,10 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using GeneratedApiNamespace.ArenaServiceClient;
+    using Libplanet.Crypto;
+    using Nekoyume.ApiClient;
+    using Nekoyume.Blockchain;
+    using Nekoyume.L10n;
     using UniRx;
 
     public class ArenaBoard : Widget
@@ -35,13 +39,10 @@ namespace Nekoyume.UI
         private ArenaBoardPlayerScroll _playerScroll;
 
         [SerializeField]
-        private GameObject _noJoinedPlayersGameObject;
-
-        [SerializeField]
         private Button _backButton;
 
         private SeasonResponse _seasonData;
-        private List<ArenaParticipantModel> _boundedData;
+        private List<AvailableOpponentResponse> _boundedData;
 
         protected override void Awake()
         {
@@ -64,43 +65,67 @@ namespace Nekoyume.UI
             var sw = new Stopwatch();
             sw.Start();
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            await UniTask.WhenAll(
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash),
-                RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash));
+
+            await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
+
+            AvailableOpponentsResponse response = null;
+            await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
+                on200AvailableOpponents: (result) =>
+                {
+                    response = result;
+                },
+                onError: (error) =>
+                {
+                    NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
+                    Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
+                        L10nManager.Localize("UI_YES"), null);
+                }
+            );
+
+            if (response == null)
+            {
+                return;
+            }
+
+            //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
+            if (response.AvailableOpponents.Count == 0 && response.RefreshTxTrackingStatus == RefreshTxTrackingStatus.COMPLETED)
+            {
+                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsFreerefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                    on200OK: (result) =>
+                    {
+                        response = result;
+                    },
+                    onError: (error) =>
+                    {
+                        NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
+                        Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
+                            L10nManager.Localize("UI_YES"), null);
+                    }
+                );
+            }
+
             loading.Close();
-            Show(RxProps.ArenaInformationOrderedWithScore.Value,
-                ignoreShowAnimation);
-            sw.Stop();
-            NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
-        }
+            if (response == null)
+            {
+                return;
+            }
 
-        public void Show(
-            List<ArenaParticipantModel> arenaParticipants,
-            bool ignoreShowAnimation = false)
-        {
-            Show(_seasonData,
-                arenaParticipants,
-                ignoreShowAnimation);
-        }
+            // todo: 아레나서비스 리프레시중인경우일수있음 체크필요
+            if (response.AvailableOpponents.Count == 0)
+            {
+                NcDebug.Log($"No available opponents found for the arena. {response.TxStatus} | {response.RefreshTxTrackingStatus}");
+                return;
+            }
 
-        public void Show(
-            SeasonResponse roundData,
-            List<ArenaParticipantModel> arenaParticipants,
-            bool ignoreShowAnimation = false)
-        {
-            _seasonData = roundData;
-            _boundedData = arenaParticipants;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            _seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+            _boundedData = response.AvailableOpponents;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
-
-            // NOTE: This code assumes that '_playerScroll.Data' contains local player
-            //       If `_playerScroll.Data` does not contains local player, change `2` in the line below to `1`.
-            //       Not use `_boundedData` here because there is the case to
-            //       use the mock data from `_so`.
-            _noJoinedPlayersGameObject.SetActive(_playerScroll.Data.Count < 2);
-
             base.Show(ignoreShowAnimation);
+            sw.Stop();
+            NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
         }
 
         private void UpdateBillboard()
@@ -167,7 +192,7 @@ namespace Nekoyume.UI
                     }
 #endif
                     var avatarStates = await Game.Game.instance.Agent.GetAvatarStatesAsync(
-                        new[] { _boundedData[index].AvatarAddr });
+                        new[] { new Address(_boundedData[index].AvatarAddress) });
                     var avatarState = avatarStates.Values.First();
                     Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Arena).Forget();
                 })
@@ -189,8 +214,7 @@ namespace Nekoyume.UI
                     Close();
                     Find<ArenaBattlePreparation>().Show(
                         _seasonData,
-                        _boundedData[index],
-                        data.Cp);
+                        _boundedData[index]);
                 })
                 .AddTo(gameObject);
         }
@@ -220,33 +244,110 @@ namespace Nekoyume.UI
                     level = e.Level,
                     fullCostumeOrArmorId = e.PortraitId,
                     titleId = null,
-                    cp = e.Cp,
+                    cp = (int)e.Cp,
                     score = e.Score,
                     rank = e.Rank,
-                    expectWinDeltaScore = e.WinScore,
-                    interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
-                    canFight = true,
-                    address = e.AvatarAddr.ToHex(),
-                    guildName = e.GuildName
+                    expectWinDeltaScore = e.ScoreGainOnWin,
+                    interactableChoiceButton = true,
+                    canFight = e.IsAttacked,
+                    address = e.AvatarAddress,
+                    guildName = e.ClanImageURL
                 }).ToList();
-            for (var i = 0; i < _boundedData.Count; i++)
-            {
-                var data = _boundedData[i];
-                if (data.AvatarAddr.Equals(currentAvatarAddr))
-                {
-                    return (scrollData, i);
-                }
-            }
-
             return (scrollData, 0);
         }
 
         private async UniTask RefreshArenaBoardAsync()
         {
-            // todo: 갱신가능한지 확인후 필요한 경우에만 갱신하도록 추가해야함.
-            // 로딩관련 처리 추가해야함.
-            await RxProps.ArenaPostCurrentSeasonsParticipantsAsync();
-            await RxProps.ArenaInformationOrderedWithScore.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash);
+            // todo : 로딩 연출 필요
+            // 첫 무료갱신
+            if (RxProps.ArenaInfo.Value.RefreshesUsedPerRound == 0)
+            {
+                AvailableOpponentsResponse response = null;
+                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsFreerefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                    on200OK: (result) =>
+                    {
+                        response = result;
+                    },
+                    onError: (error) =>
+                    {
+                        NcDebug.LogError($"[ArenaBoard] Failed to get free available opponents | Error: {error}");
+                        Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
+                            L10nManager.Localize("UI_YES"), null);
+                    }
+                );
+
+                if (response == null)
+                {
+                    NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
+                    return;
+                }
+                _boundedData = response.AvailableOpponents;
+                UpdateScrolls();
+            }
+            // 이후 유료갱신
+            else
+            {
+                // todo : 아레나서비스
+                // 재화량, 받는위치 수정해야함.
+                var result = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
+                                        States.Instance.AgentState.address,
+                                        new Libplanet.Types.Assets.FungibleAssetValue()); // 재화량을 0으로 설정
+
+                if (!result)
+                {
+                    return;
+                }
+                AvailableOpponentsResponse response = null;
+                // 서비스에서 tx확인 및 갱신완료될때까지 폴링
+                int[] initialPollingIntervals = { 8000, 4000, 2000, 1000 }; // 초기 요청시간: 8s, 4s, 2s, 1s
+                int maxAdditionalAttempts = 30; // 1초가된후 최대 요청개수
+
+                async UniTask<bool> PerformPollingAsync()
+                {
+                    await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
+                        on200AvailableOpponents: (result) =>
+                        {
+                            response = result;
+                        },
+                        onError: (error) =>
+                        {
+                            NcDebug.LogError($"[ArenaBoard] Error while polling for available opponents | Error: {error}");
+                        }
+                    );
+
+                    return response != null && response.RefreshTxTrackingStatus == RefreshTxTrackingStatus.COMPLETED;
+                }
+
+                // 초기 요청시간을 줄여가며 폴링 시작
+                foreach (var interval in initialPollingIntervals)
+                {
+                    if (await PerformPollingAsync())
+                    {
+                        NcDebug.Log("[ArenaBoard] Refresh completed.");
+                        return;
+                    }
+                    await UniTask.Delay(interval);
+                }
+
+                // 1초 간격으로 추가 폴링
+                for (int i = 0; i < maxAdditionalAttempts; i++)
+                {
+                    if (await PerformPollingAsync())
+                    {
+                        NcDebug.Log("[ArenaBoard] Refresh completed.");
+                        return;
+                    }
+                    await UniTask.Delay(1000); // 1 second interval
+                }
+
+                if (response == null)
+                {
+                    NcDebug.LogError("[ArenaBoard] Response is null after refresh.");
+                    return;
+                }
+                _boundedData = response.AvailableOpponents;
+                UpdateScrolls();
+            }
         }
 
         public void RefreshArenaBoard()

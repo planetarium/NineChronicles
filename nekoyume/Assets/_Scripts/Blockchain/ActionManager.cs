@@ -1791,6 +1791,38 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
+        public Task<bool> TransferAssetsForArenaBoardRefresh(
+            Address sender,
+            Address recipient,
+            FungibleAssetValue amount)
+        {
+            var action = new TransferAsset(sender, recipient, amount);
+            var tcs = new TaskCompletionSource<bool>();
+            ProcessAction(action, (txid) =>
+                    {
+                        var task = ApiClients.Instance.Arenaservicemanager.PostAvailableOpponentsAsync(txid.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
+                        return task.ContinueWith(t =>
+                        {
+                            if (t.IsFaulted)
+                            {
+                                tcs.SetResult(false);
+                                return false;
+                            }
+                            _agent.ActionRenderer.EveryRender<TransferAsset>()
+                                    .Timeout(ActionTimeout)
+                                    .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                                    .First()
+                                    .ObserveOnMainThread()
+                                    .DoOnError(e => { })
+                                    .Subscribe();
+
+                            tcs.SetResult(true);
+                            return true;
+                        });
+                    });
+            return tcs.Task;
+        }
+
         public IObservable<ActionEvaluation<Stake>> Stake(
             BigInteger amount)
         {

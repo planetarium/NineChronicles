@@ -266,16 +266,6 @@ namespace Nekoyume.UI
             void OnClickJoinButton()
             {
                 AudioController.PlayClick();
-                if (RxProps.ArenaInfo.HasValue &&
-                    RxProps.ArenaInfo.Value is not null)
-                {
-                    Close();
-                    Find<ArenaBoard>().Show(
-                        _scroll.SelectedItemData.SeasonData,
-                        RxProps.ArenaInformationOrderedWithScore.Value);
-                    return;
-                }
-
                 Find<ArenaBoard>().ShowAsync().Forget();
             }
 
