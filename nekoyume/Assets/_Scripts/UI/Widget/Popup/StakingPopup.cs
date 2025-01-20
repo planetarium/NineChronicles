@@ -352,28 +352,12 @@ namespace Nekoyume.UI
 
         private void OnClickEditButton()
         {
-            if (States.Instance.StakeStateV2.HasValue)
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
             {
-                var stakeState = States.Instance.StakeStateV2.Value;
-                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
-                if (stakeState.ClaimableBlockIndex <= currentBlockIndex)
-                {
-                    OneLineSystem.Push(MailType.System,
-                        L10nManager.Localize("UI_REQUIRE_CLAIM_STAKE_REWARD"),
-                        NotificationCell.NotificationType.UnlockCondition);
-                    return;
-                }
-            }
-            else
-            {
-                if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
-                {
-                    OneLineSystem.Push(MailType.System,
-                        L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
-                        NotificationCell.NotificationType.UnlockCondition);
-                    return;
-                }
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
             }
 
             OnChangeEditingState(true);
@@ -468,34 +452,11 @@ namespace Nekoyume.UI
             var confirmContent = "UI_INTRODUCE_STAKING";
             var confirmIcon = IconAndButtonSystem.SystemType.Information;
             var nullableStakeState = States.Instance.StakeStateV2;
-            if (nullableStakeState.HasValue)
+            if (nullableStakeState.HasValue && inputBigInt < States.Instance.StakedBalance.MajorUnit)
             {
-                var stakeState = nullableStakeState.Value;
-                var cancellableBlockIndex = stakeState.ReceivedBlockIndex;
-                if (inputBigInt < States.Instance.StakedBalance.MajorUnit)
-                {
-                    if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
-                    {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
-                                cancellableBlockIndex),
-                            NotificationCell.NotificationType.UnlockCondition);
-                        return;
-                    }
-
-                    if (_getUnbondClaimableHeight != -1)
-                    {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
-                                _getUnbondClaimableHeight),
-                            NotificationCell.NotificationType.UnlockCondition);
-                        return;
-                    }
-
-                    confirmTitle = "UI_CAUTION";
-                    confirmContent = "UI_WARNING_STAKING_REDUCE";
-                    confirmIcon = IconAndButtonSystem.SystemType.Error;
-                }
+                confirmTitle = "UI_CAUTION";
+                confirmContent = "UI_WARNING_STAKING_REDUCE";
+                confirmIcon = IconAndButtonSystem.SystemType.Error;
             }
 
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize: true, type: confirmIcon);
