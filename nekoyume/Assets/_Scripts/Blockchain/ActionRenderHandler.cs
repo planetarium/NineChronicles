@@ -2875,7 +2875,9 @@ namespace Nekoyume.Blockchain
                     L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                     NotificationCell.NotificationType.Information);
 
-                Widget.Find<StakingPopup>().SetView();
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.SetView();
+                stakingPopup.CheckSharePower().Forget();
             });
         }
 
