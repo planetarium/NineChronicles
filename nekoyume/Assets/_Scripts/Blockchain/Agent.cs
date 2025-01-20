@@ -432,22 +432,26 @@ namespace Nekoyume.Blockchain
 
         public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
         {
-            throw new NotImplementedException();
+            // TODO: Implement
+            return new Integer();
         }
 
         public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
         {
-            throw new NotImplementedException();
+            // TODO: Implement
+            return new List();
         }
 
         public async Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
         {
-            throw new NotImplementedException();
+            // TODO: Implement
+            return new List();
         }
 
         public async Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
         {
-            throw new NotImplementedException();
+            // TODO: Implement
+            return new FungibleAssetValue();
         }
 
         // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
