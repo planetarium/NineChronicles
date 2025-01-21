@@ -231,7 +231,7 @@ namespace Nekoyume.UI
 
             unbondBlockText.gameObject.SetActive(value > blockIndex);
             unbondBlockText.text =
-                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value);
+                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value.Value);
 
             _getUnbondClaimableHeight = value;
         }
