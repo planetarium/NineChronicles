@@ -498,7 +498,7 @@ namespace Nekoyume.Game.Scene
 
             if (planetContext.HasPledgedAccount)
             {
-                await HasPledgedAccountProcess(planetContext, loginCallback).ToUniTask();
+                await HasPledgedAccountProcess(planetContext, loginCallback);
                 return;
             }
 
@@ -512,7 +512,7 @@ namespace Nekoyume.Game.Scene
                 {
                     email = outEmail;
                     agentAddrInPortal = outAddress;
-                }).ToUniTask();
+                });
             }
             else
             {
@@ -740,8 +740,7 @@ namespace Nekoyume.Game.Scene
 
                 // NOTE: Update CommandlineOptions.PrivateKey.
                 CommandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
-                NcDebug.Log("[LoginScene] CoLogin()... CommandLineOptions.PrivateKey updated" +
-                    $" to ({pk.Address}).");
+                NcDebug.Log($"[LoginScene] CoLogin()... CommandLineOptions.PrivateKey updated to ({pk.Address}).");
 
                 // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
@@ -781,7 +780,7 @@ namespace Nekoyume.Game.Scene
             }
         }
 
-        private IEnumerator HasPledgedAccountProcess(PlanetContext planetContext, Action<bool> loginCallback)
+        private async UniTask HasPledgedAccountProcess(PlanetContext planetContext, Action<bool> loginCallback)
         {
             var game = Game.instance;
 
@@ -792,22 +791,21 @@ namespace Nekoyume.Game.Scene
                 planetContext);
 
             NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart.");
-            yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
+            await introScreen.OnClickStart.AsObservable().First().ToUniTask();
             NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
 
             // NOTE: Update CommandlineOptions.PrivateKey finally.
             CommandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
-            NcDebug.Log("[LoginScene] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                $" to ({pk.Address}).");
+            NcDebug.Log($"[LoginScene] CoLogin()... CommandLineOptions.PrivateKey finally updated to ({pk.Address}).");
 
-            yield return game.AgentInitialize(true, loginCallback);
+            await game.AgentInitialize(true, loginCallback).ToUniTask();
         }
 
         /// <summary>
         /// If has latest signed in social type, then return email and agent address in portal.
         /// </summary>
         /// <param name="outValueCallback">callback of (email, agentAddrInPortal)</param>
-        private IEnumerator HasLatestSignedInSocialTypeProcess(Action<string, Address?> outValueCallback)
+        private async UniTask HasLatestSignedInSocialTypeProcess(Action<string, Address?> outValueCallback)
         {
             var game = Game.instance;
             var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
@@ -817,14 +815,14 @@ namespace Nekoyume.Game.Scene
             sw.Reset();
             sw.Start();
             var getTokensTask = game.PortalConnect.GetTokensSilentlyAsync();
-            yield return new WaitUntil(() => getTokensTask.IsCompleted);
+            await UniTask.WaitUntil(() => getTokensTask.IsCompleted);
             sw.Stop();
             NcDebug.Log($"[LoginScene] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
             dimmedLoadingScreen.Close();
             outValueCallback?.Invoke(getTokensTask.Result.email, getTokensTask.Result.address);
 
             NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart.");
-            yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
+            await introScreen.OnClickStart.AsObservable().First().ToUniTask();
             NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
         }
 
