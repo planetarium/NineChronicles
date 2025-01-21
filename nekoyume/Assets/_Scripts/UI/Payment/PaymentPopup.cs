@@ -635,6 +635,7 @@ namespace Nekoyume.UI
 
             CloseWithOtherWidgets();
             Find<WorldMap>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
             if (currState == AdventureBossData.AdventureBossSeasonState.Progress)
