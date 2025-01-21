@@ -479,6 +479,16 @@ namespace Nekoyume.UI
             var nullableStakeState = States.Instance.StakeStateV2;
             if (nullableStakeState.HasValue && inputBigInt < States.Instance.StakedBalance.MajorUnit)
             {
+                var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                if (_getUnbondClaimableHeight != -1 && blockIndex < _getUnbondClaimableHeight)
+                {
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
+                            _getUnbondClaimableHeight),
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+
                 confirmTitle = "UI_CAUTION";
                 confirmContent = "UI_WARNING_STAKING_REDUCE";
                 confirmIcon = IconAndButtonSystem.SystemType.Error;
