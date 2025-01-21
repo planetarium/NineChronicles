@@ -250,7 +250,7 @@ namespace Nekoyume.UI
                 States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
             NcDebug.Log($"[{nameof(StakingPopup)}] DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
             allShared /= 1000000000000000000;
-            userShared /= 1000000000000000000;
+            userShared /= 10000000000000000; // 백분율 표기를 위해 allShared보다 100배 작게 나눔
 
             var sharePower = allShared == 0 ? 0 : (double)userShared / (long)allShared;
             var sharePowerString = sharePower.ToString("F4");
