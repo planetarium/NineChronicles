@@ -1796,13 +1796,13 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
-        public Task<string> TransferAssetsForArenaBoardRefresh(
+        public Task<int> TransferAssetsForArenaBoardRefresh(
             Address sender,
             Address recipient,
             FungibleAssetValue amount)
         {
             var action = new TransferAsset(sender, recipient, amount);
-            var tcs = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<int>();
             ProcessAction(action, (txid) =>
                     {
                         var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), States.Instance.CurrentAvatarState.address.ToHex());

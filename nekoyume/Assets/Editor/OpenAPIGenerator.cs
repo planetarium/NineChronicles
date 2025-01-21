@@ -942,6 +942,13 @@ namespace Nekoyume
 
                                 hasReturnType = true;
                             }
+
+                            var convert = ConvertToCSharpType(responseSchema);
+                            if (convert != "object")
+                            {
+                                returnType = convert;
+                                hasReturnType = true;
+                            }
                         }
 
                         // 중복 체크를 위해 key 생성
@@ -1000,6 +1007,10 @@ namespace Nekoyume
                                         {
                                             responseType = $"{responseSchema2["items"]["type"]}[]";
                                         }
+                                    }
+                                    else
+                                    {
+                                        responseType = ConvertToCSharpType(responseSchema2);
                                     }
                                 }
 
@@ -1260,6 +1271,10 @@ namespace Nekoyume
                         {
                             responseType = $"{responseSchema["items"]["type"]}[]";
                         }
+                    }
+                    else
+                    {
+                        responseType = ConvertToCSharpType(responseSchema);
                     }
                 }
 

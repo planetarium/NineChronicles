@@ -1721,7 +1721,7 @@ public class ArenaServiceClient
     public async Task PostTicketsBattlePurchaseAsync(
         string Authorization, PurchaseTicketRequest requestBody, 
         // Purchase Log Id
-        Action<string> on200PurchaseLogId = null, 
+        Action<int> on200PurchaseLogId = null, 
         // 
         Action<string> on401 = null, 
         // 
@@ -1753,14 +1753,17 @@ public class ArenaServiceClient
         }
     }
 
-    private void PostTicketsBattlePurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void PostTicketsBattlePurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // Purchase Log Id
         {
             if (on200PurchaseLogId != null)
             {
-                on200PurchaseLogId(responseText);
+                int responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200PurchaseLogId(responseData);
             }
             else if (onError != null)
             {
@@ -1807,7 +1810,7 @@ public class ArenaServiceClient
     public async Task PostTicketsRefreshPurchaseAsync(
         string Authorization, PurchaseTicketRequest requestBody, 
         // Purchase Log Id
-        Action<string> on200PurchaseLogId = null, 
+        Action<int> on200PurchaseLogId = null, 
         // 
         Action<string> on401 = null, 
         // 
@@ -1839,14 +1842,17 @@ public class ArenaServiceClient
         }
     }
 
-    private void PostTicketsRefreshPurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void PostTicketsRefreshPurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // Purchase Log Id
         {
             if (on200PurchaseLogId != null)
             {
-                on200PurchaseLogId(responseText);
+                int responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200PurchaseLogId(responseData);
             }
             else if (onError != null)
             {
