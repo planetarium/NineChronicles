@@ -55,7 +55,7 @@ namespace Nekoyume.UI
             IReadOnlyList<ItemBase> rewardItems,
             System.Action onClose,
             (int win, int defeat)? winDefeatCount = null,
-            BattleLogResponse battleLogResponse = null)
+            BattleResponse battleResponse = null)
         {
             base.Show();
 
@@ -72,11 +72,11 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
-            NcDebug.Log($"battleLogResponse: {battleLogResponse}");
+            NcDebug.Log($"battleLogResponse: {battleResponse}");
             NcDebug.Log($"log.Score: {log.Score}");
-            if (battleLogResponse != null)
+            if (battleResponse != null)
             {
-                scoreText.text = $"{battleLogResponse.ParticipantScore - battleLogResponse.ParticipantScoreChange} + {battleLogResponse.ParticipantScoreChange}";
+                scoreText.text = $"{battleResponse.ParticipantScore - battleResponse.ParticipantScoreChange} + {battleResponse.ParticipantScoreChange}";
             }
             else
             {

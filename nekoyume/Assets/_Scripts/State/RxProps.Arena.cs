@@ -67,7 +67,7 @@ namespace Nekoyume.State
             private set => _currentSeasonId = value;
         }
 
-        public static int LastBattleLogId
+        public static int LastBattleId
         {
             get => _lastBattleLogId;
             set => _lastBattleLogId = value;
@@ -110,7 +110,7 @@ namespace Nekoyume.State
             await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
                 on200OK: response =>
                 {
-                    _arenaSeasonResponses.SetValueAndForceNotify(response.OrderBy(season => season.StartBlockIndex).ToList());
+                    _arenaSeasonResponses.SetValueAndForceNotify(response.Seasons.OrderBy(season => season.StartBlockIndex).ToList());
                     _isUpdatingSeasonResponses = false;
                 },
                 onError: error =>
@@ -305,33 +305,7 @@ namespace Nekoyume.State
                 _playerArenaInfo.SetValueAndForceNotify(playerArenaInf);
                 return avatarAddrAndScoresWithRank;
             }
-
-            var playerArenaInfo = await ApiClients.Instance.Arenaservicemanager.GetSeasonsLeaderboardParticipantAsync(_currentSeasonId, currentAvatarAddr.ToString());
-
-            if (playerArenaInfo is null)
-            {
-                var maxRank = arenaInfo.Max(r => r.Rank);
-                var firstMaxRankIndex = arenaInfo.FindIndex(info => info.Rank == maxRank);
-                playerArenaInf.Rank = maxRank;
-                playerArenaInfo = playerArenaInf;
-            }
-            else
-            {
-                playerArenaInfo.PortraitId = portraitId;
-            }
-
-            // TODO: 신규아레나
-            // _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
-            // _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
-
-            SetArenaInfoOnMainThreadAsync(playerArenaInfo).Forget();
             return arenaInfo;
-        }
-
-        private static async UniTask SetArenaInfoOnMainThreadAsync(ArenaParticipantModel playerArenaInfo)
-        {
-            await UniTask.SwitchToMainThread();
-            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
         }
     }
 }

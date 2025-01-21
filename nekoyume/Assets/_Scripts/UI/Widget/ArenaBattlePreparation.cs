@@ -268,7 +268,7 @@ namespace Nekoyume.UI
                 if (task.Status == TaskStatus.RanToCompletion)
                 {
                     var token = task.Result;
-                    RxProps.LastBattleLogId = token.BattleLogId;
+                    RxProps.LastBattleId = token.BattleId;
                     // 성공시 호출할 콜백
                     try
                     {

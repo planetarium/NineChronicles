@@ -126,7 +126,7 @@ namespace Nekoyume.Game.Battle
             // todo: 아레나 서비스
             // 서비스에서 데이터가 갱신안되어있을수있어서 폴링처리 진행해야함.
             yield return new WaitForSeconds(5.0f);
-            var battleResponseTask = ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleLogId, myAvatarAddress.ToHex());
+            var battleResponseTask = ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
             yield return battleResponseTask.AsCoroutine();
             var battleResponse = battleResponseTask.Result;
 
@@ -159,7 +159,7 @@ namespace Nekoyume.Game.Battle
             ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
             (int, int)? winDefeatCount = null,
-            BattleLogResponse battleLogResponse = null)
+            BattleResponse battleResponse = null)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             ActionRenderHandler.Instance.Pending = false;
@@ -175,7 +175,7 @@ namespace Nekoyume.Game.Battle
             arenaCharacter.ShowSpeech("PLAYER_WIN");
             arenaCharacter.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
             Widget.Find<ArenaBattle>().Close();
-            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount, battleLogResponse);
+            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount, battleResponse);
             yield return null;
         }
 

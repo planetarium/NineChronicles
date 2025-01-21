@@ -68,11 +68,11 @@ namespace Nekoyume.UI
 
             await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
 
-            AvailableOpponentsResponse response = null;
+            List<AvailableOpponentResponse> response = null;
             await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
                 on200AvailableOpponents: (result) =>
                 {
-                    response = result;
+                    response = result?.ToList();
                 },
                 onError: (error) =>
                 {
@@ -88,12 +88,12 @@ namespace Nekoyume.UI
             }
 
             //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
-            if (response.AvailableOpponents.Count == 0 && response.RefreshTxTrackingStatus == RefreshTxTrackingStatus.COMPLETED)
+            if (response.Count == 0)
             {
-                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsFreerefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
-                    on200OK: (result) =>
+                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                    on200AvailableOpponents: (result) =>
                     {
-                        response = result;
+                        response = result?.ToList();
                     },
                     onError: (error) =>
                     {
@@ -111,15 +111,15 @@ namespace Nekoyume.UI
             }
 
             // todo: 아레나서비스 리프레시중인경우일수있음 체크필요
-            if (response.AvailableOpponents.Count == 0)
+            if (response.Count == 0)
             {
-                NcDebug.Log($"No available opponents found for the arena. {response.TxStatus} | {response.RefreshTxTrackingStatus}");
+                NcDebug.LogError("No available opponents found for the arena. Please try again later.");
                 return;
             }
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             _seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
-            _boundedData = response.AvailableOpponents;
+            _boundedData = response;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
@@ -259,55 +259,32 @@ namespace Nekoyume.UI
         private async UniTask RefreshArenaBoardAsync()
         {
             // todo : 로딩 연출 필요
-            // 첫 무료갱신
-            if (RxProps.ArenaInfo.Value.RefreshesUsedPerRound == 0)
-            {
-                AvailableOpponentsResponse response = null;
-                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsFreerefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
-                    on200OK: (result) =>
-                    {
-                        response = result;
-                    },
-                    onError: (error) =>
-                    {
-                        NcDebug.LogError($"[ArenaBoard] Failed to get free available opponents | Error: {error}");
-                        Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
-                            L10nManager.Localize("UI_YES"), null);
-                    }
-                );
-
-                if (response == null)
-                {
-                    NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
-                    return;
-                }
-                _boundedData = response.AvailableOpponents;
-                UpdateScrolls();
-            }
-            // 이후 유료갱신
-            else
+            // 무료갱신이 아닌경우
+            if (RxProps.ArenaInfo.Value.NextRefreshNCGCost > 0)
             {
                 // todo : 아레나서비스
                 // 재화량, 받는위치 수정해야함.
-                var result = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
+                var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
                                         States.Instance.AgentState.address,
                                         new Libplanet.Types.Assets.FungibleAssetValue()); // 재화량을 0으로 설정
 
-                if (!result)
+                if (logId == string.Empty)
                 {
+                    NcDebug.LogError("[ArenaBoard] Refresh failed. Please try again later.");
                     return;
                 }
-                AvailableOpponentsResponse response = null;
+
+                TicketPurchaseLogResponse refreshTicketResponse = null;
                 // 서비스에서 tx확인 및 갱신완료될때까지 폴링
                 int[] initialPollingIntervals = { 8000, 4000, 2000, 1000 }; // 초기 요청시간: 8s, 4s, 2s, 1s
                 int maxAdditionalAttempts = 30; // 1초가된후 최대 요청개수
 
                 async UniTask<bool> PerformPollingAsync()
                 {
-                    await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
-                        on200AvailableOpponents: (result) =>
+                    await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsRefreshPurchaselogsAsync(int.Parse(logId), ArenaServiceManager.CreateCurrentJwt(),
+                        on200PurchaseLogId: (result) =>
                         {
-                            response = result;
+                            refreshTicketResponse = result;
                         },
                         onError: (error) =>
                         {
@@ -315,39 +292,61 @@ namespace Nekoyume.UI
                         }
                     );
 
-                    return response != null && response.RefreshTxTrackingStatus == RefreshTxTrackingStatus.COMPLETED;
+                    return refreshTicketResponse != null && refreshTicketResponse.PurchaseStatus == PurchaseStatus.SUCCESS;
                 }
 
+                bool isPollingSuccessful = false; // 폴링 성공 여부를 저장할 변수
                 // 초기 요청시간을 줄여가며 폴링 시작
                 foreach (var interval in initialPollingIntervals)
                 {
                     if (await PerformPollingAsync())
                     {
                         NcDebug.Log("[ArenaBoard] Refresh completed.");
-                        return;
+                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                        break; // 성공 시 더 이상 요청하지 않도록 break
                     }
                     await UniTask.Delay(interval);
                 }
 
                 // 1초 간격으로 추가 폴링
-                for (int i = 0; i < maxAdditionalAttempts; i++)
+                for (int i = 0; i < maxAdditionalAttempts && !isPollingSuccessful; i++) // 성공하지 않은 경우에만 추가 요청
                 {
                     if (await PerformPollingAsync())
                     {
                         NcDebug.Log("[ArenaBoard] Refresh completed.");
-                        return;
+                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                        break; // 성공 시 더 이상 요청하지 않도록 break
                     }
                     await UniTask.Delay(1000); // 1 second interval
                 }
 
-                if (response == null)
+                if (refreshTicketResponse == null)
                 {
                     NcDebug.LogError("[ArenaBoard] Response is null after refresh.");
-                    return;
                 }
-                _boundedData = response.AvailableOpponents;
-                UpdateScrolls();
             }
+
+            List<AvailableOpponentResponse> response = null;
+            await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                on200AvailableOpponents: (result) =>
+                {
+                    response = result?.ToList();
+                },
+                onError: (error) =>
+                {
+                    NcDebug.LogError($"[ArenaBoard] Failed to get free available opponents | Error: {error}");
+                    Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
+                        L10nManager.Localize("UI_YES"), null);
+                }
+            );
+
+            if (response == null || response.Count == 0)
+            {
+                NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
+                return;
+            }
+            _boundedData = response;
+            UpdateScrolls();
         }
 
         public void RefreshArenaBoard()
