@@ -81,7 +81,7 @@ namespace Nekoyume.ApiClient
                     on200AvailableOpponents: result =>
                     {
                         models.AddRange(
-                            result.AvailableOpponents.Select(opponent => new ArenaParticipantModel
+                            result.Select(opponent => new ArenaParticipantModel
                             {
                                 AvatarAddr = new Address(opponent.AvatarAddress),
                                 NameWithHash = opponent.NameWithHash,
@@ -112,7 +112,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<bool> PostAvailableOpponentsAsync(string txId, string avatarAddress)
+        public async Task<string> PostTicketsRefreshPurchaseAsync(string txId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -123,12 +123,12 @@ namespace Nekoyume.ApiClient
             {
                 await UniTask.SwitchToMainThread();
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
-                bool response = false;
+                string response = string.Empty;
 
-                await Client.PostAvailableopponentsRefreshAsync(txId, jwt,
-                    on200OK: result =>
+                await Client.PostTicketsRefreshPurchaseAsync(/*txId,*/ jwt, new PurchaseTicketRequest(),
+                    on200PurchaseLogId : result =>
                     {
-                        response = true;
+                        response = result;
                     },
                     onError: error =>
                     {
@@ -144,50 +144,6 @@ namespace Nekoyume.ApiClient
             {
                 NcDebug.LogError($"[ArenaServiceManager] Exception while posting available opponents | " +
                     $"TxId: {txId} | " +
-                    $"AvatarAddress: {avatarAddress ?? "null"} | " +
-                    $"Error: {e.Message}");
-                throw;
-            }
-        }
-
-        public async Task<ArenaParticipantModel> GetSeasonsLeaderboardParticipantAsync(int seasonId, string avatarAddress)
-        {
-            if (!IsInitialized)
-            {
-                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
-            }
-
-            try
-            {
-                ArenaParticipantModel model = null;
-                await UniTask.SwitchToMainThread();
-                await Client.GetSeasonsLeaderboardParticipantsAsync(seasonId, avatarAddress,
-                    on200OK: result =>
-                    {
-                        model = new ArenaParticipantModel
-                        {
-                            AvatarAddr = new Address(result.AvatarAddress),
-                            NameWithHash = result.NameWithHash,
-                            PortraitId = result.PortraitId,
-                            Cp = (int)result.Cp,
-                            Level = result.Level,
-                            Score = result.Score,
-                            Rank = result.Rank
-                        };
-                    }, onError: error =>
-                    {
-                        NcDebug.LogError($"[ArenaServiceManager] Failed to get leaderboard participant | " +
-                            $"SeasonId: {seasonId} | " +
-                            $"AvatarAddress: {avatarAddress ?? "null"} | " +
-                            $"Error: {error}");
-                    });
-
-                return model;
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogError($"[ArenaServiceManager] Failed to get leaderboard participant | " +
-                    $"SeasonId: {seasonId} | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
                 throw;
@@ -323,7 +279,7 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                await Client.PostBattleRequestAsync(logId, jwt, txId,
+                await Client.PostBattleRequestAsync(logId, jwt, new BattleRequest { TxId = txId },
                     on200OK: result =>
                     {
                         response = result;
@@ -360,14 +316,14 @@ namespace Nekoyume.ApiClient
             return response;
         }
 
-        public async Task<BattleLogResponse> GetBattleAsync(int battleLogId, string avatarAddress)
+        public async Task<BattleResponse> GetBattleAsync(int battleLogId, string avatarAddress)
         {
             if (!IsInitialized)
             {
                 throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
             }
 
-            BattleLogResponse battleLogResponse = null;
+            BattleResponse battleResponse = null;
             string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
             try
             {
@@ -375,7 +331,7 @@ namespace Nekoyume.ApiClient
                 await Client.GetBattleAsync(battleLogId, jwt,
                     on200OK: result =>
                     {
-                        battleLogResponse = result;
+                        battleResponse = result;
                     },
                     on401Unauthorized: unauthorizedResult =>
                     {
@@ -402,7 +358,7 @@ namespace Nekoyume.ApiClient
                 throw;
             }
 
-            return battleLogResponse;
+            return battleResponse;
         }
         public async Task<ArenaInfoResponse> GetArenaInfoAsync(string avatarAddress)
         {
@@ -418,7 +374,7 @@ namespace Nekoyume.ApiClient
                 await UniTask.SwitchToMainThread();
                 // todo : 아레나서비스
                 // 인터페이스 수정후 작업해야함
-                await Client.GetInfoAsync(/*jwt, */
+                await Client.GetInfoAsync(jwt,
                     on200ArenaInfoResponse: result =>
                     {
                         arenaInfoResponse = result;

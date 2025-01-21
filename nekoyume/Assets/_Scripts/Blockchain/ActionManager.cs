@@ -982,7 +982,7 @@ namespace Nekoyume.Blockchain
                     // todo: 아레나 서비스
                     // 타입변경되면 수정해야함
                     // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
-                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleLogId, States.Instance.CurrentAvatarState.address.ToHex());
+                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleId, States.Instance.CurrentAvatarState.address.ToHex());
                     return task.ContinueWith(t =>
                     {
                         if (t.IsFaulted)
@@ -1791,21 +1791,21 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
-        public Task<bool> TransferAssetsForArenaBoardRefresh(
+        public Task<string> TransferAssetsForArenaBoardRefresh(
             Address sender,
             Address recipient,
             FungibleAssetValue amount)
         {
             var action = new TransferAsset(sender, recipient, amount);
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<string>();
             ProcessAction(action, (txid) =>
                     {
-                        var task = ApiClients.Instance.Arenaservicemanager.PostAvailableOpponentsAsync(txid.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
+                        var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
                         return task.ContinueWith(t =>
                         {
                             if (t.IsFaulted)
                             {
-                                tcs.SetResult(false);
+                                tcs.SetResult(t.Result);
                                 return false;
                             }
                             _agent.ActionRenderer.EveryRender<TransferAsset>()
@@ -1816,7 +1816,7 @@ namespace Nekoyume.Blockchain
                                     .DoOnError(e => { })
                                     .Subscribe();
 
-                            tcs.SetResult(true);
+                            tcs.SetResult(t.Result);
                             return true;
                         });
                     });
