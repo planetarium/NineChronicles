@@ -112,7 +112,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<string> PostTicketsRefreshPurchaseAsync(string txId, string avatarAddress)
+        public async Task<int> PostTicketsRefreshPurchaseAsync(string txId, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -123,7 +123,7 @@ namespace Nekoyume.ApiClient
             {
                 await UniTask.SwitchToMainThread();
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
-                string response = string.Empty;
+                int response = -1;
 
                 await Client.PostTicketsRefreshPurchaseAsync(/*txId,*/ jwt, new PurchaseTicketRequest(),
                     on200PurchaseLogId : result =>

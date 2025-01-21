@@ -268,7 +268,7 @@ namespace Nekoyume.UI
                                         States.Instance.AgentState.address,
                                         new Libplanet.Types.Assets.FungibleAssetValue()); // 재화량을 0으로 설정
 
-                if (logId == string.Empty)
+                if (logId == -1)
                 {
                     NcDebug.LogError("[ArenaBoard] Refresh failed. Please try again later.");
                     return;
@@ -281,7 +281,7 @@ namespace Nekoyume.UI
 
                 async UniTask<bool> PerformPollingAsync()
                 {
-                    await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsRefreshPurchaselogsAsync(int.Parse(logId), ArenaServiceManager.CreateCurrentJwt(),
+                    await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsRefreshPurchaselogsAsync(logId, ArenaServiceManager.CreateCurrentJwt(),
                         on200PurchaseLogId: (result) =>
                         {
                             refreshTicketResponse = result;
