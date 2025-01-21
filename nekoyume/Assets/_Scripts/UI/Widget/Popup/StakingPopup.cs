@@ -14,6 +14,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.Module.Guild;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -59,6 +60,7 @@ namespace Nekoyume.UI
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
         [SerializeField] private GameObject currentBenefitsTab;
         [SerializeField] private GameObject levelBenefitsTab;
+        [SerializeField] private TMP_Text sharePowerText;
 
         [Space]
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
@@ -202,6 +204,7 @@ namespace Nekoyume.UI
             }
 
             CheckClaimNcgReward().Forget();
+            CheckSharePower().Forget();
         }
 
         private async UniTask CheckUnbondBlock()
@@ -231,6 +234,28 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value);
 
             _getUnbondClaimableHeight = value;
+        }
+
+        public async UniTask CheckSharePower()
+        {
+            sharePowerText.gameObject.SetActive(false);
+            var agent = Game.Game.instance.Agent;
+            var agentAddress = States.Instance.AgentState.address;
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            var rawValue = await agent.GetDelegationInfoByStateRootHashAsync(blockTipStateRootHash, agentAddress);
+            var userShared = rawValue[0].ToBigInteger();
+            var allShared = rawValue[1].ToBigInteger();
+            var delegateGuildGold = rawValue[2].ToFungibleAssetValue();
+            var delegatedNcg = GuildModule.ConvertCurrency(delegateGuildGold,
+                States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
+            NcDebug.Log($"[{nameof(StakingPopup)}] DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
+            allShared /= 1000000000000000000;
+            userShared /= 1000000000000000000;
+
+            var sharePower = allShared == 0 ? 0 : (double)userShared / (long)allShared;
+            var sharePowerString = sharePower.ToString("F4");
+            sharePowerText.text = L10nManager.Localize("UI_STAKING_SHARE_POWER_FORMAT", sharePowerString);
+            sharePowerText.gameObject.SetActive(true);
         }
 
         public void OnRenderClaimUnbonded()
@@ -352,28 +377,12 @@ namespace Nekoyume.UI
 
         private void OnClickEditButton()
         {
-            if (States.Instance.StakeStateV2.HasValue)
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
             {
-                var stakeState = States.Instance.StakeStateV2.Value;
-                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
-                if (stakeState.ClaimableBlockIndex <= currentBlockIndex)
-                {
-                    OneLineSystem.Push(MailType.System,
-                        L10nManager.Localize("UI_REQUIRE_CLAIM_STAKE_REWARD"),
-                        NotificationCell.NotificationType.UnlockCondition);
-                    return;
-                }
-            }
-            else
-            {
-                if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
-                {
-                    OneLineSystem.Push(MailType.System,
-                        L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
-                        NotificationCell.NotificationType.UnlockCondition);
-                    return;
-                }
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
             }
 
             OnChangeEditingState(true);
@@ -468,34 +477,11 @@ namespace Nekoyume.UI
             var confirmContent = "UI_INTRODUCE_STAKING";
             var confirmIcon = IconAndButtonSystem.SystemType.Information;
             var nullableStakeState = States.Instance.StakeStateV2;
-            if (nullableStakeState.HasValue)
+            if (nullableStakeState.HasValue && inputBigInt < States.Instance.StakedBalance.MajorUnit)
             {
-                var stakeState = nullableStakeState.Value;
-                var cancellableBlockIndex = stakeState.ReceivedBlockIndex;
-                if (inputBigInt < States.Instance.StakedBalance.MajorUnit)
-                {
-                    if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
-                    {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
-                                cancellableBlockIndex),
-                            NotificationCell.NotificationType.UnlockCondition);
-                        return;
-                    }
-
-                    if (_getUnbondClaimableHeight != -1)
-                    {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
-                                _getUnbondClaimableHeight),
-                            NotificationCell.NotificationType.UnlockCondition);
-                        return;
-                    }
-
-                    confirmTitle = "UI_CAUTION";
-                    confirmContent = "UI_WARNING_STAKING_REDUCE";
-                    confirmIcon = IconAndButtonSystem.SystemType.Error;
-                }
+                confirmTitle = "UI_CAUTION";
+                confirmContent = "UI_WARNING_STAKING_REDUCE";
+                confirmIcon = IconAndButtonSystem.SystemType.Error;
             }
 
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize: true, type: confirmIcon);
