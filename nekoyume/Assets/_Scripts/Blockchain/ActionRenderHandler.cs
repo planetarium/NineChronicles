@@ -2880,6 +2880,7 @@ namespace Nekoyume.Blockchain
                 var stakingPopup = Widget.Find<StakingPopup>();
                 stakingPopup.SetView();
                 stakingPopup.CheckSharePower().Forget();
+                stakingPopup.CheckUnbondBlock().Forget();
 
                 var blockIndex = eval.BlockIndex;
                 if (nullablePrevStakeState.HasValue && nullablePrevStakeState.Value.ClaimableBlockIndex <= blockIndex)

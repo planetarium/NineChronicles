@@ -48,13 +48,13 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject editingUIParent;
         [SerializeField] private GameObject defaultUIParent;
         [SerializeField] private TMP_InputField stakingNcgInputField;
+        [SerializeField] private TMP_Text unbondBlockText;
 
         [Header("Editing")]
         [SerializeField] private Button ncgEditButton;
         [SerializeField] private Button editCancelButton;
         [SerializeField] private ConditionalButton editSaveButton;
         [SerializeField] private ConditionalButton unbondButton;
-        [SerializeField] private TMP_Text unbondBlockText;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -205,9 +205,10 @@ namespace Nekoyume.UI
 
             CheckClaimNcgReward().Forget();
             CheckSharePower().Forget();
+            CheckUnbondBlock().Forget();
         }
 
-        private async UniTask CheckUnbondBlock()
+        public async UniTask CheckUnbondBlock()
         {
             var agent = Game.Game.instance.Agent;
             editSaveButton.SetCondition(() => false);
@@ -230,8 +231,11 @@ namespace Nekoyume.UI
             unbondButton.UpdateObjects();
 
             unbondBlockText.gameObject.SetActive(value > blockIndex);
+
+            var diffBlockIndex = value - blockIndex;
+            var diffBlockTime = diffBlockIndex.BlockRangeToTimeSpanString();
             unbondBlockText.text =
-                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value.Value);
+                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", $"{diffBlockIndex}({diffBlockTime})");
 
             _getUnbondClaimableHeight = value;
         }

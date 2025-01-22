@@ -103,11 +103,11 @@ MonoBehaviour:
   editingUIParent: {fileID: 8086907764579308593}
   defaultUIParent: {fileID: 1311743436452887614}
   stakingNcgInputField: {fileID: 2076805992604655026}
+  unbondBlockText: {fileID: 3717971297094907357}
   ncgEditButton: {fileID: 2951633833249351142}
   editCancelButton: {fileID: 1144331684316804122}
   editSaveButton: {fileID: 2508074699277713052}
   unbondButton: {fileID: 3543773056911489820}
-  unbondBlockText: {fileID: 3717971297094907357}
   buffBenefitsViews:
   - {fileID: 3823265623034877818}
   - {fileID: 8445137412660312501}
@@ -13066,6 +13066,7 @@ RectTransform:
   m_Children:
   - {fileID: 3587857532151392750}
   - {fileID: 1759083029939539173}
+  - {fileID: 6491571008434508727}
   m_Father: {fileID: 1141226652636211901}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20175,7 +20176,6 @@ RectTransform:
   m_Children:
   - {fileID: 5376179445221232836}
   - {fileID: 8424543187190836175}
-  - {fileID: 6491571008434508727}
   m_Father: {fileID: 3587857532151392750}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20437,13 +20437,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1106206927664342278}
+  m_Father: {fileID: 6285854850238831857}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 171, y: 39.6}
-  m_SizeDelta: {x: 475.6388, y: 37.2}
+  m_AnchoredPosition: {x: 248.5, y: 36.31}
+  m_SizeDelta: {x: 475.6388, y: 44.38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5401279333877306622
 CanvasRenderer:
@@ -20501,8 +20501,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.4
-  m_fontSizeBase: 11.4
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 8
