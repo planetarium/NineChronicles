@@ -377,7 +377,8 @@ namespace Nekoyume.UI
 
         private void OnClickEditButton()
         {
-            if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
+            var deposit = States.Instance.StakedBalance.MajorUnit;
+            if (deposit == 0 && States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
             {
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
