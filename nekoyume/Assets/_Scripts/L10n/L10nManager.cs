@@ -443,7 +443,8 @@ namespace Nekoyume.L10n
             }
             else
             {
-                return text;
+                // 키가 없더라도 args를 보이도록 수정
+                return args.Length > 0 ? (text + string.Join(", ", args)) : text;
             }
         }
 
