@@ -37,7 +37,7 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
         private static readonly ReactiveProperty<ArenaTicketProgress>
             _arenaTicketsProgress = new(new ArenaTicketProgress());
-        
+
         private static readonly ReactiveProperty<List<SeasonResponse>> _arenaSeasonResponses = new(new List<SeasonResponse>());
         #endregion RxPropInternal
 
@@ -72,16 +72,18 @@ namespace Nekoyume.State
             get => _lastBattleLogId;
             set => _lastBattleLogId = value;
         }
-        
-        public static List<int> GetSeasonNumbersOfChampionship(){
+
+        public static List<int> GetSeasonNumbersOfChampionship()
+        {
             return ArenaSeasonResponses.Value
                     .Where(seasonResponse => seasonResponse.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON)
                     .Select(seasonResponse => seasonResponse.Id)
                     .ToList();
         }
 
-        public static SeasonResponse GetSeasonResponseByBlockIndex(long blockIndex){
-            return ArenaSeasonResponses.Value.Where(seasonResponse => seasonResponse.StartBlockIndex< blockIndex && blockIndex <= seasonResponse.EndBlockIndex).FirstOrDefault();
+        public static SeasonResponse GetSeasonResponseByBlockIndex(long blockIndex)
+        {
+            return ArenaSeasonResponses.Value.Where(seasonResponse => seasonResponse.StartBlockIndex < blockIndex && blockIndex <= seasonResponse.EndBlockIndex).FirstOrDefault();
         }
 
         public static SeasonResponse GetNextSeasonResponseByBlockIndex(long blockIndex)
@@ -121,7 +123,7 @@ namespace Nekoyume.State
                 });
         }
 
-        public static async UniTask<string> ArenaPostCurrentSeasonsParticipantsAsync()
+        public static async UniTask<string> PostUserAsync()
         {
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
@@ -132,22 +134,15 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
-
-            OnBlockIndexArena(_agent.BlockIndex);
             OnAvatarChangedArena();
 
-            ArenaInfo
-                .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
-                .AddTo(_disposables);
+            // ArenaInfo
+            //     .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
+            //     .AddTo(_disposables);
 
-            PlayerArenaInfo
-                .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
-                .AddTo(_disposables);
-        }
-
-        private static void OnBlockIndexArena(long blockIndex)
-        {
-            UpdateArenaTicketProgress(blockIndex);
+            // PlayerArenaInfo
+            //     .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
+            //     .AddTo(_disposables);
         }
 
         private static void OnAvatarChangedArena()
@@ -155,15 +150,7 @@ namespace Nekoyume.State
             // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
             _arenaInfoTupleUpdatedBlockIndex = 0;
             _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
-
-            // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
-            // if (_playersArenaParticipant.HasValue &&
-            //     _playersArenaParticipant.Value.AvatarAddr == addr)
-            // {
-            //     return;
-            // }
-            //
-            // _playersArenaParticipant.Value = null;
+            PostUserAsync().Forget();
         }
 
         private static void UpdateArenaTicketProgress(long blockIndex)

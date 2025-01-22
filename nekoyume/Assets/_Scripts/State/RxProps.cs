@@ -113,7 +113,6 @@ namespace Nekoyume.State
 
         private static void OnBlockIndex(long blockIndex)
         {
-            OnBlockIndexArena(blockIndex);
             OnBlockIndexEvent(blockIndex);
         }
 

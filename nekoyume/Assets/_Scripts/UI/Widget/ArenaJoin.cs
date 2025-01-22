@@ -94,10 +94,7 @@ namespace Nekoyume.UI
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            await RxProps.ArenaPostCurrentSeasonsParticipantsAsync();
-            await UniTask.WhenAll(
-                RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash));
+            await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
             await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
 
             // todo : 아레나서비스
