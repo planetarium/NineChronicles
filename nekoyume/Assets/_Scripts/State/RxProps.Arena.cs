@@ -31,8 +31,7 @@ namespace Nekoyume.State
             _arenaInformationOrderedWithScore = new(
                 new List<ArenaParticipantModel>(),
                 UpdateArenaInformationOrderedWithScoreAsync);
-        private static readonly ReactiveProperty<ArenaParticipantModel> _playerArenaInfo =
-            new(null);
+    
         private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
         private static readonly ReactiveProperty<ArenaTicketProgress>
@@ -44,7 +43,6 @@ namespace Nekoyume.State
         #region RxPropObservable
         public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval => _purchasedDuringInterval;
         public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex => _lastArenaBattleBlockIndex;
-        public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo => _playerArenaInfo;
 
         public static IReadOnlyAsyncUpdatableRxProp<List<ArenaParticipantModel>>
             ArenaInformationOrderedWithScore => _arenaInformationOrderedWithScore;
@@ -288,13 +286,6 @@ namespace Nekoyume.State
                 GuildName = playerGuildName
             };
 
-            if (!arenaInfo.Any())
-            {
-                NcDebug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
-
-                _playerArenaInfo.SetValueAndForceNotify(playerArenaInf);
-                return avatarAddrAndScoresWithRank;
-            }
             return arenaInfo;
         }
     }
