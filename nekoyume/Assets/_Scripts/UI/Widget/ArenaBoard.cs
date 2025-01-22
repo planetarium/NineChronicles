@@ -18,6 +18,7 @@ namespace Nekoyume.UI
     using System.Numerics;
     using GeneratedApiNamespace.ArenaServiceClient;
     using Libplanet.Crypto;
+    using Nekoyume.Action.Arena;
     using Nekoyume.ApiClient;
     using Nekoyume.Blockchain;
     using Nekoyume.Helper;
@@ -248,6 +249,17 @@ namespace Nekoyume.UI
                     }
 #endif
                     var data = _boundedData[index];
+                    if (ReactiveAvatarState.ActionPoint < Action.Arena.Battle.CostAp)
+                    {
+                        Find<HeaderMenuStatic>().ActionPoint.ShowMaterialNavigationPopup();
+                        return;
+                    }
+
+                    if (RxProps.ArenaInfo.Value.RemainingTicketsPerRound == 0)
+                    {
+                        // todo 티켓 구매플로우
+                        return;
+                    }
                     Close();
                     Find<ArenaBattlePreparation>().Show(
                         _seasonData,
@@ -288,7 +300,10 @@ namespace Nekoyume.UI
                     interactableChoiceButton = true,
                     canFight = e.IsAttacked,
                     address = e.AvatarAddress,
-                    guildName = e.ClanImageURL
+                    guildName = e.ClanImageURL,
+                    isVictory = e.IsVictory.Value,
+                    scoreOnLose = e.ScoreLossOnLose,
+                    scoreOnWin = e.ScoreGainOnWin
                 }).ToList();
             return (scrollData, 0);
         }
