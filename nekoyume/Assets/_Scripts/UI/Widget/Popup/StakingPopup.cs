@@ -231,7 +231,7 @@ namespace Nekoyume.UI
 
             unbondBlockText.gameObject.SetActive(value > blockIndex);
             unbondBlockText.text =
-                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value);
+                L10nManager.Localize("UI_STAKING_UNBOND_BLOCK_TIP_FORMAT", value.Value);
 
             _getUnbondClaimableHeight = value;
         }
@@ -250,7 +250,7 @@ namespace Nekoyume.UI
                 States.Instance.GoldBalanceState.Gold.Currency).TargetFAV;
             NcDebug.Log($"[{nameof(StakingPopup)}] DelegationInfoByBlockHash: {userShared}, {allShared}, {delegatedNcg}");
             allShared /= 1000000000000000000;
-            userShared /= 1000000000000000000;
+            userShared /= 10000000000000000; // 백분율 표기를 위해 allShared보다 100배 작게 나눔
 
             var sharePower = allShared == 0 ? 0 : (double)userShared / (long)allShared;
             var sharePowerString = sharePower.ToString("F4");
@@ -479,6 +479,16 @@ namespace Nekoyume.UI
             var nullableStakeState = States.Instance.StakeStateV2;
             if (nullableStakeState.HasValue && inputBigInt < States.Instance.StakedBalance.MajorUnit)
             {
+                var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                if (_getUnbondClaimableHeight != -1 && blockIndex < _getUnbondClaimableHeight)
+                {
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
+                            _getUnbondClaimableHeight),
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+
                 confirmTitle = "UI_CAUTION";
                 confirmContent = "UI_WARNING_STAKING_REDUCE";
                 confirmIcon = IconAndButtonSystem.SystemType.Error;

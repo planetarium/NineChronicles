@@ -6526,14 +6526,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 5
-    m_Right: 5
+    m_Right: 20
     m_Top: 5
     m_Bottom: 5
   m_ChildAlignment: 0
   m_Spacing: 5
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -26991,7 +26991,7 @@ PrefabInstance:
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
@@ -29789,7 +29789,7 @@ PrefabInstance:
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
@@ -30561,7 +30561,7 @@ PrefabInstance:
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
