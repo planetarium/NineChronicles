@@ -6,7 +6,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Board;
 using Nekoyume.UI.Scroller;
@@ -15,12 +14,16 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Globalization;
     using System.Numerics;
     using GeneratedApiNamespace.ArenaServiceClient;
     using Libplanet.Crypto;
     using Nekoyume.ApiClient;
     using Nekoyume.Blockchain;
+    using Nekoyume.Helper;
     using Nekoyume.L10n;
+    using Nekoyume.Model.State;
+    using TMPro;
     using UniRx;
 
     public class ArenaBoard : Widget
@@ -32,15 +35,49 @@ namespace Nekoyume.UI
         [SerializeField]
         private ArenaBoardSO _so;
 #endif
-
-        [SerializeField]
-        private ArenaBoardBillboard _billboard;
-
         [SerializeField]
         private ArenaBoardPlayerScroll _playerScroll;
 
         [SerializeField]
         private Button _backButton;
+
+        [SerializeField]
+        private DetailedCharacterView _characterView;
+
+        [SerializeField]
+        private TextMeshProUGUI _myName;
+
+        [SerializeField]
+        private TextMeshProUGUI _myCp;
+
+        [SerializeField]
+        private TextMeshProUGUI _myRatingAndScore;
+
+        [SerializeField]
+        private TextMeshProUGUI _myScoreChangesInRound;
+
+        [SerializeField]
+        private TextMeshProUGUI _myWinLose;
+
+        [SerializeField]
+        private TextMeshProUGUI _myWinLoseChangesInRound;
+
+        [SerializeField]
+        private GameObject _clanObj;
+
+        [SerializeField]
+        private Image _myClanIcon;
+
+        [SerializeField]
+        private TextMeshProUGUI _myClanName;
+
+        [SerializeField]
+        private GameObject _loadingObj;
+
+        [SerializeField]
+        private ConditionalButton _refreshBtn;
+        [SerializeField]
+        private TextMeshProUGUI _refeshCountText;
 
         private SeasonResponse _seasonData;
         private List<AvailableOpponentResponse> _boundedData;
@@ -56,6 +93,11 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Find<ArenaJoin>().Show();
                 Close();
+            }).AddTo(gameObject);
+
+            _refreshBtn.OnClickSubject.Subscribe(_ =>
+            {
+                RefreshArenaBoard();
             }).AddTo(gameObject);
         }
 
@@ -122,6 +164,11 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
+
+            _loadingObj.SetActive(false);
+            _refreshBtn.SetState(ConditionalButton.State.Normal);
+            RefreshStateUpdate();
+
             base.Show(ignoreShowAnimation);
             sw.Stop();
             NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
@@ -132,48 +179,39 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                _billboard.SetData(
-                    _so.SeasonText,
-                    _so.Rank,
-                    _so.WinCount,
-                    _so.LoseCount,
-                    _so.CP,
-                    _so.Rating);
+                _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
+                _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
+                _myCp.text = $"CP {_so.CP.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myRatingAndScore.text = $"{_so.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {_so.Rating.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myScoreChangesInRound.text = "";
+                _myWinLose.text = $"W {_so.WinCount.ToString("N0", CultureInfo.CurrentCulture)} | L {_so.LoseCount.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myWinLoseChangesInRound.text = "";
+                _clanObj.SetActive(false);
                 return;
             }
 #endif
-            var player = RxProps.PlayerArenaInfo.Value;
-            if (player is null)
-            {
-                NcDebug.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
-                _billboard.SetData();
-                return;
-            }
-
             if (!RxProps.ArenaInfo.HasValue)
             {
-                NcDebug.Log($"{nameof(RxProps.ArenaInfo)} is null");
-                _billboard.SetData();
+                NcDebug.LogError($"{nameof(RxProps.ArenaInfo)} is null");
                 return;
             }
 
-            var win = 0;
-            var lose = 0;
             var currentInfo = RxProps.ArenaInfo.Value;
-            if (currentInfo is not null)
-            {
-                win = currentInfo.TotalWin;
-                lose = currentInfo.TotalLose;
-            }
 
-            var cp = player.Cp;
-            _billboard.SetData(
-                "season",
-                player.Rank,
-                win,
-                lose,
-                cp,
-                player.Score);
+            _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
+            _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
+            _myCp.text = $"CP {currentInfo.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myRatingAndScore.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
+            _myWinLose.text = $"W {currentInfo.TotalWin.ToString("N0", CultureInfo.CurrentCulture)} | L {currentInfo.TotalLose.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
+            _clanObj.SetActive(currentInfo.ClanInfo.Name != null);
+            Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ToCoroutine((result) =>
+            {
+                _myClanIcon.sprite = result;
+                _myClanIcon.SetNativeSize();
+            });
+            _myClanName.text = currentInfo.ClanInfo.Name;
         }
 
         private void InitializeScrolls()
@@ -255,21 +293,37 @@ namespace Nekoyume.UI
             return (scrollData, 0);
         }
 
+        private void RefreshStateUpdate()
+        {
+            _refeshCountText.text = L10nManager.Localize("UI_ARENA_REFRESH_COUNT", RxProps.ArenaInfo.Value.RemainingRefreshesPerRound);
+            if (RxProps.ArenaInfo.Value.NextRefreshNCGCost > 0)
+            {
+                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN_WITH_NCG", RxProps.ArenaInfo.Value.NextRefreshNCGCost));
+            }
+            else
+            {
+                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN"));
+            }
+        }
+
         private async UniTask RefreshArenaBoardAsync()
         {
-            // todo : 로딩 연출 필요
             // 무료갱신이 아닌경우
+            _refreshBtn.SetState(ConditionalButton.State.Disabled);
+            _loadingObj.SetActive(true);
             if (RxProps.ArenaInfo.Value.NextRefreshNCGCost > 0)
             {
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
                                         new Address(RxProps.OperationAccountAddress),
                                         new Libplanet.Types.Assets.FungibleAssetValue(goldCurrency,
-                                            (BigInteger)RxProps.ArenaInfo.Value.NextRefreshNCGCost, 0)); 
+                                            (BigInteger)RxProps.ArenaInfo.Value.NextRefreshNCGCost, 0));
 
                 if (logId == -1)
                 {
                     NcDebug.LogError("[ArenaBoard] Refresh failed. Please try again later.");
+                    _loadingObj.SetActive(false);
+                    _refreshBtn.SetState(ConditionalButton.State.Normal);
                     return;
                 }
 
@@ -342,14 +396,28 @@ namespace Nekoyume.UI
             if (response == null || response.Count == 0)
             {
                 NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
+                _loadingObj.SetActive(false);
+                _refreshBtn.SetState(ConditionalButton.State.Normal);
                 return;
             }
             _boundedData = response;
             UpdateScrolls();
+
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
+
+            _loadingObj.SetActive(false);
+            _refreshBtn.SetState(ConditionalButton.State.Normal);
+            RefreshStateUpdate();
         }
 
         public void RefreshArenaBoard()
         {
+            if (_loadingObj.activeSelf)
+            {
+                NcDebug.LogWarning("[ArenaBoard] Loading is in progress, cannot refresh the arena board.");
+                return;
+            }
             RefreshArenaBoardAsync().Forget();
         }
     }
