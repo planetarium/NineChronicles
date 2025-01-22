@@ -15,6 +15,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Numerics;
     using GeneratedApiNamespace.ArenaServiceClient;
     using Libplanet.Crypto;
     using Nekoyume.ApiClient;
@@ -260,11 +261,11 @@ namespace Nekoyume.UI
             // 무료갱신이 아닌경우
             if (RxProps.ArenaInfo.Value.NextRefreshNCGCost > 0)
             {
-                // todo : 아레나서비스
-                // 재화량, 받는위치 수정해야함.
+                var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
-                                        States.Instance.AgentState.address,
-                                        new Libplanet.Types.Assets.FungibleAssetValue()); // 재화량을 0으로 설정
+                                        new Address(RxProps.OperationAccountAddress),
+                                        new Libplanet.Types.Assets.FungibleAssetValue(goldCurrency,
+                                            (BigInteger)RxProps.ArenaInfo.Value.NextRefreshNCGCost, 0)); 
 
                 if (logId == -1)
                 {

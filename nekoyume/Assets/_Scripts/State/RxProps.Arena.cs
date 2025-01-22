@@ -73,6 +73,8 @@ namespace Nekoyume.State
             set => _lastBattleLogId = value;
         }
 
+        public static string OperationAccountAddress;
+
         public static List<int> GetSeasonNumbersOfChampionship()
         {
             return ArenaSeasonResponses.Value
@@ -113,6 +115,7 @@ namespace Nekoyume.State
                 on200OK: response =>
                 {
                     _arenaSeasonResponses.SetValueAndForceNotify(response.Seasons.OrderBy(season => season.StartBlockIndex).ToList());
+                    OperationAccountAddress = response.OperationAccountAddress;
                     _isUpdatingSeasonResponses = false;
                 },
                 onError: error =>
