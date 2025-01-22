@@ -66,8 +66,6 @@ namespace Nekoyume.UI
             sw.Start();
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
 
-            await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
-
             List<AvailableOpponentResponse> response = null;
             await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
                 on200AvailableOpponents: (result) =>
