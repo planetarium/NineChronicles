@@ -2923,7 +2923,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
-                    mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (long)fav.MajorUnit)));
+                    mailRewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
 
                     Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                     Widget.Find<StakingPopup>().SetView();
@@ -2982,7 +2982,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
-                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (long)fav.MajorUnit)));
+                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
 
                 Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                 Widget.Find<StakingPopup>().SetView();
