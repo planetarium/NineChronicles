@@ -109,28 +109,25 @@ namespace Nekoyume.UI
             var sw = new Stopwatch();
             sw.Start();
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-
             List<AvailableOpponentResponse> response = null;
+            bool isFirst = false;
             await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
                 on200AvailableOpponents: (result) =>
                 {
                     response = result?.ToList();
                 },
+                on404Status404NotFound: (result) =>
+                {
+                    isFirst = true;
+                },
                 onError: (error) =>
                 {
                     NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
-                    Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
-                        L10nManager.Localize("UI_YES"), null);
                 }
             );
 
-            if (response == null)
-            {
-                return;
-            }
-
             //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
-            if (response.Count == 0)
+            if (isFirst)
             {
                 await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
                     on200AvailableOpponents: (result) =>
@@ -146,9 +143,15 @@ namespace Nekoyume.UI
                 );
             }
 
-            loading.Close();
             if (response == null)
             {
+                AudioController.PlayClick();
+                Close();
+                Find<ArenaJoin>().Show();
+                Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENABOARD_GET_FAILED",
+                        "UI_OK");
                 return;
             }
 
@@ -159,6 +162,21 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var arenaInfoResponse = await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
+            if (arenaInfoResponse == null)
+            {
+                loading.Close();
+                AudioController.PlayClick();
+                Find<ArenaJoin>().Show();
+                Close();
+                Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENAJOIN_INFO_GET_FAILED",
+                        "UI_OK");
+                return;
+            }
+
+            loading.Close();
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             _seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
             _boundedData = response;
@@ -206,13 +224,16 @@ namespace Nekoyume.UI
             _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
             _myWinLose.text = $"W {currentInfo.TotalWin.ToString("N0", CultureInfo.CurrentCulture)} | L {currentInfo.TotalLose.ToString("N0", CultureInfo.CurrentCulture)}";
             _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
-            _clanObj.SetActive(currentInfo.ClanInfo.Name != null);
-            Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ToCoroutine((result) =>
+            _clanObj.SetActive(currentInfo.ClanInfo != null);
+            if (currentInfo.ClanInfo != null)
             {
-                _myClanIcon.sprite = result;
-                _myClanIcon.SetNativeSize();
-            });
-            _myClanName.text = currentInfo.ClanInfo.Name;
+                Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ToCoroutine((result) =>
+                {
+                    _myClanIcon.sprite = result;
+                    _myClanIcon.SetNativeSize();
+                });
+                _myClanName.text = currentInfo.ClanInfo.Name;
+            }
         }
 
         private void InitializeScrolls()
@@ -298,10 +319,10 @@ namespace Nekoyume.UI
                     rank = e.Rank,
                     expectWinDeltaScore = e.ScoreGainOnWin,
                     interactableChoiceButton = true,
-                    canFight = e.IsAttacked,
+                    canFight = !e.IsAttacked,
                     address = e.AvatarAddress,
                     guildName = e.ClanImageURL,
-                    isVictory = e.IsVictory.Value,
+                    isVictory = e.IsVictory,
                     scoreOnLose = e.ScoreLossOnLose,
                     scoreOnWin = e.ScoreGainOnWin
                 }).ToList();
@@ -313,7 +334,7 @@ namespace Nekoyume.UI
             var currentRefreshCount = RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound + RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound;
             var maxRefreshCount = _seasonData.RefreshTicketPolicy.DefaultTicketsPerRound + _seasonData.RefreshTicketPolicy.MaxPurchasableTicketsPerRound;
             //최초라운드 시작시 자동으로 목록갱신해주는것때문에 실제 횟수에서 -1로 표기한다.
-            _refeshCountText.text = L10nManager.Localize("UI_ARENA_REFRESH_COUNT", currentRefreshCount - 1, maxRefreshCount - 1);
+            _refeshCountText.text = L10nManager.Localize("UI_ARENA_REFRESH_COUNT", currentRefreshCount, maxRefreshCount - 1);
 
             if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
             {
@@ -335,10 +356,11 @@ namespace Nekoyume.UI
             {
                 var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency,nextCost.ToString());
+
                 var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
                                         new Address(RxProps.OperationAccountAddress),
-                                        new Libplanet.Types.Assets.FungibleAssetValue(goldCurrency,
-                                            (BigInteger)nextCost, 0));
+                                        cost);
 
                 if (logId == -1)
                 {

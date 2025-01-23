@@ -1800,7 +1800,7 @@ namespace Nekoyume.Blockchain
             var tcs = new TaskCompletionSource<int>();
             ProcessAction(action, (txid) =>
                     {
-                        var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), States.Instance.CurrentAvatarState.address.ToHex());
+                        var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), amount, States.Instance.CurrentAvatarState.address.ToHex());
                         return task.ContinueWith(t =>
                         {
                             if (t.IsFaulted)

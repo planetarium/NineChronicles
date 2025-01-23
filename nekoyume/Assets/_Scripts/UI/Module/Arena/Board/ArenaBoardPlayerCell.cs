@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool canFight;
         public string address;
         public string guildName;
-        public bool isVictory;
+        public bool? isVictory;
         public int scoreOnWin;
         public int scoreOnLose;
     }
@@ -157,8 +157,8 @@ namespace Nekoyume.UI.Module.Arena.Board
             }
             else
             {
-                winImage.SetActive(_currentData.isVictory);
-                loseImage.SetActive(!_currentData.isVictory);
+                winImage.SetActive(_currentData.isVictory.Value);
+                loseImage.SetActive(!_currentData.isVictory.Value);
             }
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
             var guildEnabled = !string.IsNullOrEmpty(_currentData.guildName);

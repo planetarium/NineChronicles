@@ -31,7 +31,7 @@ namespace Nekoyume.State
             _arenaInformationOrderedWithScore = new(
                 new List<ArenaParticipantModel>(),
                 UpdateArenaInformationOrderedWithScoreAsync);
-    
+
         private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
         private static readonly ReactiveProperty<ArenaTicketProgress>
@@ -83,13 +83,13 @@ namespace Nekoyume.State
 
         public static SeasonResponse GetSeasonResponseByBlockIndex(long blockIndex)
         {
-            return ArenaSeasonResponses.Value.Where(seasonResponse => seasonResponse.StartBlockIndex < blockIndex && blockIndex <= seasonResponse.EndBlockIndex).FirstOrDefault();
+            return ArenaSeasonResponses.Value.Where(seasonResponse => seasonResponse.StartBlockIndex <= blockIndex && blockIndex <= seasonResponse.EndBlockIndex).FirstOrDefault();
         }
 
         public static SeasonResponse GetNextSeasonResponseByBlockIndex(long blockIndex)
         {
             return ArenaSeasonResponses.Value
-                .Where(seasonResponse => seasonResponse.StartBlockIndex > blockIndex)
+                .Where(seasonResponse => seasonResponse.StartBlockIndex >= blockIndex)
                 .OrderBy(seasonResponse => seasonResponse.StartBlockIndex)
                 .FirstOrDefault();
         }
@@ -112,7 +112,14 @@ namespace Nekoyume.State
             await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
                 on200OK: response =>
                 {
-                    _arenaSeasonResponses.SetValueAndForceNotify(response.Seasons.OrderBy(season => season.StartBlockIndex).ToList());
+                    _arenaSeasonResponses.SetValueAndForceNotify(response.Seasons.ToList());
+
+                    var currentSeason = _arenaSeasonResponses.Value.Find(item =>
+                        item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                    );
+                    
+                    _currentSeasonId = currentSeason.Id;
+
                     OperationAccountAddress = response.OperationAccountAddress;
                     _isUpdatingSeasonResponses = false;
                 },
@@ -127,23 +134,21 @@ namespace Nekoyume.State
         public static async UniTask<string> PostUserAsync()
         {
             var currentAvatar = _states.CurrentAvatarState;
+            if (currentAvatar == null)
+            {
+                return null;
+            }
             var currentAvatarAddr = currentAvatar.address;
-            var portraitId = Util.GetPortraitId(BattleType.Arena);
-            var cp = Util.TotalCP(BattleType.Arena);
+            // todo : 아레나서비스
+            // 서비스에서 직접넣어주거나 시점변경해야함.
+            var portraitId = 0; //Util.GetPortraitId(BattleType.Arena);
+            var cp = 0; //Util.TotalCP(BattleType.Arena);
             return await ApiClients.Instance.Arenaservicemanager.PostUsersAsync(currentAvatarAddr.ToString(), currentAvatar.NameWithHash, portraitId, cp, currentAvatar.level);
         }
 
         private static void StartArena()
         {
-            OnAvatarChangedArena();
 
-            // ArenaInfo
-            //     .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
-            //     .AddTo(_disposables);
-
-            // PlayerArenaInfo
-            //     .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
-            //     .AddTo(_disposables);
         }
 
         private static void OnAvatarChangedArena()
@@ -201,8 +206,6 @@ namespace Nekoyume.State
             try
             {
                 var currentArenaInfo = await ApiClients.Instance.Arenaservicemanager.GetArenaInfoAsync(avatarAddress.ToString());
-                var seasonResponse = GetSeasonResponseByBlockIndex(_arenaInfoTupleUpdatedBlockIndex);
-                _currentSeasonId = seasonResponse.Id;
                 return currentArenaInfo;
             }
             catch (Exception e)
