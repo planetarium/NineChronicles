@@ -394,7 +394,7 @@ namespace Nekoyume.State
                 ? _avatarModifierInfo
                 : null;
 
-            if (!(modifierInfo is null))
+            if (modifierInfo is not null)
             {
                 var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))

@@ -11,14 +11,23 @@ namespace Nekoyume.State.Modifiers
 
         public override bool IsEmpty => _items.Count == 0;
 
+        public AvatarInventoryNonFungibleItemRemover()
+        {
+        }
+
         public AvatarInventoryNonFungibleItemRemover(Guid itemId)
+        {
+            _items.Add(itemId);
+        }
+
+        public void AddItem(Guid itemId)
         {
             _items.Add(itemId);
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarInventoryNonFungibleItemRemover m))
+            if (modifier is not AvatarInventoryNonFungibleItemRemover m)
             {
                 return;
             }
@@ -34,7 +43,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarInventoryNonFungibleItemRemover m))
+            if (modifier is not AvatarInventoryNonFungibleItemRemover m)
             {
                 return;
             }

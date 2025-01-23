@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Security.Cryptography;
 using Cysharp.Threading.Tasks;
@@ -208,9 +209,31 @@ namespace Nekoyume.State
             RemoveItemInternal(avatarAddress, modifier);
         }
 
+        public static void RemoveNonFungibleItems(Address avatarAddress, List<Guid> itemIds)
+        {
+            var modifier = new AvatarInventoryNonFungibleItemRemover();
+            foreach (var itemId in itemIds)
+            {
+                modifier.AddItem(itemId);
+            }
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+            RemoveItemInternal(avatarAddress, modifier);
+        }
+
         public static void RemoveItem(Address avatarAddress, Guid tradableId, long requiredBlockIndex, int count)
         {
             var modifier = new AvatarInventoryTradableItemRemover(tradableId, requiredBlockIndex, count);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+            RemoveItemInternal(avatarAddress, modifier);
+        }
+
+        public static void RemoveItems(Address avatarAddress, List<(Guid tradableId, long requiredBlockIndex, int count)> tradableIds)
+        {
+            var modifier = new AvatarInventoryTradableItemRemover();
+            foreach (var (tradableId, requiredBlockIndex, count) in tradableIds)
+            {
+                modifier.AddItem(tradableId, requiredBlockIndex, count);
+            }
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
@@ -226,7 +249,6 @@ namespace Nekoyume.State
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
-
 
         private static void RemoveItemInternal(Address avatarAddress, AvatarStateModifier modifier)
         {

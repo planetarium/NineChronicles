@@ -661,17 +661,17 @@ namespace Nekoyume.UI
                 Game.Game.instance.ActionManager
                     .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
 
+                var removeItemIds = new List<(Guid, long, int)>();
                 foreach (var tradableItem in tradableItems)
                 {
                     if (tradableItem is not TradableMaterial)
                     {
-                        LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId,
-                            tradableItem.RequiredBlockIndex,
-                            itemCount);
+                        removeItemIds.Add((tradableItem.TradableId, tradableItem.RequiredBlockIndex, itemCount));
                     }
 
                     LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
                 }
+                LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
                 PostRegisterProduct(itemBase.GetLocalizedName());
             }
