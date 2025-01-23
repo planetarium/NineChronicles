@@ -124,7 +124,7 @@ namespace Nekoyume.ApiClient
                 await UniTask.SwitchToMainThread();
 
                 decimal calculatedAmount = decimal.Parse(amount.GetQuantityString(),CultureInfo.InvariantCulture);
-                
+
                 var request = new PurchaseTicketRequest
                 {
                     TicketCount = 1,
@@ -136,7 +136,7 @@ namespace Nekoyume.ApiClient
                 int response = -1;
 
                 await Client.PostTicketsRefreshPurchaseAsync(jwt, request,
-                    on200PurchaseLogId: result =>
+                    on201PurchaseLogId: result =>
                     {
                         response = result;
                     },

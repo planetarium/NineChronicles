@@ -9,6 +9,7 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Module.Arena.Board
 {
+    using Cysharp.Threading.Tasks;
     using Nekoyume.State;
     using UniRx;
 
@@ -27,6 +28,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool canFight;
         public string address;
         public string guildName;
+        public string guildImgUrl;
         public bool? isVictory;
         public int scoreOnWin;
         public int scoreOnLose;
@@ -164,8 +166,9 @@ namespace Nekoyume.UI.Module.Arena.Board
             var guildEnabled = !string.IsNullOrEmpty(_currentData.guildName);
             if (guildEnabled)
             {
-                var url = $"{Game.Game.instance.GuildBucketUrl}/{_currentData.guildName}.png";
-                guildMark.sprite = Util.GetTexture(url);
+                Util.DownloadTexture(_currentData.guildImgUrl).ContinueWith(guildImg =>{
+                    guildMark.sprite = guildImg;
+                });
                 NcDebug.Log($"[Guild]Set guild image {_currentData.guildName}");
             }
 

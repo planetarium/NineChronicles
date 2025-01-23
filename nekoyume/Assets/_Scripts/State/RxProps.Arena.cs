@@ -27,10 +27,6 @@ namespace Nekoyume.State
         private static readonly
             AsyncUpdatableRxProp<ArenaInfoResponse>
             _arenaInfo = new(UpdateArenaInfoAsync);
-        private static readonly AsyncUpdatableRxProp<List<ArenaParticipantModel>>
-            _arenaInformationOrderedWithScore = new(
-                new List<ArenaParticipantModel>(),
-                UpdateArenaInformationOrderedWithScoreAsync);
 
         private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
@@ -43,9 +39,6 @@ namespace Nekoyume.State
         #region RxPropObservable
         public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval => _purchasedDuringInterval;
         public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex => _lastArenaBattleBlockIndex;
-
-        public static IReadOnlyAsyncUpdatableRxProp<List<ArenaParticipantModel>>
-            ArenaInformationOrderedWithScore => _arenaInformationOrderedWithScore;
         public static IReadOnlyReactiveProperty<ArenaTicketProgress>
             ArenaTicketsProgress => _arenaTicketsProgress;
         public static IReadOnlyAsyncUpdatableRxProp<ArenaInfoResponse>
@@ -213,82 +206,6 @@ namespace Nekoyume.State
                 NcDebug.LogError($"Failed to get current season: {e}");
                 return null;
             }
-        }
-
-        private static async Task<List<ArenaParticipantModel>>
-            UpdateArenaInformationOrderedWithScoreAsync(
-                List<ArenaParticipantModel> previous, HashDigest<SHA256> stateRootHash)
-        {
-            var avatarAddress = _states.CurrentAvatarState?.address;
-            var avatarAddrAndScoresWithRank =
-                new List<ArenaParticipantModel>();
-            if (!avatarAddress.HasValue)
-            {
-                // TODO!!!!
-                // [`States.CurrentAvatarState`]가 바뀔 때, 목록에 추가 정보를 업데이트 한다.
-                return avatarAddrAndScoresWithRank;
-            }
-
-            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex == _agent.BlockIndex)
-            {
-                return previous;
-            }
-
-            _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = _agent.BlockIndex;
-
-            var currentAvatar = _states.CurrentAvatarState;
-            var currentAvatarAddr = currentAvatar.address;
-            var arenaInfo = new List<ArenaParticipantModel>();
-
-            // TODO: 신규아레나
-            // var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
-            try
-            {
-                arenaInfo = await ApiClients.Instance.Arenaservicemanager.GetAvailableopponentsAsync(currentAvatarAddr.ToString());
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogException(e);
-            }
-
-            string playerGuildName = null;
-            if (Game.Game.instance.GuildModels.Any())
-            {
-                var guildModels = Game.Game.instance.GuildModels;
-                foreach (var guildModel in guildModels)
-                {
-                    if (guildModel.AvatarModels.Any(a => a.AvatarAddress == currentAvatarAddr))
-                    {
-                        playerGuildName = guildModel.Name;
-                    }
-
-                    foreach (var info in arenaInfo)
-                    {
-                        var model = guildModel.AvatarModels.FirstOrDefault(a => a.AvatarAddress == info.AvatarAddr);
-                        if (model is not null)
-                        {
-                            info.GuildName = guildModel.Name;
-                        }
-                    }
-                }
-            }
-
-            var portraitId = Util.GetPortraitId(BattleType.Arena);
-            var cp = Util.TotalCP(BattleType.Arena);
-            var playerArenaInf = new ArenaParticipantModel
-            {
-                AvatarAddr = currentAvatarAddr,
-                Score = ArenaScore.ArenaScoreDefault,
-                WinScore = 0,
-                LoseScore = 0,
-                NameWithHash = currentAvatar.NameWithHash,
-                PortraitId = portraitId,
-                Cp = cp,
-                Level = currentAvatar.level,
-                GuildName = playerGuildName
-            };
-
-            return arenaInfo;
         }
     }
 }

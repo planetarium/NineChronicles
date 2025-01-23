@@ -3115,8 +3115,7 @@ namespace Nekoyume.Blockchain
             }
 
             // NOTE: Start cache some arena info which will be used after battle ends.
-            await UniTask.WhenAll(RxProps.ArenaInfo.UpdateAsync(eval.OutputState),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
+            await UniTask.WhenAll(RxProps.ArenaInfo.UpdateAsync(eval.OutputState));
 
             void OnBattleEnd()
             {
