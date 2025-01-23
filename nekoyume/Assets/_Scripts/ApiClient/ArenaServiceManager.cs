@@ -123,7 +123,7 @@ namespace Nekoyume.ApiClient
             {
                 await UniTask.SwitchToMainThread();
 
-                decimal calculatedAmount = decimal.Parse(amount.GetQuantityString(),CultureInfo.InvariantCulture);
+                decimal calculatedAmount = decimal.Parse(amount.GetQuantityString(), CultureInfo.InvariantCulture);
 
                 var request = new PurchaseTicketRequest
                 {
@@ -153,6 +153,54 @@ namespace Nekoyume.ApiClient
             catch (Exception e)
             {
                 NcDebug.LogError($"[ArenaServiceManager] Exception while posting available opponents | " +
+                    $"TxId: {txId} | " +
+                    $"AvatarAddress: {avatarAddress ?? "null"} | " +
+                    $"Error: {e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> PostTicketsBattlePurchaseAsync(string txId, int ticketCount, FungibleAssetValue amount, string avatarAddress)
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException("[ArenaServiceManager] Called before initialization");
+            }
+
+            try
+            {
+                await UniTask.SwitchToMainThread();
+
+                decimal calculatedAmount = decimal.Parse(amount.GetQuantityString(), CultureInfo.InvariantCulture);
+
+                var request = new PurchaseTicketRequest
+                {
+                    TicketCount = ticketCount,
+                    PurchasePrice = calculatedAmount,
+                    TxId = txId,
+                };
+
+                string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
+                int response = -1;
+
+                await Client.PostTicketsBattlePurchaseAsync(jwt, request,
+                    on201PurchaseLogId: result =>
+                    {
+                        response = result;
+                    },
+                    onError: error =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | " +
+                            $"Error: {error}");
+                    });
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[ArenaServiceManager] Exception while posting battle ticket purchase | " +
                     $"TxId: {txId} | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");

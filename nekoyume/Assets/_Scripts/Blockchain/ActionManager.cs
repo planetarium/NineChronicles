@@ -1823,6 +1823,39 @@ namespace Nekoyume.Blockchain
             return tcs.Task;
         }
 
+        public Task<int> TransferAssetsForBattleTicketPurchase(
+            Address sender,
+            Address recipient,
+            int ticketCount,
+            FungibleAssetValue amount)
+        {
+            var action = new TransferAsset(sender, recipient, amount);
+            var tcs = new TaskCompletionSource<int>();
+            ProcessAction(action, (txid) =>
+                    {
+                        var task = ApiClients.Instance.Arenaservicemanager.PostTicketsBattlePurchaseAsync(txid.ToString(), ticketCount, amount, States.Instance.CurrentAvatarState.address.ToHex());
+                        return task.ContinueWith(t =>
+                        {
+                            if (t.IsFaulted)
+                            {
+                                tcs.SetResult(t.Result);
+                                return false;
+                            }
+                            _agent.ActionRenderer.EveryRender<TransferAsset>()
+                                    .Timeout(ActionTimeout)
+                                    .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                                    .First()
+                                    .ObserveOnMainThread()
+                                    .DoOnError(e => { })
+                                    .Subscribe();
+
+                            tcs.SetResult(t.Result);
+                            return true;
+                        });
+                    });
+            return tcs.Task;
+        }
+
         public IObservable<ActionEvaluation<Stake>> Stake(
             BigInteger amount)
         {
