@@ -92,7 +92,7 @@ namespace Nekoyume.UI
             get
             {
                 var ticketCount = RxProps.ArenaInfo.HasValue
-                    ? RxProps.ArenaInfo.Value.RemainingTicketsPerRound : 0;
+                    ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingTicketsPerRound : 0;
                 return ticketCount >= TicketCountToUse;
             }
         }
@@ -208,10 +208,10 @@ namespace Nekoyume.UI
                 balance,
                 new FungibleAssetValue(),
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                currentArenaInfo.RemainingTicketsPerRound,
-                _seasonData.MaxTotalTicketsPerRound,
+                currentArenaInfo.BattleTicketStatus.RemainingTicketsPerRound,
+                _seasonData.BattleTicketPolicy.DefaultTicketsPerRound,
                 RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
-                _seasonData.MaxPurchasableTicketsPerRound
+                _seasonData.BattleTicketPolicy.MaxPurchasableTicketsPerRound
             );
         }
 

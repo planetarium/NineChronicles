@@ -65,7 +65,7 @@ namespace Nekoyume.ApiClient
             return CreateJwt(Game.Game.instance.Agent.PrivateKey, Game.Game.instance.States.CurrentAvatarState.address.ToHex());
         }
 
-        public async Task<List<ArenaParticipantModel>> GetAvailableopponentsAsync(int seasonId, string avatarAddress)
+        public async Task<List<ArenaParticipantModel>> GetAvailableopponentsAsync(string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -95,7 +95,6 @@ namespace Nekoyume.ApiClient
                     onError: error =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Failed to get available opponents | " +
-                            $"SeasonId: {seasonId} | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
                             $"Error: {error}");
                     });
@@ -105,7 +104,6 @@ namespace Nekoyume.ApiClient
             catch (Exception e)
             {
                 NcDebug.LogError($"[ArenaServiceManager] Failed to get available opponents | " +
-                    $"SeasonId: {seasonId} | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
                 throw;

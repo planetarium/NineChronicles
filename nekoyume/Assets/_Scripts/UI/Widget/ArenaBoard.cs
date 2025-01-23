@@ -201,7 +201,7 @@ namespace Nekoyume.UI
 
             _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
             _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
-            _myCp.text = $"CP {currentInfo.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myCp.text = $"CP {currentInfo.User.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
             _myRatingAndScore.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
             _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
             _myWinLose.text = $"W {currentInfo.TotalWin.ToString("N0", CultureInfo.CurrentCulture)} | L {currentInfo.TotalLose.ToString("N0", CultureInfo.CurrentCulture)}";
@@ -255,7 +255,7 @@ namespace Nekoyume.UI
                         return;
                     }
 
-                    if (RxProps.ArenaInfo.Value.RemainingTicketsPerRound == 0)
+                    if (RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingTicketsPerRound == 0)
                     {
                         // todo 티켓 구매플로우
                         return;
@@ -310,10 +310,15 @@ namespace Nekoyume.UI
 
         private void RefreshStateUpdate()
         {
-            _refeshCountText.text = L10nManager.Localize("UI_ARENA_REFRESH_COUNT", RxProps.ArenaInfo.Value.RemainingRefreshesPerRound);
-            if (RxProps.ArenaInfo.Value.NextRefreshNCGCost > 0)
+            var currentRefreshCount = RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound + RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound;
+            var maxRefreshCount = _seasonData.RefreshTicketPolicy.DefaultTicketsPerRound + _seasonData.RefreshTicketPolicy.MaxPurchasableTicketsPerRound;
+            //최초라운드 시작시 자동으로 목록갱신해주는것때문에 실제 횟수에서 -1로 표기한다.
+            _refeshCountText.text = L10nManager.Localize("UI_ARENA_REFRESH_COUNT", currentRefreshCount - 1, maxRefreshCount - 1);
+
+            if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
             {
-                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN_WITH_NCG", RxProps.ArenaInfo.Value.NextRefreshNCGCost));
+                var nextCosts = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts;
+                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN_WITH_NCG", nextCosts.First()));
             }
             else
             {
@@ -326,13 +331,14 @@ namespace Nekoyume.UI
             // 무료갱신이 아닌경우
             _refreshBtn.SetState(ConditionalButton.State.Disabled);
             _loadingObj.SetActive(true);
-            if (RxProps.ArenaInfo.Value.NextRefreshNCGCost > 0)
+            if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
             {
+                var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
                                         new Address(RxProps.OperationAccountAddress),
                                         new Libplanet.Types.Assets.FungibleAssetValue(goldCurrency,
-                                            (BigInteger)RxProps.ArenaInfo.Value.NextRefreshNCGCost, 0));
+                                            (BigInteger)nextCost, 0));
 
                 if (logId == -1)
                 {
