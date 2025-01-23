@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Lib9c.Renderers;
-using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -107,7 +105,7 @@ namespace Nekoyume.UI
             }
 
             await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
-            if (RxProps.ArenaSeasonResponses.Value.Count != 0 && 
+            if (RxProps.ArenaSeasonResponses.Value.Count != 0 &&
                 RxProps.ArenaSeasonResponses.Value.Last().EndBlockIndex > Game.Game.instance.Agent.BlockIndex)
             {
                 loading.Close();
@@ -119,7 +117,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            await ApiClients.Instance.Arenaservicemanager.Client.GetUsersClassifybychampionshipMedalsAsync(Game.Game.instance.Agent.BlockIndex,
+            await ApiClients.Instance.Arenaservicemanager.Client.GetUsersClassifybychampionshipMedalsAsync(Game.Game.instance.Agent.BlockIndex, ArenaServiceManager.CreateCurrentJwt(),
                 on200OK: (result) =>
                 {
                     _totalMedalCountForThisChampionship = result.TotalMedalCountForThisChampionship;

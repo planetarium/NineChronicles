@@ -24,26 +24,16 @@ using System.Linq;
 namespace GeneratedApiNamespace.ArenaServiceClient{
     public class ArenaInfoResponse
     {
-        [JsonPropertyName("avatarAddress")]
-        public string? AvatarAddress { get; set; }
-        [JsonPropertyName("nameWithHash")]
-        public string? NameWithHash { get; set; }
-        [JsonPropertyName("portraitId")]
-        public int PortraitId { get; set; }
-        [JsonPropertyName("cp")]
-        public Int64 Cp { get; set; }
-        [JsonPropertyName("level")]
-        public int Level { get; set; }
-        [JsonPropertyName("seasonId")]
-        public int SeasonId { get; set; }
+        [JsonPropertyName("user")]
+        public UserResponse User { get; set; }
         [JsonPropertyName("clanInfo")]
         public ClanResponse ClanInfo { get; set; }
         [JsonPropertyName("score")]
         public int Score { get; set; }
-        [JsonPropertyName("currentRoundScoreChange")]
-        public int CurrentRoundScoreChange { get; set; }
         [JsonPropertyName("rank")]
         public int Rank { get; set; }
+        [JsonPropertyName("currentRoundScoreChange")]
+        public int CurrentRoundScoreChange { get; set; }
         [JsonPropertyName("currentRoundRankChange")]
         public int CurrentRoundRankChange { get; set; }
         [JsonPropertyName("totalWin")]
@@ -54,51 +44,10 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public int CurrentRoundWinChange { get; set; }
         [JsonPropertyName("currentRoundLoseChange")]
         public int CurrentRoundLoseChange { get; set; }
-        /// <summary>
-        /// <para>현재까지 구매한 총 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("totalPurchasedTickets")]
-        public int TotalPurchasedTickets { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 구매한 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("ticketsPurchasedPerRound")]
-        public int TicketsPurchasedPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 사용한 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("ticketsUsedPerRound")]
-        public int TicketsUsedPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 사용 가능한(남아있는) 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("remainingTicketsPerRound")]
-        public int RemainingTicketsPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 구매 가능한 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("remainingPurchasableTicketsPerRound")]
-        public int RemainingPurchasableTicketsPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 구매한 리프레시 개수</para>
-        /// </summary>
-        [JsonPropertyName("purchasedRefreshesPerRound")]
-        public int PurchasedRefreshesPerRound { get; set; }
-        /// <summary>
-        /// <para>다음에 리프레시에 지불해야할 NCG</para>
-        /// </summary>
-        [JsonPropertyName("nextRefreshNCGCost")]
-        public int NextRefreshNCGCost { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 사용한 리프레시 개수</para>
-        /// </summary>
-        [JsonPropertyName("refreshesUsedPerRound")]
-        public int RefreshesUsedPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 라운드에서 남아있는 리프레시 개수</para>
-        /// </summary>
-        [JsonPropertyName("remainingRefreshesPerRound")]
-        public int RemainingRefreshesPerRound { get; set; }
+        [JsonPropertyName("battleTicketStatus")]
+        public TicketStatusResponse BattleTicketStatus { get; set; }
+        [JsonPropertyName("refreshTicketStatus")]
+        public TicketStatusResponse RefreshTicketStatus { get; set; }
     }
 
     [JsonConverter(typeof(ArenaTypeTypeConverter))]
@@ -143,10 +92,8 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
 
     public class AvailableOpponentResponse
     {
-        [JsonPropertyName("availableOpponentId")]
-        public string? AvailableOpponentId { get; set; }
         [JsonPropertyName("avatarAddress")]
-        public string? AvatarAddress { get; set; }
+        public string AvatarAddress { get; set; }
         [JsonPropertyName("nameWithHash")]
         public string? NameWithHash { get; set; }
         [JsonPropertyName("portraitId")]
@@ -176,7 +123,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     public class BattleRequest
     {
         [JsonPropertyName("txId")]
-        public string? TxId { get; set; }
+        public object TxId { get; set; }
     }
 
     public class BattleResponse
@@ -185,35 +132,35 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public int Id { get; set; }
         [JsonPropertyName("seasonId")]
         public int SeasonId { get; set; }
-        [JsonPropertyName("attackerAvatarAddress")]
-        public string? AttackerAvatarAddress { get; set; }
-        [JsonPropertyName("defenderAvatarAddress")]
-        public string? DefenderAvatarAddress { get; set; }
+        [JsonPropertyName("myAvatarAddress")]
+        public string MyAvatarAddress { get; set; }
+        [JsonPropertyName("opponentAvatarAddress")]
+        public string OpponentAvatarAddress { get; set; }
         [JsonPropertyName("battleStatus")]
         public BattleStatus BattleStatus { get; set; }
         [JsonPropertyName("txId")]
-        public string? TxId { get; set; }
+        public object TxId { get; set; }
         [JsonPropertyName("txStatus")]
         public TxStatus TxStatus { get; set; }
         [JsonPropertyName("isVictory")]
         public bool? IsVictory { get; set; }
-        [JsonPropertyName("participantScore")]
-        public int? ParticipantScore { get; set; }
-        [JsonPropertyName("participantScoreChange")]
-        public int? ParticipantScoreChange { get; set; }
+        [JsonPropertyName("myScore")]
+        public int? MyScore { get; set; }
+        [JsonPropertyName("myScoreChange")]
+        public int? MyScoreChange { get; set; }
         [JsonPropertyName("opponentScoreChange")]
         public int? OpponentScoreChange { get; set; }
-        [JsonPropertyName("battleBlockIndex")]
-        public Int64? BattleBlockIndex { get; set; }
     }
 
     [JsonConverter(typeof(BattleStatusTypeConverter))]
     public enum BattleStatus
     {
         TOKEN_ISSUED,
-        PENDING,
         TRACKING,
+        NOT_FOUND_BATTLE_ACTION,
+        INVALID_BATTLE,
         DUPLICATE_TRANSACTION,
+        TX_FAILED,
         SUCCESS,
     }
 
@@ -315,10 +262,11 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     {
         PENDING,
         TRACKING,
+        NOT_FOUND_TRANSFER_ASSETS_ACTION,
         INSUFFICIENT_PAYMENT,
         INVALID_RECIPIENT,
-        INVALID_CURRENCY,
         DUPLICATE_TRANSACTION,
+        TX_FAILED,
         SUCCESS,
     }
 
@@ -358,6 +306,10 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     {
         [JsonPropertyName("ticketCount")]
         public int TicketCount { get; set; }
+        [JsonPropertyName("purchasePrice")]
+        public decimal PurchasePrice { get; set; }
+        [JsonPropertyName("txId")]
+        public object TxId { get; set; }
     }
 
     public class RoundResponse
@@ -380,49 +332,18 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public Int64 StartBlockIndex { get; set; }
         [JsonPropertyName("endBlockIndex")]
         public Int64 EndBlockIndex { get; set; }
-        [JsonPropertyName("interval")]
-        public int Interval { get; set; }
+        [JsonPropertyName("roundInterval")]
+        public int RoundInterval { get; set; }
         [JsonPropertyName("requiredMedalCount")]
         public int RequiredMedalCount { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 티켓을 구매할 때 지불해야할 NCG Cost 리스트</para>
-        /// </summary>
-        [JsonPropertyName("ticketPrices")]
-        public List<decimal> TicketPrices { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 라운드 당 총 구매 가능한 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("maxPurchasableTicketsPerRound")]
-        public int MaxPurchasableTicketsPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 라운드 당 무료로 사용 가능한 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("maxFreeTicketsPerRound")]
-        public int MaxFreeTicketsPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 라운드 당 사용 가능한(무료, 유료 포함) 총 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("maxTotalTicketsPerRound")]
-        public int MaxTotalTicketsPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 리프레시를 구매할 때 지불해야할 NCG Cost 리스트</para>
-        /// </summary>
-        [JsonPropertyName("refreshPricesPerRound")]
-        public List<decimal> RefreshPricesPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 라운드 당 구매 가능한 리프레시 개수</para>
-        /// </summary>
-        [JsonPropertyName("maxPurchasableRefreshesPerRound")]
-        public int MaxPurchasableRefreshesPerRound { get; set; }
-        /// <summary>
-        /// <para>현재 시즌에서 라운드 당 무료로 사용 가능한 리프레시 개수</para>
-        /// </summary>
-        [JsonPropertyName("maxFreeRefreshesPerRound")]
-        public int MaxFreeRefreshesPerRound { get; set; }
+        [JsonPropertyName("battleTicketPolicy")]
+        public TicketPolicyResponse BattleTicketPolicy { get; set; }
+        [JsonPropertyName("refreshTicketPolicy")]
+        public TicketPolicyResponse RefreshTicketPolicy { get; set; }
         [JsonPropertyName("totalPrize")]
         public int TotalPrize { get; set; }
         [JsonPropertyName("prizeDetailSiteURL")]
-        public int PrizeDetailSiteURL { get; set; }
+        public string? PrizeDetailSiteURL { get; set; }
         [JsonPropertyName("rounds")]
         public List<RoundResponse> Rounds { get; set; }
     }
@@ -432,34 +353,39 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("seasons")]
         public List<SeasonResponse> Seasons { get; set; }
         [JsonPropertyName("operationAccountAddress")]
-        public string? OperationAccountAddress { get; set; }
+        public string OperationAccountAddress { get; set; }
+    }
+
+    public class TicketPolicyResponse
+    {
+        [JsonPropertyName("defaultTicketsPerRound")]
+        public int DefaultTicketsPerRound { get; set; }
+        [JsonPropertyName("maxPurchasableTicketsPerRound")]
+        public int MaxPurchasableTicketsPerRound { get; set; }
+        [JsonPropertyName("purchasePrices")]
+        public List<decimal> PurchasePrices { get; set; }
     }
 
     public class TicketPurchaseLogResponse
     {
-        [JsonPropertyName("ticketType")]
-        public TicketType TicketType { get; set; }
-        [JsonPropertyName("purchaseOrderPerRound")]
-        public int PurchaseOrderPerRound { get; set; }
-        [JsonPropertyName("purchasePrice")]
-        public decimal PurchasePrice { get; set; }
+        [JsonPropertyName("seasonId")]
+        public int SeasonId { get; set; }
+        [JsonPropertyName("roundId")]
+        public int RoundId { get; set; }
+        [JsonPropertyName("amountPaid")]
+        public decimal? AmountPaid { get; set; }
         [JsonPropertyName("purchaseCount")]
         public int PurchaseCount { get; set; }
         [JsonPropertyName("purchaseStatus")]
         public PurchaseStatus PurchaseStatus { get; set; }
         [JsonPropertyName("txId")]
-        public string? TxId { get; set; }
+        public object TxId { get; set; }
         [JsonPropertyName("txStatus")]
         public TxStatus TxStatus { get; set; }
     }
 
     public class TicketStatusResponse
     {
-        /// <summary>
-        /// <para>현재까지 구매한 총 티켓의 개수</para>
-        /// </summary>
-        [JsonPropertyName("totalPurchasedTickets")]
-        public int TotalPurchasedTickets { get; set; }
         /// <summary>
         /// <para>현재 라운드에서 구매한 티켓의 개수</para>
         /// </summary>
@@ -488,47 +414,8 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         /// <summary>
         /// <para>다음에 지불해야할 NCG</para>
         /// </summary>
-        [JsonPropertyName("nextRefreshNCGCost")]
-        public int NextRefreshNCGCost { get; set; }
-    }
-
-    [JsonConverter(typeof(TicketTypeTypeConverter))]
-    public enum TicketType
-    {
-        BATTLE,
-        REFRESH,
-    }
-
-    public class TicketTypeTypeConverter : JsonConverter<TicketType>
-    {
-        public static readonly Dictionary<string, string> InvalidEnumMapping = new Dictionary<string, string>
-        {
-        };
-        public override TicketType Read(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options)
-        {
-            return reader.TokenType switch
-            {
-                JsonTokenType.Number => (TicketType)reader.GetInt32(),
-                JsonTokenType.String => Enum.Parse<TicketType>(InvalidEnumMapping.TryGetValue(reader.GetString(), out var validName) ? validName : reader.GetString()),
-                _ => throw new JsonException(
-                    $"Expected token type to be {string.Join(" or ", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}")
-            };
-        }
-        public override void Write(
-            Utf8JsonWriter writer,
-            TicketType value,
-            JsonSerializerOptions options)
-        {
-            var enumString = value.ToString();
-            if (InvalidEnumMapping.ContainsValue(enumString))
-            {
-                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;
-            }
-            writer.WriteStringValue(enumString);
-        }
+        [JsonPropertyName("nextNCGCosts")]
+        public List<decimal> NextNCGCosts { get; set; }
     }
 
     [JsonConverter(typeof(TxStatusTypeConverter))]
@@ -581,6 +468,20 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
 
     public class UserRegisterRequest
     {
+        [JsonPropertyName("nameWithHash")]
+        public string? NameWithHash { get; set; }
+        [JsonPropertyName("portraitId")]
+        public int PortraitId { get; set; }
+        [JsonPropertyName("cp")]
+        public Int64 Cp { get; set; }
+        [JsonPropertyName("level")]
+        public int Level { get; set; }
+    }
+
+    public class UserResponse
+    {
+        [JsonPropertyName("avatarAddress")]
+        public string AvatarAddress { get; set; }
         [JsonPropertyName("nameWithHash")]
         public string? NameWithHash { get; set; }
         [JsonPropertyName("portraitId")]
@@ -1009,20 +910,25 @@ public class ArenaServiceClient
     /// <response code="401">
     /// <para>Unauthorized</para>
     /// </response>
+    /// <response code="403">
+    /// <para>Forbidden</para>
+    /// </response>
     /// <response code="404">
     /// <para>Not Found</para>
     /// </response>
     public async Task PostBattleRequestAsync(
-        int battleLogId, string Authorization, BattleRequest requestBody, 
+        int battleId, string Authorization, BattleRequest requestBody, 
         // OK
         Action<string> on200OK = null, 
         // Unauthorized
         Action<ProblemDetails> on401Unauthorized = null, 
+        // Forbidden
+        Action<ProblemDetails> on403Forbidden = null, 
         // Not Found
         Action<string> on404NotFound = null, 
         Action<string> onError = null)
     {
-        string url = $"{Url}/battle/{battleLogId}/request";
+        string url = $"{Url}/battle/{battleId}/request";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
@@ -1038,16 +944,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                PostBattleRequestAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
+                PostBattleRequestAsyncProcessResponse(request, on200OK, on401Unauthorized, on403Forbidden, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                PostBattleRequestAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
+                PostBattleRequestAsyncProcessResponse(request, on200OK, on401Unauthorized, on403Forbidden, on404NotFound, onError);
             }
         }
     }
 
-    private void PostBattleRequestAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200OK, Action<ProblemDetails> on401Unauthorized, Action<string> on404NotFound, Action<string> onError)
+    private void PostBattleRequestAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on200OK, Action<ProblemDetails> on401Unauthorized, Action<ProblemDetails> on403Forbidden, Action<string> on404NotFound, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // OK
@@ -1070,6 +976,21 @@ public class ArenaServiceClient
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<ProblemDetails>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 403) // Forbidden
+        {
+            if (on403Forbidden != null)
+            {
+                ProblemDetails responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<ProblemDetails>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on403Forbidden(responseData);
             }
             else if (onError != null)
             {
@@ -1104,20 +1025,25 @@ public class ArenaServiceClient
     /// <response code="401">
     /// <para>Unauthorized</para>
     /// </response>
+    /// <response code="403">
+    /// <para>Forbidden</para>
+    /// </response>
     /// <response code="404">
     /// <para>Not Found</para>
     /// </response>
     public async Task GetBattleAsync(
-        int battleLogId, string Authorization, 
+        int battleId, string Authorization, 
         // OK
         Action<BattleResponse> on200OK = null, 
         // Unauthorized
         Action<ProblemDetails> on401Unauthorized = null, 
+        // Forbidden
+        Action<ProblemDetails> on403Forbidden = null, 
         // Not Found
         Action<string> on404NotFound = null, 
         Action<string> onError = null)
     {
-        string url = $"{Url}/battle/{battleLogId}";
+        string url = $"{Url}/battle/{battleId}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
@@ -1129,16 +1055,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetBattleAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
+                GetBattleAsyncProcessResponse(request, on200OK, on401Unauthorized, on403Forbidden, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                GetBattleAsyncProcessResponse(request, on200OK, on401Unauthorized, on404NotFound, onError);
+                GetBattleAsyncProcessResponse(request, on200OK, on401Unauthorized, on403Forbidden, on404NotFound, onError);
             }
         }
     }
 
-    private void GetBattleAsyncProcessResponse(UnityWebRequest webRequest, Action<BattleResponse> on200OK, Action<ProblemDetails> on401Unauthorized, Action<string> on404NotFound, Action<string> onError)
+    private void GetBattleAsyncProcessResponse(UnityWebRequest webRequest, Action<BattleResponse> on200OK, Action<ProblemDetails> on401Unauthorized, Action<ProblemDetails> on403Forbidden, Action<string> on404NotFound, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // OK
@@ -1164,6 +1090,21 @@ public class ArenaServiceClient
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<ProblemDetails>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on401Unauthorized(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 403) // Forbidden
+        {
+            if (on403Forbidden != null)
+            {
+                ProblemDetails responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<ProblemDetails>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on403Forbidden(responseData);
             }
             else if (onError != null)
             {
@@ -1488,60 +1429,6 @@ public class ArenaServiceClient
         }
     }
 
-    /// <response code="200">
-    /// <para>OK</para>
-    /// </response>
-    public async Task GetSeasonsAsync(
-        int pageNumber, int pageSize, 
-        // OK
-        Action<SeasonsResponse> on200OK = null, 
-        Action<string> onError = null)
-    {
-        string url = $"{Url}/seasons";
-        using (var request = new UnityWebRequest(url, "GET"))
-        {
-            url += $"?pageNumber={pageNumber}&pageSize={pageSize}";
-            request.uri = new Uri(url);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.timeout = 10;
-            try
-            {
-                await request.SendWebRequest();
-                GetSeasonsAsyncProcessResponse(request, on200OK, onError);
-            }
-            catch (Exception ex)
-            {
-                GetSeasonsAsyncProcessResponse(request, on200OK, onError);
-            }
-        }
-    }
-
-    private void GetSeasonsAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonsResponse> on200OK, Action<string> onError)
-    {
-        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // OK
-        {
-            if (on200OK != null)
-            {
-                SeasonsResponse responseData;
-                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonsResponse>(responseText); }
-                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
-                on200OK(responseData);
-            }
-            else if (onError != null)
-            {
-                onError(responseText);
-            }
-            return;
-        }
-        if (onError != null)
-        {
-            onError(webRequest.error);
-        }
-    }
-
     /// <param name="Authorization">
     /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
     /// </param>
@@ -1723,6 +1610,8 @@ public class ArenaServiceClient
         // Purchase Log Id
         Action<int> on200PurchaseLogId = null, 
         // 
+        Action<string> on400 = null, 
+        // 
         Action<string> on401 = null, 
         // 
         Action<string> on503 = null, 
@@ -1744,16 +1633,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                PostTicketsBattlePurchaseAsyncProcessResponse(request, on200PurchaseLogId, on401, on503, onError);
+                PostTicketsBattlePurchaseAsyncProcessResponse(request, on200PurchaseLogId, on400, on401, on503, onError);
             }
             catch (Exception ex)
             {
-                PostTicketsBattlePurchaseAsyncProcessResponse(request, on200PurchaseLogId, on401, on503, onError);
+                PostTicketsBattlePurchaseAsyncProcessResponse(request, on200PurchaseLogId, on400, on401, on503, onError);
             }
         }
     }
 
-    private void PostTicketsBattlePurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void PostTicketsBattlePurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200PurchaseLogId, Action<string> on400, Action<string> on401, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // Purchase Log Id
@@ -1764,6 +1653,18 @@ public class ArenaServiceClient
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on200PurchaseLogId(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 400) // 
+        {
+            if (on400 != null)
+            {
+                on400(responseText);
             }
             else if (onError != null)
             {
@@ -1903,6 +1804,8 @@ public class ArenaServiceClient
         // 
         Action<string> on401 = null, 
         // 
+        Action<string> on403 = null, 
+        // 
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -1918,16 +1821,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200PurchaseLogId, on401, on503, onError);
+                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200PurchaseLogId, on401, on403, on503, onError);
             }
             catch (Exception ex)
             {
-                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200PurchaseLogId, on401, on503, onError);
+                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200PurchaseLogId, on401, on403, on503, onError);
             }
         }
     }
 
-    private void GetTicketsBattlePurchaselogsAsyncProcessResponse(UnityWebRequest webRequest, Action<TicketPurchaseLogResponse> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void GetTicketsBattlePurchaselogsAsyncProcessResponse(UnityWebRequest webRequest, Action<TicketPurchaseLogResponse> on200PurchaseLogId, Action<string> on401, Action<string> on403, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // Purchase Log Id
@@ -1950,6 +1853,18 @@ public class ArenaServiceClient
             if (on401 != null)
             {
                 on401(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 403) // 
+        {
+            if (on403 != null)
+            {
+                on403(responseText);
             }
             else if (onError != null)
             {
@@ -2155,6 +2070,9 @@ public class ArenaServiceClient
         }
     }
 
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
     /// <response code="200">
     /// <para>OK</para>
     /// </response>
@@ -2165,7 +2083,7 @@ public class ArenaServiceClient
     /// <para>Not Found</para>
     /// </response>
     public async Task GetUsersClassifybychampionshipMedalsAsync(
-        Int64 blockIndex, 
+        Int64 blockIndex, string Authorization, 
         // OK
         Action<ClassifyByBlockMedalsResponse> on200OK = null, 
         // Unauthorized
@@ -2178,6 +2096,7 @@ public class ArenaServiceClient
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");

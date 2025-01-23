@@ -9,6 +9,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using GeneratedApiNamespace.ArenaServiceClient;
+using System;
 
 namespace Nekoyume.UI
 {
@@ -76,7 +77,7 @@ namespace Nekoyume.UI
             NcDebug.Log($"log.Score: {log.Score}");
             if (battleResponse != null)
             {
-                scoreText.text = $"{battleResponse.ParticipantScore - battleResponse.ParticipantScoreChange} + {battleResponse.ParticipantScoreChange}";
+                scoreText.text = $"{battleResponse.MyScore - battleResponse.MyScoreChange} { (battleResponse.MyScoreChange > 0 ? "+" : "-") } { Math.Abs(battleResponse.MyScoreChange.Value) }";
             }
             else
             {

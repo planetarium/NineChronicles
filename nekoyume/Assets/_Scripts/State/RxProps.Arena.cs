@@ -154,11 +154,11 @@ namespace Nekoyume.State
             PostUserAsync().Forget();
         }
 
-        private static void UpdateArenaTicketProgress(long blockIndex)
+        public static void UpdateArenaTicketProgress(long blockIndex)
         {
             var currentSeason = GetSeasonResponseByBlockIndex(blockIndex);
-            int maxTicketCount = currentSeason.MaxTotalTicketsPerRound;
-            var ticketResetInterval = GetSeasonResponseByBlockIndex(blockIndex).Interval;
+            int maxTicketCount = currentSeason.BattleTicketPolicy.DefaultTicketsPerRound;
+            var ticketResetInterval = currentSeason.RoundInterval;
             var currentArenaInfo = _arenaInfo.HasValue
                 ? _arenaInfo.Value
                 : null;
@@ -168,17 +168,15 @@ namespace Nekoyume.State
                 _arenaTicketsProgress.SetValueAndForceNotify(_arenaTicketsProgress.Value);
                 return;
             }
-
-            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var currentTicketCount = currentArenaInfo.RemainingTicketsPerRound;
+            var currentTicketCount = currentArenaInfo.BattleTicketStatus.RemainingTicketsPerRound;
             var progressedBlockRange =
-                (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
+                (blockIndex - currentSeason.StartBlockIndex) % ticketResetInterval;
             _arenaTicketsProgress.Value.Reset(
                 currentTicketCount,
                 maxTicketCount,
                 (int)progressedBlockRange,
                 ticketResetInterval,
-                currentArenaInfo.RemainingPurchasableTicketsPerRound);
+                currentArenaInfo.BattleTicketStatus.TicketsPurchasedPerRound);
             _arenaTicketsProgress.SetValueAndForceNotify(
                 _arenaTicketsProgress.Value);
         }
@@ -203,7 +201,8 @@ namespace Nekoyume.State
             try
             {
                 var currentArenaInfo = await ApiClients.Instance.Arenaservicemanager.GetArenaInfoAsync(avatarAddress.ToString());
-                _currentSeasonId = currentArenaInfo.SeasonId;
+                var seasonResponse = GetSeasonResponseByBlockIndex(_arenaInfoTupleUpdatedBlockIndex);
+                _currentSeasonId = seasonResponse.Id;
                 return currentArenaInfo;
             }
             catch (Exception e)
@@ -242,7 +241,7 @@ namespace Nekoyume.State
             // var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                arenaInfo = await ApiClients.Instance.Arenaservicemanager.GetAvailableopponentsAsync(_currentSeasonId, currentAvatarAddr.ToString());
+                arenaInfo = await ApiClients.Instance.Arenaservicemanager.GetAvailableopponentsAsync(currentAvatarAddr.ToString());
             }
             catch (Exception e)
             {
