@@ -2865,6 +2865,8 @@ namespace Nekoyume.Blockchain
             {
                 var nullablePrevStakeState = States.Instance.StakeStateV2;
                 var prevStakeState = nullablePrevStakeState.GetValueOrDefault();
+                var stakingLevel = States.Instance.StakingLevel;
+                var stakedNcg = States.Instance.StakedBalance;
 
                 await UpdateStakeStateAsync(eval);
                 await UpdateAgentStateAsync(eval);
@@ -2892,8 +2894,6 @@ namespace Nekoyume.Blockchain
                     // Calculate rewards~
                     var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
                     var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
-                    var stakingLevel = States.Instance.StakingLevel;
-                    var stakedNcg = States.Instance.StakedBalance;
                     var itemSheet = TableSheets.Instance.ItemSheet;
                     // The first reward is given at the claimable block index.
                     var rewardSteps = stakeState.ClaimableBlockIndex == eval.BlockIndex
