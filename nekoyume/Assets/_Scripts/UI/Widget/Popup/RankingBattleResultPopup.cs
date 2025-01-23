@@ -77,7 +77,10 @@ namespace Nekoyume.UI
             NcDebug.Log($"log.Score: {log.Score}");
             if (battleResponse != null)
             {
-                scoreText.text = $"{battleResponse.MyScore - battleResponse.MyScoreChange} { (battleResponse.MyScoreChange > 0 ? "+" : "-") } { Math.Abs(battleResponse.MyScoreChange.Value) }";
+                var scoreChange = battleResponse.MyScoreChange.Value;
+                var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
+                var scoreChangeSign = scoreChange > 0 ? "+" : "-";
+                scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
             }
             else
             {
