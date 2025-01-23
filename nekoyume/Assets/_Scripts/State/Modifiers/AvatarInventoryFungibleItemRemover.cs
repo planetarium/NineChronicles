@@ -29,6 +29,11 @@ namespace Nekoyume.State.Modifiers
 
         public override bool IsEmpty => innerDictionary.Value.Count == 0;
 
+        public AvatarInventoryFungibleItemRemover()
+        {
+            innerDictionary = new InnerDictionary();
+        }
+
         public AvatarInventoryFungibleItemRemover(HashDigest<SHA256> fungibleId, int count)
         {
             if (count is 0)
@@ -52,6 +57,23 @@ namespace Nekoyume.State.Modifiers
                 }
 
                 innerDictionary.Value.Add(new JsonConvertibleFungibleId(pair.Key), pair.Value);
+            }
+        }
+
+        public void AddItem(HashDigest<SHA256> fungibleId, int count)
+        {
+            if (count is 0)
+            {
+                return;
+            }
+
+            if (innerDictionary.Value.ContainsKey(new JsonConvertibleFungibleId(fungibleId)))
+            {
+                innerDictionary.Value[new JsonConvertibleFungibleId(fungibleId)] += count;
+            }
+            else
+            {
+                innerDictionary.Value.Add(new JsonConvertibleFungibleId(fungibleId), count);
             }
         }
 

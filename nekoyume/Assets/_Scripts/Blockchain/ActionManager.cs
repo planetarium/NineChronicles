@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Tx;
@@ -356,6 +358,7 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
 
+            var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
             foreach (var pair in recipeInfo.Materials)
             {
                 var id = pair.Key;
@@ -373,8 +376,9 @@ namespace Nekoyume.Blockchain
                         : 0;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                removeItemIds.Add((row.ItemId, count));
             }
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Create CombinationConsumable",
@@ -446,6 +450,7 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
 
+            var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
             foreach (var pair in recipeInfo.Materials)
             {
                 var id = pair.Key;
@@ -463,8 +468,9 @@ namespace Nekoyume.Blockchain
                         : 0;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                removeItemIds.Add((row.ItemId, count));
             }
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             var action = new EventConsumableItemCrafts
             {
@@ -493,6 +499,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
+            var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
             foreach (var (id, count) in materialsToUse)
             {
                 if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
@@ -500,8 +507,9 @@ namespace Nekoyume.Blockchain
                     continue;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                removeItemIds.Add((row.ItemId, count));
             }
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             var action = new EventMaterialItemCrafts
             {
@@ -804,21 +812,23 @@ namespace Nekoyume.Blockchain
             }
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            var removeNonFungibleIds = new List<Guid>();
+            var removeItemIds = new List<(Guid, long, int)>();
             foreach (var materialEquip in materialEquipments)
             {
                 if (materialEquip.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
-                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, materialEquip.ItemId);
+                    removeNonFungibleIds.Add(materialEquip.ItemId);
                 }
                 else
                 {
-                    LocalLayerModifier.RemoveItem(avatarAddress, materialEquip.ItemId,
-                        materialEquip.RequiredBlockIndex, 1);
+                    removeItemIds.Add((materialEquip.ItemId, materialEquip.RequiredBlockIndex, 1));
                 }
 
                 LocalLayerModifier.SetItemEquip(avatarAddress, materialEquip.NonFungibleId, false);
             }
+            LocalLayerModifier.RemoveNonFungibleItems(avatarAddress, removeNonFungibleIds);
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
 
@@ -1048,6 +1058,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
+                var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
                 foreach (var pair in recipeInfo.Materials)
                 {
                     var id = pair.Key;
@@ -1065,8 +1076,9 @@ namespace Nekoyume.Blockchain
                             : 0;
                     }
 
-                    LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                    removeItemIds.Add((row.ItemId, count));
                 }
+                LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
             }
 
             var action = new CombinationEquipment
@@ -1198,24 +1210,22 @@ namespace Nekoyume.Blockchain
             long gainedCrystal)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var removeNonFungibleIds = new List<Guid>();
+            var removeItemIds = new List<(Guid, long, int)>();
             equipmentList.ForEach(equipment =>
             {
                 if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
                     // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
-                    LocalLayerModifier.RemoveNonFungibleItem(
-                        avatarAddress,
-                        equipment.ItemId);
+                    removeNonFungibleIds.Add(equipment.ItemId);
                 }
                 else
                 {
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        equipment.ItemId,
-                        equipment.RequiredBlockIndex,
-                        1);
+                    removeItemIds.Add((equipment.ItemId, equipment.RequiredBlockIndex, 1));
                 }
             });
+            LocalLayerModifier.RemoveNonFungibleItems(avatarAddress, removeNonFungibleIds);
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             if (chargeAp)
             {
@@ -1261,35 +1271,28 @@ namespace Nekoyume.Blockchain
             ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var removeNonFungibleIds = new List<Guid>();
+            var removeItemIds = new List<(Guid, long, int)>();
             itemBaseList.ForEach(itemBase =>
             {
                 if (itemBase is Equipment equipment)
                 {
                     if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                     {
-                        // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
-                        LocalLayerModifier.RemoveNonFungibleItem(
-                            avatarAddress,
-                            equipment.ItemId);
+                        removeNonFungibleIds.Add(equipment.ItemId);
                     }
                     else
                     {
-                        LocalLayerModifier.RemoveItem(
-                            avatarAddress,
-                            equipment.ItemId,
-                            equipment.RequiredBlockIndex,
-                            1);
+                        removeItemIds.Add((equipment.ItemId, equipment.RequiredBlockIndex, 1));
                     }
                 }
                 else if (itemBase is Costume costume)
                 {
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        costume.ItemId,
-                        costume.RequiredBlockIndex,
-                        1);
+                    removeItemIds.Add((costume.ItemId, costume.RequiredBlockIndex, 1));
                 }
             });
+            LocalLayerModifier.RemoveNonFungibleItems(avatarAddress, removeNonFungibleIds);
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             if (chargeAp)
             {
