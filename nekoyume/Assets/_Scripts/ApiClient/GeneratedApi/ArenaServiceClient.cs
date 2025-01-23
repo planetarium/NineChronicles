@@ -28,6 +28,10 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public UserResponse User { get; set; }
         [JsonPropertyName("clanInfo")]
         public ClanResponse ClanInfo { get; set; }
+        [JsonPropertyName("seasonId")]
+        public int SeasonId { get; set; }
+        [JsonPropertyName("roundId")]
+        public int RoundId { get; set; }
         [JsonPropertyName("score")]
         public int Score { get; set; }
         [JsonPropertyName("rank")]
@@ -123,7 +127,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     public class BattleRequest
     {
         [JsonPropertyName("txId")]
-        public object TxId { get; set; }
+        public string TxId { get; set; }
     }
 
     public class BattleResponse
@@ -309,7 +313,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("purchasePrice")]
         public decimal PurchasePrice { get; set; }
         [JsonPropertyName("txId")]
-        public object TxId { get; set; }
+        public string TxId { get; set; }
     }
 
     public class RoundResponse
@@ -379,7 +383,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("purchaseStatus")]
         public PurchaseStatus PurchaseStatus { get; set; }
         [JsonPropertyName("txId")]
-        public object TxId { get; set; }
+        public string TxId { get; set; }
         [JsonPropertyName("txStatus")]
         public TxStatus TxStatus { get; set; }
     }
