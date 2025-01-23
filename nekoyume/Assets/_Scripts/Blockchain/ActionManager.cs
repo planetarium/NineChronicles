@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Tx;
@@ -356,6 +358,7 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
 
+            var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
             foreach (var pair in recipeInfo.Materials)
             {
                 var id = pair.Key;
@@ -373,8 +376,9 @@ namespace Nekoyume.Blockchain
                         : 0;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                removeItemIds.Add((row.ItemId, count));
             }
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Create CombinationConsumable",
@@ -446,6 +450,7 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
 
+            var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
             foreach (var pair in recipeInfo.Materials)
             {
                 var id = pair.Key;
@@ -463,8 +468,9 @@ namespace Nekoyume.Blockchain
                         : 0;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                removeItemIds.Add((row.ItemId, count));
             }
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             var action = new EventConsumableItemCrafts
             {
@@ -493,6 +499,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
+            var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
             foreach (var (id, count) in materialsToUse)
             {
                 if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
@@ -500,8 +507,9 @@ namespace Nekoyume.Blockchain
                     continue;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                removeItemIds.Add((row.ItemId, count));
             }
+            LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
 
             var action = new EventMaterialItemCrafts
             {
@@ -1050,6 +1058,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
+                var removeItemIds = new List<(HashDigest<SHA256>, int)>(); // (itemId, count)
                 foreach (var pair in recipeInfo.Materials)
                 {
                     var id = pair.Key;
@@ -1067,8 +1076,9 @@ namespace Nekoyume.Blockchain
                             : 0;
                     }
 
-                    LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                    removeItemIds.Add((row.ItemId, count));
                 }
+                LocalLayerModifier.RemoveItems(avatarAddress, removeItemIds);
             }
 
             var action = new CombinationEquipment

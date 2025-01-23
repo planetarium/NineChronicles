@@ -250,6 +250,17 @@ namespace Nekoyume.State
             RemoveItemInternal(avatarAddress, modifier);
         }
 
+        public static void RemoveItems(Address avatarAddress, List<(HashDigest<SHA256> tradableId, int count)> tradableIds)
+        {
+            var modifier = new AvatarInventoryFungibleItemRemover();
+            foreach (var (tradableId, count) in tradableIds)
+            {
+                modifier.AddItem(tradableId, count);
+            }
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+            RemoveItemInternal(avatarAddress, modifier);
+        }
+
         private static void RemoveItemInternal(Address avatarAddress, AvatarStateModifier modifier)
         {
             if (!TryGetLoadedAvatarState(
