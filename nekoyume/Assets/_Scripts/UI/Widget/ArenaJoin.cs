@@ -92,21 +92,10 @@ namespace Nekoyume.UI
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            var arenaInfoResponse = await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
-            if (arenaInfoResponse == null)
-            {
-                loading.Close();
-                Lobby.Enter(true);
-                Find<IconAndButtonSystem>().Show(
-                        "UI_ERROR",
-                        "UI_ARENAJOIN_INFO_GET_FAILED",
-                        "UI_OK");
-                return;
-            }
 
             await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
-            if (RxProps.ArenaSeasonResponses.Value.Count != 0 &&
-                RxProps.ArenaSeasonResponses.Value.Last().EndBlockIndex > Game.Game.instance.Agent.BlockIndex)
+            if (!RxProps.ArenaSeasonResponses.HasValue ||
+                RxProps.ArenaSeasonResponses.Value.Last().EndBlockIndex < Game.Game.instance.Agent.BlockIndex)
             {
                 loading.Close();
                 Lobby.Enter(true);
@@ -276,6 +265,7 @@ namespace Nekoyume.UI
             void OnClickJoinButton()
             {
                 AudioController.PlayClick();
+                Close();
                 Find<ArenaBoard>().ShowAsync().Forget();
             }
 
@@ -319,25 +309,19 @@ namespace Nekoyume.UI
                     {
                         if (isOpened)
                         {
-                            if (RxProps.ArenaInfo.Value is null)
+                            if (CheckChampionshipConditions())
                             {
-                                _joinButton.gameObject.SetActive(false);
-                                if (arenaType == ArenaType.CHAMPIONSHIP &&
-                                    !CheckChampionshipConditions())
-                                {
-                                    _bottomButtonText.text =
-                                        L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
-                                    _bottomButtonText.enabled = true;
-                                    return;
-                                }
-
                                 _bottomButtonText.enabled = false;
-                                return;
+                                _joinButton.Interactable = true;
+                                _joinButton.gameObject.SetActive(true);
                             }
-
-                            _bottomButtonText.enabled = false;
-                            _joinButton.Interactable = true;
-                            _joinButton.gameObject.SetActive(true);
+                            else
+                            {
+                                _bottomButtonText.text =
+                                    L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
+                                _bottomButtonText.enabled = true;
+                                _joinButton.gameObject.SetActive(false);
+                            }
                         }
                         else
                         {

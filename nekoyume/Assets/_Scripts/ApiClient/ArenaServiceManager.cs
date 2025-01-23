@@ -8,6 +8,8 @@ using Nekoyume.UI.Model;
 using System.Linq;
 using GeneratedApiNamespace.ArenaServiceClient;
 using Cysharp.Threading.Tasks;
+using Libplanet.Types.Assets;
+using System.Globalization;
 
 namespace Nekoyume.ApiClient
 {
@@ -110,7 +112,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<int> PostTicketsRefreshPurchaseAsync(string txId, string avatarAddress)
+        public async Task<int> PostTicketsRefreshPurchaseAsync(string txId, FungibleAssetValue amount, string avatarAddress)
         {
             if (!IsInitialized)
             {
@@ -120,11 +122,21 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
+
+                decimal calculatedAmount = decimal.Parse(amount.GetQuantityString(),CultureInfo.InvariantCulture);
+                
+                var request = new PurchaseTicketRequest
+                {
+                    TicketCount = 1,
+                    PurchasePrice = calculatedAmount,
+                    TxId = txId,
+                };
+
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
                 int response = -1;
 
-                await Client.PostTicketsRefreshPurchaseAsync(/*txId,*/ jwt, new PurchaseTicketRequest(),
-                    on200PurchaseLogId : result =>
+                await Client.PostTicketsRefreshPurchaseAsync(jwt, request,
+                    on200PurchaseLogId: result =>
                     {
                         response = result;
                     },
