@@ -1,23 +1,24 @@
-﻿using Nekoyume.Game;
+﻿using System;
+using Nekoyume.Game;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class ArenaTicketPopup : PopupWidget
     {
         [SerializeField]
         private SweepSlider ticketSlider = null;
 
         [SerializeField]
-        private TextMeshProUGUI haveTicketText = null;
+        private TextMeshProUGUI willBuyTicketText = null;
 
         [SerializeField]
-        private TextMeshProUGUI ticketCountToUseText = null;
+        private TextMeshProUGUI ticketPriceToBuyText = null;
 
         [SerializeField]
         private ConditionalButton startButton = null;
@@ -25,42 +26,50 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
-        private System.Action<int> _arenaBattleAction;
-        private readonly ReactiveProperty<int> _ticketCountToUse = new();
+        private readonly ReactiveProperty<int> _ticketCountToBuy = new();
 
         protected override void Awake()
         {
             base.Awake();
 
-            _ticketCountToUse
+            _ticketCountToBuy
                 .Subscribe(count =>
                 {
-                    ticketCountToUseText.text = count.ToString();
+                    var price = 0;
+                    try
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            price += (int)RxProps.ArenaInfo.Value.BattleTicketStatus.NextNCGCosts[i];
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        NcDebug.LogError($"Error calculating ticket price: {e.Message}");
+                    }
+                    ticketPriceToBuyText.text = price.ToString();
                     startButton.Interactable = count > 0;
                 })
                 .AddTo(gameObject);
 
             startButton.OnSubmitSubject.Subscribe(_ =>
             {
-                _arenaBattleAction?.Invoke(_ticketCountToUse.Value);
+
                 Close();
             }).AddTo(gameObject);
 
             closeButton.onClick.AddListener(() => Close());
         }
 
-        public void Show(System.Action<int> arenaBattleAction)
+        public void Show()
         {
-            _arenaBattleAction = arenaBattleAction;
-
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             var ticketCount = RxProps.ArenaInfo.HasValue
-                ? RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound
+                ? RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
-            haveTicketText.text = ticketCount.ToString();
+            willBuyTicketText.text = ticketCount.ToString();
 
-            ticketSlider.Set(0, ticketCount, ticketCount, 8, 1, x => _ticketCountToUse.Value = x);
+            ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
 
             base.Show();
         }
