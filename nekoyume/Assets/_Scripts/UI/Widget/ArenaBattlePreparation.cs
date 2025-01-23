@@ -177,7 +177,7 @@ namespace Nekoyume.UI
 
         private void ShowArenaTicketPopup()
         {
-            Find<ArenaTicketPopup>().Show(SendBattleArenaAction);
+            Find<ArenaTicketPopup>().Show();
         }
 
         private void OnClickBattle()

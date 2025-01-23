@@ -257,7 +257,7 @@ namespace Nekoyume.UI
 
                     if (RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingTicketsPerRound == 0)
                     {
-                        // todo 티켓 구매플로우
+                        Find<ArenaTicketPopup>().Show();
                         return;
                     }
                     Close();
