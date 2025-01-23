@@ -94,11 +94,31 @@ namespace Nekoyume.UI
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
-            await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
+            var arenaInfoResponse = await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
+            if (arenaInfoResponse == null)
+            {
+                loading.Close();
+                Lobby.Enter(true);
+                Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENAJOIN_INFO_GET_FAILED",
+                        "UI_OK");
+                return;
+            }
 
-            // todo : 아레나서비스
-            // 호출 빈번하지 않도록 수정해야함
+            await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
+            if (RxProps.ArenaSeasonResponses.Value.Count != 0 && 
+                RxProps.ArenaSeasonResponses.Value.Last().EndBlockIndex > Game.Game.instance.Agent.BlockIndex)
+            {
+                loading.Close();
+                Lobby.Enter(true);
+                Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENAJOIN_SEASON_INFO_GET_FAILED",
+                        "UI_OK");
+                return;
+            }
+
             await ApiClients.Instance.Arenaservicemanager.Client.GetUsersClassifybychampionshipMedalsAsync(Game.Game.instance.Agent.BlockIndex,
                 on200OK: (result) =>
                 {
@@ -138,7 +158,7 @@ namespace Nekoyume.UI
 
         public void OnRenderJoinArena(ActionEvaluation<JoinArena> eval)
         {
-        // 메모: 이 함수는 더 이상 사용되지 않으므로 삭제 예정입니다.
+            // 메모: 이 함수는 더 이상 사용되지 않으므로 삭제 예정입니다.
         }
 
         /// <summary>
