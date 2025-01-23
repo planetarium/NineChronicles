@@ -646,14 +646,6 @@ namespace Nekoyume.Blockchain
 
         private void InitializeArenaActions()
         {
-            _actionRenderer.EveryRender<JoinArena>()
-                .ObserveOn(Scheduler.ThreadPool)
-                .Where(ValidateEvaluationForCurrentAgent)
-                .Select(PrepareJoinArena)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseJoinArenaAsync)
-                .AddTo(_disposables);
-
             _actionRenderer.EveryRender<Action.Arena.Battle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOn(Scheduler.ThreadPool)
@@ -3089,52 +3081,6 @@ namespace Nekoyume.Blockchain
             public LocalRandom(int seed) : base(seed)
             {
                 Seed = seed;
-            }
-        }
-
-        private static ActionEvaluation<JoinArena> PrepareJoinArena(
-            ActionEvaluation<JoinArena> eval)
-        {
-            UpdateCrystalBalance(eval);
-            UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
-            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
-            return eval;
-        }
-
-        private static async UniTaskVoid ResponseJoinArenaAsync(
-            ActionEvaluation<JoinArena> eval)
-        {
-            if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
-            var arenaJoin = Widget.Find<ArenaJoin>();
-            if (eval.Exception != null)
-            {
-                if (arenaJoin && arenaJoin.IsActive())
-                {
-                    arenaJoin.OnRenderJoinArena(eval);
-                }
-            }
-
-            var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(
-                Game.Game.instance.Agent.BlockIndex);
-            if (eval.Action.championshipId == currentRound.ChampionshipId &&
-                eval.Action.round == currentRound.Round)
-            {
-                await UniTask.WhenAll(
-                    RxProps.ArenaInfo.UpdateAsync(eval.OutputState),
-                    RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
-            }
-            else
-            {
-                await RxProps.ArenaInfo.UpdateAsync(eval.OutputState);
-            }
-
-            if (arenaJoin && arenaJoin.IsActive())
-            {
-                arenaJoin.OnRenderJoinArena(eval);
             }
         }
 

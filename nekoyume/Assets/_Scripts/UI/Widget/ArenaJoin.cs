@@ -156,11 +156,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void OnRenderJoinArena(ActionEvaluation<JoinArena> eval)
-        {
-            // 메모: 이 함수는 더 이상 사용되지 않으므로 삭제 예정입니다.
-        }
-
         /// <summary>
         /// Used from Awake() function once.
         /// </summary>
