@@ -2692,7 +2692,7 @@ namespace Nekoyume.Blockchain
                 .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
 
-            var mailRewards = new List<MailReward> { new(crystalReward, (int)crystalReward.MajorUnit) };
+            var mailRewards = new List<MailReward> { new(crystalReward, (long)crystalReward.MajorUnit), };
             mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
 
             Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
@@ -2864,6 +2864,8 @@ namespace Nekoyume.Blockchain
             UniTask.RunOnThreadPool(async () =>
             {
                 var nullablePrevStakeState = States.Instance.StakeStateV2;
+                var prevStakeState = nullablePrevStakeState.GetValueOrDefault();
+
                 await UpdateStakeStateAsync(eval);
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
@@ -2885,7 +2887,7 @@ namespace Nekoyume.Blockchain
                 var blockIndex = eval.BlockIndex;
                 if (nullablePrevStakeState.HasValue && nullablePrevStakeState.Value.ClaimableBlockIndex <= blockIndex)
                 {
-                    var stakeState = nullablePrevStakeState.Value;
+                    var stakeState = prevStakeState;
 
                     // Calculate rewards~
                     var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
@@ -2921,7 +2923,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
-                    mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (int)fav.MajorUnit)));
+                    mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (long)fav.MajorUnit)));
 
                     Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                     Widget.Find<StakingPopup>().SetView();
@@ -2980,7 +2982,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
-                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (int)fav.MajorUnit)));
+                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (long)fav.MajorUnit)));
 
                 Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                 Widget.Find<StakingPopup>().SetView();
