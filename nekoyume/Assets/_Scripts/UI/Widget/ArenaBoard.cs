@@ -321,7 +321,8 @@ namespace Nekoyume.UI
                     interactableChoiceButton = true,
                     canFight = !e.IsAttacked,
                     address = e.AvatarAddress,
-                    guildName = e.ClanImageURL,
+                    guildName = e.ClanInfo?.Name,
+                    guildImgUrl = e.ClanInfo?.ImageURL,
                     isVictory = e.IsVictory,
                     scoreOnLose = e.ScoreLossOnLose,
                     scoreOnWin = e.ScoreGainOnWin

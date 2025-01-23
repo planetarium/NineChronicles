@@ -112,6 +112,8 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public int Score { get; set; }
         [JsonPropertyName("rank")]
         public int Rank { get; set; }
+        [JsonPropertyName("groupId")]
+        public int GroupId { get; set; }
         [JsonPropertyName("isAttacked")]
         public bool IsAttacked { get; set; }
         [JsonPropertyName("scoreGainOnWin")]
@@ -120,8 +122,8 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public int ScoreLossOnLose { get; set; }
         [JsonPropertyName("isVictory")]
         public bool? IsVictory { get; set; }
-        [JsonPropertyName("clanImageURL")]
-        public string? ClanImageURL { get; set; }
+        [JsonPropertyName("clanInfo")]
+        public ClanResponse ClanInfo { get; set; }
     }
 
     public class BattleRequest
@@ -1606,13 +1608,13 @@ public class ArenaServiceClient
     /// <param name="Authorization">
     /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
     /// </param>
-    /// <response code="200">
+    /// <response code="201">
     /// <para>Purchase Log Id</para>
     /// </response>
     public async Task PostTicketsBattlePurchaseAsync(
         string Authorization, PurchaseTicketRequest requestBody, 
         // Purchase Log Id
-        Action<int> on200PurchaseLogId = null, 
+        Action<int> on201PurchaseLogId = null, 
         // 
         Action<string> on400 = null, 
         // 
@@ -1637,26 +1639,26 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                PostTicketsBattlePurchaseAsyncProcessResponse(request, on200PurchaseLogId, on400, on401, on503, onError);
+                PostTicketsBattlePurchaseAsyncProcessResponse(request, on201PurchaseLogId, on400, on401, on503, onError);
             }
             catch (Exception ex)
             {
-                PostTicketsBattlePurchaseAsyncProcessResponse(request, on200PurchaseLogId, on400, on401, on503, onError);
+                PostTicketsBattlePurchaseAsyncProcessResponse(request, on201PurchaseLogId, on400, on401, on503, onError);
             }
         }
     }
 
-    private void PostTicketsBattlePurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200PurchaseLogId, Action<string> on400, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void PostTicketsBattlePurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on201PurchaseLogId, Action<string> on400, Action<string> on401, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // Purchase Log Id
+        if (webRequest.responseCode == 201) // Purchase Log Id
         {
-            if (on200PurchaseLogId != null)
+            if (on201PurchaseLogId != null)
             {
                 int responseData;
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
-                on200PurchaseLogId(responseData);
+                on201PurchaseLogId(responseData);
             }
             else if (onError != null)
             {
@@ -1709,13 +1711,13 @@ public class ArenaServiceClient
     /// <param name="Authorization">
     /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
     /// </param>
-    /// <response code="200">
+    /// <response code="201">
     /// <para>Purchase Log Id</para>
     /// </response>
     public async Task PostTicketsRefreshPurchaseAsync(
         string Authorization, PurchaseTicketRequest requestBody, 
         // Purchase Log Id
-        Action<int> on200PurchaseLogId = null, 
+        Action<int> on201PurchaseLogId = null, 
         // 
         Action<string> on401 = null, 
         // 
@@ -1738,26 +1740,26 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on200PurchaseLogId, on401, on503, onError);
+                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on201PurchaseLogId, on401, on503, onError);
             }
             catch (Exception ex)
             {
-                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on200PurchaseLogId, on401, on503, onError);
+                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on201PurchaseLogId, on401, on503, onError);
             }
         }
     }
 
-    private void PostTicketsRefreshPurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void PostTicketsRefreshPurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on201PurchaseLogId, Action<string> on401, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // Purchase Log Id
+        if (webRequest.responseCode == 201) // Purchase Log Id
         {
-            if (on200PurchaseLogId != null)
+            if (on201PurchaseLogId != null)
             {
                 int responseData;
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
-                on200PurchaseLogId(responseData);
+                on201PurchaseLogId(responseData);
             }
             else if (onError != null)
             {
@@ -2061,6 +2063,83 @@ public class ArenaServiceClient
             if (on409Conflict != null)
             {
                 on409Conflict(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
+        }
+    }
+
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
+    /// <response code="200">
+    /// <para>OK</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Unauthorized</para>
+    /// </response>
+    public async Task GetUsersAsync(
+        string avatarAddress, string Authorization, 
+        // OK
+        Action<UserResponse> on200OK = null, 
+        // Unauthorized
+        Action<ProblemDetails> on401Unauthorized = null, 
+        Action<string> onError = null)
+    {
+        string url = $"{Url}/users/{avatarAddress}";
+        using (var request = new UnityWebRequest(url, "GET"))
+        {
+            request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                GetUsersAsyncProcessResponse(request, on200OK, on401Unauthorized, onError);
+            }
+            catch (Exception ex)
+            {
+                GetUsersAsyncProcessResponse(request, on200OK, on401Unauthorized, onError);
+            }
+        }
+    }
+
+    private void GetUsersAsyncProcessResponse(UnityWebRequest webRequest, Action<UserResponse> on200OK, Action<ProblemDetails> on401Unauthorized, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // OK
+        {
+            if (on200OK != null)
+            {
+                UserResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<UserResponse>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200OK(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Unauthorized
+        {
+            if (on401Unauthorized != null)
+            {
+                ProblemDetails responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<ProblemDetails>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on401Unauthorized(responseData);
             }
             else if (onError != null)
             {
