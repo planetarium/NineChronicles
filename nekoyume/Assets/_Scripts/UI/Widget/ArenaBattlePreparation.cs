@@ -3,14 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Renderers;
-using Nekoyume.Action;
-using Nekoyume.Arena;
 using Nekoyume.Blockchain;
-using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
-using Nekoyume.GraphQL;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -20,7 +15,6 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 
@@ -44,13 +38,12 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
-        private Button repeatPopupButton;
-
-        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
-        private Transform buttonStarImageTransform;
+        private Transform actionPointIconPos;
+        [SerializeField]
+        private Transform ticketIconPos;
 
         [SerializeField]
         [Range(.5f, 3.0f)]
@@ -72,8 +65,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI enemyCp;
-
-        private GameObject _cachedCharacterTitle;
 
         private const int TicketCountToUse = 1;
         private SeasonResponse _seasonData;
@@ -116,15 +107,16 @@ namespace Nekoyume.UI
             base.Initialize();
 
             information.Initialize();
-            startButton.SetCost(CostType.ArenaTicket, TicketCountToUse);
+            var costs = new List<ConditionalCostButton.CostParam>
+                    {
+                        new(CostType.ArenaTicket, TicketCountToUse),
+                        new(CostType.ActionPoint, Action.Arena.Battle.CostAp)
+                    };
+            startButton.SetCost(costs);
             startButton.OnSubmitSubject
                 .Where(_ => !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle())
-                .AddTo(gameObject);
-
-            repeatPopupButton.OnClickAsObservable()
-                .Subscribe(_ => ShowArenaTicketPopup())
                 .AddTo(gameObject);
         }
 
@@ -175,11 +167,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowArenaTicketPopup()
-        {
-            Find<ArenaTicketPopup>().Show();
-        }
-
         private void OnClickBattle()
         {
             AudioController.PlayClick();
@@ -226,7 +213,7 @@ namespace Nekoyume.UI
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
                 currencyImage.transform.position,
-                buttonStarImageTransform.position,
+                ticketIconPos.position,
                 Vector2.one,
                 moveToLeft,
                 true,
@@ -237,13 +224,13 @@ namespace Nekoyume.UI
             var actionPointMoveAnimation = ItemMoveAnimation.Show(
                 actionPointImage.sprite,
                 actionPointImage.transform.position,
-                buttonStarImageTransform.position,
+                actionPointIconPos.position,
                 Vector2.one,
                 moveToLeft,
                 true,
                 animationTime,
                 middleXGap);
-            
+
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             SendBattleArenaAction();
@@ -349,8 +336,6 @@ namespace Nekoyume.UI
         {
             startButton.gameObject.SetActive(canBattle);
             blockStartingText.gameObject.SetActive(!canBattle);
-            repeatPopupButton.gameObject.SetActive(canBattle &&
-                _seasonData.ArenaType == ArenaType.OFF_SEASON);
 
             if (!canBattle)
             {
