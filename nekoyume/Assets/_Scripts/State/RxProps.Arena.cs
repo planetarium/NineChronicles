@@ -165,6 +165,9 @@ namespace Nekoyume.State
                     .Subscribe(UpdateArenaTicketProgress)
                     .AddTo(_disposables);
 
+                ArenaInfo.Subscribe((info) => UpdateArenaTicketProgress(Game.Game.instance.Agent.BlockIndex))
+                    .AddTo(_disposables);
+
                 _hasSubscribedArenaTicketProgress = true;
             }
         }

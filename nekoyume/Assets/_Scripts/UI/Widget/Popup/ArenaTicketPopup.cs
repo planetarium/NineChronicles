@@ -34,6 +34,8 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<int> _ticketCountToBuy = new();
         private decimal _ticketPrice = 0;
 
+        public ReactiveProperty<bool> IsBuyingTicket = new ReactiveProperty<bool>(false);
+
         protected override void Awake()
         {
             base.Awake();
@@ -62,6 +64,9 @@ namespace Nekoyume.UI
 
             startButton.OnSubmitSubject.Subscribe(async _ =>
             {
+                Close();
+                IsBuyingTicket.SetValueAndForceNotify(true);
+
                 var ticketCount = _ticketCountToBuy.Value;
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString());
@@ -76,6 +81,11 @@ namespace Nekoyume.UI
                 if (logId == -1)
                 {
                     NcDebug.LogError("[ArenaTicketPopup] Ticket purchase failed. Please try again later.");
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENATICKET_PURCHASE_FAILED",
+                        "UI_OK");
+                    IsBuyingTicket.SetValueAndForceNotify(false);
                     return;
                 }
 
@@ -120,8 +130,8 @@ namespace Nekoyume.UI
                     }
                     await UniTask.Delay(1000);
                 }
-
-                Close();
+                await RxProps.ArenaInfo.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash);
+                IsBuyingTicket.SetValueAndForceNotify(false);
             }).AddTo(gameObject);
 
             closeButton.onClick.AddListener(() => Close());
