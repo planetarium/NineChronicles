@@ -41,6 +41,8 @@ namespace Nekoyume.UI
 
         private SynthesizeModel? _synthesizeModel;
 
+        public bool HasModel(SynthesizeModel model) => _synthesizeModel != null && _synthesizeModel == model;
+
 #region MonoBehaviour
 
         protected override void Awake()
@@ -204,6 +206,13 @@ namespace Nekoyume.UI
             Action<IList<InventoryItem>, SynthesizeModel> registerAction,
             bool ignoreShowAnimation = false)
         {
+            var isSameModel = _synthesizeModel == model;
+            if (isSameModel)
+            {
+                base.Show(ignoreShowAnimation);
+                return;
+            }
+
             _synthesizeModel = model;
             _registerMaterials = registerAction;
 
