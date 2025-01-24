@@ -193,26 +193,12 @@ namespace Nekoyume.UI
             var hasEnoughTickets =
                 RxProps.ArenaTicketsProgress.HasValue &&
                 RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
-            if (hasEnoughTickets)
+            if (!hasEnoughTickets)
             {
-                StartCoroutine(CoBattleStart(CostType.ArenaTicket));
+                NcDebug.LogError("Not enough tickets to start the battle.");
                 return;
             }
-
-            var balance = States.Instance.GoldBalanceState.Gold;
-            var currentArenaInfo = RxProps.ArenaInfo.Value;
-
-            Find<ArenaTicketPurchasePopup>().Show(
-                CostType.ArenaTicket,
-                CostType.NCG,
-                balance,
-                new FungibleAssetValue(),
-                () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                currentArenaInfo.BattleTicketStatus.RemainingTicketsPerRound,
-                _seasonData.BattleTicketPolicy.DefaultTicketsPerRound,
-                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
-                _seasonData.BattleTicketPolicy.MaxPurchasableTicketsPerRound
-            );
+            StartCoroutine(CoBattleStart(CostType.ArenaTicket));
         }
 
         private IEnumerator CoBattleStart(CostType costType)
@@ -223,16 +209,20 @@ namespace Nekoyume.UI
             BattleRenderer.Instance.IsOnBattle = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
-            var currencyImage = costType switch
+            Image GetCurrencyImage(CostType type)
             {
-                CostType.NCG => headerMenuStatic.Gold.IconImage,
-                CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
-                CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
-                CostType.Crystal => headerMenuStatic.Crystal.IconImage,
-                CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
-                _ or CostType.None => throw new ArgumentOutOfRangeException(
-                    nameof(costType), costType, null)
-            };
+                return type switch
+                {
+                    CostType.NCG => headerMenuStatic.Gold.IconImage,
+                    CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
+                    CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
+                    CostType.Crystal => headerMenuStatic.Crystal.IconImage,
+                    CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
+                    _ or CostType.None => throw new ArgumentOutOfRangeException(
+                        nameof(type), type, null)
+                };
+            }
+            var currencyImage = GetCurrencyImage(costType);
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
                 currencyImage.transform.position,
@@ -242,6 +232,18 @@ namespace Nekoyume.UI
                 true,
                 animationTime,
                 middleXGap);
+
+            var actionPointImage = GetCurrencyImage(CostType.ActionPoint);
+            var actionPointMoveAnimation = ItemMoveAnimation.Show(
+                actionPointImage.sprite,
+                actionPointImage.transform.position,
+                buttonStarImageTransform.position,
+                Vector2.one,
+                moveToLeft,
+                true,
+                animationTime,
+                middleXGap);
+            
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             SendBattleArenaAction();

@@ -14,7 +14,6 @@ using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.ActionExtensions;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;

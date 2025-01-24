@@ -59,7 +59,6 @@ namespace Nekoyume.State
                 .Subscribe(OnAvatarChanged)
                 .AddTo(_disposables);
 
-            StartArena();
             StartEvent();
         }
 
@@ -88,6 +87,9 @@ namespace Nekoyume.State
                     _states.CurrentAvatarState.address),
                 UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
                 States.Instance.InitItemSlotStates());
+
+            // 아레나서비스에 등록하는시점에 cp계산이 필요해서 ItemSlot States까지 전부 갱신된다음 아레나데이터 초기화
+            await InitializeArena();
         }
 
         public static async UniTask SelectAvatarAsync(
@@ -107,6 +109,9 @@ namespace Nekoyume.State
                     _states.CurrentAvatarState.address),
                 UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
                 States.Instance.InitItemSlotStates());
+
+            // 아레나서비스에 등록하는시점에 cp계산이 필요해서 ItemSlot States까지 전부 갱신된다음 아레나데이터 초기화
+            await InitializeArena();
         }
 
         private static void OnBlockIndex(long blockIndex)
@@ -123,7 +128,6 @@ namespace Nekoyume.State
             }
 
             _currentAvatarAddr = avatarAddr;
-            OnAvatarChangedArena();
             OnAvatarChangedEvent();
         }
     }

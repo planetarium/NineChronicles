@@ -102,6 +102,22 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
+        private void HandleArenaError(string errorl10nKey, string logMessage = null)
+        {
+            if (!string.IsNullOrEmpty(logMessage))
+            {
+                NcDebug.LogError(logMessage);
+            }
+            Find<LoadingScreen>().Close();
+            AudioController.PlayClick();
+            Close();
+            Find<ArenaJoin>().Show();
+            Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    errorl10nKey,
+                    "UI_OK");
+        }
+
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
             var loading = Find<LoadingScreen>();
@@ -137,42 +153,27 @@ namespace Nekoyume.UI
                     onError: (error) =>
                     {
                         NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
-                        Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
-                            L10nManager.Localize("UI_YES"), null);
                     }
                 );
             }
 
             if (response == null)
             {
-                AudioController.PlayClick();
-                Close();
-                Find<ArenaJoin>().Show();
-                Find<IconAndButtonSystem>().Show(
-                        "UI_ERROR",
-                        "UI_ARENABOARD_GET_FAILED",
-                        "UI_OK");
+                HandleArenaError("UI_ARENABOARD_GET_FAILED");
                 return;
             }
 
             // todo: 아레나서비스 리프레시중인경우일수있음 체크필요
             if (response.Count == 0)
             {
-                NcDebug.LogError("No available opponents found for the arena. Please try again later.");
+                HandleArenaError("UI_ARENA_GET_OPPONENTS_FAILED", "No available opponents found for the arena. Please try again later.");
                 return;
             }
 
             var arenaInfoResponse = await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
             if (arenaInfoResponse == null)
             {
-                loading.Close();
-                AudioController.PlayClick();
-                Find<ArenaJoin>().Show();
-                Close();
-                Find<IconAndButtonSystem>().Show(
-                        "UI_ERROR",
-                        "UI_ARENAJOIN_INFO_GET_FAILED",
-                        "UI_OK");
+                HandleArenaError("UI_ARENA_INFO_GET_FAILED");
                 return;
             }
 
@@ -357,7 +358,7 @@ namespace Nekoyume.UI
             {
                 var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency,nextCost.ToString());
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
 
                 var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
                                         new Address(RxProps.OperationAccountAddress),

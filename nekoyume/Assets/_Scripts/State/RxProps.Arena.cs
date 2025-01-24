@@ -47,9 +47,8 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<List<SeasonResponse>> ArenaSeasonResponses => _arenaSeasonResponses;
         #endregion RxPropObservable
 
-        private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
         private static long _arenaInfoTupleUpdatedBlockIndex;
-        private static int _currentSeasonId;
+        private static int _currentSeasonId = -1;
         private static int _lastBattleLogId;
 
         public static int CurrentArenaSeasonId
@@ -110,7 +109,15 @@ namespace Nekoyume.State
                     var currentSeason = _arenaSeasonResponses.Value.Find(item =>
                         item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
                     );
-                    
+
+                    if (currentSeason == null)
+                    {
+                        _currentSeasonId = -1;
+                        _isUpdatingSeasonResponses = false;
+                        NcDebug.LogError("current season is null");
+                        return;
+                    }
+
                     _currentSeasonId = currentSeason.Id;
 
                     OperationAccountAddress = response.OperationAccountAddress;
@@ -132,24 +139,34 @@ namespace Nekoyume.State
                 return null;
             }
             var currentAvatarAddr = currentAvatar.address;
-            // todo : 아레나서비스
-            // 서비스에서 직접넣어주거나 시점변경해야함.
-            var portraitId = 0; //Util.GetPortraitId(BattleType.Arena);
-            var cp = 0; //Util.TotalCP(BattleType.Arena);
+            var portraitId = Util.GetPortraitId(BattleType.Arena);
+            var cp = Util.TotalCP(BattleType.Arena);
             return await ApiClients.Instance.Arenaservicemanager.PostUsersAsync(currentAvatarAddr.ToString(), currentAvatar.NameWithHash, portraitId, cp, currentAvatar.level);
         }
 
-        private static void StartArena()
+        private static bool _hasSubscribedArenaTicketProgress = false;
+        private static async UniTask InitializeArena()
         {
+            await UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
 
-        }
+            // 아바타 최초 아레나등록
+            await PostUserAsync();
 
-        private static void OnAvatarChangedArena()
-        {
-            // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
+            // 로비화면에서 티켓정보를 보여주기 위해 인포 초기화
+            await ArenaInfo.UpdateAsync(_agent.BlockTipStateRootHash);
+
             _arenaInfoTupleUpdatedBlockIndex = 0;
-            _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
-            PostUserAsync().Forget();
+
+            // 중복 구독을 방지
+            if (!_hasSubscribedArenaTicketProgress)
+            {
+                Game.Game.instance.Agent.BlockIndexSubject
+                    .StartWith(Game.Game.instance.Agent.BlockIndex)
+                    .Subscribe(UpdateArenaTicketProgress)
+                    .AddTo(_disposables);
+
+                _hasSubscribedArenaTicketProgress = true;
+            }
         }
 
         public static void UpdateArenaTicketProgress(long blockIndex)
@@ -157,18 +174,22 @@ namespace Nekoyume.State
             var currentSeason = GetSeasonResponseByBlockIndex(blockIndex);
             int maxTicketCount = currentSeason.BattleTicketPolicy.DefaultTicketsPerRound;
             var ticketResetInterval = currentSeason.RoundInterval;
+            var progressedBlockRange =
+                (blockIndex - currentSeason.StartBlockIndex) % ticketResetInterval;
             var currentArenaInfo = _arenaInfo.HasValue
                 ? _arenaInfo.Value
                 : null;
             if (currentArenaInfo is null)
             {
-                _arenaTicketsProgress.Value.Reset(maxTicketCount, maxTicketCount);
+                _arenaTicketsProgress.Value.Reset(
+                    maxTicketCount,
+                    maxTicketCount,
+                    (int)progressedBlockRange,
+                    ticketResetInterval);
                 _arenaTicketsProgress.SetValueAndForceNotify(_arenaTicketsProgress.Value);
                 return;
             }
             var currentTicketCount = currentArenaInfo.BattleTicketStatus.RemainingTicketsPerRound;
-            var progressedBlockRange =
-                (blockIndex - currentSeason.StartBlockIndex) % ticketResetInterval;
             _arenaTicketsProgress.Value.Reset(
                 currentTicketCount,
                 maxTicketCount,
