@@ -75,12 +75,20 @@ namespace Nekoyume.UI
 
             NcDebug.Log($"battleLogResponse: {battleResponse}");
             NcDebug.Log($"log.Score: {log.Score}");
-            if (battleResponse != null)
+            if (battleResponse != null && battleResponse.MyScoreChange.HasValue && battleResponse.MyScore.HasValue)
             {
-                var scoreChange = battleResponse.MyScoreChange.Value;
-                var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
-                var scoreChangeSign = scoreChange > 0 ? "+" : "-";
-                scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                try
+                {
+                    var scoreChange = battleResponse.MyScoreChange.Value;
+                    var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
+                    var scoreChangeSign = scoreChange > 0 ? "+" : "-";
+                    scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"Error occurred: {e.Message}");
+                    scoreText.text = $"{log.Score}";    
+                }
             }
             else
             {

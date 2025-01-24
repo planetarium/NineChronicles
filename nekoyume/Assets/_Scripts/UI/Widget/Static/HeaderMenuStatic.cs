@@ -514,7 +514,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(true, true, true);
                     break;
                 case AssetVisibleState.Arena:
-                    SetActiveAssets(true, true, isArenaTicketsActive: true);
+                    SetActiveAssets(true, false, isArenaTicketsActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.EventDungeon:
                     SetActiveAssets(true, true, isEventDungeonTicketsActive: true);

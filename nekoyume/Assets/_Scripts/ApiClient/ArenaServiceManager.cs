@@ -10,6 +10,7 @@ using GeneratedApiNamespace.ArenaServiceClient;
 using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
 using System.Globalization;
+using Nekoyume;
 
 namespace Nekoyume.ApiClient
 {
@@ -470,5 +471,15 @@ public static class ArenaServiceExtentions
             seasonData?.StartBlockIndex ?? 0,
             seasonData?.EndBlockIndex ?? 0,
             blockIndex);
+    }
+
+    public static RoundResponse GetCurrentRound(this SeasonResponse seasonData, long blockIndex){
+        var round = seasonData.Rounds.FirstOrDefault(r => r.StartBlockIndex <= blockIndex && blockIndex <= r.EndBlockIndex);
+        if (round == null)
+        {
+            NcDebug.LogError($"No round found for block index {blockIndex} in season {seasonData.Id}");
+            return null;
+        }
+        return round;
     }
 }
