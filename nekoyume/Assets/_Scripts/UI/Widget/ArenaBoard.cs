@@ -369,6 +369,10 @@ namespace Nekoyume.UI
                     NcDebug.LogError("[ArenaBoard] Refresh failed. Please try again later.");
                     _loadingObj.SetActive(false);
                     _refreshBtn.SetState(ConditionalButton.State.Normal);
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENABOARD_GET_FAILED",
+                        "UI_OK");
                     return;
                 }
 
@@ -433,8 +437,6 @@ namespace Nekoyume.UI
                 onError: (error) =>
                 {
                     NcDebug.LogError($"[ArenaBoard] Failed to get free available opponents | Error: {error}");
-                    Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENABOARD_GET_FAILED"),
-                        L10nManager.Localize("UI_YES"), null);
                 }
             );
 
@@ -443,6 +445,10 @@ namespace Nekoyume.UI
                 NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
                 _loadingObj.SetActive(false);
                 _refreshBtn.SetState(ConditionalButton.State.Normal);
+                Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    "UI_ARENABOARD_GET_FAILED",
+                    "UI_OK");
                 return;
             }
             _boundedData = response;

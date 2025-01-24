@@ -984,7 +984,7 @@ namespace Nekoyume.Blockchain
                     var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleId, States.Instance.CurrentAvatarState.address.ToHex());
                     return task.ContinueWith(t =>
                     {
-                        if (t.IsFaulted)
+                        if (t.IsFaulted || t.Result == null)
                         {
                             // 오류 처리
                             NcDebug.LogError($"[ActionManager] 아레나 서비스 요청 실패: {t.Exception?.Message}");
@@ -1802,7 +1802,7 @@ namespace Nekoyume.Blockchain
                         var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), amount, States.Instance.CurrentAvatarState.address.ToHex());
                         return task.ContinueWith(t =>
                         {
-                            if (t.IsFaulted)
+                            if (t.IsFaulted || t.Result == -1)
                             {
                                 tcs.SetResult(t.Result);
                                 return false;
@@ -1835,7 +1835,7 @@ namespace Nekoyume.Blockchain
                         var task = ApiClients.Instance.Arenaservicemanager.PostTicketsBattlePurchaseAsync(txid.ToString(), ticketCount, amount, States.Instance.CurrentAvatarState.address.ToHex());
                         return task.ContinueWith(t =>
                         {
-                            if (t.IsFaulted)
+                            if (t.IsFaulted || t.Result == -1)
                             {
                                 tcs.SetResult(t.Result);
                                 return false;
