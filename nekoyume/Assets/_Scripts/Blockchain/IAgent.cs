@@ -86,6 +86,14 @@ namespace Nekoyume.Blockchain
             HashDigest<SHA256> stateRootHash,
             Address address,
             Currency currency);
+        
+        Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
+
+        Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
+
+        Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
+
+        Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
 
         Task<AgentState> GetAgentStateAsync(Address address);
 
@@ -106,10 +114,6 @@ namespace Nekoyume.Blockchain
 
         Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             HashDigest<SHA256> stateRootHash,
-            IEnumerable<Address> addressList);
-
-        Task<Dictionary<Address, IValue>> GetStateBulkAsync(
-            Address accountAddress,
             IEnumerable<Address> addressList);
 
         Task<Dictionary<Address, IValue>> GetStateBulkAsync(

@@ -56,6 +56,7 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton receiveButton;
         [SerializeField] private GameObject receiveButtonIndicator;
 
+        private bool _isPatrolRewardInitialized;
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new ();
 
@@ -75,6 +76,21 @@ namespace Nekoyume.UI
                 }
 
                 return notReadAtToday;
+            }
+        }
+
+        public bool HasEvent
+        {
+            get
+            {
+                var liveAssetManager = LiveAssetManager.instance;
+                if (!liveAssetManager.IsInitialized || !_isInitialized)
+                {
+                    return false;
+                }
+
+                var eventRewardPopupData = liveAssetManager.EventRewardPopupData;
+                return eventRewardPopupData.HasEvent;
             }
         }
 
@@ -121,11 +137,13 @@ namespace Nekoyume.UI
                 };
                 tabToggle.toggle.onValueChanged.AddListener(value =>
                 {
-                    if (value)
+                    if (!value)
                     {
-                        SetData(eventReward);
-                        setContent?.Invoke();
+                        return;
                     }
+
+                    SetData(eventReward);
+                    setContent?.Invoke();
                 });
                 tabToggle.SetText(L10nManager.Localize(eventReward.ToggleL10NKey));
                 tabToggle.toggle.gameObject.SetActive(true);
@@ -136,46 +154,82 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            var eventRewardData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewards = eventRewardData.EventRewards;
+            if (!eventRewardData.HasEvent)
+            {
+                NcDebug.LogError("No event rewards.");
+                return;
+            }
+
+            if (!_isPatrolRewardInitialized)
+            {
+                patrolRewardModule.Initialize();
+                _isPatrolRewardInitialized = true;
+            }
+
             int index;
             if (TryGetClaimableGift(out _))
             {
                 var claimGifts = eventRewards.FirstOrDefault(reward =>
                     reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ClaimGift);
                 index = Array.IndexOf(eventRewards, claimGifts);
-            }
-            else
-            {
-                var other = eventRewards.FirstOrDefault(reward =>
-                    reward.ContentPresetType != EventRewardPopupData.ContentPresetType.ClaimGift);
-                index = Array.IndexOf(eventRewards, other);
+                if (index >= 0)
+                {
+                    ShowAsTab(index);
+                    return;
+                }
             }
 
-            ShowAsTab(index);
+            var other = eventRewards.FirstOrDefault(reward =>
+                reward.ContentPresetType != EventRewardPopupData.ContentPresetType.ClaimGift);
+            index = Array.IndexOf(eventRewards, other);
+
+            ShowAsTab(Mathf.Max(index, 0));
         }
 
         public void ShowAsThorChain()
         {
-            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            var eventRewardData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewards = eventRewardData.EventRewards;
+            if (!eventRewardData.HasEvent)
+            {
+                NcDebug.LogError("No event rewards.");
+                return;
+            }
+
             var thor = eventRewards.FirstOrDefault(reward =>
                 reward.ContentPresetType == EventRewardPopupData.ContentPresetType.ThorChain);
             var index = Array.IndexOf(eventRewards, thor);
 
-            ShowAsTab(index);
+            ShowAsTab(Mathf.Max(index, 0));
         }
 
         public void ShowAsPatrolReward()
         {
-            var eventRewards = LiveAssetManager.instance.EventRewardPopupData.EventRewards;
+            var eventRewardData = LiveAssetManager.instance.EventRewardPopupData;
+            var eventRewards = eventRewardData.EventRewards;
+            if (!eventRewardData.HasEvent)
+            {
+                NcDebug.LogError("No event rewards.");
+                return;
+            }
+
             var patrolReward = eventRewards.FirstOrDefault(reward =>
                 reward.ContentPresetType == EventRewardPopupData.ContentPresetType.PatrolReward);
             var index = Array.IndexOf(eventRewards, patrolReward);
 
-            ShowAsTab(index);
+            ShowAsTab(Mathf.Max(index, 0));
         }
 
         private void ShowAsTab(int index, bool ignoreShowAnimation = false)
         {
+            if (index < 0 || index >= tabToggles.Length)
+            {
+                NcDebug.LogError($"Invalid index: {index}");
+                return;
+            }
+
             base.Show(ignoreShowAnimation);
 
             if (!_isInitialized)
@@ -240,20 +294,15 @@ namespace Nekoyume.UI
             }).AddTo(_disposables);
         }
 
-        private async void SetPatrolReward()
+        private void SetPatrolReward()
         {
-            await patrolRewardModule.SetData();
+            patrolRewardModule.SetData();
             patrolRewardModule.gameObject.SetActive(true);
             receiveButton.gameObject.SetActive(true);
 
             PatrolReward.PatrolTime
                 .Where(_ => !PatrolReward.Claiming.Value)
-                .Select(patrolTime =>
-                {
-                    var patrolTimeWithOutSeconds = new TimeSpan(patrolTime.Ticks /
-                        TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
-                    return PatrolReward.Interval - patrolTimeWithOutSeconds;
-                })
+                .Select(patrolTime => PatrolReward.Interval - patrolTime)
                 .Subscribe(SetReceiveButton)
                 .AddTo(_disposables);
 
@@ -358,14 +407,14 @@ namespace Nekoyume.UI
         }
 
         // subscribe from PatrolReward.PatrolTime
-        private void SetReceiveButton(TimeSpan remainTime)
+        public void SetReceiveButton(long remainTime)
         {
-            var canReceive = remainTime <= TimeSpan.Zero;
+            var canReceive = remainTime <= 0L;
             receiveButton.Interactable = canReceive;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME",
-                    PatrolRewardModule.TimeSpanToString(remainTime));
+                    remainTime.BlockRangeToTimeSpanString());
             receiveButtonIndicator.SetActive(false);
         }
 

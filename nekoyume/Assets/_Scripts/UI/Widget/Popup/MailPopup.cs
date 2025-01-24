@@ -962,6 +962,62 @@ namespace Nekoyume.UI
             Find<CustomCraftResultScreen>().Show(itemUsable);
         }
 
+        public void Read(PatrolRewardMail patrolRewardMail)
+        {
+            var game = Game.Game.instance;
+            patrolRewardMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                patrolRewardMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+            NcDebug.Log($"[MailRead] MailPopupRead PatrolRewardMail mailid : {patrolRewardMail.id}");
+
+            var rewards = new List<MailReward>();
+            if (patrolRewardMail.FungibleAssetValues is not null)
+            {
+                rewards.AddRange(
+                    patrolRewardMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav, (int)fav.MajorUnit)));
+            }
+
+            if (patrolRewardMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                foreach (var (fungibleId, count) in
+                    patrolRewardMail.Items)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    {
+                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                        rewards.Add(new MailReward(item, 1));
+                        continue;
+                    }
+
+                    NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
+                }
+            }
+
+            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+        }
+
         [Obsolete]
         public void Read(SellCancelMail mail)
         {

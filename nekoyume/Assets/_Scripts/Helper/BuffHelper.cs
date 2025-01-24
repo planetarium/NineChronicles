@@ -25,10 +25,10 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static GameObject GetCastingVFXPrefab(Buff buff)
+        public static GameObject GetCastingVFXPrefab(Buff buff, TableSheets tableSheets)
         {
             var id = buff.BuffInfo.Id;
-            var actionBuffCastingPrefab = GetActionBuffCastingPrefab(id);
+            var actionBuffCastingPrefab = GetActionBuffCastingPrefab(id, tableSheets);
             if (actionBuffCastingPrefab != null)
             {
                 return actionBuffCastingPrefab;
@@ -55,9 +55,9 @@ namespace Nekoyume.Helper
                 isPositive ? data.PlusCastingVFX : data.MinusCastingVFX;
         }
 
-        public static GameObject GetCastingVFXPrefab(int buffId)
+        public static GameObject GetCastingVFXPrefab(int buffId, TableSheets tableSheets)
         {
-            var actionBuffCastingPrefab = GetActionBuffCastingPrefab(buffId);
+            var actionBuffCastingPrefab = GetActionBuffCastingPrefab(buffId, tableSheets);
             if (actionBuffCastingPrefab != null)
             {
                 return actionBuffCastingPrefab;
@@ -70,9 +70,9 @@ namespace Nekoyume.Helper
         }
 
         [CanBeNull]
-        private static GameObject GetActionBuffCastingPrefab(int id)
+        private static GameObject GetActionBuffCastingPrefab(int id, TableSheets tableSheets)
         {
-            var actionSheet = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet(tableSheets);
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (!hasActionBuff)
             {
@@ -86,10 +86,10 @@ namespace Nekoyume.Helper
             return actionOverrideData?.CastingVFX;
         }
 
-        public static GameObject GetBuffVFXPrefab(Buff buff)
+        public static GameObject GetBuffVFXPrefab(Buff buff, TableSheets tableSheets)
         {
             var id = buff.BuffInfo.Id;
-            var actionBuffPrefab = GetActionBuffPrefab(id);
+            var actionBuffPrefab = GetActionBuffPrefab(id, tableSheets);
             if (actionBuffPrefab != null)
             {
                 return actionBuffPrefab;
@@ -115,9 +115,9 @@ namespace Nekoyume.Helper
                 isPositive ? data.PlusVFX : data.MinusVFX;
         }
 
-        public static GameObject GetBuffVFXPrefab(int buffId)
+        public static GameObject GetBuffVFXPrefab(int buffId, TableSheets tableSheets)
         {
-            var actionBuffPrefab = GetActionBuffPrefab(buffId);
+            var actionBuffPrefab = GetActionBuffPrefab(buffId, tableSheets);
             if (actionBuffPrefab != null)
             {
                 return actionBuffPrefab;
@@ -129,9 +129,9 @@ namespace Nekoyume.Helper
         }
 
         [CanBeNull]
-        private static GameObject GetActionBuffPrefab(int id)
+        private static GameObject GetActionBuffPrefab(int id, TableSheets tableSheets)
         {
-            var actionSheet = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet(tableSheets);
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (!hasActionBuff)
             {
@@ -145,10 +145,10 @@ namespace Nekoyume.Helper
             return actionOverrideData?.BuffVFX;
         }
 
-        public static Sprite GetBuffIcon(Buff buff)
+        public static Sprite GetBuffIcon(Buff buff, TableSheets tableSheets)
         {
             var id = buff.BuffInfo.Id;
-            var actionBuffIcon = GetActionBuffIcon(id);
+            var actionBuffIcon = GetActionBuffIcon(id, tableSheets);
             if (actionBuffIcon != null)
             {
                 return actionBuffIcon;
@@ -174,9 +174,9 @@ namespace Nekoyume.Helper
                 isPositive ? data.PlusIcon : data.MinusIcon;
         }
 
-        public static Sprite GetBuffOverrideIcon(int id)
+        public static Sprite GetBuffOverrideIcon(int id, TableSheets tableSheets)
         {
-            var actionBuffIcon = GetActionBuffIcon(id);
+            var actionBuffIcon = GetActionBuffIcon(id, tableSheets);
             if (actionBuffIcon != null)
             {
                 return actionBuffIcon;
@@ -187,9 +187,9 @@ namespace Nekoyume.Helper
         }
 
         [CanBeNull]
-        private static Sprite GetActionBuffIcon(int id)
+        private static Sprite GetActionBuffIcon(int id, TableSheets tableSheets)
         {
-            var actionSheet = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet(tableSheets);
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (!hasActionBuff)
             {
@@ -214,9 +214,10 @@ namespace Nekoyume.Helper
             return VFXData.FallbackPosition;
         }
 
-        public static Vector3 GetBuffPosition(int id, bool isCasting = false)
+        public static Vector3 GetBuffPosition(int id, TableSheets tableSheets,
+            bool isCasting = false)
         {
-            var actionSheet = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet(tableSheets);
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (hasActionBuff)
             {
@@ -235,9 +236,9 @@ namespace Nekoyume.Helper
             return overrideData?.Position ?? VFXData.FallbackPosition;
         }
 
-        private static ActionBuffSheet GetActionBuffSheet()
+        private static ActionBuffSheet GetActionBuffSheet(TableSheets tableSheets)
         {
-            return TableSheets.Instance.ActionBuffSheet;
+            return tableSheets.ActionBuffSheet;
         }
     }
 }

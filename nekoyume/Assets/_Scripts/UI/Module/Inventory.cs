@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -807,8 +808,8 @@ namespace Nekoyume.UI.Module
         public void SetShop(Action<InventoryItem> clickItem)
         {
             _checkTradable = true;
-            SetAction(clickItem);
-            SetInventoryTab();
+            SetAction(clickItem, onClickTab: OnClickTapShop);
+            SetInventoryTab(onUpdateInventory: OnUpdateInventoryShop);
             _toggleGroup.DisabledFunc = () => false;
         }
 
@@ -817,8 +818,12 @@ namespace Nekoyume.UI.Module
             List<(ItemType type, Predicate<InventoryItem>)> predicateList,
             bool reverseOrder)
         {
-            SetAction(clickItem);
-            SetInventoryTab(predicateList, onUpdateInventory, reverseOrder: reverseOrder);
+            SetAction(clickItem, onClickTab: OnClickTapGrind);
+            SetInventoryTab(predicateList, onUpdateInventory: (inventory1, inventory2) =>
+            {
+                onUpdateInventory?.Invoke(inventory1, inventory2);
+                OnUpdateInventoryGrind(inventory1, inventory2);
+            }, reverseOrder: reverseOrder);
             _toggleGroup.DisabledFunc = () => true;
             StartCoroutine(CoUpdateEquipped());
         }
@@ -1083,5 +1088,106 @@ namespace Nekoyume.UI.Module
         }
 
 #endregion
+
+#region ShopEvents
+
+        private void OnClickTapShop(InventoryTabType tabType)
+        {
+            SortInventoryInShop(tabType);
+        }
+
+        private void OnUpdateInventoryShop(Inventory inventory, Nekoyume.Model.Item.Inventory nekoyumeInventory)
+        {
+            SortInventoryInShop(_activeTabType);
+        }
+
+        private void SortInventoryInShop(InventoryTabType tabType)
+        {
+            var data = GetModels(tabType);
+            if (tabType == InventoryTabType.Equipment)
+            {
+                data = data
+                    .OrderByDescending(x => x.ItemBase is ITradableItem)
+                    .ThenByDescending(x => x.ItemBase.Grade)
+                    .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                    .ToList();
+            }
+
+            if (tabType == InventoryTabType.Consumable)
+            {
+                data = data
+                    .OrderByDescending(x => x.ItemBase is ITradableItem)
+                    .ThenByDescending(x => x.ItemBase.Grade)
+                    .ToList();
+            }
+
+            if (tabType == InventoryTabType.Material)
+            {
+                data = data
+                    .OrderByDescending(x => x.ItemBase is ITradableItem)
+                    .ThenByDescending(x => x.ItemBase.Grade)
+                    .ToList();
+            }
+
+            if (tabType == InventoryTabType.Costume)
+            {
+                var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                data = data
+                    .OrderByDescending(x => x.ItemBase is ITradableItem)
+                    .ThenByDescending(x => x.ItemBase.Grade)
+                    .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Costume, costumeSheet))
+                    .ToList();
+            }
+
+            if (tabType == InventoryTabType.FungibleAsset)
+            {
+                var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+                data = data
+                    .OrderByDescending(x => x.Tradable.Value)
+                    .ThenByDescending(x => x.ItemBase is ITradableItem)
+                    .ThenByDescending(x =>
+                    {
+                        if (!RuneFrontHelper.TryGetRuneData(x.FungibleAssetValue.Currency.Ticker, out var value))
+                        {
+                            return 0;
+                        }
+
+                        return runeListSheet.TryGetValue(value.id, out var row) ? row.Grade : 0;
+                    })
+                    .ToList();
+            }
+
+            scroll.UpdateData(data);
+        }
+
+#endregion ShopEvents
+
+#region GrindEvents
+
+        private void OnClickTapGrind(InventoryTabType tabType)
+        {
+            SortInventoryInGrind(tabType);
+        }
+
+        private void OnUpdateInventoryGrind(Inventory inventory, Nekoyume.Model.Item.Inventory nekoyumeInventory)
+        {
+            SortInventoryInGrind(_activeTabType);
+        }
+
+        private void SortInventoryInGrind(InventoryTabType tabType)
+        {
+            var data = GetModels(tabType);
+            if (tabType == InventoryTabType.Equipment)
+            {
+                data = data
+                       .OrderByDescending(x => x.ItemBase is ITradableItem)
+                       .ThenByDescending(x => x.ItemBase.Grade)
+                       .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                       .ToList();
+            }
+            scroll.UpdateData(data);
+        }
+
+#endregion GrindEvents
     }
 }

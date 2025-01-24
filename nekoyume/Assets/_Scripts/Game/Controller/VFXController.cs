@@ -1,4 +1,5 @@
 using System.Collections;
+using JetBrains.Annotations;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
 using UnityEngine;
@@ -40,6 +41,7 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
+        [CanBeNull]
         public T CreateAndChaseCam<T>(Vector3 position) where T : VFX.VFX
         {
             var target = ActionCamera.instance.transform;
@@ -51,30 +53,38 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
+        [CanBeNull]
         public T CreateAndChaseCam<T>(Vector3 position, Vector3 offset) where T : VFX.VFX
         {
             return CreateAndChaseCam<T>(position + offset);
         }
 
         // FIXME: RectTransform이 아니라 Transform을 받아도 되겠습니다.
+        [CanBeNull]
         public T CreateAndChaseRectTransform<T>(RectTransform target) where T : VFX.VFX
         {
             return CreateAndChaseRectTransform<T>(target, target.position);
         }
 
         // FIXME: RectTransform이 아니라 Transform을 받아도 되겠습니다.
+        [CanBeNull]
         public T CreateAndChaseRectTransform<T>(RectTransform target, Vector3 position) where T : VFX.VFX
         {
             var targetPosition = target.position;
             var offset = position - targetPosition;
             offset.z += 10f;
-            var vfx = _pool.Get<T>(targetPosition + offset);
+            var vfx = _pool?.Get<T>(targetPosition + offset);
             StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
         }
 
         private static IEnumerator CoChaseTarget(Component vfx, Transform target, Vector3 offset)
         {
+            if (!vfx)
+            {
+                yield break;
+            }
+
             var g = vfx.gameObject;
             var t = vfx.transform;
             while (g.activeSelf &&

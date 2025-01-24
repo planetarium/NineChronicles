@@ -306,7 +306,7 @@ namespace Nekoyume.UI
 
                             Lobby.Enter(true);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
-                            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.EventRewards.Any();
+                            var isInEventDate = LiveAssetManager.instance.EventRewardPopupData.HasEvent;
                             if (isInEventDate)
                             {
                                 Find<EventRewardPopup>().Show();

@@ -5,6 +5,8 @@ namespace Nekoyume
 {
     public static class NcDebug
     {
+        public const string ChannelWidget = "Widget";
+
         // used for build with 'DEBUG_USE' symbol.
         [UsedImplicitly]
         public static string InsertTimestamp(string message)

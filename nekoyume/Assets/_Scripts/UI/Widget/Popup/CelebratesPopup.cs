@@ -351,7 +351,7 @@ namespace Nekoyume.UI
 
             var position = ActionCamera.instance.transform.position;
             _praiseVFX = VFXController.instance.CreateAndChaseCam<PraiseVFX>(position);
-            _praiseVFX.Play();
+            _praiseVFX?.Play();
         }
 
         private void StopEffects()

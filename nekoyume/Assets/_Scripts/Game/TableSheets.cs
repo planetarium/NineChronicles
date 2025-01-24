@@ -20,16 +20,7 @@ namespace Nekoyume.Game
 {
     public class TableSheets
     {
-        public static TableSheets Instance
-        {
-            get
-            {
-#if TEST_SCENE
-                return SimulationTest.TestArena.Instance.TableSheets;
-#endif
-                return Game.instance.TableSheets;
-            }
-        }
+        public static TableSheets Instance => Game.instance.TableSheets;
 
         private TableSheets()
         {
@@ -304,6 +295,9 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftRecipeSheet CustomEquipmentCraftRecipeSheet { get; private set; }
         public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
         public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
+
+        [UsedImplicitly]
+        public PatrolRewardSheet PatrolRewardSheet { get; private set; }
 
         [UsedImplicitly]
         public SynthesizeSheet SynthesizeSheet { get; private set; }

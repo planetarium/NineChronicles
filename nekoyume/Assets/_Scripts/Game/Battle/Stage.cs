@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using JetBrains.Annotations;
 using mixpanel;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
@@ -447,6 +448,7 @@ namespace Nekoyume.Game.Battle
             ClearBattle();
         }
 
+        [CanBeNull]
         private AdventureBoss_line_character _adventurebossCharacterEffect;
 
         private IEnumerator CoBreakThroughStart()
@@ -464,13 +466,16 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"CoBreakThroughEnd");
             Widget.Find<UI.Battle>().LineEffect.SetActive(false);
             SetSpeed(AcceleratedAnimationTimeScaleWeight);
-            _adventurebossCharacterEffect.LazyStop();
+            if (_adventurebossCharacterEffect)
+            {
+                _adventurebossCharacterEffect.LazyStop();
+            }
             yield return new WaitForSeconds(0.5f);
         }
 
         private async UniTaskVoid FollowCharacterEffect()
         {
-            while (_adventurebossCharacterEffect.isActiveAndEnabled)
+            while (_adventurebossCharacterEffect != null && _adventurebossCharacterEffect.isActiveAndEnabled)
             {
                 _adventurebossCharacterEffect.transform.position = _stageRunningPlayer.transform.position;
                 _adventurebossCharacterEffect.transform.position += new Vector3(0.9581f, 0.7f, 0);
@@ -892,7 +897,7 @@ namespace Nekoyume.Game.Battle
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
             var playerCharacter = RunPlayer(false);
-            playerCharacter.Set(avatarState.address, character, true);
+            playerCharacter.Set(avatarState.address, character, true, TableSheets.Instance);
             playerCharacter.Run();
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
@@ -1464,8 +1469,6 @@ namespace Nekoyume.Game.Battle
                             ));
                         break;
                     }
-
-                    ;
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)
@@ -1622,7 +1625,7 @@ namespace Nekoyume.Game.Battle
                 }
             }
 
-            character?.Set(caster);
+            character?.Set(caster, TableSheets.Instance);
 
             return character;
         }

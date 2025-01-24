@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -89,6 +90,18 @@ namespace Nekoyume.UI.Module
             SelectAutoSelectItems(requiredModel);
         }
 
+        private void SetFirstItem()
+        {
+            if (_cachedInventoryItems?.Count > 0)
+            {
+                _onClickItem?.Invoke(_cachedInventoryItems[0]);
+            }
+            else
+            {
+                NcDebug.LogError("Inventory is empty.");
+            }
+        }
+
         public bool SelectAutoSelectItems(SynthesizeModel model)
         {
             _cachedInventoryItems ??= GetModels(model);
@@ -96,9 +109,10 @@ namespace Nekoyume.UI.Module
             var itemCount = GetCanAutoSelectCount();
             var selectedCount = SelectedItems.Count;
             var remainder = selectedCount % model.RequiredItemCount;
+            // 이미 선택된 아이템을 제외하고 필요 수량만큼 선택할 여분이 없으면 아이템 추가 선택 안함
             if (itemCount - (selectedCount - remainder) < model.RequiredItemCount)
             {
-                // 이미 선택된 아이템을 제외하고 필요 수량만큼 선택할 여분이 없으면 아이템 추가 선택 안함
+                SetFirstItem();
                 return false;
             }
 
@@ -109,6 +123,7 @@ namespace Nekoyume.UI.Module
             var synthesisCount = selectedCount / selectCount;
             if (synthesisCount >= Synthesis.MaxSynthesisCount)
             {
+                SetFirstItem();
                 Synthesis.NotificationMaxSynthesisCount(model.RequiredItemCount);
                 return false;
             }
@@ -145,6 +160,7 @@ namespace Nekoyume.UI.Module
             var itemCount = GetCanAutoSelectCount();
             if (itemCount < model.RequiredItemCount)
             {
+                SetFirstItem();
                 return false;
             }
 
@@ -209,7 +225,9 @@ namespace Nekoyume.UI.Module
                     UpdateEquipmentEquipped(items);
                     break;
                 case ItemType.Costume:
+                    var costumeSheet = TableSheets.Instance.CostumeStatSheet;
                     items = items
+                        .OrderBy(item => CPHelper.GetCP(item.ItemBase as Costume, costumeSheet))
                         .ToList();
                     UpdateCostumeEquipped(items);
                     break;

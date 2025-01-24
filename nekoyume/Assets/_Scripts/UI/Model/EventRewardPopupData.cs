@@ -37,10 +37,13 @@ namespace Nekoyume.UI.Model
             public ShortcutHelper.PlaceType[] ShortcutTypes { get; set; }
         }
 
+        public bool EnableEventRewardPopup { get; set; }
         public string TitleL10NKey { get; set; }
         public EventReward[] EventRewards { get; set; }
 
         public Content EnabledThorChainContent { get; set; }
         public Content DisabledThorChainContent { get; set; }
+
+        public bool HasEvent => EnableEventRewardPopup && (EventRewards?.Length ?? 0) > 0;
     }
 }

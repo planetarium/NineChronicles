@@ -101,7 +101,16 @@ jobs:
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
-          docker rmi $(docker image ls -aq)
+          # Get the list of all image IDs
+          image_ids=$(docker image ls -aq)
+
+          # Check if there are any images to remove
+          if [ -n "$image_ids" ]; then
+            # Remove the images
+            docker rmi $image_ids
+          else
+            echo "No images to remove."
+          fi
           df -h
           
       - uses: game-ci/unity-builder@v4

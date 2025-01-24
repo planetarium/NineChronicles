@@ -7,6 +7,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -41,7 +42,8 @@ namespace Nekoyume.Game.Character
             ArenaPlayerDigest digest,
             Address avatarAddress,
             CharacterAnimator animator,
-            HudContainer hudContainer)
+            HudContainer hudContainer,
+            TableSheets tableSheets)
         {
             var armor = (Armor)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var weapon = (Weapon)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
@@ -49,7 +51,7 @@ namespace Nekoyume.Game.Character
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 digest.Costumes, armor, weapon, aura,
-                digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex);
+                digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex, tableSheets);
         }
 
         public void Set(
@@ -62,6 +64,7 @@ namespace Nekoyume.Game.Character
             int lensIndex,
             int hairIndex,
             int tailIndex,
+            TableSheets tableSheets,
             bool isFriendCharacter = false,
             System.Action onFinish = null)
         {
@@ -71,7 +74,7 @@ namespace Nekoyume.Game.Character
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 costumes, armor, weapon, aura,
-                earIndex, lensIndex, hairIndex, tailIndex, isFriendCharacter, onFinish);
+                earIndex, lensIndex, hairIndex, tailIndex, tableSheets, isFriendCharacter, onFinish);
         }
 
         public void Set(
@@ -85,11 +88,12 @@ namespace Nekoyume.Game.Character
             int earIndex,
             int lensIndex,
             int hairIndex,
-            int tailIndex)
+            int tailIndex,
+            TableSheets tableSheets)
         {
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 costumes, armor, weapon, aura,
-                earIndex, lensIndex, hairIndex, tailIndex);
+                earIndex, lensIndex, hairIndex, tailIndex, tableSheets);
         }
 
         public void SetForPrologue(
@@ -100,7 +104,8 @@ namespace Nekoyume.Game.Character
             int earIndex,
             int lensIndex,
             int hairIndex,
-            int tailIndex)
+            int tailIndex,
+            CostumeItemSheet costumeItemSheet)
         {
             _animator = animator;
             _hudContainer = hudContainer;
@@ -108,10 +113,10 @@ namespace Nekoyume.Game.Character
             SpineController.UnequipFullCostume(false);
             SpineController.UpdateBody(armorId, 0, false);
             SpineController.UpdateWeapon(weaponId, null);
-            UpdateEar(earIndex, false);
-            UpdateFace(lensIndex, false);
-            UpdateHair(hairIndex, false);
-            UpdateTail(tailIndex, false);
+            UpdateEar(earIndex, false, costumeItemSheet);
+            UpdateFace(lensIndex, false, costumeItemSheet);
+            UpdateHair(hairIndex, false, costumeItemSheet);
+            UpdateTail(tailIndex, false, costumeItemSheet);
             UpdateAcFace(0, false);
             UpdateAcEye(0, false);
             UpdateAcHead(0, false);
@@ -154,12 +159,14 @@ namespace Nekoyume.Game.Character
             int lensIndex,
             int hairIndex,
             int tailIndex,
+            TableSheets tableSheets,
             bool isFriendCharacter = false,
             System.Action onFinish = null)
         {
             _animator = animator;
             _hudContainer = hudContainer;
             Destroy(_cachedCharacterTitle);
+            var costumeItemSheet = tableSheets.CostumeItemSheet;
 
             var isDcc = Dcc.instance.IsVisible(avatarAddress, out var id, out var isVisible);
             if (isDcc && !isFriendCharacter &&
@@ -176,10 +183,10 @@ namespace Nekoyume.Game.Character
                 UpdateArmor(armor, dccParts[DccPartsType.skin], true);
                 UpdateWeapon(weapon);
                 UpdateAura(aura);
-                UpdateEar(dccParts[DccPartsType.ear_tail], true);
-                UpdateFace(dccParts[DccPartsType.face], true);
-                UpdateHair(dccParts[DccPartsType.hair], true);
-                UpdateTail(dccParts[DccPartsType.ear_tail], true);
+                UpdateEar(dccParts[DccPartsType.ear_tail], true, costumeItemSheet);
+                UpdateFace(dccParts[DccPartsType.face], true, costumeItemSheet);
+                UpdateHair(dccParts[DccPartsType.hair], true, costumeItemSheet);
+                UpdateTail(dccParts[DccPartsType.ear_tail], true, costumeItemSheet);
                 UpdateAcFace(dccParts[DccPartsType.ac_face], true);
                 UpdateAcEye(dccParts[DccPartsType.ac_eye], true);
                 UpdateAcHead(dccParts[DccPartsType.ac_head], true);
@@ -193,26 +200,27 @@ namespace Nekoyume.Game.Character
             {
                 var fullCostume =
                     costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+                var useEquipment = true;
                 if (fullCostume is not null)
                 {
-                    UpdateFullCostume(fullCostume);
-                    UpdateAura(aura);
+                    useEquipment = !UpdateFullCostume(fullCostume);
                 }
-                else
+
+                if (useEquipment)
                 {
                     SpineController.UnequipFullCostume(false);
-                    UpdateEar(earIndex, false);
-                    UpdateFace(lensIndex, false);
-                    UpdateHair(hairIndex, false);
-                    UpdateTail(tailIndex, false);
+                    UpdateEar(earIndex, false, costumeItemSheet);
+                    UpdateFace(lensIndex, false, costumeItemSheet);
+                    UpdateHair(hairIndex, false, costumeItemSheet);
+                    UpdateTail(tailIndex, false, costumeItemSheet);
                     UpdateAcFace(0, false);
                     UpdateAcEye(0, false);
                     UpdateAcHead(0, false);
                     UpdateArmor(armor, 0, false);
                     UpdateWeapon(weapon);
-                    UpdateAura(aura);
                 }
 
+                UpdateAura(aura);
                 if (!isFriendCharacter && pet)
                 {
                     pet.SetPosition(SpineController.GetBodySkeletonAnimation(), fullCostume is not null);
@@ -228,11 +236,31 @@ namespace Nekoyume.Game.Character
             onFinish?.Invoke();
         }
 
-        private void UpdateFullCostume(Costume fullCostume)
+        /// <summary>
+        /// Updates the full costume for the character by setting the corresponding costume ID.
+        /// If the costume exists, updates the target and hit points.
+        /// Note: If <c>UpdateHitPoint</c> is called conditionally on <c>costumeExist</c>,
+        /// fallback behavior (when the costume does not exist) may not execute as intended.
+        /// </summary>
+        /// <param name="fullCostume">The costume object containing the ID to be applied.</param>
+        /// <returns>True if the costume exists and was successfully updated; otherwise, false.</returns>
+        private bool UpdateFullCostume(Costume fullCostume)
         {
-            SpineController.UpdateFullCostume(fullCostume.Id, false);
-            UpdateTarget();
-            UpdateHitPoint();
+            // Attempt to update the full costume using the SpineController and check if it exists.
+            var costumeExist = SpineController.UpdateFullCostume(fullCostume.Id, false);
+
+            // If the costume exists, update the character's target and hit points.
+            if (costumeExist)
+            {
+                UpdateTarget(); // Update the target object for the character's animations.
+
+                // Warning: If the costume does not exist, fallback logic (e.g., resetting hit points)
+                // will not execute as intended because UpdateHitPoint is conditionally called here.
+                UpdateHitPoint(); // Update the character's collider and hit point dimensions.
+            }
+
+            // Return whether the costume exists.
+            return costumeExist;
         }
 
         private void UpdateAcFace(int index, bool isDcc)
@@ -278,33 +306,29 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateAura(vfx);
         }
 
-        private void UpdateEar(int index, bool isDcc)
+        private void UpdateEar(int index, bool isDcc, CostumeItemSheet sheet)
         {
-            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateEar(id, isDcc);
         }
 
-        private void UpdateFace(int index, bool isDcc)
+        private void UpdateFace(int index, bool isDcc, CostumeItemSheet sheet)
         {
-            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateFace(id, isDcc);
         }
 
-        private void UpdateHair(int index, bool isDcc)
+        private void UpdateHair(int index, bool isDcc, CostumeItemSheet sheet)
         {
-            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateHair(id, isDcc);
         }
 
-        private void UpdateTail(int index, bool isDcc)
+        private void UpdateTail(int index, bool isDcc, CostumeItemSheet sheet)
         {
-            var sheet = TableSheets.Instance.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
             var id = isDcc ? index : row.Id + index;
             SpineController.UpdateTail(id, isDcc);

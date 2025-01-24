@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -44,13 +45,14 @@ namespace Nekoyume.UI
             ArenaPlayerDigest enemyDigest,
             Address myAvatarAddress,
             Address enemyAvatarAddress,
+            TableSheets tableSheets,
             bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().Close(true);
             Find<Status>().Close(true);
             Find<EventBanner>().Close(true);
-            SetStatus(myDigest, myStatus, myAvatarAddress);
-            SetStatus(enemyDigest, enemyStatus, enemyAvatarAddress);
+            SetStatus(myDigest, myStatus, myAvatarAddress, tableSheets, true);
+            SetStatus(enemyDigest, enemyStatus, enemyAvatarAddress, tableSheets, true);
 
             comboText.comboMax = AttackCountHelper.GetCountMax(myDigest.Level);
             comboText.Close();
@@ -81,17 +83,19 @@ namespace Nekoyume.UI
             bool isEnemy,
             long currentHp,
             long maxHp,
-            Dictionary<int, Nekoyume.Model.Buff.Buff> buffs)
+            Dictionary<int, Nekoyume.Model.Buff.Buff> buffs,
+            TableSheets tableSheets,
+            bool vfx)
         {
             if (isEnemy)
             {
                 enemyStatus.SetHp(currentHp, maxHp);
-                enemyStatus.SetBuff(buffs);
+                enemyStatus.SetBuff(tableSheets, vfx, buffs);
             }
             else
             {
                 myStatus.SetHp(currentHp, maxHp);
-                myStatus.SetBuff(buffs);
+                myStatus.SetBuff(tableSheets, vfx, buffs);
             }
         }
 
@@ -101,10 +105,10 @@ namespace Nekoyume.UI
             comboText.Show(attacked);
         }
 
-        private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status, Address address)
+        private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status, Address address, TableSheets tableSheets, bool vfx)
         {
             var portraitId = Util.GetPortraitId(digest.Equipments, digest.Costumes);
-            status.Set(portraitId, digest.NameWithHash, digest.Level, address);
+            status.Set(portraitId, digest.NameWithHash, digest.Level, address, tableSheets, vfx);
             status.gameObject.SetActive(false);
         }
     }

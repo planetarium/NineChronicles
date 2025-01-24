@@ -15,7 +15,7 @@ namespace Nekoyume.UI
             WaitingForSocialAuthenticating,
             WaitingForPortalAuthenticating,
             WaitingForPlanetAccountInfoSyncing,
-            WaitingForConnectingToPlanet
+            WaitingForConnectingToPlanet,
         }
 
         public override WidgetType WidgetType => WidgetType.System;

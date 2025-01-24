@@ -4,6 +4,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using JetBrains.Annotations;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -45,6 +46,7 @@ namespace Nekoyume.UI
         private Coroutine _npcAppearCoroutine = null;
         private readonly WaitForSeconds _waitForOneSec = new(1f);
 
+        [CanBeNull]
         private CombinationSparkVFX _sparkVFX = null;
         private bool _itemMoveAnimation = true;
 

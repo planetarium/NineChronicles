@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -31,6 +29,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
+using Nekoyume.Action.Guild;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
@@ -55,7 +54,6 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
-    using Data;
     using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
@@ -98,6 +96,16 @@ namespace Nekoyume.Blockchain
             _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ => { NcDebug.Log($"[{nameof(BlockRenderHandler)}] Render actions end"); }).AddTo(_disposables);
             _actionRenderer.ActionRenderSubject.ObserveOnMainThread().Subscribe(eval =>
             {
+                if (eval.Exception is {} exc)
+                {
+                    NcDebug.LogException(exc);
+
+                    if (exc.InnerException is { } inner)
+                    {
+                        NcDebug.LogException(inner);
+                    }
+                }
+
                 if (eval.Action is not GameAction gameAction)
                 {
                     return;
@@ -183,8 +191,11 @@ namespace Nekoyume.Blockchain
             DailyReward();
             RedeemCode();
             ChargeActionPoint();
+
             ClaimStakeReward();
             ClaimGifts();
+            ClaimReward();
+            ClaimUnbonded();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -212,6 +223,7 @@ namespace Nekoyume.Blockchain
 
             // Claim Items
             ClaimItems();
+            ClaimPatrolReward();
 
             // Mint Assets
             MintAssets();
@@ -609,6 +621,26 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsTerminated)
                 .ObserveOnMainThread()
                 .Subscribe(ExceptionClaimGifts)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimReward()
+        {
+            _actionRenderer.EveryRender<ClaimReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimUnbonded()
+        {
+            _actionRenderer.EveryRender<ClaimUnbonded>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimUnbonded)
                 .AddTo(_disposables);
         }
 
@@ -2660,7 +2692,7 @@ namespace Nekoyume.Blockchain
                 .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
 
-            var mailRewards = new List<MailReward> { new(crystalReward, (int)crystalReward.MajorUnit) };
+            var mailRewards = new List<MailReward> { new(crystalReward, (long)crystalReward.MajorUnit), };
             mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
 
             Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
@@ -2823,24 +2855,79 @@ namespace Nekoyume.Blockchain
 
         private void ResponseStake(ActionEvaluation<Stake> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
+                Debug.LogError($"Failed to stake. {eval.Exception}");
                 return;
             }
 
             UniTask.RunOnThreadPool(async () =>
             {
+                var nullablePrevStakeState = States.Instance.StakeStateV2;
+                var prevStakeState = nullablePrevStakeState.GetValueOrDefault();
+                var stakingLevel = States.Instance.StakingLevel;
+                var stakedNcg = States.Instance.StakedBalance;
+
                 await UpdateStakeStateAsync(eval);
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
+                UpdateCrystalBalance(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+
+                await UniTask.SwitchToMainThread();
+
                 NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                     NotificationCell.NotificationType.Information);
 
-                Widget.Find<StakingPopup>().SetView();
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.SetView();
+                stakingPopup.CheckSharePower().Forget();
+                stakingPopup.CheckUnbondBlock().Forget();
+
+                var blockIndex = eval.BlockIndex;
+                if (nullablePrevStakeState.HasValue && nullablePrevStakeState.Value.ClaimableBlockIndex <= blockIndex)
+                {
+                    var stakeState = prevStakeState;
+
+                    // Calculate rewards~
+                    var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
+                    var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
+                    var itemSheet = TableSheets.Instance.ItemSheet;
+                    // The first reward is given at the claimable block index.
+                    var rewardSteps = stakeState.ClaimableBlockIndex == eval.BlockIndex
+                        ? 1
+                        : 1 + (int)Math.DivRem(
+                            eval.BlockIndex - stakeState.ClaimableBlockIndex,
+                            stakeState.Contract.RewardInterval,
+                            out var _);
+                    var rand = new LocalRandom(eval.RandomSeed);
+                    var rewardItems = StakeRewardCalculator.CalculateFixedRewards(stakingLevel, rand,
+                        stakeRegularFixedRewardSheet, itemSheet, rewardSteps);
+                    var (itemRewards, favs) = StakeRewardCalculator.CalculateRewards(GoldCurrency, stakedNcg, stakingLevel, rewardSteps,
+                        stakeRegularRewardSheet, itemSheet, rand);
+                    // ~Calculate rewards
+
+                    var mailRewards = new List<MailReward>();
+                    foreach (var rewardPair in itemRewards)
+                    {
+                        if (rewardItems.Keys.FirstOrDefault(key => key.Id == rewardPair.Key.Id) is { } itemBase)
+                        {
+                            rewardItems[itemBase] += rewardPair.Value;
+                        }
+                        else
+                        {
+                            rewardItems.Add(rewardPair.Key, rewardPair.Value);
+                        }
+                    }
+
+                    mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
+                    mailRewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
+
+                    Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
+                    Widget.Find<StakingPopup>().SetView();
+                }
             });
         }
 
@@ -2865,7 +2952,7 @@ namespace Nekoyume.Blockchain
                 var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
                 var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
                 var stakingLevel = States.Instance.StakingLevel;
-                var stakedNcg = States.Instance.StakedBalanceState.Gold;
+                var stakedNcg = States.Instance.StakedBalance;
                 var itemSheet = TableSheets.Instance.ItemSheet;
                 // The first reward is given at the claimable block index.
                 var rewardSteps = prevStakeState.ClaimableBlockIndex == eval.BlockIndex
@@ -2895,7 +2982,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
-                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (int)fav.MajorUnit)));
+                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
 
                 Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                 Widget.Find<StakingPopup>().SetView();
@@ -2943,6 +3030,57 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Alert);
         }
 
+        private void ResponseClaimReward(ActionEvaluation<ClaimReward> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim reward. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+
+                await UniTask.SwitchToMainThread();
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CLAIM_NCG_REWARD_SUCCESS"),
+                    NotificationCell.NotificationType.Information);
+
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.SetNcgArchiveButtonLoading(false);
+                await stakingPopup.CheckClaimNcgReward(true);
+            });
+        }
+
+        private void ResponseClaimUnbonded(ActionEvaluation<ClaimUnbonded> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim unbonded. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+
+                await UniTask.SwitchToMainThread();
+
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CLAIM_UNBONDED_REWARD_SUCCESS"),
+                    NotificationCell.NotificationType.Information);
+
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.OnRenderClaimUnbonded();
+            });
+        }
 
         internal class LocalRandom : System.Random, IRandom
         {
@@ -4612,6 +4750,88 @@ namespace Nekoyume.Blockchain
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
             Widget.Find<CustomCraftResultPopup>().Show((Equipment)result.itemUsable);
             LoadingHelper.CustomEquipmentCraft.Value = false;
+        }
+
+
+        private void ClaimPatrolReward()
+        {
+            _actionRenderer.EveryRender<ClaimPatrolReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval =>
+                    eval.Action.AvatarAddress.Equals(States.Instance?.CurrentAvatarState?.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareClaimPatrolReward)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimPatrolReward)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<ClaimPatrolReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionClaimPatrolReward)
+                .AddTo(_disposables);
+        }
+
+        private (ActionEvaluation<ClaimPatrolReward>, PatrolRewardMail, AvatarState) PrepareClaimPatrolReward(ActionEvaluation<ClaimPatrolReward> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+            var mailBox = avatarState.mailBox;
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
+             var mail = mailBox.OfType<PatrolRewardMail>()
+                 .First(r => r.blockIndex == eval.BlockIndex);
+            foreach (var fav in mail.FungibleAssetValues)
+            {
+                var currency = fav.Currency;
+                var recipientAddress = Currencies.PickAddress(currency, agentAddr,
+                    avatarAddr);
+                var isCrystal = currency.Equals(Currencies.Crystal);
+                var balance = StateGetter.GetBalance(
+                    states,
+                    recipientAddress,
+                    currency);
+                if (isCrystal)
+                {
+                    gameStates.SetCrystalBalance(balance);
+                }
+                else
+                {
+                    gameStates.SetCurrentAvatarBalance(balance);
+                }
+            }
+            ReactiveAvatarState.UpdatePatrolRewardClaimedBlockIndex(eval.BlockIndex);
+
+            return (eval, mail, avatarState);
+        }
+
+        private void ResponseClaimPatrolReward((ActionEvaluation<ClaimPatrolReward> eval, PatrolRewardMail mail, AvatarState avatarState) prepared)
+        {
+            var eval = prepared.eval;
+            if (eval.Exception is not null)
+            {
+                NcDebug.Log(eval.Exception.Message);
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+            LocalLayerModifier.AddNewMail(prepared.avatarState, prepared.mail.id);
+            OneLineSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                NotificationCell.NotificationType.Notification);
+            PatrolReward.Claiming.Value = false;
+        }
+
+        private void ExceptionClaimPatrolReward(ActionEvaluation<ClaimPatrolReward> eval)
+        {
+            PatrolReward.Claiming.Value = false;
         }
 
         /// <summary>

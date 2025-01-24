@@ -98,7 +98,7 @@ namespace Nekoyume.Blockchain
             else
             {
                 nullableStakeState = stakeState;
-                balance = StateGetter.GetBalance(evaluation.OutputState, stakeAddr, GoldCurrency);
+                balance = await Game.Game.instance.Agent.GetStakedByStateRootHashAsync(evaluation.OutputState, agentAddr);
                 sheetAddrArr = new[]
                 {
                     Addresses.GetSheetAddress(
@@ -116,7 +116,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 var sheetStates = await agent.GetStateBulkAsync(
-                    ReservedAddresses.LegacyAccount, sheetAddrArr);
+                    agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, sheetAddrArr);
                 var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                 stakeRegularFixedRewardSheet.Set(
                     sheetStates[sheetAddrArr[0]].ToDotnetString());
@@ -326,8 +326,7 @@ namespace Nekoyume.Blockchain
 
         protected async UniTask UpdateStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var (
-                    stakeAddr,
+            var (stakeAddr,
                     stakeState,
                     deposit,
                     stakingLevel,
@@ -336,7 +335,7 @@ namespace Nekoyume.Blockchain
                 await GetStakeStateAsync(evaluation);
             States.Instance.SetStakeState(
                 stakeState,
-                new GoldBalanceState(stakeAddr, deposit),
+                deposit,
                 stakingLevel,
                 stakeRegularFixedRewardSheet,
                 stakeRegularRewardSheet);

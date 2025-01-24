@@ -1,27 +1,27 @@
 using System;
 using Cysharp.Threading.Tasks;
-using Nekoyume.UI;
 using Object = UnityEngine.Object;
 
 namespace Nekoyume.Game.Scene
-{    
+{
     using UnityEngine.SceneManagement;
-    
+
     public enum SceneType
     {
         Login,
         Loading,
         Game,
     }
-    
+
     public class NcSceneManager
-    {        
+    {
         private const float ChangeSceneDelay = 500f;
-        
+
         private static class Singleton
         {
             internal static readonly NcSceneManager Value = new();
         }
+
         public static NcSceneManager Instance => Singleton.Value;
 
         public SceneType ESceneType { get; private set; } = SceneType.Login;

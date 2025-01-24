@@ -355,18 +355,6 @@ namespace Nekoyume.Blockchain
             return dict;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
-        {
-            var dict = new Dictionary<Address, IValue>();
-            foreach (var address in addressList)
-            {
-                var result = await await Task.FromResult(GetStateAsync(accountAddress, address));
-                dict[address] = result;
-            }
-
-            return dict;
-        }
-
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             HashDigest<SHA256> stateRootHash,
             Address accountAddress,
@@ -440,6 +428,30 @@ namespace Nekoyume.Blockchain
             Currency currency)
         {
             return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
+        }
+
+        public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new Integer();
+        }
+
+        public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new List();
+        }
+
+        public async Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new List();
+        }
+
+        public async Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new FungibleAssetValue();
         }
 
         // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
@@ -672,7 +684,7 @@ namespace Nekoyume.Blockchain
 
         private void StartNullableCoroutine(IEnumerator routine)
         {
-            if (!(routine is null))
+            if (routine is not null)
             {
                 StartCoroutine(routine);
             }

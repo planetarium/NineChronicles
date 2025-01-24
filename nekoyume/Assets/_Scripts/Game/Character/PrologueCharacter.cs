@@ -225,7 +225,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationBuffCast(buff));
             Animator.CastAttack();
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
-            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_target.gameObject, buff, TableSheets.Instance);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
@@ -237,7 +237,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = BattleRenderer.Instance.BuffController.Get(pos, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, buff, TableSheets.Instance);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
