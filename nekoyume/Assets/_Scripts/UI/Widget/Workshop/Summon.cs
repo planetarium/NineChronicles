@@ -279,6 +279,7 @@ namespace Nekoyume.UI
                     summonRow,
                     summonCount,
                     random)
+                .OrderBy(row => row.Grade)
                 .ToList();
         }
 

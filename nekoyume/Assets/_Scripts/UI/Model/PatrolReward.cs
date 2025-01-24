@@ -73,25 +73,32 @@ namespace Nekoyume.ApiClient
         public static void LoadPolicyInfo(int level, long blockIndex)
         {
             var patrolRewardSheet = Game.Game.instance.TableSheets.PatrolRewardSheet;
-            var row = patrolRewardSheet.FindByLevel(level, blockIndex);
-            var rewards = new List<PatrolRewardModel>();
-            foreach (var rewardModel in row.Rewards)
+            try
             {
-                rewards.Add(new PatrolRewardModel
+                var row = patrolRewardSheet.FindByLevel(level, blockIndex);
+                var rewards = new List<PatrolRewardModel>();
+                foreach (var rewardModel in row.Rewards)
                 {
-                    Currency = rewardModel.Ticker,
-                    ItemId = rewardModel.ItemId,
-                    PerInterval = rewardModel.Count,
-                });
+                    rewards.Add(new PatrolRewardModel
+                    {
+                        Currency = rewardModel.Ticker,
+                        ItemId = rewardModel.ItemId,
+                        PerInterval = rewardModel.Count,
+                    });
+                }
+                var policy = new PolicyModel
+                {
+                    MinimumLevel = row.MinimumLevel,
+                    MaxLevel = row.MaxLevel,
+                    RequiredBlockInterval = row.Interval,
+                    Rewards = rewards,
+                };
+                SetPolicyModel(policy);
             }
-            var policy = new PolicyModel
+            catch (InvalidOperationException)
             {
-                MinimumLevel = row.MinimumLevel,
-                MaxLevel = row.MaxLevel,
-                RequiredBlockInterval = row.Interval,
-                Rewards = rewards,
-            };
-            SetPolicyModel(policy);
+                Debug.LogError("No activated policy matches the criteria.");
+            }
         }
 
         public static void ClaimReward(System.Action onSuccess)

@@ -818,8 +818,12 @@ namespace Nekoyume.UI.Module
             List<(ItemType type, Predicate<InventoryItem>)> predicateList,
             bool reverseOrder)
         {
-            SetAction(clickItem);
-            SetInventoryTab(predicateList, onUpdateInventory, reverseOrder: reverseOrder);
+            SetAction(clickItem, onClickTab: OnClickTapGrind);
+            SetInventoryTab(predicateList, onUpdateInventory: (inventory1, inventory2) =>
+            {
+                onUpdateInventory?.Invoke(inventory1, inventory2);
+                OnUpdateInventoryGrind(inventory1, inventory2);
+            }, reverseOrder: reverseOrder);
             _toggleGroup.DisabledFunc = () => true;
             StartCoroutine(CoUpdateEquipped());
         }
@@ -1157,5 +1161,33 @@ namespace Nekoyume.UI.Module
         }
 
 #endregion ShopEvents
+
+#region GrindEvents
+
+        private void OnClickTapGrind(InventoryTabType tabType)
+        {
+            SortInventoryInGrind(tabType);
+        }
+
+        private void OnUpdateInventoryGrind(Inventory inventory, Nekoyume.Model.Item.Inventory nekoyumeInventory)
+        {
+            SortInventoryInGrind(_activeTabType);
+        }
+
+        private void SortInventoryInGrind(InventoryTabType tabType)
+        {
+            var data = GetModels(tabType);
+            if (tabType == InventoryTabType.Equipment)
+            {
+                data = data
+                       .OrderByDescending(x => x.ItemBase is ITradableItem)
+                       .ThenByDescending(x => x.ItemBase.Grade)
+                       .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                       .ToList();
+            }
+            scroll.UpdateData(data);
+        }
+
+#endregion GrindEvents
     }
 }

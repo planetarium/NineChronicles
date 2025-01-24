@@ -2692,7 +2692,7 @@ namespace Nekoyume.Blockchain
                 .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
 
-            var mailRewards = new List<MailReward> { new(crystalReward, (int)crystalReward.MajorUnit) };
+            var mailRewards = new List<MailReward> { new(crystalReward, (long)crystalReward.MajorUnit), };
             mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
 
             Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
@@ -2863,19 +2863,71 @@ namespace Nekoyume.Blockchain
 
             UniTask.RunOnThreadPool(async () =>
             {
+                var nullablePrevStakeState = States.Instance.StakeStateV2;
+                var prevStakeState = nullablePrevStakeState.GetValueOrDefault();
+                var stakingLevel = States.Instance.StakingLevel;
+                var stakedNcg = States.Instance.StakedBalance;
+
                 await UpdateStakeStateAsync(eval);
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
                 UpdateCrystalBalance(eval);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
+
+                await UniTask.SwitchToMainThread();
+
                 NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                     NotificationCell.NotificationType.Information);
 
-                Widget.Find<StakingPopup>().SetView();
+                var stakingPopup = Widget.Find<StakingPopup>();
+                stakingPopup.SetView();
+                stakingPopup.CheckSharePower().Forget();
+                stakingPopup.CheckUnbondBlock().Forget();
+
+                var blockIndex = eval.BlockIndex;
+                if (nullablePrevStakeState.HasValue && nullablePrevStakeState.Value.ClaimableBlockIndex <= blockIndex)
+                {
+                    var stakeState = prevStakeState;
+
+                    // Calculate rewards~
+                    var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
+                    var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
+                    var itemSheet = TableSheets.Instance.ItemSheet;
+                    // The first reward is given at the claimable block index.
+                    var rewardSteps = stakeState.ClaimableBlockIndex == eval.BlockIndex
+                        ? 1
+                        : 1 + (int)Math.DivRem(
+                            eval.BlockIndex - stakeState.ClaimableBlockIndex,
+                            stakeState.Contract.RewardInterval,
+                            out var _);
+                    var rand = new LocalRandom(eval.RandomSeed);
+                    var rewardItems = StakeRewardCalculator.CalculateFixedRewards(stakingLevel, rand,
+                        stakeRegularFixedRewardSheet, itemSheet, rewardSteps);
+                    var (itemRewards, favs) = StakeRewardCalculator.CalculateRewards(GoldCurrency, stakedNcg, stakingLevel, rewardSteps,
+                        stakeRegularRewardSheet, itemSheet, rand);
+                    // ~Calculate rewards
+
+                    var mailRewards = new List<MailReward>();
+                    foreach (var rewardPair in itemRewards)
+                    {
+                        if (rewardItems.Keys.FirstOrDefault(key => key.Id == rewardPair.Key.Id) is { } itemBase)
+                        {
+                            rewardItems[itemBase] += rewardPair.Value;
+                        }
+                        else
+                        {
+                            rewardItems.Add(rewardPair.Key, rewardPair.Value);
+                        }
+                    }
+
+                    mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
+                    mailRewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
+
+                    Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
+                    Widget.Find<StakingPopup>().SetView();
+                }
             });
         }
 
@@ -2930,7 +2982,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
-                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (int)fav.MajorUnit)));
+                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
 
                 Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                 Widget.Find<StakingPopup>().SetView();
