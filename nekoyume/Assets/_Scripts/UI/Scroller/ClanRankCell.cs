@@ -1,5 +1,4 @@
 using GeneratedApiNamespace.ArenaServiceClient;
-using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
