@@ -840,6 +840,7 @@ namespace Nekoyume
                         var parameters = method.Value["parameters"];
                         if (parameters != null)
                         {
+                            // todo : Parameters  required 관련 처리 작업진행해야함.
                             var queryParameters = new List<string>();
                             var headerParameters = new List<string>();
 
