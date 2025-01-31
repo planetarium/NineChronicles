@@ -1,10 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Nekoyume.L10n;
-using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using System;
-using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
@@ -12,12 +9,17 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using GeneratedApiNamespace.ArenaServiceClient;
+    using Nekoyume.ApiClient;
     using UniRx;
 
     public class ClanRankPopup : PopupWidget
     {
         [SerializeField]
         private Button closeButton = null;
+
+        [SerializeField]
+        private ClanRankCell myInfo;
 
         [SerializeField]
         private ClanRankScroll clanRankScroll = null;
@@ -30,12 +32,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI missingText = null;
-
-        [SerializeField]
-        private GameObject refreshObject = null;
-
-        [SerializeField]
-        private Button refreshButton = null;
 
         public const int RankingBoardDisplayCount = 100;
 
@@ -54,7 +50,46 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            //clanRankScroll.Show(rankingInfos, true);
+            FillDataAsync().Forget();
+        }
+
+        public async UniTask FillDataAsync()
+        {
+            preloadingObject.SetActive(true);
+            missingObject.SetActive(false);
+
+            try
+            {
+                // 클랜 리더보드 데이터를 비동기로 가져옵니다.
+                ClanLeaderboardResponse response = null;
+                await ApiClients.Instance.Arenaservicemanager.Client.GetClansLeaderboardAsync(0, RankingBoardDisplayCount,
+                    on200OK: (result) =>
+                    {
+                        response = result;
+                    });
+                
+                if (response != null)
+                {
+                    // 클랜 랭크 스크롤에 데이터를 설정합니다.
+                    clanRankScroll.Show(response.Leaderboard, true);
+                    myInfo.UpdateContent(response.MyClan);
+                }
+                else
+                {
+                    missingObject.SetActive(true);
+                    missingText.text = L10nManager.Localize("UI_CLAN_RANK_DATA_NOT_FOUND");
+                }
+            }
+            catch (Exception ex)
+            {
+                NcDebug.LogError(ex.Message);
+                missingObject.SetActive(true);
+                missingText.text =  L10nManager.Localize("UI_CLAN_RANK_DATA_NOT_FOUND");
+            }
+            finally
+            {
+                preloadingObject.SetActive(false);
+            }
         }
     }
 }
