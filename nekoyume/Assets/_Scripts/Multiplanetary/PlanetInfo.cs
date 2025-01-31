@@ -50,7 +50,7 @@ namespace Nekoyume.Multiplanetary
         [JsonPropertyName("guild.rest")]
         public List<string> GuildRest { get; set; } = new();
 
-        [JsonPropertyName("arena.gql")]
-        public List<string> ArenaGql { get; set; } = new();
+        [JsonPropertyName("arena.rest")]
+        public List<string> ArenaRest { get; set; } = new();
     }
 }
