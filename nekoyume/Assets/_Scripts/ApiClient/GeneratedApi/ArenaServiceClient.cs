@@ -99,7 +99,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("avatarAddress")]
         public string AvatarAddress { get; set; }
         [JsonPropertyName("nameWithHash")]
-        public string? NameWithHash { get; set; }
+        public string NameWithHash { get; set; }
         [JsonPropertyName("portraitId")]
         public int PortraitId { get; set; }
         [JsonPropertyName("cp")]
@@ -205,7 +205,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     public class BattleTokenResponse
     {
         [JsonPropertyName("token")]
-        public string? Token { get; set; }
+        public string Token { get; set; }
         [JsonPropertyName("battleId")]
         public int BattleId { get; set; }
     }
@@ -221,9 +221,9 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     public class ClanResponse
     {
         [JsonPropertyName("imageURL")]
-        public string? ImageURL { get; set; }
+        public string ImageURL { get; set; }
         [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         [JsonPropertyName("rank")]
         public int Rank { get; set; }
         [JsonPropertyName("score")]
@@ -232,21 +232,18 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
 
     public class ClassifyByBlockMedalsResponse
     {
-        /// <summary>
-        /// <para>(SeasonId, MedalCount)</para>
-        /// </summary>
         [JsonPropertyName("medals")]
-        public List<Int32Int32ValueTuple> Medals { get; set; }
+        public List<MedalResponse> Medals { get; set; }
         [JsonPropertyName("totalMedalCountForThisChampionship")]
         public int TotalMedalCountForThisChampionship { get; set; }
     }
 
-    public class Int32Int32ValueTuple
+    public class MedalResponse
     {
-        [JsonPropertyName("item1")]
-        public int Item1 { get; set; }
-        [JsonPropertyName("item2")]
-        public int Item2 { get; set; }
+        [JsonPropertyName("seasonId")]
+        public int SeasonId { get; set; }
+        [JsonPropertyName("medalCount")]
+        public int MedalCount { get; set; }
     }
 
     public class ProblemDetails
@@ -349,7 +346,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("totalPrize")]
         public int TotalPrize { get; set; }
         [JsonPropertyName("prizeDetailSiteURL")]
-        public string? PrizeDetailSiteURL { get; set; }
+        public string PrizeDetailSiteURL { get; set; }
         [JsonPropertyName("rounds")]
         public List<RoundResponse> Rounds { get; set; }
     }
@@ -475,7 +472,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     public class UserRegisterRequest
     {
         [JsonPropertyName("nameWithHash")]
-        public string? NameWithHash { get; set; }
+        public string NameWithHash { get; set; }
         [JsonPropertyName("portraitId")]
         public int PortraitId { get; set; }
         [JsonPropertyName("cp")]
@@ -489,7 +486,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("avatarAddress")]
         public string AvatarAddress { get; set; }
         [JsonPropertyName("nameWithHash")]
-        public string? NameWithHash { get; set; }
+        public string NameWithHash { get; set; }
         [JsonPropertyName("portraitId")]
         public int PortraitId { get; set; }
         [JsonPropertyName("cp")]
@@ -1136,20 +1133,28 @@ public class ArenaServiceClient
         }
     }
 
+    /// <param name="Authorization">
+    /// <para>JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"</para>
+    /// </param>
     /// <response code="200">
     /// <para>OK</para>
     /// </response>
+    /// <response code="404">
+    /// <para>Not Found</para>
+    /// </response>
     public async Task GetClansLeaderboardAsync(
-        int offset, int limit, 
+        string Authorization, 
         // OK
         Action<ClanLeaderboardResponse> on200OK = null, 
+        // Not Found
+        Action<string> on404NotFound = null, 
         Action<string> onError = null)
     {
         string url = $"{Url}/clans/leaderboard";
         using (var request = new UnityWebRequest(url, "GET"))
         {
-            url += $"?offset={offset}&limit={limit}";
             request.uri = new Uri(url);
+            request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
@@ -1157,16 +1162,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetClansLeaderboardAsyncProcessResponse(request, on200OK, onError);
+                GetClansLeaderboardAsyncProcessResponse(request, on200OK, on404NotFound, onError);
             }
             catch (Exception ex)
             {
-                GetClansLeaderboardAsyncProcessResponse(request, on200OK, onError);
+                GetClansLeaderboardAsyncProcessResponse(request, on200OK, on404NotFound, onError);
             }
         }
     }
 
-    private void GetClansLeaderboardAsyncProcessResponse(UnityWebRequest webRequest, Action<ClanLeaderboardResponse> on200OK, Action<string> onError)
+    private void GetClansLeaderboardAsyncProcessResponse(UnityWebRequest webRequest, Action<ClanLeaderboardResponse> on200OK, Action<string> on404NotFound, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // OK
@@ -1175,116 +1180,6 @@ public class ArenaServiceClient
             {
                 ClanLeaderboardResponse responseData;
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<ClanLeaderboardResponse>(responseText); }
-                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
-                on200OK(responseData);
-            }
-            else if (onError != null)
-            {
-                onError(responseText);
-            }
-            return;
-        }
-        if (onError != null)
-        {
-            onError(webRequest.error);
-        }
-    }
-
-    /// <response code="200">
-    /// <para>OK</para>
-    /// </response>
-    public async Task GetClansAsync(
-        
-        // OK
-        Action<ClanResponse> on200OK = null, 
-        Action<string> onError = null)
-    {
-        string url = $"{Url}/clans";
-        using (var request = new UnityWebRequest(url, "GET"))
-        {
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.timeout = 10;
-            try
-            {
-                await request.SendWebRequest();
-                GetClansAsyncProcessResponse(request, on200OK, onError);
-            }
-            catch (Exception ex)
-            {
-                GetClansAsyncProcessResponse(request, on200OK, onError);
-            }
-        }
-    }
-
-    private void GetClansAsyncProcessResponse(UnityWebRequest webRequest, Action<ClanResponse> on200OK, Action<string> onError)
-    {
-        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // OK
-        {
-            if (on200OK != null)
-            {
-                ClanResponse responseData;
-                try { responseData = System.Text.Json.JsonSerializer.Deserialize<ClanResponse>(responseText); }
-                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
-                on200OK(responseData);
-            }
-            else if (onError != null)
-            {
-                onError(responseText);
-            }
-            return;
-        }
-        if (onError != null)
-        {
-            onError(webRequest.error);
-        }
-    }
-
-    /// <response code="200">
-    /// <para>OK</para>
-    /// </response>
-    /// <response code="404">
-    /// <para>Not Found</para>
-    /// </response>
-    public async Task GetSeasonsAsync(
-        int seasonId, 
-        // OK
-        Action<SeasonResponse> on200OK = null, 
-        // Not Found
-        Action<string> on404NotFound = null, 
-        Action<string> onError = null)
-    {
-        string url = $"{Url}/seasons/{seasonId}";
-        using (var request = new UnityWebRequest(url, "GET"))
-        {
-            request.uri = new Uri(url);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.timeout = 10;
-            try
-            {
-                await request.SendWebRequest();
-                GetSeasonsAsyncProcessResponse(request, on200OK, on404NotFound, onError);
-            }
-            catch (Exception ex)
-            {
-                GetSeasonsAsyncProcessResponse(request, on200OK, on404NotFound, onError);
-            }
-        }
-    }
-
-    private void GetSeasonsAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonResponse> on200OK, Action<string> on404NotFound, Action<string> onError)
-    {
-        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // OK
-        {
-            if (on200OK != null)
-            {
-                SeasonResponse responseData;
-                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on200OK(responseData);
             }
