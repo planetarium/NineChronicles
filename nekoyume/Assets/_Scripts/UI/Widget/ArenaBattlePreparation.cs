@@ -3,14 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Renderers;
-using Nekoyume.Action;
-using Nekoyume.Arena;
 using Nekoyume.Blockchain;
-using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
-using Nekoyume.GraphQL;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -20,12 +15,15 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 
 namespace Nekoyume.UI
 {
+    using System.Threading.Tasks;
+    using GeneratedApiNamespace.ArenaServiceClient;
+    using Libplanet.Types.Assets;
+    using Nekoyume.ApiClient;
     using UniRx;
 
     public class ArenaBattlePreparation : Widget
@@ -40,21 +38,23 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
-        private Button repeatPopupButton;
-
-        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
-        private Transform buttonStarImageTransform;
+        private Transform actionPointIconPos;
+        [SerializeField]
+        private Transform ticketIconPos;
 
-        [SerializeField][Range(.5f, 3.0f)]
+        [SerializeField]
+        [Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField][Range(0f, 10f)][Tooltip("Gap between start position X and middle position X")]
+        [SerializeField]
+        [Range(0f, 10f)]
+        [Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         [SerializeField]
@@ -66,11 +66,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI enemyCp;
 
-        private GameObject _cachedCharacterTitle;
-
         private const int TicketCountToUse = 1;
-        private ArenaSheet.RoundData _roundData;
-        private ArenaParticipantModel _info;
+        private SeasonResponse _seasonData;
+        private AvailableOpponentResponse _info;
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -84,20 +82,13 @@ namespace Nekoyume.UI
         {
             get
             {
-                var blockIndex = Game.Game.instance.Agent.BlockIndex;
-                var currentRound =
-                    TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-                var ticketCount = RxProps.ArenaInfoTuple.HasValue
-                    ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
-                        blockIndex,
-                        currentRound.StartBlockIndex,
-                        States.Instance.GameConfigState.DailyArenaInterval)
-                    : 0;
+                var ticketCount = RxProps.ArenaInfo.HasValue
+                    ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingTicketsPerRound : 0;
                 return ticketCount >= TicketCountToUse;
             }
         }
 
-#region override
+        #region override
 
         protected override void Awake()
         {
@@ -116,29 +107,29 @@ namespace Nekoyume.UI
             base.Initialize();
 
             information.Initialize();
-            startButton.SetCost(CostType.ArenaTicket, TicketCountToUse);
+            var costs = new List<ConditionalCostButton.CostParam>
+                    {
+                        new(CostType.ArenaTicket, TicketCountToUse),
+                        new(CostType.ActionPoint, Action.Arena.Battle.CostAp)
+                    };
+            startButton.SetCost(costs);
             startButton.OnSubmitSubject
                 .Where(_ => !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
-
-            repeatPopupButton.OnClickAsObservable()
-                .Subscribe(_ => ShowArenaTicketPopup())
-                .AddTo(gameObject);
         }
 
         public void Show(
-            ArenaSheet.RoundData roundData,
-            ArenaParticipantModel info,
-            int chooseAvatarCp,
+            SeasonResponse seasonData,
+            AvailableOpponentResponse info,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            _roundData = roundData;
+            _seasonData = seasonData;
             _info = info;
 
-            _chooseAvatarCp = chooseAvatarCp;
+            _chooseAvatarCp = (int)info.Cp;
             enemyCp.text = _chooseAvatarCp.ToString();
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, _chooseAvatarCp);
@@ -158,7 +149,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-#endregion
+        #endregion
 
         private void ReadyToBattle()
         {
@@ -176,11 +167,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowArenaTicketPopup()
-        {
-            Find<ArenaTicketPopup>().Show(SendBattleArenaAction);
-        }
-
         private void OnClickBattle()
         {
             AudioController.PlayClick();
@@ -194,30 +180,12 @@ namespace Nekoyume.UI
             var hasEnoughTickets =
                 RxProps.ArenaTicketsProgress.HasValue &&
                 RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
-            if (hasEnoughTickets)
+            if (!hasEnoughTickets)
             {
-                StartCoroutine(CoBattleStart(CostType.ArenaTicket));
+                NcDebug.LogError("Not enough tickets to start the battle.");
                 return;
             }
-
-            var balance = States.Instance.GoldBalanceState.Gold;
-            var currentArenaInfo = RxProps.ArenaInfoTuple.Value.current;
-            var cost = ArenaHelper.GetTicketPrice(
-                _roundData,
-                currentArenaInfo,
-                balance.Currency);
-
-            Find<ArenaTicketPurchasePopup>().Show(
-                CostType.ArenaTicket,
-                CostType.NCG,
-                balance,
-                cost,
-                () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                currentArenaInfo.PurchasedTicketCount,
-                _roundData.MaxPurchaseCount,
-                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
-                _roundData.MaxPurchaseCountWithInterval
-            );
+            StartCoroutine(CoBattleStart(CostType.ArenaTicket));
         }
 
         private IEnumerator CoBattleStart(CostType costType)
@@ -228,25 +196,41 @@ namespace Nekoyume.UI
             BattleRenderer.Instance.IsOnBattle = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
-            var currencyImage = costType switch
+            Image GetCurrencyImage(CostType type)
             {
-                CostType.NCG => headerMenuStatic.Gold.IconImage,
-                CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
-                CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
-                CostType.Crystal => headerMenuStatic.Crystal.IconImage,
-                CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
-                _ or CostType.None => throw new ArgumentOutOfRangeException(
-                    nameof(costType), costType, null)
-            };
+                return type switch
+                {
+                    CostType.NCG => headerMenuStatic.Gold.IconImage,
+                    CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
+                    CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
+                    CostType.Crystal => headerMenuStatic.Crystal.IconImage,
+                    CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
+                    _ or CostType.None => throw new ArgumentOutOfRangeException(
+                        nameof(type), type, null)
+                };
+            }
+            var currencyImage = GetCurrencyImage(costType);
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
                 currencyImage.transform.position,
-                buttonStarImageTransform.position,
+                ticketIconPos.position,
                 Vector2.one,
                 moveToLeft,
                 true,
                 animationTime,
                 middleXGap);
+
+            var actionPointImage = GetCurrencyImage(CostType.ActionPoint);
+            var actionPointMoveAnimation = ItemMoveAnimation.Show(
+                actionPointImage.sprite,
+                actionPointImage.transform.position,
+                actionPointIconPos.position,
+                Vector2.one,
+                moveToLeft,
+                true,
+                animationTime,
+                middleXGap);
+
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             SendBattleArenaAction();
@@ -265,32 +249,51 @@ namespace Nekoyume.UI
                 _info.NameWithHash,
                 _info.Level,
                 _info.PortraitId,
-                _info.AvatarAddr);
+                new Libplanet.Crypto.Address(_info.AvatarAddress));
 
-            try
+            var tokenTask = ApiClients.Instance.Arenaservicemanager.GetBattleTokenAsync(_info.AvatarAddress, playerAvatar.address.ToHex());
+            tokenTask.ContinueWith(task =>
             {
-                var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
-                var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
-                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                    .GetEquippedRuneSlotInfos();
-                ActionRenderHandler.Instance.Pending = true;
-                ActionManager.Instance.BattleArena(
-                        _info.AvatarAddr,
-                        costumes,
-                        equipments,
-                        runeInfos,
-                        _roundData.ChampionshipId,
-                        _roundData.Round,
-                        ticket)
-                    .Subscribe();
-            }
-            catch(Exception e)
-            {
-                Game.Game.BackToMainAsync(e).Forget();
-            }
+                if (task.Result == null)
+                {
+                    Game.Game.BackToMainAsync(new Exception(L10nManager.Localize("UI_ARENA_BATTLETOKEN_RECIVE_FAIL"))).Forget();
+                }
+                if (task.Status == TaskStatus.RanToCompletion)
+                {
+                    var token = task.Result;
+                    RxProps.LastBattleId = token.BattleId;
+                    // 성공시 호출할 콜백
+                    try
+                    {
+                        var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+                        var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+                        var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
+                            .GetEquippedRuneSlotInfos();
+                        ActionRenderHandler.Instance.Pending = true;
+                        ActionManager.Instance.BattleArena(
+                                new Libplanet.Crypto.Address(_info.AvatarAddress),
+                                costumes,
+                                equipments,
+                                runeInfos,
+                                _seasonData.Id,
+                                _seasonData.Id,
+                                token);
+                    }
+                    catch (Exception e)
+                    {
+                        Game.Game.BackToMainAsync(e).Forget();
+                    }
+                }
+                else if (task.Status == TaskStatus.Faulted)
+                {
+                    // 오류 처리
+                    NcDebug.LogError("토큰 요청에 실패했습니다. 오류: " + task.Exception?.Message);
+                    Game.Game.BackToMainAsync(task.Exception).Forget();
+                }
+            });
         }
 
-        public void OnRenderBattleArena(ActionEvaluation<BattleArena> eval)
+        public void OnRenderBattleArena(ActionEvaluation<Action.Arena.Battle> eval)
         {
             if (eval.Exception is not null)
             {
@@ -333,8 +336,6 @@ namespace Nekoyume.UI
         {
             startButton.gameObject.SetActive(canBattle);
             blockStartingText.gameObject.SetActive(!canBattle);
-            repeatPopupButton.gameObject.SetActive(canBattle &&
-                _roundData.ArenaType == ArenaType.OffSeason);
 
             if (!canBattle)
             {

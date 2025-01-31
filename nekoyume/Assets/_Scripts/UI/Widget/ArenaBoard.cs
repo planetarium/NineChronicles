@@ -6,17 +6,25 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Board;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI
 {
+    using System.Globalization;
+    using System.Numerics;
+    using GeneratedApiNamespace.ArenaServiceClient;
+    using Libplanet.Crypto;
+    using Nekoyume.Action.Arena;
+    using Nekoyume.ApiClient;
+    using Nekoyume.Blockchain;
+    using Nekoyume.Helper;
+    using Nekoyume.L10n;
+    using Nekoyume.Model.State;
+    using TMPro;
     using UniRx;
 
     public class ArenaBoard : Widget
@@ -28,21 +36,52 @@ namespace Nekoyume.UI
         [SerializeField]
         private ArenaBoardSO _so;
 #endif
-
-        [SerializeField]
-        private ArenaBoardBillboard _billboard;
-
         [SerializeField]
         private ArenaBoardPlayerScroll _playerScroll;
 
         [SerializeField]
-        private GameObject _noJoinedPlayersGameObject;
-
-        [SerializeField]
         private Button _backButton;
 
-        private ArenaSheet.RoundData _roundData;
-        private List<ArenaParticipantModel> _boundedData;
+        [SerializeField]
+        private DetailedCharacterView _characterView;
+
+        [SerializeField]
+        private TextMeshProUGUI _myName;
+
+        [SerializeField]
+        private TextMeshProUGUI _myCp;
+
+        [SerializeField]
+        private TextMeshProUGUI _myRatingAndScore;
+
+        [SerializeField]
+        private TextMeshProUGUI _myScoreChangesInRound;
+
+        [SerializeField]
+        private TextMeshProUGUI _myWinLose;
+
+        [SerializeField]
+        private TextMeshProUGUI _myWinLoseChangesInRound;
+
+        [SerializeField]
+        private GameObject _clanObj;
+
+        [SerializeField]
+        private Image _myClanIcon;
+
+        [SerializeField]
+        private TextMeshProUGUI _myClanName;
+
+        [SerializeField]
+        private GameObject _loadingObj;
+
+        [SerializeField]
+        private ConditionalButton _refreshBtn;
+        [SerializeField]
+        private TextMeshProUGUI _refeshCountText;
+
+        private SeasonResponse _seasonData;
+        private List<AvailableOpponentResponse> _boundedData;
 
         protected override void Awake()
         {
@@ -56,6 +95,27 @@ namespace Nekoyume.UI
                 Find<ArenaJoin>().Show();
                 Close();
             }).AddTo(gameObject);
+
+            _refreshBtn.OnClickSubject.Subscribe(_ =>
+            {
+                RefreshArenaBoard();
+            }).AddTo(gameObject);
+        }
+
+        private void HandleArenaError(string errorl10nKey, string logMessage = null)
+        {
+            if (!string.IsNullOrEmpty(logMessage))
+            {
+                NcDebug.LogError(logMessage);
+            }
+            Find<LoadingScreen>().Close();
+            AudioController.PlayClick();
+            Close();
+            Find<ArenaJoin>().Show();
+            Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    errorl10nKey,
+                    "UI_OK");
         }
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
@@ -65,43 +125,73 @@ namespace Nekoyume.UI
             var sw = new Stopwatch();
             sw.Start();
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
-            await UniTask.WhenAll(
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash),
-                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash));
+            List<AvailableOpponentResponse> response = null;
+            bool isFirst = false;
+            await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
+                on200AvailableOpponents: (result) =>
+                {
+                    response = result?.ToList();
+                },
+                on404Status404NotFound: (result) =>
+                {
+                    isFirst = true;
+                },
+                onError: (error) =>
+                {
+                    NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
+                }
+            );
+
+            //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
+            if (isFirst)
+            {
+                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                    on200AvailableOpponents: (result) =>
+                    {
+                        response = result?.ToList();
+                    },
+                    onError: (error) =>
+                    {
+                        NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
+                    }
+                );
+            }
+
+            if (response == null)
+            {
+                HandleArenaError("UI_ARENABOARD_GET_FAILED");
+                return;
+            }
+
+            // todo: 아레나서비스 리프레시중인경우일수있음 체크필요
+            if (response.Count == 0)
+            {
+                HandleArenaError("UI_ARENA_GET_OPPONENTS_FAILED", "No available opponents found for the arena. Please try again later.");
+                return;
+            }
+
+            var arenaInfoResponse = await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
+            if (arenaInfoResponse == null)
+            {
+                HandleArenaError("UI_ARENA_INFO_GET_FAILED");
+                return;
+            }
+
             loading.Close();
-            Show(RxProps.ArenaInformationOrderedWithScore.Value,
-                ignoreShowAnimation);
-            sw.Stop();
-            NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
-        }
-
-        public void Show(
-            List<ArenaParticipantModel> arenaParticipants,
-            bool ignoreShowAnimation = false)
-        {
-            Show(_roundData,
-                arenaParticipants,
-                ignoreShowAnimation);
-        }
-
-        public void Show(
-            ArenaSheet.RoundData roundData,
-            List<ArenaParticipantModel> arenaParticipants,
-            bool ignoreShowAnimation = false)
-        {
-            _roundData = roundData;
-            _boundedData = arenaParticipants;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            _seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+            _boundedData = response;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
 
-            // NOTE: This code assumes that '_playerScroll.Data' contains local player
-            //       If `_playerScroll.Data` does not contains local player, change `2` in the line below to `1`.
-            //       Not use `_boundedData` here because there is the case to
-            //       use the mock data from `_so`.
-            _noJoinedPlayersGameObject.SetActive(_playerScroll.Data.Count < 2);
+            _loadingObj.SetActive(false);
+            _refreshBtn.SetState(ConditionalButton.State.Normal);
+            RefreshStateUpdate();
 
             base.Show(ignoreShowAnimation);
+            sw.Stop();
+            NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
         }
 
         private void UpdateBillboard()
@@ -109,48 +199,42 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                _billboard.SetData(
-                    _so.SeasonText,
-                    _so.Rank,
-                    _so.WinCount,
-                    _so.LoseCount,
-                    _so.CP,
-                    _so.Rating);
+                _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
+                _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
+                _myCp.text = $"CP {_so.CP.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myRatingAndScore.text = $"{_so.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {_so.Rating.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myScoreChangesInRound.text = "";
+                _myWinLose.text = $"W {_so.WinCount.ToString("N0", CultureInfo.CurrentCulture)} | L {_so.LoseCount.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myWinLoseChangesInRound.text = "";
+                _clanObj.SetActive(false);
                 return;
             }
 #endif
-            var player = RxProps.PlayerArenaInfo.Value;
-            if (player is null)
+            if (!RxProps.ArenaInfo.HasValue)
             {
-                NcDebug.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
-                _billboard.SetData();
+                NcDebug.LogError($"{nameof(RxProps.ArenaInfo)} is null");
                 return;
             }
 
-            if (!RxProps.ArenaInfoTuple.HasValue)
-            {
-                NcDebug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
-                _billboard.SetData();
-                return;
-            }
+            var currentInfo = RxProps.ArenaInfo.Value;
 
-            var win = 0;
-            var lose = 0;
-            var currentInfo = RxProps.ArenaInfoTuple.Value.current;
-            if (currentInfo is not null)
+            _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
+            _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
+            _myCp.text = $"CP {currentInfo.User.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myRatingAndScore.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
+            _myWinLose.text = $"W {currentInfo.TotalWin.ToString("N0", CultureInfo.CurrentCulture)} | L {currentInfo.TotalLose.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
+            _clanObj.SetActive(currentInfo.ClanInfo != null);
+            if (currentInfo.ClanInfo != null)
             {
-                win = currentInfo.Win;
-                lose = currentInfo.Lose;
+                Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ToCoroutine((result) =>
+                {
+                    _myClanIcon.sprite = result;
+                    _myClanIcon.SetNativeSize();
+                });
+                _myClanName.text = currentInfo.ClanInfo.Name;
             }
-
-            var cp = player.Cp;
-            _billboard.SetData(
-                "season",
-                player.Rank,
-                win,
-                lose,
-                cp,
-                player.Score);
         }
 
         private void InitializeScrolls()
@@ -168,7 +252,7 @@ namespace Nekoyume.UI
                     }
 #endif
                     var avatarStates = await Game.Game.instance.Agent.GetAvatarStatesAsync(
-                        new[] { _boundedData[index].AvatarAddr });
+                        new[] { new Address(_boundedData[index].AvatarAddress) });
                     var avatarState = avatarStates.Values.First();
                     Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Arena).Forget();
                 })
@@ -187,11 +271,21 @@ namespace Nekoyume.UI
                     }
 #endif
                     var data = _boundedData[index];
+                    if (ReactiveAvatarState.ActionPoint < Action.Arena.Battle.CostAp)
+                    {
+                        Find<HeaderMenuStatic>().ActionPoint.ShowMaterialNavigationPopup();
+                        return;
+                    }
+
+                    if (RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingTicketsPerRound == 0)
+                    {
+                        Find<ArenaTicketPopup>().Show();
+                        return;
+                    }
                     Close();
                     Find<ArenaBattlePreparation>().Show(
-                        _roundData,
-                        _boundedData[index],
-                        data.Cp);
+                        _seasonData,
+                        _boundedData[index]);
                 })
                 .AddTo(gameObject);
         }
@@ -221,25 +315,161 @@ namespace Nekoyume.UI
                     level = e.Level,
                     fullCostumeOrArmorId = e.PortraitId,
                     titleId = null,
-                    cp = e.Cp,
+                    cp = (int)e.Cp,
                     score = e.Score,
                     rank = e.Rank,
-                    expectWinDeltaScore = e.WinScore,
-                    interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
-                    canFight = true,
-                    address = e.AvatarAddr.ToHex(),
-                    guildName = e.GuildName
+                    expectWinDeltaScore = e.ScoreGainOnWin,
+                    interactableChoiceButton = true,
+                    canFight = !e.IsAttacked,
+                    address = e.AvatarAddress,
+                    guildName = e.ClanInfo?.Name,
+                    guildImgUrl = e.ClanInfo?.ImageURL,
+                    isVictory = e.IsVictory,
+                    scoreOnLose = e.ScoreLossOnLose,
+                    scoreOnWin = e.ScoreGainOnWin
                 }).ToList();
-            for (var i = 0; i < _boundedData.Count; i++)
+            return (scrollData, 0);
+        }
+
+        private void RefreshStateUpdate()
+        {
+            var currentRefreshCount = RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound + RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound;
+            var maxRefreshCount = _seasonData.RefreshTicketPolicy.DefaultTicketsPerRound + _seasonData.RefreshTicketPolicy.MaxPurchasableTicketsPerRound;
+            //최초라운드 시작시 자동으로 목록갱신해주는것때문에 실제 횟수에서 -1로 표기한다.
+            _refeshCountText.text = L10nManager.Localize("UI_ARENA_REFRESH_COUNT", currentRefreshCount, maxRefreshCount - 1);
+
+            if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
             {
-                var data = _boundedData[i];
-                if (data.AvatarAddr.Equals(currentAvatarAddr))
+                var nextCosts = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts;
+                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN_WITH_NCG", nextCosts.First()));
+            }
+            else
+            {
+                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN"));
+            }
+        }
+
+        private async UniTask RefreshArenaBoardAsync()
+        {
+            // 무료갱신이 아닌경우
+            _refreshBtn.SetState(ConditionalButton.State.Disabled);
+            _loadingObj.SetActive(true);
+            if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
+            {
+                var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
+                var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
+
+                var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
+                                        new Address(RxProps.OperationAccountAddress),
+                                        cost);
+
+                if (logId == -1)
                 {
-                    return (scrollData, i);
+                    NcDebug.LogError("[ArenaBoard] Refresh failed. Please try again later.");
+                    _loadingObj.SetActive(false);
+                    _refreshBtn.SetState(ConditionalButton.State.Normal);
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENABOARD_GET_FAILED",
+                        "UI_OK");
+                    return;
+                }
+
+                TicketPurchaseLogResponse refreshTicketResponse = null;
+                // 서비스에서 tx확인 및 갱신완료될때까지 폴링
+                int[] initialPollingIntervals = { 8000, 4000, 2000, 1000 }; // 초기 요청시간: 8s, 4s, 2s, 1s
+                int maxAdditionalAttempts = 30; // 1초가된후 최대 요청개수
+
+                async UniTask<bool> PerformPollingAsync()
+                {
+                    await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsRefreshPurchaselogsAsync(logId, ArenaServiceManager.CreateCurrentJwt(),
+                        on200PurchaseLogId: (result) =>
+                        {
+                            refreshTicketResponse = result;
+                        },
+                        onError: (error) =>
+                        {
+                            NcDebug.LogError($"[ArenaBoard] Error while polling for available opponents | Error: {error}");
+                        }
+                    );
+
+                    return refreshTicketResponse != null && refreshTicketResponse.PurchaseStatus == PurchaseStatus.SUCCESS;
+                }
+
+                bool isPollingSuccessful = false; // 폴링 성공 여부를 저장할 변수
+                // 초기 요청시간을 줄여가며 폴링 시작
+                foreach (var interval in initialPollingIntervals)
+                {
+                    if (await PerformPollingAsync())
+                    {
+                        NcDebug.Log("[ArenaBoard] Refresh completed.");
+                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                        break; // 성공 시 더 이상 요청하지 않도록 break
+                    }
+                    await UniTask.Delay(interval);
+                }
+
+                // 1초 간격으로 추가 폴링
+                for (int i = 0; i < maxAdditionalAttempts && !isPollingSuccessful; i++) // 성공하지 않은 경우에만 추가 요청
+                {
+                    if (await PerformPollingAsync())
+                    {
+                        NcDebug.Log("[ArenaBoard] Refresh completed.");
+                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                        break; // 성공 시 더 이상 요청하지 않도록 break
+                    }
+                    await UniTask.Delay(1000); // 1 second interval
+                }
+
+                if (refreshTicketResponse == null)
+                {
+                    NcDebug.LogError("[ArenaBoard] Response is null after refresh.");
                 }
             }
 
-            return (scrollData, 0);
+            List<AvailableOpponentResponse> response = null;
+            await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                on200AvailableOpponents: (result) =>
+                {
+                    response = result?.ToList();
+                },
+                onError: (error) =>
+                {
+                    NcDebug.LogError($"[ArenaBoard] Failed to get free available opponents | Error: {error}");
+                }
+            );
+
+            if (response == null || response.Count == 0)
+            {
+                NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
+                _loadingObj.SetActive(false);
+                _refreshBtn.SetState(ConditionalButton.State.Normal);
+                Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    "UI_ARENABOARD_GET_FAILED",
+                    "UI_OK");
+                return;
+            }
+            _boundedData = response;
+            UpdateScrolls();
+
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
+
+            _loadingObj.SetActive(false);
+            _refreshBtn.SetState(ConditionalButton.State.Normal);
+            RefreshStateUpdate();
+        }
+
+        public void RefreshArenaBoard()
+        {
+            if (_loadingObj.activeSelf)
+            {
+                NcDebug.LogWarning("[ArenaBoard] Loading is in progress, cannot refresh the arena board.");
+                return;
+            }
+            RefreshArenaBoardAsync().Forget();
         }
     }
 }

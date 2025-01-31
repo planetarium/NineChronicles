@@ -25,7 +25,23 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI _timespanText;
 
+        [SerializeField]
+        private Button _chargeButton;
+
+        [SerializeField]
+        private GameObject _loadingObj;
+
         private readonly List<IDisposable> _disposables = new();
+
+        void Awake()
+        {
+            _chargeButton.onClick.AddListener(OnCharge);
+        }
+
+        private void OnCharge()
+        {
+            Widget.Find<ArenaTicketPopup>().Show();
+        }
 
         private void OnEnable()
         {
@@ -33,9 +49,17 @@ namespace Nekoyume.UI.Module
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
                 .AddTo(_disposables);
+            Widget.Find<ArenaTicketPopup>().IsBuyingTicket
+                .SubscribeOnMainThread()
+                .Subscribe((isBuying) =>{
+                    _fillText.gameObject.SetActive(!isBuying);
+                    _loadingObj.SetActive(isBuying);
+                    _chargeButton.interactable = !isBuying;
+                })
+                .AddTo(_disposables);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
         }

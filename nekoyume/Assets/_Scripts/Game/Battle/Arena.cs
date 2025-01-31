@@ -2,20 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using GeneratedApiNamespace.ArenaServiceClient;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
+using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.Game.Battle
 {
@@ -117,7 +123,57 @@ namespace Nekoyume.Game.Battle
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
-            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
+            BattleResponse battleResponse = null;
+            yield return PollBattleResponse(myAvatarAddress).ToCoroutine(response => battleResponse = response); 
+            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount, battleResponse));
+        }
+
+        private async UniTask<BattleResponse> PollBattleResponse(Address myAvatarAddress)
+        {
+            int[] initialPollingIntervals = { 8000, 4000, 2000, 1000 }; // 초기 요청시간: 8s, 4s, 2s, 1s
+            int maxAdditionalAttempts = 10; // 1초가된후 최대 요청개수
+
+            // 처음에 바로 시도
+            var battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
+
+            if (battleResponse == null)
+            {
+                bool isPollingSuccessful = false; // 폴링 성공 여부를 저장할 변수
+
+                // 초기 요청시간을 줄여가며 폴링 시작
+                foreach (var interval in initialPollingIntervals)
+                {
+                    battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
+
+                    if (battleResponse != null)
+                    {
+                        NcDebug.Log("[Arena] Battle response received.");
+                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                        break; // 성공 시 더 이상 요청하지 않도록 break
+                    }
+                    await UniTask.Delay(interval); // milliseconds to seconds
+                }
+
+                // 1초 간격으로 추가 폴링
+                for (int i = 0; i < maxAdditionalAttempts && !isPollingSuccessful; i++) // 성공하지 않은 경우에만 추가 요청
+                {
+                    battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
+
+                    if (battleResponse != null)
+                    {
+                        NcDebug.Log("[Arena] Battle response received.");
+                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                        break; // 성공 시 더 이상 요청하지 않도록 break
+                    }
+                    await UniTask.Delay(1000); // 1 second interval
+                }
+
+                if (battleResponse == null)
+                {
+                    NcDebug.LogError("[Arena] Response is null after polling.");
+                }
+            }
+            return battleResponse;
         }
 
         private IEnumerator CoStart(
@@ -145,7 +201,8 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoEnd(
             ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
-            (int, int)? winDefeatCount = null)
+            (int, int)? winDefeatCount = null,
+            BattleResponse battleResponse = null)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             ActionRenderHandler.Instance.Pending = false;
@@ -161,7 +218,7 @@ namespace Nekoyume.Game.Battle
             arenaCharacter.ShowSpeech("PLAYER_WIN");
             arenaCharacter.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
             Widget.Find<ArenaBattle>().Close();
-            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount);
+            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount, battleResponse);
             yield return null;
         }
 

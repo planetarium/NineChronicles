@@ -1,23 +1,29 @@
-﻿using Nekoyume.Game;
+﻿using System;
+using Nekoyume.Game;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
+    using GeneratedApiNamespace.ArenaServiceClient;
+    using Libplanet.Crypto;
+    using Nekoyume.ApiClient;
+    using Nekoyume.Blockchain;
+    using UniRx;
     public class ArenaTicketPopup : PopupWidget
     {
         [SerializeField]
         private SweepSlider ticketSlider = null;
 
         [SerializeField]
-        private TextMeshProUGUI haveTicketText = null;
+        private TextMeshProUGUI willBuyTicketText = null;
 
         [SerializeField]
-        private TextMeshProUGUI ticketCountToUseText = null;
+        private TextMeshProUGUI ticketPriceToBuyText = null;
 
         [SerializeField]
         private ConditionalButton startButton = null;
@@ -25,45 +31,121 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
-        private System.Action<int> _arenaBattleAction;
-        private readonly ReactiveProperty<int> _ticketCountToUse = new();
+        private readonly ReactiveProperty<int> _ticketCountToBuy = new();
+        private decimal _ticketPrice = 0;
+
+        public ReactiveProperty<bool> IsBuyingTicket = new ReactiveProperty<bool>(false);
 
         protected override void Awake()
         {
             base.Awake();
 
-            _ticketCountToUse
+            _ticketCountToBuy
                 .Subscribe(count =>
                 {
-                    ticketCountToUseText.text = count.ToString();
+                    decimal price = 0;
+                    try
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            price += RxProps.ArenaInfo.Value.BattleTicketStatus.NextNCGCosts[i];
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        NcDebug.LogError($"Error calculating ticket price: {e.Message}");
+                    }
+                    _ticketPrice = price;
+                    ticketPriceToBuyText.text = price.ToString();
                     startButton.Interactable = count > 0;
+                    willBuyTicketText.text = count.ToString();
                 })
                 .AddTo(gameObject);
 
-            startButton.OnSubmitSubject.Subscribe(_ =>
+            startButton.OnSubmitSubject.Subscribe(async _ =>
             {
-                _arenaBattleAction?.Invoke(_ticketCountToUse.Value);
                 Close();
+                IsBuyingTicket.SetValueAndForceNotify(true);
+
+                var ticketCount = _ticketCountToBuy.Value;
+                var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString());
+
+                var logId = await ActionManager.Instance.TransferAssetsForBattleTicketPurchase(
+                    States.Instance.AgentState.address,
+                    new Address(RxProps.OperationAccountAddress),
+                    ticketCount,
+                    cost
+                );
+
+                if (logId == -1)
+                {
+                    NcDebug.LogError("[ArenaTicketPopup] Ticket purchase failed. Please try again later.");
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENATICKET_PURCHASE_FAILED",
+                        "UI_OK");
+                    IsBuyingTicket.SetValueAndForceNotify(false);
+                    return;
+                }
+
+                TicketPurchaseLogResponse ticketResponse = null;
+                int[] initialPollingIntervals = { 8000, 4000, 2000, 1000 };
+                int maxAdditionalAttempts = 30;
+
+                async UniTask<bool> PerformPollingAsync()
+                {
+                    await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsBattlePurchaselogsAsync(logId, ArenaServiceManager.CreateCurrentJwt(),
+                        on200PurchaseLogId: (result) =>
+                        {
+                            ticketResponse = result;
+                        },
+                        onError: (error) =>
+                        {
+                            NcDebug.LogError($"[ArenaTicketPopup] Error while polling for ticket purchase | Error: {error}");
+                        }
+                    );
+
+                    return ticketResponse != null && ticketResponse.PurchaseStatus == PurchaseStatus.SUCCESS;
+                }
+
+                bool isPollingSuccessful = false;
+                foreach (var interval in initialPollingIntervals)
+                {
+                    if (await PerformPollingAsync())
+                    {
+                        NcDebug.Log("[ArenaTicketPopup] Ticket purchase completed successfully.");
+                        isPollingSuccessful = true;
+                        break;
+                    }
+                    await UniTask.Delay(interval);
+                }
+
+                for (int i = 0; i < maxAdditionalAttempts && !isPollingSuccessful; i++)
+                {
+                    if (await PerformPollingAsync())
+                    {
+                        NcDebug.Log("[ArenaTicketPopup] Ticket purchase completed successfully.");
+                        break;
+                    }
+                    await UniTask.Delay(1000);
+                }
+                await RxProps.ArenaInfo.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash);
+                IsBuyingTicket.SetValueAndForceNotify(false);
             }).AddTo(gameObject);
 
             closeButton.onClick.AddListener(() => Close());
         }
 
-        public void Show(System.Action<int> arenaBattleAction)
+        public void Show()
         {
-            _arenaBattleAction = arenaBattleAction;
-
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var ticketCount = RxProps.ArenaInfoTuple.HasValue
-                ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
-                    blockIndex,
-                    currentRound.StartBlockIndex,
-                    States.Instance.GameConfigState.DailyArenaInterval)
+            var ticketCount = RxProps.ArenaInfo.HasValue
+                ? RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
-            haveTicketText.text = ticketCount.ToString();
+            willBuyTicketText.text = "0";
 
-            ticketSlider.Set(0, ticketCount, ticketCount, 8, 1, x => _ticketCountToUse.Value = x);
+            ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
 
             base.Show();
         }

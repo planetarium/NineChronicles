@@ -8,6 +8,8 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using GeneratedApiNamespace.ArenaServiceClient;
+using System;
 
 namespace Nekoyume.UI
 {
@@ -53,7 +55,8 @@ namespace Nekoyume.UI
             ArenaLog log,
             IReadOnlyList<ItemBase> rewardItems,
             System.Action onClose,
-            (int win, int defeat)? winDefeatCount = null)
+            (int win, int defeat)? winDefeatCount = null,
+            BattleResponse battleResponse = null)
         {
             base.Show();
 
@@ -70,7 +73,27 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
-            scoreText.text = $"{log.Score}";
+            NcDebug.Log($"battleLogResponse: {battleResponse}");
+            NcDebug.Log($"log.Score: {log.Score}");
+            if (battleResponse != null && battleResponse.MyScoreChange.HasValue && battleResponse.MyScore.HasValue)
+            {
+                try
+                {
+                    var scoreChange = battleResponse.MyScoreChange.Value;
+                    var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
+                    var scoreChangeSign = scoreChange > 0 ? "+" : "-";
+                    scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"Error occurred: {e.Message}");
+                    scoreText.text = $"{log.Score}";    
+                }
+            }
+            else
+            {
+                scoreText.text = $"{log.Score}";
+            }
             winLoseCountText.text = winDefeatCount.HasValue
                 ? $"Win {winDefeatCount.Value.win} Lose {winDefeatCount.Value.defeat}"
                 : string.Empty;

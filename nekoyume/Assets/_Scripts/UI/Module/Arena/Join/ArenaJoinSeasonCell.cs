@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.Model.EnumType;
-using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
+using GeneratedApiNamespace.ArenaServiceClient;
+using ArenaType = GeneratedApiNamespace.ArenaServiceClient.ArenaType;
 
 namespace Nekoyume.UI.Module.Arena.Join
 {
     [Serializable]
     public class ArenaJoinSeasonItemData
     {
-        public ArenaSheet.RoundData RoundData;
+        public SeasonResponse SeasonData;
         public int? SeasonNumber;
         public List<int> ChampionshipSeasonNumbers;
 
         public string GetRoundName()
         {
-            return RoundData.ArenaType switch
+            return SeasonData.ArenaType switch
             {
-                ArenaType.OffSeason => "off-season",
-                ArenaType.Season => $"season #{SeasonNumber}",
-                ArenaType.Championship => $"championship #{RoundData.ChampionshipId}",
+                ArenaType.OFF_SEASON => "off-season",
+                ArenaType.SEASON => $"season #{SeasonNumber}",
+                ArenaType.CHAMPIONSHIP => $"championship #{SeasonData.Id}",
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
@@ -78,21 +78,21 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             _currentData = itemData;
             _medalCountObject.SetActive(false);
-            switch (_currentData.RoundData.ArenaType)
+            switch (_currentData.SeasonData.ArenaType)
             {
-                case ArenaType.OffSeason:
+                case ArenaType.OFF_SEASON:
                     _offseason.Show(_currentData, Index == Context.SelectedIndex);
                     _season.Hide();
                     _championship.Hide();
                     _seasonCountObject.SetActive(false);
                     break;
-                case ArenaType.Season:
+                case ArenaType.SEASON:
                     _offseason.Hide();
                     _season.Show(_currentData, Index == Context.SelectedIndex);
                     _championship.Hide();
                     _seasonCountObject.SetActive(false);
                     break;
-                case ArenaType.Championship:
+                case ArenaType.CHAMPIONSHIP:
                     _offseason.Hide();
                     _season.Hide();
                     _championship.Show(_currentData, Index == Context.SelectedIndex);
@@ -106,19 +106,19 @@ namespace Nekoyume.UI.Module.Arena.Join
             _currentPosition = position;
             PlayAnimation(_animator, _currentPosition);
 
-            switch (_currentData?.RoundData.ArenaType)
+            switch (_currentData?.SeasonData.ArenaType)
             {
-                case ArenaType.OffSeason:
+                case ArenaType.OFF_SEASON:
                     PlayAnimation(_offseason.Animator, _currentPosition);
                     break;
-                case ArenaType.Season:
+                case ArenaType.SEASON:
                     PlayAnimation(_season.Animator, _currentPosition);
                     break;
-                case ArenaType.Championship:
+                case ArenaType.CHAMPIONSHIP:
                     PlayAnimation(_championship.Animator, _currentPosition);
                     break;
                 default:
-                    var value = _currentData?.RoundData.ArenaType.ToString() ?? "null";
+                    var value = _currentData?.SeasonData.ArenaType.ToString() ?? "null";
                     NcDebug.Log($"{nameof(ArenaJoinSeasonCell)} type: {value}");
                     break;
             }
