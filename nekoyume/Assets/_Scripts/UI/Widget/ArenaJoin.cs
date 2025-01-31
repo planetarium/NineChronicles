@@ -95,6 +95,7 @@ namespace Nekoyume.UI
 
             await RxProps.UpdateSeasonResponsesAsync(Game.Game.instance.Agent.BlockIndex);
             if (!RxProps.ArenaSeasonResponses.HasValue ||
+                RxProps.ArenaSeasonResponses.Value.Count <= 0 ||
                 RxProps.ArenaSeasonResponses.Value.Last().EndBlockIndex < Game.Game.instance.Agent.BlockIndex ||
                 RxProps.CurrentArenaSeasonId == -1)
             {

@@ -175,6 +175,15 @@ namespace Nekoyume.State
         public static void UpdateArenaTicketProgress(long blockIndex)
         {
             var currentSeason = GetSeasonResponseByBlockIndex(blockIndex);
+            if (currentSeason == null)
+            {
+                NcDebug.LogError("Unable to retrieve current season information. Block index: " + blockIndex);
+                _arenaTicketsProgress.Value.Reset(
+                    5,
+                    5);
+                _arenaTicketsProgress.SetValueAndForceNotify(_arenaTicketsProgress.Value);
+                return;
+            }
             int maxTicketCount = currentSeason.BattleTicketPolicy.DefaultTicketsPerRound;
             var ticketResetInterval = currentSeason.RoundInterval;
             var progressedBlockRange =
