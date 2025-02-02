@@ -83,12 +83,41 @@ ZIP = {
 
 
 def cleanup_debug_dir(build_result_dir: str, isMobile: bool):
-    build_name = "android-build" if isMobile else "NineChronicles" 
-    shutil.rmtree(os.path.join(build_result_dir,
-                  f"{build_name}_BurstDebugInformation_DoNotShip"))
-
+    build_name = "android-build" if isMobile else "NineChronicles"
+    debug_dir = os.path.join(build_result_dir, f"{build_name}_BurstDebugInformation_DoNotShip")
+    if os.path.exists(debug_dir):
+        shutil.rmtree(debug_dir)
+        logging.info("Removed debug folder: %s", debug_dir)
+    else:
+        logging.info("Debug folder does not exist at expected path: %s", debug_dir)
+        # 대체 디버그 폴더 확인
+        alternative_dirs = []
+        for root, dirs, _ in os.walk(build_result_dir):
+            for d in dirs:
+                if "BurstDebugInformation_DoNotShip" in d:
+                    alternative_dirs.append(os.path.join(root, d))
+        if alternative_dirs:
+            logging.info("Found alternative debug folder(s): %s", alternative_dirs)
+        else:
+            logging.info("No alternative debug folder found in: %s", build_result_dir)
+    
+    # build_result_dir 내부가 비었는지 확인
     if len(os.listdir(build_result_dir)) == 0:
-        raise Exception("Build result is empty")
+        logging.info("Build result folder is empty at: %s", build_result_dir)
+        # 상위 디렉토리에서 대체 빌드 결과 디렉토리 탐색
+        alternative_builds = []
+        parent_dir = os.path.dirname(build_result_dir)
+        for item in os.listdir(parent_dir):
+            full_path = os.path.join(parent_dir, item)
+            if os.path.isdir(full_path) and item != os.path.basename(build_result_dir):
+                alternative_builds.append(full_path)
+        if alternative_builds:
+            logging.info("Found alternative build result directories: %s", alternative_builds)
+            build_result_dir = alternative_builds[0]
+            logging.info("Using alternative build result directory: %s", build_result_dir)
+        else:
+            raise Exception("Build result is empty")
+
 
 
 def main() -> None:
