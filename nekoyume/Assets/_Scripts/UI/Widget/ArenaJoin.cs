@@ -48,10 +48,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private ConditionalButton _joinButton;
 
-        [Obsolete("추후에 삭제될 예정.")]
-        [SerializeField]
-        private ConditionalCostButton _paymentButton;
-
         [SerializeField]
         private ArenaJoinMissionButton _missionButton;
 
@@ -371,10 +367,7 @@ namespace Nekoyume.UI
             var lastChampionship = RxProps.ArenaSeasonResponses.Value.LastOrDefault();
             var avatarState = States.Instance.CurrentAvatarState;
             var requiredMedal = lastChampionship?.RequiredMedalCount ?? 0;
-
-            // todo : 아레나서비스
-            // 사용자 메달 숫자로 갱신시켜야함.
-            var medalTotalCount = 0;
+            var medalTotalCount = _totalMedalCountForThisChampionship;
             return ((int)requiredMedal, medalTotalCount);
         }
 

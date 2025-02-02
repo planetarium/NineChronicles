@@ -142,7 +142,6 @@ MonoBehaviour:
   _info: {fileID: 2898975863204621241}
   _bottomButtonText: {fileID: 1322950702785674811}
   _joinButton: {fileID: 3978652346562661286}
-  _paymentButton: {fileID: 46208906117760654}
   _missionButton: {fileID: 95861224967661445}
   _backButton: {fileID: 2903141791949199146}
   baseArenaJoinObject: {fileID: 9039415839821357432}
@@ -2126,18 +2125,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a, type: 3}
---- !u!114 &46208906117760654 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1993604777373137340, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
-    type: 3}
-  m_PrefabInstance: {fileID: 1949669664321912626}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &95861224967661445 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1898847219997300919, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,

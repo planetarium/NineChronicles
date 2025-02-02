@@ -10,11 +10,14 @@ using GeneratedApiNamespace.ArenaServiceClient;
 
 namespace Nekoyume.UI.Module.Arena.Join
 {
+    using System.Globalization;
+    using Nekoyume.L10n;
     using UniRx;
 
     public class ArenaJoinSeasonInfo : MonoBehaviour
     {
-        [Flags][Serializable]
+        [Flags]
+        [Serializable]
         public enum RewardType
         {
             None = 0,
@@ -53,6 +56,10 @@ namespace Nekoyume.UI.Module.Arena.Join
         private GameObject _courageReward;
         [SerializeField]
         private List<Image> _currentRoundMedalImages;
+        [SerializeField]
+        private TextMeshProUGUI _totalPrice;
+        [SerializeField]
+        private ConditionalButton _viewDetail;
 
         private readonly List<IDisposable> _disposablesFromOnEnable = new();
 
@@ -63,6 +70,19 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private readonly Subject<Unit> _onSeasonEnded = new();
         public IObservable<Unit> OnSeasonEnded => _onSeasonEnded;
+
+        void Awake()
+        {
+            _viewDetail.OnClickSubject.Subscribe(_ =>
+            {
+                if (string.IsNullOrEmpty(_seasonData?.PrizeDetailSiteURL))
+                {
+                    NcDebug.LogError("The prize detail site URL is empty.");
+                    return;
+                }
+                Application.OpenURL(_seasonData?.PrizeDetailSiteURL);
+            }).AddTo(gameObject);
+        }
 
         private void OnEnable()
         {
@@ -96,7 +116,8 @@ namespace Nekoyume.UI.Module.Arena.Join
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             SetSliderAndText(_seasonData.GetSeasonProgress(blockIndex));
             SetRewards(rewardType);
-            SetMedalImages(medalItemId);
+            //SetMedalImages(medalItemId);
+            _totalPrice.text = L10nManager.Localize("UI_ARENAJOIN_NCG", seasonData.TotalPrize.ToString("N0", CultureInfo.CurrentCulture));
         }
 
         private void SetSliderAndText((long beginning, long end, long current) tuple)

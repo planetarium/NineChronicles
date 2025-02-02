@@ -1697,7 +1697,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: af71cb05bb367459190116188b5ba567, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b838d452ee0d547179f51bc5f1f14791, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4087,6 +4087,8 @@ MonoBehaviour:
   _courageReward: {fileID: 3914420672647302377}
   _currentRoundMedalImages:
   - {fileID: 2186114825340549839}
+  _totalPrice: {fileID: 7752399793043587506}
+  _viewDetail: {fileID: 3319059879664063756}
 --- !u!225 &146861636396827714
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5019,6 +5021,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45eb7886920094eeca085daf783730b5, type: 3}
+--- !u!114 &3319059879664063756 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1868312093538365535, guid: 45eb7886920094eeca085daf783730b5,
+    type: 3}
+  m_PrefabInstance: {fileID: 4026843222231426387}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3319059879664063757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3319059879664063757 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1868312093538365534, guid: 45eb7886920094eeca085daf783730b5,
