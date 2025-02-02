@@ -228,10 +228,9 @@ namespace Nekoyume.UI
             _clanObj.SetActive(currentInfo.ClanInfo != null);
             if (currentInfo.ClanInfo != null)
             {
-                Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ToCoroutine((result) =>
+                Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ContinueWith((result) =>
                 {
                     _myClanIcon.sprite = result;
-                    _myClanIcon.SetNativeSize();
                 });
                 _myClanName.text = currentInfo.ClanInfo.Name;
             }
@@ -470,6 +469,10 @@ namespace Nekoyume.UI
                 return;
             }
             RefreshArenaBoardAsync().Forget();
+        }
+
+        public void OnClickClanRankingBtn(){
+            Find<ClanRankPopup>().Show();
         }
     }
 }

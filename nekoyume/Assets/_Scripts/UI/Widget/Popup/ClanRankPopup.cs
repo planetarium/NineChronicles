@@ -62,12 +62,12 @@ namespace Nekoyume.UI
             {
                 // 클랜 리더보드 데이터를 비동기로 가져옵니다.
                 ClanLeaderboardResponse response = null;
-                await ApiClients.Instance.Arenaservicemanager.Client.GetClansLeaderboardAsync(0, RankingBoardDisplayCount,
+                await ApiClients.Instance.Arenaservicemanager.Client.GetClansLeaderboardAsync(ArenaServiceManager.CreateCurrentJwt(),
                     on200OK: (result) =>
                     {
                         response = result;
                     });
-                
+
                 if (response != null)
                 {
                     // 클랜 랭크 스크롤에 데이터를 설정합니다.
@@ -84,7 +84,7 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError(ex.Message);
                 missingObject.SetActive(true);
-                missingText.text =  L10nManager.Localize("UI_CLAN_RANK_DATA_NOT_FOUND");
+                missingText.text = L10nManager.Localize("UI_CLAN_RANK_DATA_NOT_FOUND");
             }
             finally
             {

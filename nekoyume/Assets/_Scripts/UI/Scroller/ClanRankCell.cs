@@ -1,4 +1,7 @@
+using System.Globalization;
+using Cysharp.Threading.Tasks;
 using GeneratedApiNamespace.ArenaServiceClient;
+using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,10 +10,19 @@ namespace Nekoyume.UI.Scroller
 {
     public class ClanRankCell : RectCell<
         ClanResponse,
-        RankScroll.ContextModel>
+        ClanRankScroll.ContextModel>
     {
         [SerializeField]
         private Image rankImage = null;
+
+        [SerializeField]
+        private TextMeshProUGUI clanName;
+
+        [SerializeField]
+        private TextMeshProUGUI clanScore;
+
+        [SerializeField]
+        private Image clanIcon;
 
         [SerializeField]
         private TextMeshProUGUI rankText = null;
@@ -60,6 +72,14 @@ namespace Nekoyume.UI.Scroller
         public override void UpdateContent(ClanResponse viewModel)
         {
             UpdateRank(viewModel.Rank);
+
+            clanName.text = viewModel.Name;
+            clanScore.text = viewModel.Score.ToString("N0", CultureInfo.CurrentCulture);
+
+            Util.DownloadTexture(viewModel.ImageURL).ContinueWith((result) =>
+            {
+                clanIcon.sprite = result;
+            });
         }
     }
 }

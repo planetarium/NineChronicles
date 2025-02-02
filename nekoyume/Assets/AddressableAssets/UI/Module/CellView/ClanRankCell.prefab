@@ -950,6 +950,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rankImage: {fileID: 122602637965479747}
+  clanName: {fileID: 3860167515089439130}
+  clanScore: {fileID: 838063577250149986}
+  clanIcon: {fileID: 6077010611777772255}
   rankText: {fileID: 5818069285300886996}
   firstPlaceSprite: {fileID: 21300000, guid: b5bf5b24edcd24e3fbb975b716166eb4, type: 3}
   secondPlaceSprite: {fileID: 21300000, guid: c6c50146382394d668455c00a30730db, type: 3}
@@ -966,7 +969,6 @@ GameObject:
   - component: {fileID: 7130176339200182422}
   - component: {fileID: 7310601213690546868}
   - component: {fileID: 4689412366874212794}
-  - component: {fileID: 7487196731104356635}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1062,31 +1064,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7487196731104356635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3207195796803610007}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb4e8c8fbc0ec0f4da94773d3a285d50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rankImage: {fileID: 122602637965479747}
-  rankText: {fileID: 5818069285300886996}
-  characterView: {fileID: 0}
-  nicknameText: {fileID: 3860167515089439130}
-  addressText: {fileID: 0}
-  firstElementCpText: {fileID: 9009409968298169080}
-  firstElementText: {fileID: 838063577250149986}
-  secondElementText: {fileID: 638468547428219404}
-  secondElementEquipmentNameText: {fileID: 5639917612869158870}
-  firstPlaceSprite: {fileID: 21300000, guid: b5bf5b24edcd24e3fbb975b716166eb4, type: 3}
-  secondPlaceSprite: {fileID: 21300000, guid: c6c50146382394d668455c00a30730db, type: 3}
-  thirdPlaceSprite: {fileID: 21300000, guid: 6ef43577a33454f3eae3444f44b80a95, type: 3}
-  addressStringCount: 6
 --- !u!1 &3732045135272570060
 GameObject:
   m_ObjectHideFlags: 0
@@ -1894,15 +1871,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3603455593439042566}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9009409968298169080 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5694187535309377278, guid: 47f8c7ccd12294594bc91d796d7bd0d1,
-    type: 3}
-  m_PrefabInstance: {fileID: 3603455593439042566}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

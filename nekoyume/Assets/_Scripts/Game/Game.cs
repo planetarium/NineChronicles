@@ -918,8 +918,8 @@ namespace Nekoyume.Game
         public static async UniTaskVoid BackToMainAsync(Exception exc,
             bool showLoadingScreen = false)
         {
+            await UniTask.SwitchToMainThread();
             NcDebug.LogException(exc);
-
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
             Lobby.Enter(showLoadingScreen);
             instance.Lobby.OnLobbyEnterEnd
