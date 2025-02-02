@@ -121,7 +121,7 @@ jobs:
           version: ${{ github.event.inputs.app-version }}
           allowDirtyBuild: true
           
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
@@ -163,7 +163,7 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Download iOS Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
