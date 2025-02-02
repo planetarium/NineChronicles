@@ -3090,6 +3090,7 @@ namespace Nekoyume.Blockchain
             UpdatePreviousAvatarState(eval.PreviousState, eval.Action.myAvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
+            ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.myAvatarAddress));
             return eval;
         }
 
