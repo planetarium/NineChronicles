@@ -82,7 +82,7 @@ jobs:
 
       - name: Move Folder
         run: |
-          sudo mv $GITHUB_WORKSPACE/build/* /tmp/player
+          sudo mv $GITHUB_WORKSPACE/build /tmp/player
 
       - name: Debug - List contents of /tmp/player
         run: |
