@@ -83,10 +83,26 @@ ZIP = {
 
 
 def cleanup_debug_dir(build_result_dir: str, isMobile: bool):
-    build_name = "android-build" if isMobile else "NineChronicles" 
-    shutil.rmtree(os.path.join(build_result_dir,
-                  f"{build_name}_BurstDebugInformation_DoNotShip"))
-
+    build_name = "android-build" if isMobile else "NineChronicles"
+    debug_dir = os.path.join(build_result_dir, f"{build_name}_BurstDebugInformation_DoNotShip")
+    if os.path.exists(debug_dir):
+        shutil.rmtree(debug_dir)
+        logging.info("Removed debug folder: %s", debug_dir)
+    else:
+        logging.info("Debug folder does not exist at expected path: %s", debug_dir)
+        # 대체 경로 확인: build_result_dir 전체에서 "BurstDebugInformation_DoNotShip" 문자열 포함 폴더 검색
+        alternative_dirs = []
+        for root, dirs, files in os.walk(build_result_dir):
+            for d in dirs:
+                if "BurstDebugInformation_DoNotShip" in d:
+                    alternative_dirs.append(os.path.join(root, d))
+        if alternative_dirs:
+            logging.info("Found alternative debug folder(s):")
+            for alt in alternative_dirs:
+                logging.info("Alternative debug folder: %s", alt)
+        else:
+            logging.info("No alternative debug folder found in: %s", build_result_dir)
+    
     if len(os.listdir(build_result_dir)) == 0:
         raise Exception("Build result is empty")
 
