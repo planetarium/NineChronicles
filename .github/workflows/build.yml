@@ -71,21 +71,26 @@ jobs:
         with:
           python-version: 3.11.0
 
-      - name: Debug - List contents of build directory before moving
+      - name: Debug - Tree view of build directory before moving
         run: |
-          echo "빌드 폴더 내용 확인: $GITHUB_WORKSPACE/build"
-          ls -alR $GITHUB_WORKSPACE/build
+          echo "===== 빌드 폴더 트리 구조: $GITHUB_WORKSPACE/build ====="
+          if ! command -v tree >/dev/null 2>&1; then
+            echo "tree 명령어가 없습니다. 설치 중..."
+            sudo apt-get update && sudo apt-get install -y tree
+          fi
+          tree $GITHUB_WORKSPACE/build
 
       - name: Move Folder
         run: |
           sudo mv $GITHUB_WORKSPACE/build/* /tmp/player
 
-      - name: Debug - List contents of /tmp/packages
+      - name: Debug - List contents of /tmp/player
         run: |
-          echo "파일 개수: $(find /tmp/packages -type f | wc -l)"
-          echo "폴더 개수: $(find /tmp/packages -type d | wc -l)"
+          tree /tmp/player
+          echo "파일 개수: $(find /tmp/player -type f | wc -l)"
+          echo "폴더 개수: $(find /tmp/player -type d | wc -l)"
           echo "전체 목록:"
-          ls -alR /tmp/packages
+          ls -alR /tmp/player
 
       - name: Pack
         run: |
