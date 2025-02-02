@@ -6,6 +6,7 @@ using UnityEngine.UI.Extensions;
 namespace Nekoyume.UI.Module.Arena.Board
 {
     using UniRx;
+    using UnityEngine.UI;
 
     public class ArenaBoardPlayerScroll
         : FancyScrollRect<ArenaBoardPlayerItemData, ArenaBoardPlayerScrollContext>
@@ -41,6 +42,8 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         public IObservable<int> OnClickChoice => _onClickChoice;
 
+        public RectTransform ContentsVerticalLayoutgroup;
+
         public void SetData(List<ArenaBoardPlayerItemData> data, int? index = null)
         {
             if (!initialized)
@@ -56,17 +59,21 @@ namespace Nekoyume.UI.Module.Arena.Board
                 return;
             }
 
-            if (index.HasValue)
-            {
-                if (index.Value >= _data.Count)
-                {
-                    NcDebug.LogError($"Index out of range: {index.Value} >= {_data.Count}");
-                    return;
-                }
+            // 스크롤 기능을 사용하지않고 최대 갯수만큼 보여주기위한 임시코드.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ContentsVerticalLayoutgroup);
+            return;
 
-                UpdateSelection(index.Value, true);
-                _scroller.JumpTo(index.Value);
-            }
+            // if (index.HasValue)
+            // {
+            //     if (index.Value >= _data.Count)
+            //     {
+            //         NcDebug.LogError($"Index out of range: {index.Value} >= {_data.Count}");
+            //         return;
+            //     }
+
+            //     UpdateSelection(index.Value, true);
+            //     _scroller.JumpTo(index.Value);
+            // }
         }
 
         public void SelectCell(int index, bool invokeEvents)
