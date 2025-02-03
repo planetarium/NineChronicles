@@ -8,6 +8,7 @@ on:
       - preview
       - release/*
       - fast-track/*
+      - fix-upload-artifact
     tags: [ "*" ]
   pull_request:
     types: [ ready_for_review, opened, reopened, auto_merge_enabled ]
