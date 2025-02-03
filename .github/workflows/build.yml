@@ -186,7 +186,7 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: release
-        uses: planetarium/9c-toolbelt@main
+        uses: planetarium/9c-toolbelt@feature/deprecate_runtime_api
         with:
           COMMAND_LIST: "release|player|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|${{ matrix.targetPlatform }}|${{ needs.extract.outputs.signing }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}|--run-id=${{ github.run_id }}"
           ENV: production
