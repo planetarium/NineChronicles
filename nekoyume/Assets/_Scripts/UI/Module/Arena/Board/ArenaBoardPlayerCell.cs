@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Module.Arena.Board
     using Cysharp.Threading.Tasks;
     using Nekoyume.State;
     using UniRx;
+    using Unity.Mathematics;
 
     [Serializable]
     public class ArenaBoardPlayerItemData
@@ -70,6 +71,8 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         [SerializeField]
         private TextMeshProUGUI _plusRatingText;
+        [SerializeField]
+        private TextMeshProUGUI _minusRatingText;
 
         [SerializeField]
         private ConditionalButton _choiceButton;
@@ -150,6 +153,9 @@ namespace Nekoyume.UI.Module.Arena.Board
             _ratingText.text = _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
             _plusRatingText.gameObject.SetActive(_currentData.canFight);
             _plusRatingText.text = _currentData.expectWinDeltaScore.ToString("N0", CultureInfo.CurrentCulture);
+            _minusRatingText.gameObject.SetActive(_currentData.canFight);
+            
+            _minusRatingText.text = math.abs(_currentData.scoreOnLose).ToString("N0", CultureInfo.CurrentCulture);
 
             _choiceButton.gameObject.SetActive(_currentData.canFight);
             if (_currentData.canFight)
