@@ -358,6 +358,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AvatarInfoPopup>());
             _secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
             _secondWidgets.Add(Widget.Create<RankPopup>());
+            _secondWidgets.Add(Widget.Create<ClanRankPopup>());
             _secondWidgets.Add(Widget.Create<ChatPopup>());
             _secondWidgets.Add(Widget.Create<QuitSystem>());
             _secondWidgets.Add(Widget.Create<BuffBonusPopup>());
