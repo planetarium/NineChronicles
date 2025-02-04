@@ -71,6 +71,17 @@ namespace Nekoyume.UI
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString());
 
+                if (States.Instance.GoldBalanceState.Gold < cost)
+                {
+                    NcDebug.LogError("[ArenaTicketPopup] Ticket purchase failed. Not Enough Cost");
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENATICKET_NOT_ENOUGH_GOLD",
+                        "UI_OK");
+                    IsBuyingTicket.SetValueAndForceNotify(false);
+                    return;
+                }
+
                 var logId = await ActionManager.Instance.TransferAssetsForBattleTicketPurchase(
                     States.Instance.AgentState.address,
                     new Address(RxProps.OperationAccountAddress),
