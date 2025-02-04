@@ -88,6 +88,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             InitializeScrolls();
+            _loadingObj.SetActive(false);
 
             _backButton.OnClickAsObservable().Subscribe(_ =>
             {
@@ -127,47 +128,51 @@ namespace Nekoyume.UI
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
             List<AvailableOpponentResponse> response = null;
             bool isFirst = false;
-            await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
-                on200AvailableOpponents: (result) =>
-                {
-                    response = result?.ToList();
-                },
-                on404Status404NotFound: (result) =>
-                {
-                    isFirst = true;
-                },
-                onError: (error) =>
-                {
-                    NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
-                }
-            );
 
-            //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
-            if (isFirst)
+
+            //로딩이 아닌경우에만 리스트요청하도록
+            if (!_loadingObj.activeSelf)
             {
-                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
                     on200AvailableOpponents: (result) =>
                     {
                         response = result?.ToList();
                     },
+                    on404Status404NotFound: (result) =>
+                    {
+                        isFirst = true;
+                    },
                     onError: (error) =>
                     {
-                        NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
+                        NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
                     }
                 );
-            }
+                //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
+                if (isFirst)
+                {
+                    await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                        on200AvailableOpponents: (result) =>
+                        {
+                            response = result?.ToList();
+                        },
+                        onError: (error) =>
+                        {
+                            NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
+                        }
+                    );
+                }
+                if (response == null)
+                {
+                    HandleArenaError("UI_ARENABOARD_GET_FAILED");
+                    return;
+                }
 
-            if (response == null)
-            {
-                HandleArenaError("UI_ARENABOARD_GET_FAILED");
-                return;
-            }
-
-            // todo: 아레나서비스 리프레시중인경우일수있음 체크필요
-            if (response.Count == 0)
-            {
-                HandleArenaError("UI_ARENA_GET_OPPONENTS_FAILED", "No available opponents found for the arena. Please try again later.");
-                return;
+                // todo: 아레나서비스 리프레시중인경우일수있음 체크필요
+                if (response.Count == 0)
+                {
+                    HandleArenaError("UI_ARENA_GET_OPPONENTS_FAILED", "No available opponents found for the arena. Please try again later.");
+                    return;
+                }
             }
 
             var arenaInfoResponse = await RxProps.ArenaInfo.UpdateAsync(blockTipStateRootHash);
@@ -185,7 +190,6 @@ namespace Nekoyume.UI
             UpdateBillboard();
             UpdateScrolls();
 
-            _loadingObj.SetActive(false);
             _refreshBtn.SetState(ConditionalButton.State.Normal);
             RefreshStateUpdate();
 
@@ -435,7 +439,7 @@ namespace Nekoyume.UI
                 },
                 onError: (error) =>
                 {
-                    NcDebug.LogError($"[ArenaBoard] Failed to get free available opponents | Error: {error}");
+                    NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
                 }
             );
 
