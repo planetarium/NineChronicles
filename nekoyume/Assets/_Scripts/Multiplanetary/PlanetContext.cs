@@ -202,7 +202,8 @@ namespace Nekoyume.Multiplanetary
             {
                 if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
                 {
-                    // ErrorType.NoHeadlessGqlEndpointInPlanet
+                    planetInfo.ErrorType = ErrorType.NoHeadlessGqlEndpointInPlanet;
+                    planetInfos.Add(planetInfo);
                     NcDebug.LogError($"[{nameof(PlanetContext)}] HeadlessGql endpoint of planet({planetInfo.ID.ToLocalizedPlanetName(true)}) is empty.");
                     continue;
                 }
@@ -211,7 +212,8 @@ namespace Nekoyume.Multiplanetary
                 var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
                 if (string.IsNullOrEmpty(endpoint))
                 {
-                    // ErrorType.PlanetHeadlessGqlEndpointIsEmpty
+                    planetInfo.ErrorType = ErrorType.PlanetHeadlessGqlEndpointIsEmpty;
+                    planetInfos.Add(planetInfo);
                     NcDebug.LogError($"[{nameof(PlanetContext)}] endpoint(index: {index}) is null or empty for planet({planetInfo.ID.ToLocalizedPlanetName(true)}).");
                     continue;
                 }
@@ -239,7 +241,8 @@ namespace Nekoyume.Multiplanetary
                 }
                 if (hasError)
                 {
-                    // ErrorType.QueryPlanetAccountInfoFailed
+                    planetInfo.ErrorType = ErrorType.QueryPlanetAccountInfoFailed;
+                    planetInfos.Add(planetInfo);
                     NcDebug.LogError($"[{nameof(PlanetContext)}] Querying failed. Check the endpoint url.");
                     continue;
                 }

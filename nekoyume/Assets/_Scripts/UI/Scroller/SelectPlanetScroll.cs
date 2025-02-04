@@ -89,23 +89,15 @@ namespace Nekoyume.UI.Scroller
                     };
                 }
 
-                if (selectedPlanetId is null)
-                {
-                    return new SelectPlanetCell.ViewModel
-                    {
-                        PlanetId = e.ID,
-                        PlanetName = textInfo.ToTitleCase(e.Name),
-                        IsSelected = false,
-                        IsNew = IsThor(e),
-                    };
-                }
+                var isSelect = selectedPlanetId is not null && e.ID.Equals(selectedPlanetId);
 
                 return new SelectPlanetCell.ViewModel
                 {
                     PlanetId = e.ID,
                     PlanetName = textInfo.ToTitleCase(e.Name),
-                    IsSelected = e.ID.Equals(selectedPlanetId),
+                    IsSelected = isSelect,
                     IsNew = IsThor(e),
+                    HasError = e.ErrorType != null,
                 };
             }).ToArray();
             UpdateContents(newItemsSource);

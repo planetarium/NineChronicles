@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Scroller
             public string PlanetName;
             public bool IsNew;
             public bool IsSelected;
+            public bool HasError;
         }
 
         [SerializeField]
@@ -47,10 +48,19 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            button.Interactable = _viewModel.IsSelected;
             button.Text = string.IsNullOrEmpty(_viewModel.PlanetName)
                 ? "null"
                 : _viewModel.PlanetName;
+
+            if (_viewModel.HasError)
+            {
+                button.Interactable = false;
+                button.Text = $"{button.Text} (Error)";
+                newMarkGO.SetActive(false);
+                return;
+            }
+
+            button.Interactable = _viewModel.IsSelected;
             newMarkGO.SetActive(_viewModel.IsNew);
         }
     }
