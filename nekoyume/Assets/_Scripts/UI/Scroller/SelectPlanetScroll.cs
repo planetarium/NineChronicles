@@ -68,6 +68,15 @@ namespace Nekoyume.UI.Scroller
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
+
+            foreach (var planetInfo in planetRegistry.PlanetInfos)
+            {
+                NcDebug.LogWarning("---------11123321");
+                NcDebug.LogWarning(planetInfo.ID.ToString());
+                NcDebug.LogWarning(planetInfo.Name);
+                NcDebug.LogWarning(planetInfo.ErrorType == null ? "null" : planetInfo.ErrorType.ToString());
+            }
+
             var newItemsSource = planetRegistry.PlanetInfos.Where(e =>
             {
                 if (LiveAssetManager.instance.ThorSchedule.IsOpened)
