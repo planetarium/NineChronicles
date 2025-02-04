@@ -298,7 +298,7 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                await Client.GetBattleTokenAsync(opponentAvatarAddress, jwt,
+                await Client.PostBattleTokenAsync(opponentAvatarAddress, jwt,
                     on201Created: result =>
                     {
                         token = result;
