@@ -387,7 +387,7 @@ namespace Nekoyume.UI
 
             return data.SeasonData.ArenaType switch
             {
-                ArenaType.OFF_SEASON => ArenaJoinSeasonInfo.RewardType.None,
+                ArenaType.OFF_SEASON => ArenaJoinSeasonInfo.RewardType.Courage,
                 ArenaType.SEASON =>
                     ArenaJoinSeasonInfo.RewardType.Courage |
                     ArenaJoinSeasonInfo.RewardType.Medal |
