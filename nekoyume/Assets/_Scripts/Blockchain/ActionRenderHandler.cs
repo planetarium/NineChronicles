@@ -3201,21 +3201,10 @@ namespace Nekoyume.Blockchain
                     tableSheets.BuffLinkSheet,
                     true);
 
-                var reward = RewardSelector.Select(
-                    random,
-                    tableSheets.WeeklyArenaRewardSheet,
-                    tableSheets.MaterialItemSheet,
-                    myDigest.Value.Level,
-                    ArenaHelper.GetRewardCount(previousMyScore));
+                var reward = new List<ItemBase>();
 
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
-                    // TODO: 아레나 서비스
-                    // if (hasMedalReward && medalItem is not null)
-                    // {
-                    //     reward.Add(medalItem);
-                    // }
-
                     winCount++;
                 }
                 else
