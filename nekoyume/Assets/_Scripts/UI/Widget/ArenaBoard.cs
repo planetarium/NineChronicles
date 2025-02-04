@@ -441,7 +441,7 @@ namespace Nekoyume.UI
 
             if (response == null || response.Count == 0)
             {
-                NcDebug.LogError("[ArenaBoard] Response is null after free refresh.");
+                NcDebug.LogError("[ArenaBoard] Response is null after refresh.");
                 _loadingObj.SetActive(false);
                 _refreshBtn.SetState(ConditionalButton.State.Normal);
                 Find<IconAndButtonSystem>().Show(
@@ -468,10 +468,50 @@ namespace Nekoyume.UI
                 NcDebug.LogWarning("[ArenaBoard] Loading is in progress, cannot refresh the arena board.");
                 return;
             }
-            RefreshArenaBoardAsync().Forget();
+
+            if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
+            {
+                //더 이상 갱신못하는 경우
+                if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound == 0)
+                {
+                    Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENA_BOARD_REFRESH_MAX_LIMIT"),
+                        L10nManager.Localize("UI_YES"), () =>
+                        {
+
+                        });
+                }
+                //재화 소모로 갱신가능한경우
+                else
+                {
+                    var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
+                    var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+                    var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
+                    Find<PaymentPopup>().ShowCheckPaymentNCG(
+                        States.Instance.GoldBalanceState.Gold,
+                        cost,
+                        L10nManager.Localize("UI_ARENA_BOARD_REFRESH_NCG_REQUIRE", nextCost.ToString()),
+                        () =>
+                        {
+                            RefreshArenaBoardAsync().Forget();
+                        }
+                    );
+                }
+            }
+            //무료로 갱신가능한경우
+            else
+            {
+                Find<TwoButtonSystem>().Show(L10nManager.Localize("UI_ARENA_BOARD_FREE_REFRESH_NOTICE"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    () =>
+                    {
+                        RefreshArenaBoardAsync().Forget();
+                    });
+            }
         }
 
-        public void OnClickClanRankingBtn(){
+        public void OnClickClanRankingBtn()
+        {
             Find<ClanRankPopup>().Show();
         }
     }
