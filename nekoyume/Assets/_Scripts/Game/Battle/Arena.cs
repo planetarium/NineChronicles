@@ -136,7 +136,7 @@ namespace Nekoyume.Game.Battle
             // 처음에 바로 시도
             var battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
 
-            if (battleResponse == null)
+            if (battleResponse == null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
             {
                 bool isPollingSuccessful = false; // 폴링 성공 여부를 저장할 변수
 
@@ -145,7 +145,7 @@ namespace Nekoyume.Game.Battle
                 {
                     battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
 
-                    if (battleResponse != null)
+                    if (battleResponse != null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
                     {
                         NcDebug.Log("[Arena] Battle response received.");
                         isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
@@ -159,7 +159,7 @@ namespace Nekoyume.Game.Battle
                 {
                     battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
 
-                    if (battleResponse != null)
+                    if (battleResponse != null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
                     {
                         NcDebug.Log("[Arena] Battle response received.");
                         isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
@@ -168,7 +168,7 @@ namespace Nekoyume.Game.Battle
                     await UniTask.Delay(1000); // 1 second interval
                 }
 
-                if (battleResponse == null)
+                if (battleResponse == null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
                 {
                     NcDebug.LogError("[Arena] Response is null after polling.");
                 }
