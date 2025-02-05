@@ -129,7 +129,6 @@ namespace Nekoyume.UI
             List<AvailableOpponentResponse> response = null;
             bool isFirst = false;
 
-
             //로딩이 아닌경우에만 리스트요청하도록
             if (!_loadingObj.activeSelf)
             {
@@ -140,6 +139,7 @@ namespace Nekoyume.UI
                     },
                     on404Status404NotFound: (result) =>
                     {
+                        NcDebug.LogError("[ArenaBoard] Unable to retrieve available opponents. Error details: " + result);
                         isFirst = true;
                     },
                     onError: (error) =>
@@ -352,8 +352,17 @@ namespace Nekoyume.UI
 
             if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
             {
-                var nextCosts = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts;
-                _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN_WITH_NCG", nextCosts.First()));
+                // 더이상 구매할수없는경우
+                if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound == 0)
+                {
+                    _refreshBtn.SetState(ConditionalButton.State.Disabled);
+                    _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN"));
+                }
+                else
+                {
+                    var nextCosts = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts;
+                    _refreshBtn.SetText(L10nManager.Localize("UI_ARENA_REFRESH_BTN_WITH_NCG", nextCosts.FirstOrDefault()));
+                }
             }
             else
             {
@@ -369,7 +378,7 @@ namespace Nekoyume.UI
 
             if (RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingTicketsPerRound == 0)
             {
-                var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
+                var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.FirstOrDefault();
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
 
@@ -533,7 +542,7 @@ namespace Nekoyume.UI
                 //재화 소모로 갱신가능한경우
                 else
                 {
-                    var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.First();
+                    var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.FirstOrDefault();
                     var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                     var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
                     Find<PaymentPopup>().ShowCheckPaymentNCG(

@@ -104,7 +104,7 @@ namespace Nekoyume.State
                     item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
                 );
                 // 받은 응답에서 현재 시즌에 해당하는것이 없을경우 예외처리.
-                if (currentSeason != null)
+                if (currentSeason == null)
                 {
                     _currentSeasonId = -1;
                     _isUpdatingSeasonResponses = false;
