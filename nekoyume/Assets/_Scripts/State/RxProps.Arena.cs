@@ -97,7 +97,26 @@ namespace Nekoyume.State
         {
             if (_isUpdatingSeasonResponses) return;
 
-            if (_arenaSeasonResponses.Value.Count != 0 && _arenaSeasonResponses.Value.Last().EndBlockIndex > blockIndex) return;
+            //이미 Classifybychampionship된 응답을 한번 받은경우.
+            if (_arenaSeasonResponses.Value.Count != 0)
+            {
+                var currentSeason = _arenaSeasonResponses.Value.Find(item =>
+                    item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                );
+                // 받은 응답에서 현재 시즌에 해당하는것이 없을경우 예외처리.
+                if (currentSeason != null)
+                {
+                    _currentSeasonId = -1;
+                    _isUpdatingSeasonResponses = false;
+                    NcDebug.LogError("current season is null");
+                    return;
+                }
+                _currentSeasonId = currentSeason.Id;
+                
+                //이미 받은응답의 마지막 블록인덱스가 현재인댁스보다 큰경우 Classifybychampionship이 바뀌지않은것임으로 중복요청 방지.
+                if (_arenaSeasonResponses.Value.Last().EndBlockIndex > blockIndex)
+                    return;
+            }
 
             _isUpdatingSeasonResponses = true;
 
