@@ -952,7 +952,6 @@ namespace Nekoyume.Blockchain
             List<Guid> equipments,
             List<RuneSlotInfo> runeInfos,
             int championshipId,
-            int round,
             BattleTokenResponse token
         )
         {
@@ -974,7 +973,6 @@ namespace Nekoyume.Blockchain
                     new Dictionary<string, Value>()
                     {
                         ["championshipId"] = championshipId,
-                        ["round"] = round,
                         ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -982,7 +980,6 @@ namespace Nekoyume.Blockchain
 
                 var evt = new AirbridgeEvent("BattleArena");
                 evt.SetValue(championshipId);
-                evt.AddCustomAttribute("round", round);
                 evt.AddCustomAttribute("enemy-avatar-address", enemyAvatarAddress.ToString());
                 evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
                 evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
@@ -1807,9 +1804,15 @@ namespace Nekoyume.Blockchain
                         var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), amount, States.Instance.CurrentAvatarState.address.ToHex());
                         return task.ContinueWith(t =>
                         {
-                            if (t.IsFaulted || t.Result == -1)
+                            if (t.IsFaulted)
+                            {
+                                tcs.SetException(t.Exception);
+                                return false;
+                            }
+                            if (t.Result == -1)
                             {
                                 tcs.SetResult(t.Result);
+                                tcs.SetException(t.Exception);
                                 return false;
                             }
                             _agent.ActionRenderer.EveryRender<TransferAsset>()

@@ -258,7 +258,7 @@ namespace Nekoyume.UI
                 {
                     if (task.Result == null)
                     {
-                        Game.Game.BackToMainAsync(new Exception(L10nManager.Localize("UI_ARENA_BATTLETOKEN_RECIVE_FAIL"))).Forget();
+                        Game.Game.BackToMainAsync(new ArenaServiceException("UI_ARENA_BATTLETOKEN_RECIVE_FAIL")).Forget();
                         return;
                     }
                     var token = task.Result;
@@ -277,7 +277,6 @@ namespace Nekoyume.UI
                                 equipments,
                                 runeInfos,
                                 _seasonData.Id,
-                                _seasonData.Id,
                                 token);
                     }
                     catch (Exception e)
@@ -289,7 +288,7 @@ namespace Nekoyume.UI
                 {
                     // 오류 처리
                     NcDebug.LogError("토큰 요청에 실패했습니다. 오류: " + task.Exception?.Message);
-                    Game.Game.BackToMainAsync(task.Exception).Forget();
+                    Game.Game.BackToMainAsync(task.Exception.InnerException).Forget();
                 }
             });
         }

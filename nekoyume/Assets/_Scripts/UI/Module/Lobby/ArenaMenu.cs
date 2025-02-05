@@ -77,7 +77,7 @@ namespace Nekoyume.UI.Module.Lobby
                     _championshipGameObject.SetActive(false);
                     break;
                 case GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON:
-                    _seasonText.text = currentSeasonData.Id.ToString();
+                    _seasonText.text = currentSeasonData.SeasonGroupId.ToString();
                     _seasonGameObject.SetActive(true);
                     _championshipGameObject.SetActive(false);
                     break;

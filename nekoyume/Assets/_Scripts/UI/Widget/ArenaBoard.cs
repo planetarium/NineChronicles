@@ -265,7 +265,9 @@ namespace Nekoyume.UI
             _myCp.text = $"CP {currentInfo.User.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
             _myRatingAndScore.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
             _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
-            _myWinLose.text = $"W {currentInfo.TotalWin.ToString("N0", CultureInfo.CurrentCulture)} | L {currentInfo.TotalLose.ToString("N0", CultureInfo.CurrentCulture)}";
+            var currentRoundWin = currentInfo.TotalWin - currentInfo.CurrentRoundWinChange;
+            var currentRoundLose = currentInfo.TotalLose - currentInfo.CurrentRoundLoseChange;
+            _myWinLose.text = $"W {currentRoundWin.ToString("N0", CultureInfo.CurrentCulture)} | L {currentRoundLose.ToString("N0", CultureInfo.CurrentCulture)}";
             _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
             _clanObj.SetActive(currentInfo.ClanInfo != null);
             if (currentInfo.ClanInfo != null)
