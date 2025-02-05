@@ -165,7 +165,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var ticketCount = RxProps.ArenaInfo.HasValue
+            var ticketCount = RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null
                 ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
             willBuyTicketText.text = ticketCount.ToString();

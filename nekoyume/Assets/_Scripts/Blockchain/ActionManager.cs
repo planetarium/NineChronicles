@@ -952,7 +952,6 @@ namespace Nekoyume.Blockchain
             List<Guid> equipments,
             List<RuneSlotInfo> runeInfos,
             int championshipId,
-            int round,
             BattleTokenResponse token
         )
         {
@@ -974,7 +973,6 @@ namespace Nekoyume.Blockchain
                     new Dictionary<string, Value>()
                     {
                         ["championshipId"] = championshipId,
-                        ["round"] = round,
                         ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -982,7 +980,6 @@ namespace Nekoyume.Blockchain
 
                 var evt = new AirbridgeEvent("BattleArena");
                 evt.SetValue(championshipId);
-                evt.AddCustomAttribute("round", round);
                 evt.AddCustomAttribute("enemy-avatar-address", enemyAvatarAddress.ToString());
                 evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
                 evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());

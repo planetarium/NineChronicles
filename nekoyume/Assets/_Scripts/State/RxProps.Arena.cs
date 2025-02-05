@@ -69,7 +69,7 @@ namespace Nekoyume.State
         {
             return ArenaSeasonResponses.Value
                     .Where(seasonResponse => seasonResponse.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON)
-                    .Select(seasonResponse => seasonResponse.Id)
+                    .Select(seasonResponse => seasonResponse.SeasonGroupId)
                     .ToList();
         }
 

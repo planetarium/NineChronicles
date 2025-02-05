@@ -315,6 +315,8 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
+        [JsonPropertyName("seasonGroupId")]
+        public int SeasonGroupId { get; set; }
         [JsonPropertyName("arenaType")]
         public ArenaType ArenaType { get; set; }
         [JsonPropertyName("startBlockIndex")]

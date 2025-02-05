@@ -199,7 +199,7 @@ namespace Nekoyume.UI
                 return arenaDataList.Select(data => new ArenaJoinSeasonItemData
                 {
                     SeasonData = data,
-                    SeasonNumber = data.Id,
+                    SeasonNumber = data.SeasonGroupId,
                     ChampionshipSeasonNumbers = championshipSeasonIds
                 }).ToList();
             }
@@ -209,7 +209,7 @@ namespace Nekoyume.UI
                     .Select(seasonResponse => new ArenaJoinSeasonItemData
                     {
                         SeasonData = seasonResponse,
-                        SeasonNumber = seasonResponse.Id,
+                        SeasonNumber = seasonResponse.SeasonGroupId,
                         ChampionshipSeasonNumbers =
                             RxProps.GetSeasonNumbersOfChampionship()
                     }).ToList();
