@@ -985,7 +985,7 @@ namespace Nekoyume
                                     descriptionPart = descriptionPart.Substring(0, 30);
                                 }
 
-                                var callbackName = $"on{statusCode}{descriptionPart}";
+                                var callbackName = $"on{statusCode}";
 
                                 var responseSchema2 = response.Value["content"]?["application/json"]?["schema"];
                                 if (responseSchema2 != null)
@@ -1279,7 +1279,7 @@ namespace Nekoyume
                     }
                 }
 
-                parameters.Add($"Action<{responseType}> on{statusCode}{descriptionPart}");
+                parameters.Add($"Action<{responseType}> on{statusCode}");
             }
             return string.Join(", ", parameters);
         }
@@ -1296,7 +1296,7 @@ namespace Nekoyume
                 {
                     descriptionPart = descriptionPart.Substring(0, 30);
                 }
-                names.Add($"on{statusCode}{descriptionPart}");
+                names.Add($"on{statusCode}");
             }
             return names.ToArray();
         }

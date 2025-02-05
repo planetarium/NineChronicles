@@ -77,15 +77,7 @@ namespace Nekoyume.UI.Module.Lobby
                     _championshipGameObject.SetActive(false);
                     break;
                 case GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON:
-                    var roundData = currentSeasonData.GetCurrentRound(blockIndex);
-                    if (roundData != null)
-                    {
-                        _seasonText.text = roundData.Id.ToString();
-                    }
-                    else
-                    {
-                        NcDebug.LogError("[ArenaMenu] roundData is null.");
-                    }
+                    _seasonText.text = currentSeasonData.Id.ToString();
                     _seasonGameObject.SetActive(true);
                     _championshipGameObject.SetActive(false);
                     break;

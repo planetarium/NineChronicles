@@ -281,3 +281,10 @@ public class WorldBossStateNotFoundException : Exception
     {
     }
 }
+
+public class ArenaServiceException : Exception
+{
+    public ArenaServiceException(string message) : base(message)
+    {
+    }
+}

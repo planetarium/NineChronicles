@@ -81,13 +81,27 @@ namespace Nekoyume.UI
                     IsBuyingTicket.SetValueAndForceNotify(false);
                     return;
                 }
-
-                var logId = await ActionManager.Instance.TransferAssetsForBattleTicketPurchase(
-                    States.Instance.AgentState.address,
-                    new Address(RxProps.OperationAccountAddress),
-                    ticketCount,
-                    cost
-                );
+                int logId = -1;
+                try
+                {
+                    logId = await ActionManager.Instance.TransferAssetsForBattleTicketPurchase(
+                        States.Instance.AgentState.address,
+                        new Address(RxProps.OperationAccountAddress),
+                        ticketCount,
+                        cost
+                    );
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"[ArenaTicketPopup] 티켓 구매 중 예외 발생: {e.Message}");
+                    
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        e.InnerException != null ? e.InnerException.Message : e.Message,
+                        "UI_OK");
+                    IsBuyingTicket.SetValueAndForceNotify(false);
+                    return;
+                }
 
                 if (logId == -1)
                 {
@@ -107,7 +121,7 @@ namespace Nekoyume.UI
                 async UniTask<bool> PerformPollingAsync()
                 {
                     await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsBattlePurchaselogsAsync(logId, ArenaServiceManager.CreateCurrentJwt(),
-                        on200PurchaseLogId: (result) =>
+                        on200: (result) =>
                         {
                             ticketResponse = result;
                         },
@@ -152,12 +166,11 @@ namespace Nekoyume.UI
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var ticketCount = RxProps.ArenaInfo.HasValue
-                ? RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound
+                ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
-            willBuyTicketText.text = "0";
-
+            willBuyTicketText.text = ticketCount.ToString();
+            _ticketCountToBuy.SetValueAndForceNotify(ticketCount);
             ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
-
             base.Show();
         }
     }
