@@ -12,11 +12,14 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using GeneratedApiNamespace.ArenaServiceClient;
+using Nekoyume.Game;
+using System.Reactive.Linq;
 
 namespace Nekoyume.State
 {
     using Libplanet.Common;
-    using System.Reactive.Linq;
+    using Nekoyume.L10n;
+    using Nekoyume.UI;
     using System.Security.Cryptography;
     using UniRx;
 
@@ -50,6 +53,8 @@ namespace Nekoyume.State
         private static long _arenaInfoTupleUpdatedBlockIndex;
         private static int _currentSeasonId = -1;
         private static int _lastBattleLogId;
+
+        private static int _lastRoundIndex = -1;
 
         public static int CurrentArenaSeasonId
         {
@@ -112,7 +117,8 @@ namespace Nekoyume.State
                     return;
                 }
                 _currentSeasonId = currentSeason.Id;
-                
+                _lastRoundIndex = currentSeason.GetCurrentRound(blockIndex)?.Id ?? -1;
+
                 //이미 받은응답의 마지막 블록인덱스가 현재인댁스보다 큰경우 Classifybychampionship이 바뀌지않은것임으로 중복요청 방지.
                 if (_arenaSeasonResponses.Value.Last().EndBlockIndex > blockIndex)
                     return;
@@ -138,6 +144,7 @@ namespace Nekoyume.State
                     }
 
                     _currentSeasonId = currentSeason.Id;
+                    _lastRoundIndex = currentSeason.GetCurrentRound(blockIndex)?.Id ?? -1;
 
                     OperationAccountAddress = response.OperationAccountAddress;
                     _isUpdatingSeasonResponses = false;
@@ -229,6 +236,26 @@ namespace Nekoyume.State
                 currentArenaInfo.BattleTicketStatus.TicketsPurchasedPerRound);
             _arenaTicketsProgress.SetValueAndForceNotify(
                 _arenaTicketsProgress.Value);
+
+            var currentBlockIndex = currentSeason.GetCurrentRound(blockIndex);
+            if (currentBlockIndex?.Id != _lastRoundIndex)
+            {
+                _lastRoundIndex = currentBlockIndex?.Id ?? _lastRoundIndex;
+                //라운드 바뀌는순간.
+                if (Widget.Find<ArenaBoard>().IsActive() ||
+                    Widget.Find<ArenaBattlePreparation>().IsActive())
+                {
+                    Lobby.Enter(false);
+                    Game.Game.instance.Lobby.OnLobbyEnterEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            Widget.Find<ArenaJoin>().ShowAsync().Forget();
+                            Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENA_ROUND_CHAGED"), L10nManager.Localize("UI_OK"), null);
+                        });
+                    MainCanvas.instance.InitWidgetInMain();
+                }
+            }
         }
 
         private static async Task<ArenaInfoResponse>
