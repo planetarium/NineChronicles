@@ -77,6 +77,11 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
+            int defaultScore = 1000;
+            if (RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null)
+            {
+                defaultScore = RxProps.ArenaInfo.Value.Score;
+            }
             NcDebug.Log($"battleLogResponse: {battleResponse}");
             NcDebug.Log($"log.Score: {log.Score}");
             if (battleResponse != null && battleResponse.MyScoreChange.HasValue && battleResponse.MyScore.HasValue)
@@ -91,7 +96,7 @@ namespace Nekoyume.UI
                 catch (Exception e)
                 {
                     NcDebug.LogError($"Error occurred: {e.Message}");
-                    scoreText.text = $"{log.Score}";    
+                    scoreText.text = $"{defaultScore}";
                 }
             }
             else
@@ -105,18 +110,18 @@ namespace Nekoyume.UI
                         var scoreChange = win ? info.ScoreGainOnWin : info.ScoreLossOnLose;
                         var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
                         var scoreChangeSign = scoreChange > 0 ? "+" : "-";
-                        scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                        scoreText.text = $"{defaultScore} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
                     }
                     catch (Exception e)
                     {
                         NcDebug.LogError($"Error occurred: {e.Message}");
-                        scoreText.text = $"{log.Score}";
+                        scoreText.text = $"{defaultScore}";
                     }
                 }
                 else
                 {
-                    NcDebug.LogError($"Failed to retrieve information. Score: {log.Score}");
-                    scoreText.text = $"{log.Score}";
+                    NcDebug.LogError($"Failed to retrieve information. Score: {defaultScore}");
+                    scoreText.text = $"{defaultScore}";
                 }
             }
             winLoseCountText.text = winDefeatCount.HasValue
