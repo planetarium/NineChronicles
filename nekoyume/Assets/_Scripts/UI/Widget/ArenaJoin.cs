@@ -105,7 +105,7 @@ namespace Nekoyume.UI
             }
 
             await ApiClients.Instance.Arenaservicemanager.Client.GetUsersClassifybychampionshipMedalsAsync(Game.Game.instance.Agent.BlockIndex, ArenaServiceManager.CreateCurrentJwt(),
-                on200OK: (result) =>
+                on200: (result) =>
                 {
                     _totalMedalCountForThisChampionship = result.TotalMedalCountForThisChampionship;
                 },
@@ -244,6 +244,11 @@ namespace Nekoyume.UI
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var season = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+            if (season == null)
+            {
+                NcDebug.LogError("[ArenaJoin] Failed to retrieve season information. Block index: " + blockIndex);
+                return;
+            }
             var championshipRound = RxProps.ArenaSeasonResponses.Value.LastOrDefault().Id;
             if (season.Id > championshipRound)
             {

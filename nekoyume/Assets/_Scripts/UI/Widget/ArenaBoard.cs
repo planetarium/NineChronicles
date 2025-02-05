@@ -11,6 +11,7 @@ using Nekoyume.UI.Module.Arena.Board;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 namespace Nekoyume.UI
 {
@@ -93,7 +94,16 @@ namespace Nekoyume.UI
             _backButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Find<ArenaJoin>().Show();
+
+                //캐싱한 시즌정보들에 시즌이없는경우 다음구간 시즌리스트를 가져와야해서 비동기 실행으로 변경.
+                if (RxProps.GetSeasonResponseByBlockIndex(Game.Game.instance.Agent.BlockIndex) == null)
+                {
+                    Find<ArenaJoin>().ShowAsync().Forget();
+                }
+                else
+                {
+                    Find<ArenaJoin>().Show();
+                }
                 Close();
             }).AddTo(gameObject);
 
@@ -133,13 +143,14 @@ namespace Nekoyume.UI
             if (!_loadingObj.activeSelf)
             {
                 await ApiClients.Instance.Arenaservicemanager.Client.GetAvailableopponentsAsync(ArenaServiceManager.CreateCurrentJwt(),
-                    on200AvailableOpponents: (result) =>
+                    on200: (result) =>
                     {
                         response = result?.ToList();
                     },
-                    on404Status404NotFound: (result) =>
+                    on404: (result) =>
                     {
-                        NcDebug.LogError("[ArenaBoard] Unable to retrieve available opponents. Error details: " + result);
+                        //최초진입시 발생할수있어 로그수준을 낮춤.
+                        NcDebug.Log("[ArenaBoard] Unable to retrieve available opponents. Error details: " + result);
                         isFirst = true;
                     },
                     onError: (error) =>
@@ -150,16 +161,29 @@ namespace Nekoyume.UI
                 //시즌 시작 또는 인터벌시작 직후 최초 리스트가없는경우
                 if (isFirst)
                 {
-                    await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
-                        on200AvailableOpponents: (result) =>
-                        {
-                            response = result?.ToList();
-                        },
-                        onError: (error) =>
-                        {
-                            NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
-                        }
-                    );
+                    try
+                    {
+                        await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                            on200: (result) =>
+                            {
+                                response = result?.ToList();
+                            },
+                            on423: _ =>
+                            {
+                                throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
+                            },
+                            onError: (error) =>
+                            {
+                                NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
+                            }
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        NcDebug.LogError($"[ArenaBoard] Exception occurred while refreshing available opponents | Error: {ex.Message}");
+                        HandleArenaError(ex.Message);
+                        return;
+                    }
                 }
                 if (response == null)
                 {
@@ -190,6 +214,11 @@ namespace Nekoyume.UI
             loading.Close();
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             _seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+            if (_seasonData == null)
+            {
+                HandleArenaError("UI_ARENA_SEASONDATA_GET_FAILED");
+                return;
+            }
             _boundedData = response;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
@@ -382,9 +411,24 @@ namespace Nekoyume.UI
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
 
-                var logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
-                                        new Address(RxProps.OperationAccountAddress),
-                                        cost);
+                int logId = -1;
+                try
+                {
+                    logId = await ActionManager.Instance.TransferAssetsForArenaBoardRefresh(States.Instance.AgentState.address,
+                                           new Address(RxProps.OperationAccountAddress),
+                                           cost);
+                }
+                catch (Exception ex)
+                {
+                    NcDebug.LogError("[ArenaBoard] Refresh failed. Please try again later.");
+                    _loadingObj.SetActive(false);
+                    _refreshBtn.SetState(ConditionalButton.State.Normal);
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENABOARD_GET_LOCKED",
+                        "UI_OK");
+                    return;
+                }
 
                 if (logId == -1)
                 {
@@ -406,7 +450,7 @@ namespace Nekoyume.UI
                 async UniTask<PurchaseStatus> PerformPollingAsync()
                 {
                     await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsRefreshPurchaselogsAsync(logId, ArenaServiceManager.CreateCurrentJwt(),
-                        on200PurchaseLogId: (result) =>
+                        on200: (result) =>
                         {
                             refreshTicketResponse = result;
                         },
@@ -487,16 +531,36 @@ namespace Nekoyume.UI
             }
 
             List<AvailableOpponentResponse> response = null;
-            await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
-                on200AvailableOpponents: (result) =>
-                {
-                    response = result?.ToList();
-                },
-                onError: (error) =>
-                {
-                    NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
-                }
-            );
+            try
+            {
+                await ApiClients.Instance.Arenaservicemanager.Client.PostAvailableopponentsRefreshAsync(ArenaServiceManager.CreateCurrentJwt(),
+                    on200: (result) =>
+                    {
+                        response = result?.ToList();
+                    },
+                    on423: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
+                    }
+                    ,
+                    onError: (error) =>
+                    {
+                        NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");
+                    }
+                );
+
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError("[ArenaBoard] Response is null after refresh.");
+                _loadingObj.SetActive(false);
+                _refreshBtn.SetState(ConditionalButton.State.Normal);
+                Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    e.Message,
+                    "UI_OK");
+                return;
+            }
 
             if (response == null || response.Count == 0)
             {

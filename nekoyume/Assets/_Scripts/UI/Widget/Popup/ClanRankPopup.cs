@@ -63,7 +63,7 @@ namespace Nekoyume.UI
                 // 클랜 리더보드 데이터를 비동기로 가져옵니다.
                 ClanLeaderboardResponse response = null;
                 await ApiClients.Instance.Arenaservicemanager.Client.GetClansLeaderboardAsync(ArenaServiceManager.CreateCurrentJwt(),
-                    on200OK: (result) =>
+                    on200: (result) =>
                     {
                         response = result;
                     });

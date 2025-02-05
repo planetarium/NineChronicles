@@ -1843,6 +1843,7 @@ namespace Nekoyume.Blockchain
                             if (t.IsFaulted || t.Result == -1)
                             {
                                 tcs.SetResult(t.Result);
+                                tcs.SetException(t.Exception);
                                 return false;
                             }
                             _agent.ActionRenderer.EveryRender<TransferAsset>()

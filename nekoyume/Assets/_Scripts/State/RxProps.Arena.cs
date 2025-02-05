@@ -121,7 +121,7 @@ namespace Nekoyume.State
             _isUpdatingSeasonResponses = true;
 
             await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
-                on200OK: response =>
+                on200: response =>
                 {
                     _arenaSeasonResponses.SetValueAndForceNotify(response.Seasons.ToList());
 

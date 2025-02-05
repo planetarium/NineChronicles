@@ -254,12 +254,13 @@ namespace Nekoyume.UI
             var tokenTask = ApiClients.Instance.Arenaservicemanager.GetBattleTokenAsync(_info.AvatarAddress, playerAvatar.address.ToHex());
             tokenTask.ContinueWith(task =>
             {
-                if (task.Result == null)
-                {
-                    Game.Game.BackToMainAsync(new Exception(L10nManager.Localize("UI_ARENA_BATTLETOKEN_RECIVE_FAIL"))).Forget();
-                }
                 if (task.Status == TaskStatus.RanToCompletion)
                 {
+                    if (task.Result == null)
+                    {
+                        Game.Game.BackToMainAsync(new Exception(L10nManager.Localize("UI_ARENA_BATTLETOKEN_RECIVE_FAIL"))).Forget();
+                        return;
+                    }
                     var token = task.Result;
                     RxProps.LastBattleId = token.BattleId;
                     // 성공시 호출할 콜백
