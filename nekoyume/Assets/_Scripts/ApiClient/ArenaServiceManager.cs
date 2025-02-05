@@ -210,6 +210,7 @@ namespace Nekoyume.ApiClient
                             $"TxId: {txId} | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
                             $"Error: {error}");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED");
                     });
 
                 return response;

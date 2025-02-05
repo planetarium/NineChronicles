@@ -94,9 +94,10 @@ namespace Nekoyume.UI
                 catch (Exception e)
                 {
                     NcDebug.LogError($"[ArenaTicketPopup] 티켓 구매 중 예외 발생: {e.Message}");
+                    
                     Find<IconAndButtonSystem>().Show(
                         "UI_ERROR",
-                        e.Message,
+                        e.InnerException != null ? e.InnerException.Message : e.Message,
                         "UI_OK");
                     IsBuyingTicket.SetValueAndForceNotify(false);
                     return;
@@ -168,9 +169,8 @@ namespace Nekoyume.UI
                 ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
             willBuyTicketText.text = ticketCount.ToString();
-
+            _ticketCountToBuy.SetValueAndForceNotify(ticketCount);
             ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
-
             base.Show();
         }
     }
