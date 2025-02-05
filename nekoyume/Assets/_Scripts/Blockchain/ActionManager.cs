@@ -1804,9 +1804,15 @@ namespace Nekoyume.Blockchain
                         var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), amount, States.Instance.CurrentAvatarState.address.ToHex());
                         return task.ContinueWith(t =>
                         {
-                            if (t.IsFaulted || t.Result == -1)
+                            if (t.IsFaulted)
+                            {
+                                tcs.SetException(t.Exception);
+                                return false;
+                            }
+                            if (t.Result == -1)
                             {
                                 tcs.SetResult(t.Result);
+                                tcs.SetException(t.Exception);
                                 return false;
                             }
                             _agent.ActionRenderer.EveryRender<TransferAsset>()

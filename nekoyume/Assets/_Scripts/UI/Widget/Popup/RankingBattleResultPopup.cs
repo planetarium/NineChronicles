@@ -80,7 +80,7 @@ namespace Nekoyume.UI
             int defaultScore = 1000;
             if (RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null)
             {
-                defaultScore = RxProps.ArenaInfo.Value.Score;
+                defaultScore = RxProps.ArenaInfo.Value.Score + RxProps.ArenaInfo.Value.CurrentRoundScoreChange;
             }
             NcDebug.Log($"battleLogResponse: {battleResponse}");
             NcDebug.Log($"log.Score: {log.Score}");
