@@ -346,5 +346,10 @@ namespace Nekoyume.UI
                     : L10nManager.Localize("UI_EQUIP_FAILED");
             }
         }
+
+        public AvailableOpponentResponse GetCurrentOpponentInfo()
+        {
+            return _info;
+        }
     }
 }

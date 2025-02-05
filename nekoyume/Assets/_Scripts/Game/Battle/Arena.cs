@@ -124,7 +124,7 @@ namespace Nekoyume.Game.Battle
             }
 
             BattleResponse battleResponse = null;
-            yield return PollBattleResponse(myAvatarAddress).ToCoroutine(response => battleResponse = response); 
+            yield return PollBattleResponse(myAvatarAddress).ToCoroutine(response => battleResponse = response);
             yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount, battleResponse));
         }
 
@@ -136,7 +136,7 @@ namespace Nekoyume.Game.Battle
             // 처음에 바로 시도
             var battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
 
-            if (battleResponse == null)
+            if (battleResponse == null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
             {
                 bool isPollingSuccessful = false; // 폴링 성공 여부를 저장할 변수
 
@@ -147,9 +147,21 @@ namespace Nekoyume.Game.Battle
 
                     if (battleResponse != null)
                     {
-                        NcDebug.Log("[Arena] Battle response received.");
-                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
-                        break; // 성공 시 더 이상 요청하지 않도록 break
+                        if (battleResponse.BattleStatus == BattleStatus.SUCCESS)
+                        {
+                            NcDebug.Log("[Arena] Battle response received.");
+                            isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                            break; // 성공 시 더 이상 요청하지 않도록 break
+                        }
+                        if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
+                            battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
+                            battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
+                            battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                        {
+                            NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
+                            //폴링 실패시 처리.
+                            return null;
+                        }
                     }
                     await UniTask.Delay(interval); // milliseconds to seconds
                 }
@@ -159,16 +171,28 @@ namespace Nekoyume.Game.Battle
                 {
                     battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
 
-                    if (battleResponse != null)
+                    if (battleResponse != null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
                     {
-                        NcDebug.Log("[Arena] Battle response received.");
-                        isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
-                        break; // 성공 시 더 이상 요청하지 않도록 break
+                        if (battleResponse.BattleStatus == BattleStatus.SUCCESS)
+                        {
+                            NcDebug.Log("[Arena] Battle response received.");
+                            isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                            break; // 성공 시 더 이상 요청하지 않도록 break
+                        }
+                        if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
+                            battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
+                            battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
+                            battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                        {
+                            NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
+                            //폴링 실패시 처리.
+                            return null;
+                        }
                     }
                     await UniTask.Delay(1000); // 1 second interval
                 }
 
-                if (battleResponse == null)
+                if (battleResponse == null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
                 {
                     NcDebug.LogError("[Arena] Response is null after polling.");
                 }
