@@ -125,7 +125,7 @@ namespace Nekoyume.UI
             winLoseCountText.gameObject.SetActive(winDefeatCount.HasValue);
 
             var currentSeason = RxProps.GetSeasonResponseByBlockIndex(Game.Game.instance.Agent.BlockIndex);
-            if (win && currentSeason != null && currentSeason.ArenaType != ArenaType.OFF_SEASON)
+            if (win && currentSeason != null && currentSeason.ArenaType == ArenaType.SEASON)
             {
                 medalItemView.SetActive(true);
             }
