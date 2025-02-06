@@ -71,12 +71,37 @@ namespace Nekoyume.UI
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
                 var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString());
 
-                var logId = await ActionManager.Instance.TransferAssetsForBattleTicketPurchase(
-                    States.Instance.AgentState.address,
-                    new Address(RxProps.OperationAccountAddress),
-                    ticketCount,
-                    cost
-                );
+                if (States.Instance.GoldBalanceState.Gold < cost)
+                {
+                    NcDebug.LogError("[ArenaTicketPopup] Ticket purchase failed. Not Enough Cost");
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "UI_ARENATICKET_NOT_ENOUGH_GOLD",
+                        "UI_OK");
+                    IsBuyingTicket.SetValueAndForceNotify(false);
+                    return;
+                }
+                int logId = -1;
+                try
+                {
+                    logId = await ActionManager.Instance.TransferAssetsForBattleTicketPurchase(
+                        States.Instance.AgentState.address,
+                        new Address(RxProps.OperationAccountAddress),
+                        ticketCount,
+                        cost
+                    );
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"[ArenaTicketPopup] 티켓 구매 중 예외 발생: {e.Message}");
+                    
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        e.InnerException != null ? e.InnerException.Message : e.Message,
+                        "UI_OK");
+                    IsBuyingTicket.SetValueAndForceNotify(false);
+                    return;
+                }
 
                 if (logId == -1)
                 {
@@ -96,7 +121,7 @@ namespace Nekoyume.UI
                 async UniTask<bool> PerformPollingAsync()
                 {
                     await ApiClients.Instance.Arenaservicemanager.Client.GetTicketsBattlePurchaselogsAsync(logId, ArenaServiceManager.CreateCurrentJwt(),
-                        on200PurchaseLogId: (result) =>
+                        on200: (result) =>
                         {
                             ticketResponse = result;
                         },
@@ -140,13 +165,12 @@ namespace Nekoyume.UI
         public void Show()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var ticketCount = RxProps.ArenaInfo.HasValue
-                ? RxProps.ArenaInfo.Value.RefreshTicketStatus.RemainingPurchasableTicketsPerRound
+            var ticketCount = RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null
+                ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
-            willBuyTicketText.text = "0";
-
+            willBuyTicketText.text = ticketCount.ToString();
+            _ticketCountToBuy.SetValueAndForceNotify(ticketCount);
             ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
-
             base.Show();
         }
     }

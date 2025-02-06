@@ -254,12 +254,13 @@ namespace Nekoyume.UI
             var tokenTask = ApiClients.Instance.Arenaservicemanager.GetBattleTokenAsync(_info.AvatarAddress, playerAvatar.address.ToHex());
             tokenTask.ContinueWith(task =>
             {
-                if (task.Result == null)
-                {
-                    Game.Game.BackToMainAsync(new Exception(L10nManager.Localize("UI_ARENA_BATTLETOKEN_RECIVE_FAIL"))).Forget();
-                }
                 if (task.Status == TaskStatus.RanToCompletion)
                 {
+                    if (task.Result == null)
+                    {
+                        Game.Game.BackToMainAsync(new ArenaServiceException("UI_ARENA_BATTLETOKEN_RECIVE_FAIL")).Forget();
+                        return;
+                    }
                     var token = task.Result;
                     RxProps.LastBattleId = token.BattleId;
                     // 성공시 호출할 콜백
@@ -276,7 +277,6 @@ namespace Nekoyume.UI
                                 equipments,
                                 runeInfos,
                                 _seasonData.Id,
-                                _seasonData.Id,
                                 token);
                     }
                     catch (Exception e)
@@ -288,7 +288,7 @@ namespace Nekoyume.UI
                 {
                     // 오류 처리
                     NcDebug.LogError("토큰 요청에 실패했습니다. 오류: " + task.Exception?.Message);
-                    Game.Game.BackToMainAsync(task.Exception).Forget();
+                    Game.Game.BackToMainAsync(task.Exception.InnerException).Forget();
                 }
             });
         }
@@ -344,6 +344,11 @@ namespace Nekoyume.UI
                     ? L10nManager.Localize("UI_BATTLE_INTERVAL", battleArenaInterval)
                     : L10nManager.Localize("UI_EQUIP_FAILED");
             }
+        }
+
+        public AvailableOpponentResponse GetCurrentOpponentInfo()
+        {
+            return _info;
         }
     }
 }

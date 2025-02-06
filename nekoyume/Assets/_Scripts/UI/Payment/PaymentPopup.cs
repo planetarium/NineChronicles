@@ -430,6 +430,38 @@ namespace Nekoyume.UI
         }
 
         public void ShowCheckPaymentNCG(
+            FungibleAssetValue balance,
+            FungibleAssetValue cost,
+            string checkCostMessage,
+            System.Action onPaymentSucceed,
+            bool isStaking = false)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            YesCallback = () =>
+            {
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentNCG(cost.ToString(), isStaking);
+                }
+            };
+
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentNCG(
             BigInteger balance,
             BigInteger cost,
             string checkCostMessage,

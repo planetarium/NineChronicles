@@ -105,7 +105,7 @@ namespace Nekoyume.UI
             }
 
             await ApiClients.Instance.Arenaservicemanager.Client.GetUsersClassifybychampionshipMedalsAsync(Game.Game.instance.Agent.BlockIndex, ArenaServiceManager.CreateCurrentJwt(),
-                on200OK: (result) =>
+                on200: (result) =>
                 {
                     _totalMedalCountForThisChampionship = result.TotalMedalCountForThisChampionship;
                 },
@@ -199,7 +199,7 @@ namespace Nekoyume.UI
                 return arenaDataList.Select(data => new ArenaJoinSeasonItemData
                 {
                     SeasonData = data,
-                    SeasonNumber = data.Id,
+                    SeasonNumber = data.SeasonGroupId,
                     ChampionshipSeasonNumbers = championshipSeasonIds
                 }).ToList();
             }
@@ -209,7 +209,7 @@ namespace Nekoyume.UI
                     .Select(seasonResponse => new ArenaJoinSeasonItemData
                     {
                         SeasonData = seasonResponse,
-                        SeasonNumber = seasonResponse.Id,
+                        SeasonNumber = seasonResponse.SeasonGroupId,
                         ChampionshipSeasonNumbers =
                             RxProps.GetSeasonNumbersOfChampionship()
                     }).ToList();
@@ -244,6 +244,11 @@ namespace Nekoyume.UI
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var season = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+            if (season == null)
+            {
+                NcDebug.LogError("[ArenaJoin] Failed to retrieve season information. Block index: " + blockIndex);
+                return;
+            }
             var championshipRound = RxProps.ArenaSeasonResponses.Value.LastOrDefault().Id;
             if (season.Id > championshipRound)
             {
@@ -387,7 +392,7 @@ namespace Nekoyume.UI
 
             return data.SeasonData.ArenaType switch
             {
-                ArenaType.OFF_SEASON => ArenaJoinSeasonInfo.RewardType.None,
+                ArenaType.OFF_SEASON => ArenaJoinSeasonInfo.RewardType.Courage,
                 ArenaType.SEASON =>
                     ArenaJoinSeasonInfo.RewardType.Courage |
                     ArenaJoinSeasonInfo.RewardType.Medal |

@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine;
 using GeneratedApiNamespace.ArenaServiceClient;
 using System;
+using Nekoyume.State;
 
 namespace Nekoyume.UI
 {
@@ -38,6 +39,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI seasonPassCourageAmount;
+
+        [SerializeField]
+        private GameObject medalItemView;
 
         private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, .25f, 10f);
 
@@ -73,6 +77,11 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
+            int defaultScore = 1000;
+            if (RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null)
+            {
+                defaultScore = RxProps.ArenaInfo.Value.Score + RxProps.ArenaInfo.Value.CurrentRoundScoreChange;
+            }
             NcDebug.Log($"battleLogResponse: {battleResponse}");
             NcDebug.Log($"log.Score: {log.Score}");
             if (battleResponse != null && battleResponse.MyScoreChange.HasValue && battleResponse.MyScore.HasValue)
@@ -87,17 +96,48 @@ namespace Nekoyume.UI
                 catch (Exception e)
                 {
                     NcDebug.LogError($"Error occurred: {e.Message}");
-                    scoreText.text = $"{log.Score}";    
+                    scoreText.text = $"{defaultScore}";
                 }
             }
             else
             {
-                scoreText.text = $"{log.Score}";
+                //폴링 실패하여 정보를 가져올수없는상태라 마지막 아래나 배틀진입 할때의 정보를가지고 임시로 보여준다.
+                var info = Find<ArenaBattlePreparation>().GetCurrentOpponentInfo();
+                if (info != null)
+                {
+                    try
+                    {
+                        var scoreChange = win ? info.ScoreGainOnWin : info.ScoreLossOnLose;
+                        var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
+                        var scoreChangeSign = scoreChange > 0 ? "+" : "-";
+                        scoreText.text = $"{defaultScore} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                    }
+                    catch (Exception e)
+                    {
+                        NcDebug.LogError($"Error occurred: {e.Message}");
+                        scoreText.text = $"{defaultScore}";
+                    }
+                }
+                else
+                {
+                    NcDebug.LogError($"Failed to retrieve information. Score: {defaultScore}");
+                    scoreText.text = $"{defaultScore}";
+                }
             }
             winLoseCountText.text = winDefeatCount.HasValue
                 ? $"Win {winDefeatCount.Value.win} Lose {winDefeatCount.Value.defeat}"
                 : string.Empty;
             winLoseCountText.gameObject.SetActive(winDefeatCount.HasValue);
+
+            var currentSeason = RxProps.GetSeasonResponseByBlockIndex(Game.Game.instance.Agent.BlockIndex);
+            if (win && currentSeason != null && currentSeason.ArenaType == ArenaType.SEASON)
+            {
+                medalItemView.SetActive(true);
+            }
+            else
+            {
+                medalItemView.SetActive(false);
+            }
 
             var items = rewardItems.ToCountableItems();
             for (var i = 0; i < rewards.Count; i++)
