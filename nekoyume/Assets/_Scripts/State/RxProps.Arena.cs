@@ -250,6 +250,7 @@ namespace Nekoyume.State
                         .First()
                         .Subscribe(_ =>
                         {
+                            Widget.Find<LobbyMenu>().Close();
                             Widget.Find<ArenaJoin>().ShowAsync().Forget();
                             Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENA_ROUND_CHAGED"), L10nManager.Localize("UI_OK"), null);
                         });
