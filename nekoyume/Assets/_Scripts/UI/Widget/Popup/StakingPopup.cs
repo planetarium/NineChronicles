@@ -49,12 +49,12 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject defaultUIParent;
         [SerializeField] private TMP_InputField stakingNcgInputField;
         [SerializeField] private TMP_Text unbondBlockText;
+        [SerializeField] private ConditionalButton unbondButton;
 
         [Header("Editing")]
         [SerializeField] private Button ncgEditButton;
         [SerializeField] private Button editCancelButton;
         [SerializeField] private ConditionalButton editSaveButton;
-        [SerializeField] private ConditionalButton unbondButton;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -394,8 +394,6 @@ namespace Nekoyume.UI
             currentBenefitsTabButton.SetToggledOff();
             levelBenefitsTabButton.OnClick.OnNext(levelBenefitsTabButton);
             levelBenefitsTabButton.SetToggledOn();
-
-            CheckUnbondBlock().Forget();
         }
 
         private void OnClickMigrateButton()
@@ -672,6 +670,8 @@ namespace Nekoyume.UI
             editingUIParent.SetActive(isEdit);
             defaultUIParent.SetActive(!isEdit);
             stakingNcgInputField.interactable = isEdit;
+
+            CheckUnbondBlock().Forget();
         }
     }
 }
