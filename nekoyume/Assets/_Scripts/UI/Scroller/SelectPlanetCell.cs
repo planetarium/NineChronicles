@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(_ => Context.OnClickCellSubject.OnNext((this, _viewModel)))
                 .AddTo(gameObject);
             button.OnClickDisabledSubject
-                .Subscribe(_ => Context.OnClickCellSubject.OnNext((this, _viewModel)))
+                .Subscribe(_ => Context.OnClickDisableCellSubject.OnNext((this, _viewModel)))
                 .AddTo(gameObject);
         }
 

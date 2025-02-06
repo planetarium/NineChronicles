@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.L10n;
 using Nekoyume.Multiplanetary;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
@@ -17,10 +18,14 @@ namespace Nekoyume.UI.Scroller
             public readonly Subject<(
                 SelectPlanetCell cell,
                 SelectPlanetCell.ViewModel viewModel)> OnClickCellSubject = new();
+            public readonly Subject<(
+                SelectPlanetCell cell,
+                SelectPlanetCell.ViewModel viewModel)> OnClickDisableCellSubject = new();
 
             public void Dispose()
             {
                 OnClickCellSubject.Dispose();
+                OnClickDisableCellSubject.Dispose();
             }
         }
 
@@ -49,8 +54,8 @@ namespace Nekoyume.UI.Scroller
         protected override void Initialize()
         {
             base.Initialize();
-            Context.OnClickCellSubject.Subscribe(OnClickCell)
-                .AddTo(gameObject);
+            Context.OnClickCellSubject.Subscribe(OnClickCell).AddTo(gameObject);
+            Context.OnClickDisableCellSubject.Subscribe(OnClickDisableCell).AddTo(gameObject);
         }
 
         public void SetData(PlanetRegistry planetRegistry, PlanetId? selectedPlanetId)
@@ -136,6 +141,15 @@ namespace Nekoyume.UI.Scroller
             }).ToArray();
             UpdateContents(newItemsSource);
             OnChangeSelectedPlanetSubject.OnNext((this, tuple.viewModel.PlanetId));
+        }
+
+        private void OnClickDisableCell((
+            SelectPlanetCell cell,
+            SelectPlanetCell.ViewModel viewModel) tuple)
+        {
+            Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("EDESC_PLANET_ACCOUNT_INFOS_NOT_INITIALIZED"),
+                L10nManager.Localize("UI_YES"),
+                null);
         }
     }
 }
