@@ -4986,6 +4986,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4069692389251459550, guid: 0f15c360eb8a5ea43a2a424b2edc6660,
+        type: 3}
+      propertyPath: emptyClanIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: 043252e51dd88ca46abfd57e65175107,
+        type: 3}
     - target: {fileID: 4689412366874212794, guid: 0f15c360eb8a5ea43a2a424b2edc6660,
         type: 3}
       propertyPath: m_Enabled
@@ -4996,6 +5002,17 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 45
       objectReference: {fileID: 0}
+    - target: {fileID: 6077010611777772255, guid: 0f15c360eb8a5ea43a2a424b2edc6660,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6077010611777772255, guid: 0f15c360eb8a5ea43a2a424b2edc6660,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 043252e51dd88ca46abfd57e65175107,
+        type: 3}
     - target: {fileID: 7119504166014272590, guid: 0f15c360eb8a5ea43a2a424b2edc6660,
         type: 3}
       propertyPath: m_AnchorMax.y

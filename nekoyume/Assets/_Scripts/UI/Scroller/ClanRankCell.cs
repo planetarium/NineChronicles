@@ -36,6 +36,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Sprite thirdPlaceSprite = null;
 
+        [SerializeField]
+        private Sprite emptyClanIcon;
+
         private void UpdateRank(int? rank)
         {
             switch (rank)
@@ -75,7 +78,11 @@ namespace Nekoyume.UI.Scroller
 
             clanName.text = viewModel.Name;
             clanScore.text = viewModel.Score.ToString("N0", CultureInfo.CurrentCulture);
-
+            if (string.IsNullOrEmpty(viewModel.ImageURL))
+            {
+                clanIcon.sprite = emptyClanIcon;
+                return;
+            }
             Util.DownloadTexture(viewModel.ImageURL).ContinueWith((result) =>
             {
                 clanIcon.sprite = result;
