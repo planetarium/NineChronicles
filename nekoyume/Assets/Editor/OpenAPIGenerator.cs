@@ -1099,12 +1099,19 @@ namespace Nekoyume
                         sb.AppendLine($"        string url = $\"{{Url}}{path}\";");
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
+                        sb.AppendLine("            try");
+                        sb.AppendLine("            {");
                         sb.Append(parameterUsages);
                         sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
-
                         sb.AppendLine($"            request.SetRequestHeader(\"accept\", \"application/json\");");
                         sb.AppendLine($"            request.SetRequestHeader(\"Content-Type\", \"application/json\");");
                         sb.AppendLine($"            request.timeout = {_timeOut};");
+                        sb.AppendLine("            }");
+                        sb.AppendLine("            catch (Exception ex)");
+                        sb.AppendLine("            {");
+                        sb.AppendLine($"                onError(ex.Message);");
+                        sb.AppendLine($"                return;");
+                        sb.AppendLine("            }");
                         sb.AppendLine("            try");
                         sb.AppendLine("            {");
                         sb.AppendLine("                await request.SendWebRequest();");

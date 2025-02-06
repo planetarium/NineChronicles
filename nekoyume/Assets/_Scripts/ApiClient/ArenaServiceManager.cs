@@ -25,7 +25,8 @@ namespace Nekoyume.ApiClient
             if (string.IsNullOrEmpty(url))
             {
                 NcDebug.LogError($"ArenaServiceManager Initialized Fail url is Null");
-                return;
+                // url이 없더라도 생성해야 NRE문제를 피할수있음.
+                url = string.Empty;
             }
             Client = new ArenaServiceClient(url);
         }

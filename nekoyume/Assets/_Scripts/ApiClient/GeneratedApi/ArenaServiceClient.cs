@@ -515,12 +515,20 @@ public class ArenaServiceClient
         string url = $"{Url}/info";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -611,12 +619,20 @@ public class ArenaServiceClient
         string url = $"{Url}/available-opponents";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -715,12 +731,20 @@ public class ArenaServiceClient
         string url = $"{Url}/available-opponents/refresh";
         using (var request = new UnityWebRequest(url, "POST"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -835,6 +859,8 @@ public class ArenaServiceClient
         string url = $"{Url}/battle/token";
         using (var request = new UnityWebRequest(url, "POST"))
         {
+            try
+            {
             url += $"?opponentAvatarAddress={opponentAvatarAddress}";
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
@@ -842,6 +868,12 @@ public class ArenaServiceClient
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -944,6 +976,8 @@ public class ArenaServiceClient
         string url = $"{Url}/battle/{battleId}/request";
         using (var request = new UnityWebRequest(url, "POST"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -954,6 +988,12 @@ public class ArenaServiceClient
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1053,12 +1093,20 @@ public class ArenaServiceClient
         string url = $"{Url}/battle/{battleId}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1146,12 +1194,20 @@ public class ArenaServiceClient
         string url = $"{Url}/clans/leaderboard";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1205,11 +1261,19 @@ public class ArenaServiceClient
         string url = $"{Url}/seasons/by-block/{blockIndex}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1270,11 +1334,19 @@ public class ArenaServiceClient
         string url = $"{Url}/seasons/classify-by-championship/{blockIndex}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1330,12 +1402,20 @@ public class ArenaServiceClient
         string url = $"{Url}/tickets/battle";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1415,12 +1495,20 @@ public class ArenaServiceClient
         string url = $"{Url}/tickets/refresh";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1504,6 +1592,8 @@ public class ArenaServiceClient
         string url = $"{Url}/tickets/battle/purchase";
         using (var request = new UnityWebRequest(url, "POST"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -1514,6 +1604,12 @@ public class ArenaServiceClient
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1619,6 +1715,8 @@ public class ArenaServiceClient
         string url = $"{Url}/tickets/refresh/purchase";
         using (var request = new UnityWebRequest(url, "POST"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -1629,6 +1727,12 @@ public class ArenaServiceClient
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1722,12 +1826,20 @@ public class ArenaServiceClient
         string url = $"{Url}/tickets/battle/purchase-logs/{logId}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1819,12 +1931,20 @@ public class ArenaServiceClient
         string url = $"{Url}/tickets/refresh/purchase-logs/{logId}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1910,6 +2030,8 @@ public class ArenaServiceClient
         string url = $"{Url}/users";
         using (var request = new UnityWebRequest(url, "POST"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -1920,6 +2042,12 @@ public class ArenaServiceClient
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -1997,12 +2125,20 @@ public class ArenaServiceClient
         string url = $"{Url}/users/{avatarAddress}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
@@ -2076,12 +2212,20 @@ public class ArenaServiceClient
         string url = $"{Url}/users/classify-by-championship/medals/{blockIndex}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            try
+            {
             request.uri = new Uri(url);
             request.SetRequestHeader("Authorization", Authorization.ToString());
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
             try
             {
                 await request.SendWebRequest();
