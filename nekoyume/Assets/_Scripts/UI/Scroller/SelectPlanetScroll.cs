@@ -147,7 +147,7 @@ namespace Nekoyume.UI.Scroller
             SelectPlanetCell cell,
             SelectPlanetCell.ViewModel viewModel) tuple)
         {
-            Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("EDESC_PLANET_ACCOUNT_INFOS_NOT_INITIALIZED"),
+            Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("ERROR_UNABLE_CONNECT_PLANET"),
                 L10nManager.Localize("UI_YES"),
                 null);
         }

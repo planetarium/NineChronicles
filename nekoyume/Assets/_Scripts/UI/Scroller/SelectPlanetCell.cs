@@ -1,3 +1,4 @@
+using Nekoyume.L10n;
 using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -55,7 +56,7 @@ namespace Nekoyume.UI.Scroller
             if (_viewModel.HasError)
             {
                 button.Interactable = false;
-                button.Text = $"{button.Text} (Error)";
+                button.Text = $"{button.Text} ({L10nManager.Localize("ERROR_UNABLE_CONNECT_MARK")})";
                 newMarkGO.SetActive(false);
                 return;
             }
