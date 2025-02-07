@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Controller
             public AudioInfo(AudioSource source)
             {
                 this.source = source;
-                volume = source.volume;
+                volume = source ? source.volume : 0f;
             }
         }
 
@@ -281,7 +281,7 @@ namespace Nekoyume.Game.Controller
             {
                 foreach (var audioInfo in pair.Value)
                 {
-                    if (audioInfo.source.isPlaying)
+                    if (audioInfo.source == null || audioInfo.source.isPlaying)
                     {
                         continue;
                     }
@@ -434,6 +434,11 @@ namespace Nekoyume.Game.Controller
             }
 
             var audioInfo = PopFromSfxPool(audioName);
+            if (audioInfo.source == null)
+            {
+                NcDebug.LogError($"Failed to load AudioSource `{audioName}`.");
+                return;
+            }
             Push(_sfxPlaylist, audioName, audioInfo);
             audioInfo.source.volume = audioInfo.volume * volume * Settings.Instance.volumeSfx;
             audioInfo.source.Play();

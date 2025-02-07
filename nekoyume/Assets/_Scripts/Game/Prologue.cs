@@ -234,6 +234,10 @@ namespace Nekoyume.Game
             castingEffect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
             var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_player.gameObject, buff, TableSheets.Instance);
+            if (effect == null)
+            {
+                yield break;
+            }
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
