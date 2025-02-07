@@ -247,6 +247,14 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
             var rawValue = await agent.GetDelegationInfoByStateRootHashAsync(blockTipStateRootHash, agentAddress);
+            // rawValue: [userShared, allShared, delegateGuildGold]
+            if (rawValue.Count < 3)
+            {
+                sharePowerText.text = L10nManager.Localize("UI_STAKING_SHARE_POWER_FORMAT", 0);
+                sharePowerText.gameObject.SetActive(true);
+                return;
+            }
+
             var userShared = rawValue[0].ToBigInteger();
             var allShared = rawValue[1].ToBigInteger();
             var delegateGuildGold = rawValue[2].ToFungibleAssetValue();
@@ -288,6 +296,13 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
             var claimableRewards = await agent.GetClaimableRewardsByStateRootHashAsync(blockTipStateRootHash, agentAddress);
+            if (claimableRewards.Count < 0)
+            {
+                rewardNcgText.text = "+0";
+                rewardNcgText.gameObject.SetActive(true);
+                ncgLoadingIndicator.SetActive(false);
+                return;
+            }
             var fungibleAssetValue = new FungibleAssetValue(claimableRewards[0]);
             var claimableQuantity = fungibleAssetValue.RawValue;
 
