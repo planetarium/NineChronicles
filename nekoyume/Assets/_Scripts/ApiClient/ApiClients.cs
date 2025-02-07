@@ -27,8 +27,6 @@ namespace Nekoyume.ApiClient
 
         public MarketServiceClient MarketServiceClient { get; private set; }
 
-        public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
-
         public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
 
         // Game.IAPStoreManager와 기능 정리 가능할지도?
@@ -61,7 +59,6 @@ namespace Nekoyume.ApiClient
             ArenaServiceClient = new NineChroniclesAPIClient(clo.ArenaServiceHost);
             WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
-            PatrolRewardServiceClient = new NineChroniclesAPIClient(clo.PatrolRewardServiceHost);
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             ApplySeasonPassMarketUrl(clo);
 

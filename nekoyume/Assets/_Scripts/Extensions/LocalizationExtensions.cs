@@ -261,6 +261,8 @@ namespace Nekoyume
                         GetLocalizedNonColoredName(
                             customCraftMail.Equipment,
                             customCraftMail.Equipment.ItemType.HasElementType()));
+                case PatrolRewardMail _:
+                    return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -571,6 +573,12 @@ namespace Nekoyume
             return level > 0
                 ? $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>+{level} {name}</color>"
                 : $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>{name}</color>";
+        }
+
+        public static string GetLocalizedName(this CostumeItemSheet.Row costumeRow)
+        {
+            var name = L10nManager.LocalizeItemName(costumeRow.Id);
+            return $"<color=#{GetColorHexByGrade(costumeRow.Grade)}>{name}</color>";
         }
 
         public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow,

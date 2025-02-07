@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using mixpanel;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
@@ -18,6 +19,8 @@ namespace Nekoyume.UI
         [SerializeField] private PatrolRewardModule patrolRewardModule;
         [SerializeField] private ConditionalButton receiveButton;
 
+        private bool _isInitialized;
+
         protected override void Awake()
         {
             base.Awake();
@@ -31,12 +34,7 @@ namespace Nekoyume.UI
 
             PatrolReward.PatrolTime
                 .Where(_ => !PatrolReward.Claiming.Value)
-                .Select(patrolTime =>
-                {
-                    var patrolTimeWithOutSeconds = new TimeSpan(patrolTime.Ticks /
-                        TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
-                    return PatrolReward.Interval - patrolTimeWithOutSeconds;
-                })
+                .Select(patrolTime => PatrolReward.Interval - patrolTime)
                 .Subscribe(SetReceiveButton)
                 .AddTo(gameObject);
 
@@ -49,27 +47,20 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public void Show(bool ignoreShowAnimation = false)
+        public override void Show(bool ignoreShowAnimation = false)
         {
             if (PatrolReward.Claiming.Value)
             {
                 return;
             }
 
-            var clientInitialized = ApiClients.Instance.PatrolRewardServiceClient.IsInitialized;
-            if (!clientInitialized)
+            if (!_isInitialized)
             {
-                NcDebug.Log(
-                    $"[{nameof(PatrolRewardPopup)}]PatrolRewardServiceClient is not initialized.");
-                return;
+                patrolRewardModule.Initialize();
+                _isInitialized = true;
             }
 
-            ShowAsync(ignoreShowAnimation);
-        }
-
-        private async void ShowAsync(bool ignoreShowAnimation = false)
-        {
-            await patrolRewardModule.SetData();
+            patrolRewardModule.SetData();
 
             var patrolTime = PatrolReward.PatrolTime.Value;
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
@@ -95,17 +86,17 @@ namespace Nekoyume.UI
             Close();
         }
 
-        // subscribe from PatrolReward.PatrolTime
-        private void SetReceiveButton(TimeSpan remainTime)
+        private void SetReceiveButton(long remainTime)
         {
-            var canReceive = remainTime <= TimeSpan.Zero;
+            var canReceive = remainTime <= 0L;
             receiveButton.Interactable = canReceive;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
-                : L10nManager.Localize("UI_REMAINING_TIME", PatrolRewardModule.TimeSpanToString(remainTime));
+                : L10nManager.Localize("UI_REMAINING_TIME", remainTime.BlockRangeToTimeSpanString());
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        [UsedImplicitly]
         public void TutorialActionClickClaimPatrolRewardButton()
         {
             receiveButton.OnSubmitSubject.OnNext(default);

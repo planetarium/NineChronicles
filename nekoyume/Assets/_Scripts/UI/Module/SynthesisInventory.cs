@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -224,7 +225,9 @@ namespace Nekoyume.UI.Module
                     UpdateEquipmentEquipped(items);
                     break;
                 case ItemType.Costume:
+                    var costumeSheet = TableSheets.Instance.CostumeStatSheet;
                     items = items
+                        .OrderBy(item => CPHelper.GetCP(item.ItemBase as Costume, costumeSheet))
                         .ToList();
                     UpdateCostumeEquipped(items);
                     break;

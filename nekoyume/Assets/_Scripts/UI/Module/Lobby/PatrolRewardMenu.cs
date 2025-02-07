@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.ApiClient;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,12 +18,6 @@ namespace Nekoyume.UI.Module.Lobby
 
         [SerializeField]
         private Image rewardIcon;
-
-        [SerializeField]
-        private PatrolRewardDataScriptableObject patrolRewardData;
-
-        [SerializeField]
-        private GameObject effect00;
 
         [SerializeField]
         private GameObject effect03;
@@ -44,28 +39,49 @@ namespace Nekoyume.UI.Module.Lobby
 
         private readonly List<IDisposable> _disposables = new();
 
-        private void OnEnable()
+        protected override void Awake()
+        {
+            base.Awake();
+            Game.Lobby.OnLobbyEnterEvent += OnLobbyEnter;
+        }
+
+        private void OnDestroy()
+        {
+            Game.Lobby.OnLobbyEnterEvent -= OnLobbyEnter;
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+
+        private void OnLobbyEnter()
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             if (avatarState is null)
             {
+                NcDebug.LogWarning($"[{nameof(PatrolRewardMenu)}] AvatarState is null.");
                 return;
             }
 
             if (PatrolReward.NeedToInitialize(avatarState.address))
             {
-                NcDebug.LogWarning("PatrolReward is not initialized.");
-                return;
+                var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+                var level = Game.Game.instance.States.CurrentAvatarState.level;
+                var lastClaimedBlockIndex = ReactiveAvatarState.PatrolRewardClaimedBlockIndex;
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                PatrolReward.InitializeInformation(avatarAddress, level, lastClaimedBlockIndex, currentBlockIndex);
             }
 
-            PatrolReward.PatrolTime
-                .Select(time => time < PatrolReward.Interval)
+            Game.Game.instance.Agent.BlockIndexSubject
                 .Where(_ => !PatrolReward.Claiming.Value)
+                .Select(_ => !PatrolReward.CanClaim)
                 .Subscribe(patrolling => SetCanClaim(patrolling, false))
                 .AddTo(_disposables);
 
-            PatrolReward.Claiming.Where(claiming => claiming)
-                .Subscribe(value => SetCanClaim(false, true)).AddTo(_disposables);
+            PatrolReward.Claiming
+                .Where(claiming => claiming)
+                .Subscribe(_ => SetCanClaim(false, true)).AddTo(_disposables);
         }
 
         private void SetCanClaim(bool patrolling, bool claiming)
@@ -97,11 +113,6 @@ namespace Nekoyume.UI.Module.Lobby
                 1f,
                 0,
                 ItemMoveAnimation.EndPoint.Inventory);
-        }
-
-        private void OnDisable()
-        {
-            _disposables.DisposeAllAndClear();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace Nekoyume.UI
                 var rows = equipmentSummonSheet.Values
                     .Concat(runeSummonSheet.Values).ToList();
                 return rows.Any(row =>
-                    SimpleCostButton.CheckCostOfType((CostType) row.CostMaterial,
+                    SimpleCostButton.CheckCostOfType((CostType)row.CostMaterial,
                         row.CostMaterialCount));
             }
         }
@@ -183,7 +183,7 @@ namespace Nekoyume.UI
                 case SummonResult.FullCostume:
                 case SummonResult.Title:
                     ActionManager.Instance.CostumeSummon(row.GroupId, _selectedSummonCount);
-                    // TODO: 코스튬 뚱땅창 연출 추가해야함
+                    StartCoroutine(CoShowCostumeSummonLoadingScreen(row.Recipes.Select(r => r.Item1).ToList()));
                     break;
             }
 
@@ -279,6 +279,7 @@ namespace Nekoyume.UI
                     summonRow,
                     summonCount,
                     random)
+                .OrderBy(row => row.Grade)
                 .ToList();
         }
 
@@ -384,6 +385,40 @@ namespace Nekoyume.UI
 
             loadingScreen.AnimateNPC(
                 CombinationLoadingScreen.SpeechBubbleItemType.Rune,
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
+        }
+
+        private IEnumerator CoShowCostumeSummonLoadingScreen(List<int> recipes)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+
+            IEnumerator CoChangeItem()
+            {
+                var costumeSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
+                while (loadingScreen.isActiveAndEnabled)
+                {
+                    foreach (var recipe in recipes)
+                    {
+                        if (!costumeSheet.TryGetValue(recipe, out var costume))
+                        {
+                            NcDebug.LogError($"Invalid recipe id: {recipe}");
+                            continue;
+                        }
+                        var equipment = ItemFactory.CreateCostume(costume, Guid.NewGuid());
+                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(equipment));
+                        yield return new WaitForSeconds(.1f);
+                    }
+                }
+            }
+
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+            StartCoroutine(CoChangeItem());
+            yield return new WaitForSeconds(.5f);
+
+            loadingScreen.AnimateNPC(
+                CombinationLoadingScreen.SpeechBubbleItemType.Equipment,
                 L10nManager.Localize("UI_COST_BLOCK", 1),
                 false);
         }

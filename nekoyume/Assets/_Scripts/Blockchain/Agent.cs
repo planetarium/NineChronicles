@@ -430,6 +430,30 @@ namespace Nekoyume.Blockchain
             return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
         }
 
+        public async Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new Integer();
+        }
+
+        public async Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new List();
+        }
+
+        public async Task<List> GetDelegationInfoByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new List();
+        }
+
+        public async Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            // TODO: Implement
+            return new FungibleAssetValue();
+        }
+
         // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
         // since using BlockChain.GetNextWorldState() is not recommended.
         // These have to be done by render from constructor of BlockChain in the future.
@@ -660,7 +684,7 @@ namespace Nekoyume.Blockchain
 
         private void StartNullableCoroutine(IEnumerator routine)
         {
-            if (!(routine is null))
+            if (routine is not null)
             {
                 StartCoroutine(routine);
             }

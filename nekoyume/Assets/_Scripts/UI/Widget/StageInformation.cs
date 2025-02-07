@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.ApiClient;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -73,6 +74,16 @@ namespace Nekoyume.UI
             CloseWidget = OnClickClose;
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            var worldMap = Find<WorldMap>();
+            if (worldMap.gameObject.activeSelf)
+            {
+                worldMap.UpdateAssets();
+            }
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -126,11 +137,13 @@ namespace Nekoyume.UI
                 var expAmount = 0;
                 if (isEventDungeon)
                 {
-                    expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.event_dungeon);
+                    expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass,
+                        SeasonPassServiceClient.ActionType.event_dungeon);
                 }
                 else
                 {
-                    expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash);
+                    expAmount = seasonPassServiceManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass,
+                        SeasonPassServiceClient.ActionType.hack_and_slash);
                 }
                 seasonPassCourageAmount.text = $"+{expAmount}";
             }

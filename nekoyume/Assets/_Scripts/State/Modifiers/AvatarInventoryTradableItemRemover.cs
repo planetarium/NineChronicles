@@ -29,9 +29,25 @@ namespace Nekoyume.State.Modifiers
 
         public override bool IsEmpty => _items.Count == 0;
 
+        public AvatarInventoryTradableItemRemover()
+        {
+        }
+
         public AvatarInventoryTradableItemRemover(Guid tradableId, long requiredBlockIndex, int count)
         {
             _items.Add(tradableId, new InnerModel(requiredBlockIndex, count));
+        }
+
+        public void AddItem(Guid tradableId, long requiredBlockIndex, int count)
+        {
+            if (_items.TryGetValue(tradableId, out var item))
+            {
+                item.Count += count;
+            }
+            else
+            {
+                _items.Add(tradableId, new InnerModel(requiredBlockIndex, count));
+            }
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
