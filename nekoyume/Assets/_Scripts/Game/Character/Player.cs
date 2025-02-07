@@ -212,8 +212,15 @@ namespace Nekoyume.Game.Character
         protected override void UpdateHitPoint()
         {
             var scale = Vector3.one;
-            var center = GetAnimatorHitPointBoxCollider().center;
-            var size = GetAnimatorHitPointBoxCollider().size;
+            var source = GetAnimatorHitPointBoxCollider();
+            if (!source)
+            {
+                NcDebug.LogError("GetAnimatorHitPointBoxCollider() returns null.");
+                return;
+            }
+
+            var center = source.center;
+            var size = source.size;
             HitPointBoxCollider.center =
                 new Vector3(center.x * scale.x, center.y * scale.y, center.z * scale.z);
             HitPointBoxCollider.size =

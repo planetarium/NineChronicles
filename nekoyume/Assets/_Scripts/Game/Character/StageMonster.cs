@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -125,7 +126,7 @@ namespace Nekoyume.Game.Character
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()
         {
-            return SpineController.BoxCollider;
+            return SpineController == null ? null : SpineController.BoxCollider;
         }
 
 #region AttackPoint & HitPoint
