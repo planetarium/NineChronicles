@@ -3,6 +3,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Buff;
 using System.Collections;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 
@@ -33,6 +34,7 @@ namespace Nekoyume.Game.VFX.Skill
             });
         }
 
+        [CanBeNull]
         public T Get<T>(GameObject target, Buff buff, TableSheets tableSheets) where T : BuffVFX
         {
             if (target == null)
@@ -43,13 +45,10 @@ namespace Nekoyume.Game.VFX.Skill
             var position = target.transform.position + BuffHelper.GetBuffPosition(buff.BuffInfo.Id, tableSheets);
 
             var resourceName = BuffHelper.GetBuffVFXPrefab(buff, tableSheets).name;
-            var go = _pool.Get(resourceName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(resourceName, true, position);
-            }
+            var go = _pool.Get(resourceName, false, position) ??
+                _pool.Get(resourceName, true, position);
 
-            return GetEffect<T>(go);
+            return go == null ? null : GetEffect<T>(go);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff, TableSheets tableSheets)

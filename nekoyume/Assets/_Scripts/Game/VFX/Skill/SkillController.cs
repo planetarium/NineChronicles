@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -34,6 +35,7 @@ namespace Nekoyume.Game.VFX.Skill
             });
         }
 
+        [CanBeNull]
         public T Get<T>(Character.Character target, Model.BattleStatus.Skill.SkillInfo skillInfo)
             where T : SkillVFX
         {
@@ -75,7 +77,7 @@ namespace Nekoyume.Game.VFX.Skill
             var go = _pool.Get(skillName, false, position) ??
                 _pool.Get(skillName, true, position);
 
-            return GetEffect<T>(go, target);
+            return go == null ? null : GetEffect<T>(go, target);
         }
 
         public T Get<T>(Character.Character target, ArenaSkill.ArenaSkillInfo skillInfo)
@@ -153,7 +155,7 @@ namespace Nekoyume.Game.VFX.Skill
                 throw new NotFoundComponentException<T>(go.name);
             }
 
-            if (!(target is null))
+            if (target is not null)
             {
                 effect.target = target;
             }
