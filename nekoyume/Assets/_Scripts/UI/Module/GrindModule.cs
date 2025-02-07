@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -210,6 +211,7 @@ namespace Nekoyume.UI.Module
             }
 
             grindInventory.ClearSelectedItem();
+            return;
 
             void RegisterForGrind()
             {
@@ -478,18 +480,21 @@ namespace Nekoyume.UI.Module
             if (_selectedItemsForGrind.Count > 0)
             {
                 ClearSelectedItems();
-                return;
             }
 
             var inventoryData = States.Instance.CurrentAvatarState.inventory;
             inventoryData.Equipments
-                .OrderByDescending(equipment => equipment.Grade)
-                .ThenBy(equipment => equipment.Id)
+                .OrderBy(equipment => equipment.Grade)
+                .ThenBy(CPHelper.GetCP)
                 .Take(20)
                 .ToList()
                 .ForEach(equipment =>
                 {
+                    grindInventory.TryGetModel(equipment, out var inventoryItem);
+                    _selectedItemsForGrind.Add(inventoryItem);
                 });
+
+            animator.SetTrigger(FirstRegister);
         }
 
         private void ClearSelectedItems()
