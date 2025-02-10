@@ -74,10 +74,12 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(ClanResponse viewModel)
         {
+            emptyClanIcon.SetActive(true);
+            clanIcon.gameObject.SetActive(false);
+            
             if (viewModel == null)
             {
-                emptyClanIcon.SetActive(true);
-                clanIcon.gameObject.SetActive(false);
+                return;
             }
             UpdateRank(viewModel.Rank);
 

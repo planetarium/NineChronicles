@@ -226,7 +226,7 @@ namespace Nekoyume.UI
                         clanLeaderBoardResponse = result;
                     });
 
-                if (clanLeaderBoardResponse != null)
+                if (clanLeaderBoardResponse == null)
                 {
                     _clanObj.SetActive(false);
                 }
