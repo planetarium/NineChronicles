@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Scroller
         private Sprite thirdPlaceSprite = null;
 
         [SerializeField]
-        private Sprite emptyClanIcon;
+        private GameObject emptyClanIcon;
 
         private void UpdateRank(int? rank)
         {
@@ -74,18 +74,34 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(ClanResponse viewModel)
         {
+            if (viewModel == null)
+            {
+                emptyClanIcon.SetActive(true);
+                clanIcon.gameObject.SetActive(false);
+            }
             UpdateRank(viewModel.Rank);
 
             clanName.text = viewModel.Name;
             clanScore.text = viewModel.Score.ToString("N0", CultureInfo.CurrentCulture);
             if (string.IsNullOrEmpty(viewModel.ImageURL))
             {
-                clanIcon.sprite = emptyClanIcon;
+                emptyClanIcon.SetActive(true);
+                clanIcon.gameObject.SetActive(false);
                 return;
             }
             Util.DownloadTexture(viewModel.ImageURL).ContinueWith((result) =>
             {
-                clanIcon.sprite = result;
+                if (result != null)
+                {
+                    clanIcon.sprite = result;
+                    emptyClanIcon.SetActive(false);
+                    clanIcon.gameObject.SetActive(true);
+                }
+                else
+                {
+                    emptyClanIcon.SetActive(true);
+                    clanIcon.gameObject.SetActive(false);
+                }
             });
         }
     }

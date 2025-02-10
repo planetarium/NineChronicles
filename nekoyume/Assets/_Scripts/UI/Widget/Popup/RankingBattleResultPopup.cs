@@ -91,7 +91,7 @@ namespace Nekoyume.UI
                     var scoreChange = battleResponse.MyScoreChange.Value;
                     var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
                     var scoreChangeSign = scoreChange > 0 ? "+" : "-";
-                    scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                    scoreText.text = $"{battleResponse.MyScore - scoreChange} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>({scoreChangeSign}{Math.Abs(scoreChange)})</color>";
                 }
                 catch (Exception e)
                 {
@@ -110,7 +110,7 @@ namespace Nekoyume.UI
                         var scoreChange = win ? info.ScoreGainOnWin : info.ScoreLossOnLose;
                         var scoreChangeColor = scoreChange > 0 ? new Color(0.5f, 1f, 0.5f) : new Color(1f, 0.5f, 0.5f);
                         var scoreChangeSign = scoreChange > 0 ? "+" : "-";
-                        scoreText.text = $"{defaultScore} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>{scoreChangeSign}{Math.Abs(scoreChange)}</color>";
+                        scoreText.text = $"{defaultScore} <color=#{ColorUtility.ToHtmlStringRGB(scoreChangeColor)}>({scoreChangeSign}{Math.Abs(scoreChange)})</color>";
                     }
                     catch (Exception e)
                     {
