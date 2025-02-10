@@ -28,7 +28,6 @@ namespace Nekoyume.UI.Module
         private SynthesizeModel? _selectedModel;
         private Action<InventoryItem>? _onClickItem;
 
-        private readonly List<IDisposable> _disposables = new();
         private readonly List<InventoryItem> _items = new();
 
         private List<InventoryItem>? _cachedInventoryItems;
@@ -57,21 +56,15 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private void OnEnable()
+        public void UpdateInventory()
         {
-            ReactiveAvatarState.Inventory
-                .Subscribe(UpdateInventory)
-                .AddTo(_disposables);
-        }
-
-        private void OnDisable()
-        {
-            _disposables.DisposeAllAndClear();
+            ClearSelectedItems();
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            UpdateInventory(inventory);
         }
 
         public void Show(SynthesizeModel requiredItem)
         {
-            ClearSelectedItems();
             _selectedModel = requiredItem;
             _cachedInventoryItems = GetModels(requiredItem);
             scroll.UpdateData(_cachedInventoryItems, true);

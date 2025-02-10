@@ -210,6 +210,8 @@ namespace Nekoyume.UI
             if (isSameModel)
             {
                 base.Show(ignoreShowAnimation);
+                _registerMaterials = registerAction;
+                synthesisInventory.Show(model);
                 return;
             }
 
@@ -222,6 +224,14 @@ namespace Nekoyume.UI
             SetHeaderText(model);
 
             synthesisInventory.Show(model);
+            synthesisInventory.UpdateInventory();
+        }
+
+        public void Clear()
+        {
+            _registerMaterials = null;
+            _synthesizeModel = null;
+            synthesisInventory.UpdateInventory();
         }
 
         private void SetAutoSelectButtonText(SynthesizeModel model)
@@ -276,7 +286,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            equipmentTooltip.Show(item, string.Empty, false, null);
+            if (equipmentTooltip.gameObject.activeSelf)
+            {
+                    equipmentTooltip.Show(item, string.Empty, false, null);
+            }
+
             equipmentTooltip.OnEnterButtonArea(true);
         }
 
