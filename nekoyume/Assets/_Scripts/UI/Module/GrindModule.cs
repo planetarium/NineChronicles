@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -54,6 +55,9 @@ namespace Nekoyume.UI.Module
         private ConditionalButton removeAllButton;
 
         [SerializeField]
+        private ConditionalButton autoSelectButton;
+
+        [SerializeField]
         private Animator animator;
 
         [SerializeField]
@@ -89,53 +93,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            grindButton.SetCost(CostType.ActionPoint, GameConfig.ActionCostAP);
-            removeAllButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                foreach (var item in _selectedItemsForGrind.ToList())
-                {
-                    item.SelectCountEnabled.SetValueAndForceNotify(false);
-                }
-
-                _selectedItemsForGrind.Clear();
-            }).AddTo(gameObject);
-            stakingBonus.SetBonusTextFunc(level =>
-            {
-                if (level > 0 &&
-                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
-                        out var row))
-                {
-                    return $"+{row.Multiplier}%";
-                }
-
-                return "+0%";
-            });
-
-            grindButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                var message = scroll.DataCount > 0
-                    ? "GRIND_UI_SLOTNOTICE"
-                    : "ERROR_NOT_GRINDING_EQUIPPED";
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize(message),
-                    NotificationCell.NotificationType.Notification);
-            }).AddTo(gameObject);
-            grindButton.OnClickSubject.Subscribe(state =>
-            {
-                switch (state)
-                {
-                    case ConditionalButton.State.Normal:
-                    case ConditionalButton.State.Conditional:
-                        Action(_selectedItemsForGrind.Select(inventoryItem =>
-                            (Equipment)inventoryItem.ItemBase).ToList());
-                        break;
-                    case ConditionalButton.State.Disabled:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(state), state, null);
-                }
-            }).AddTo(gameObject);
+            BindButtonEvents();
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
@@ -146,9 +104,11 @@ namespace Nekoyume.UI.Module
                     animator.SetTrigger(FirstRegister);
                 }
             }).AddTo(gameObject);
+
             _selectedItemsForGrind.ObserveRemove()
                 .Subscribe(item => item.Value.SelectCountEnabled.SetValueAndForceNotify(false))
                 .AddTo(gameObject);
+
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
             {
                 UpdateScroll();
@@ -251,6 +211,7 @@ namespace Nekoyume.UI.Module
             }
 
             grindInventory.ClearSelectedItem();
+            return;
 
             void RegisterForGrind()
             {
@@ -513,5 +474,91 @@ namespace Nekoyume.UI.Module
             }
         }
 #endif
+
+        private void AutoSelect20()
+        {
+            if (_selectedItemsForGrind.Count > 0)
+            {
+                ClearSelectedItems();
+            }
+
+            var inventoryData = States.Instance.CurrentAvatarState.inventory;
+            inventoryData.Equipments
+                .OrderBy(equipment => equipment.Grade)
+                .ThenBy(CPHelper.GetCP)
+                .Take(20)
+                .ToList()
+                .ForEach(equipment =>
+                {
+                    grindInventory.TryGetModel(equipment, out var inventoryItem);
+                    _selectedItemsForGrind.Add(inventoryItem);
+                });
+
+            animator.SetTrigger(FirstRegister);
+        }
+
+        private void ClearSelectedItems()
+        {
+            foreach (var item in _selectedItemsForGrind.ToList())
+            {
+                item.SelectCountEnabled.SetValueAndForceNotify(false);
+            }
+
+            _selectedItemsForGrind.Clear();
+        }
+
+        private void BindButtonEvents()
+        {
+            grindButton.SetCost(CostType.ActionPoint, GameConfig.ActionCostAP);
+            removeAllButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                ClearSelectedItems();
+            }).AddTo(gameObject);
+
+            stakingBonus.SetBonusTextFunc(level =>
+            {
+                if (level > 0 &&
+                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
+                        out var row))
+                {
+                    return $"+{row.Multiplier}%";
+                }
+
+                return "+0%";
+            });
+
+            grindButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                var message = scroll.DataCount > 0
+                    ? "GRIND_UI_SLOTNOTICE"
+                    : "ERROR_NOT_GRINDING_EQUIPPED";
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize(message),
+                    NotificationCell.NotificationType.Notification);
+            }).AddTo(gameObject);
+
+            grindButton.OnClickSubject.Subscribe(state =>
+            {
+                switch (state)
+                {
+                    case ConditionalButton.State.Normal:
+                    case ConditionalButton.State.Conditional:
+                        Action(_selectedItemsForGrind.Select(inventoryItem =>
+                            (Equipment)inventoryItem.ItemBase).ToList());
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                }
+            }).AddTo(gameObject);
+
+            autoSelectButton.Interactable = true;
+            autoSelectButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                AutoSelect20();
+            }).AddTo(gameObject);
+        }
     }
 }
