@@ -53,7 +53,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI _myCp;
 
         [SerializeField]
-        private TextMeshProUGUI _myRatingAndScore;
+        private TextMeshProUGUI _myRating;
+        [SerializeField]
+        private TextMeshProUGUI _myScore;
 
         [SerializeField]
         private TextMeshProUGUI _myScoreChangesInRound;
@@ -69,6 +71,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Image _myClanIcon;
+
+        [SerializeField]
+        private GameObject _clanEmptyIcon;
 
         [SerializeField]
         private TextMeshProUGUI _myClanName;
@@ -211,6 +216,38 @@ namespace Nekoyume.UI
                 return;
             }
 
+            try
+            {
+                // 클랜 리더보드 데이터를 비동기로 가져옵니다.
+                ClanLeaderboardResponse clanLeaderBoardResponse = null;
+                await ApiClients.Instance.Arenaservicemanager.Client.GetClansLeaderboardAsync(ArenaServiceManager.CreateCurrentJwt(),
+                    on200: (result) =>
+                    {
+                        clanLeaderBoardResponse = result;
+                    });
+
+                if (clanLeaderBoardResponse != null)
+                {
+                    _clanObj.SetActive(false);
+                }
+                else
+                {
+                    if (clanLeaderBoardResponse.Leaderboard.Count > 0)
+                    {
+                        _clanObj.SetActive(true);
+                    }
+                    else
+                    {
+                        _clanObj.SetActive(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NcDebug.LogError(ex.Message);
+                _clanObj.SetActive(false);
+            }
+
             loading.Close();
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             _seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
@@ -244,7 +281,8 @@ namespace Nekoyume.UI
                 _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
                 _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
                 _myCp.text = $"CP {_so.CP.ToString("N0", CultureInfo.CurrentCulture)}";
-                _myRatingAndScore.text = $"{_so.Rank.ToString("N0", CultureInfo.CurrentCulture)} | {_so.Rating.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myRating.text = $"{_so.Rank.ToString("N0", CultureInfo.CurrentCulture)} |";
+                _myScore.text = $" {_so.Rating.ToString("N0", CultureInfo.CurrentCulture)}";
                 _myScoreChangesInRound.text = "";
                 _myWinLose.text = $"W {_so.WinCount.ToString("N0", CultureInfo.CurrentCulture)} | L {_so.LoseCount.ToString("N0", CultureInfo.CurrentCulture)}";
                 _myWinLoseChangesInRound.text = "";
@@ -263,20 +301,36 @@ namespace Nekoyume.UI
             _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
             _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
             _myCp.text = $"CP {currentInfo.User.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
-            _myRatingAndScore.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} | <color=#86D2FF>{currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myRating.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} |";
+            _myScore.text = $" {currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
             _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
             var currentRoundWin = currentInfo.TotalWin - currentInfo.CurrentRoundWinChange;
             var currentRoundLose = currentInfo.TotalLose - currentInfo.CurrentRoundLoseChange;
             _myWinLose.text = $"W {currentRoundWin.ToString("N0", CultureInfo.CurrentCulture)} <color=#FFFFFF>|</color> L {currentRoundLose.ToString("N0", CultureInfo.CurrentCulture)}";
             _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
-            _clanObj.SetActive(currentInfo.ClanInfo != null);
             if (currentInfo.ClanInfo != null)
             {
+                _clanEmptyIcon.SetActive(false);
                 Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ContinueWith((result) =>
                 {
-                    _myClanIcon.sprite = result;
+                    if (result != null)
+                    {
+                        _myClanIcon.sprite = result;
+                        _myClanIcon.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        _myClanIcon.gameObject.SetActive(false);
+                        _clanEmptyIcon.SetActive(true);
+                    }
                 });
                 _myClanName.text = currentInfo.ClanInfo.Name;
+            }
+            else
+            {
+                _myClanIcon.gameObject.SetActive(false);
+                _clanEmptyIcon.SetActive(true);
+                _myClanName.text = "-";
             }
         }
 
