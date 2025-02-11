@@ -115,41 +115,42 @@ namespace Nekoyume.UI.Scroller
             SelectPlanetCell cell,
             SelectPlanetCell.ViewModel viewModel) tuple)
         {
-            var (_, viewModel) = tuple;
-            if (viewModel.IsSelected)
-            {
-                OnClickSelectedPlanetSubject.OnNext(this);
-                return;
-            }
-
-            var selectedPlanetId = viewModel.PlanetId;
-            var newItemsSource = ItemsSource.Select(e =>
-            {
-                if (e.IsSelected)
-                {
-                    e.IsSelected = false;
-                    return e;
-                }
-
-                if (e.PlanetId.Equals(selectedPlanetId))
-                {
-                    e.IsSelected = true;
-                    return e;
-                }
-
-                return e;
-            }).ToArray();
-            UpdateContents(newItemsSource);
-            OnChangeSelectedPlanetSubject.OnNext((this, tuple.viewModel.PlanetId));
+            OnClickSelectedPlanetSubject.OnNext(this);
         }
 
         private void OnClickDisableCell((
             SelectPlanetCell cell,
             SelectPlanetCell.ViewModel viewModel) tuple)
         {
-            Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("ERROR_UNABLE_CONNECT_PLANET"),
-                L10nManager.Localize("UI_YES"),
-                null);
+            var (_, viewModel) = tuple;
+            if (viewModel == null || viewModel.HasError)
+            {
+                Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("ERROR_UNABLE_CONNECT_PLANET"),
+                    L10nManager.Localize("UI_YES"),
+                    null);
+            }
+            else
+            {
+                var selectedPlanetId = viewModel.PlanetId;
+                var newItemsSource = ItemsSource.Select(e =>
+                {
+                    if (e.IsSelected)
+                    {
+                        e.IsSelected = false;
+                        return e;
+                    }
+
+                    if (e.PlanetId.Equals(selectedPlanetId))
+                    {
+                        e.IsSelected = true;
+                        return e;
+                    }
+
+                    return e;
+                }).ToArray();
+                UpdateContents(newItemsSource);
+                OnChangeSelectedPlanetSubject.OnNext((this, tuple.viewModel.PlanetId));
+            }
         }
     }
 }
