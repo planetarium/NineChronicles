@@ -149,6 +149,14 @@ namespace Nekoyume.ApiClient
                             $"AvatarAddress: {avatarAddress ?? "null"}");
                         throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
                     },
+                    on401: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_REFRESH_TICKET_PURCHASE_FAILED_401");
+                    },
+                    on503: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_REFRESH_TICKET_PURCHASE_FAILED_503");
+                    },
                     onError: error =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Failed to post available opponents | " +
@@ -204,6 +212,27 @@ namespace Nekoyume.ApiClient
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
                             $"Error: {_}");
                         throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
+                    },
+                    on400: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | ");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED_400");
+                    },
+                    on401: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | ");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED_401");
+                    },
+                    on503: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | ");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED_503");
                     },
                     onError: error =>
                     {

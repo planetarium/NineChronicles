@@ -177,6 +177,18 @@ namespace Nekoyume.UI
                             {
                                 throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
                             },
+                            on400: _ =>
+                            {
+                                throw new ArenaServiceException("UI_ARENA_SERVICE_POST_AVAILABLE_OPPONENTS_REFRESH_FAILED_400");
+                            },
+                            on401: _ =>
+                            {
+                                throw new ArenaServiceException("UI_ARENA_SERVICE_POST_AVAILABLE_OPPONENTS_REFRESH_FAILED_401");
+                            },
+                            on503: _ =>
+                            {
+                                throw new ArenaServiceException("UI_ARENA_SERVICE_POST_AVAILABLE_OPPONENTS_REFRESH_FAILED_503");
+                            },
                             onError: (error) =>
                             {
                                 NcDebug.LogError($"[ArenaBoard] Failed to get first available opponents | Error: {error}");
@@ -599,8 +611,19 @@ namespace Nekoyume.UI
                     on423: _ =>
                     {
                         throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
-                    }
-                    ,
+                    },
+                    on400: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_POST_AVAILABLE_OPPONENTS_REFRESH_FAILED_400");
+                    },
+                    on401: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_POST_AVAILABLE_OPPONENTS_REFRESH_FAILED_401");
+                    },
+                    on503: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_POST_AVAILABLE_OPPONENTS_REFRESH_FAILED_503");
+                    },
                     onError: (error) =>
                     {
                         NcDebug.LogError($"[ArenaBoard] Failed to get available opponents | Error: {error}");

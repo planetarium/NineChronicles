@@ -186,7 +186,7 @@ namespace Nekoyume.Game.Battle
                 {
                     battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
 
-                    if (battleResponse != null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
+                    if (battleResponse != null)
                     {
                         if (battleResponse.BattleStatus == BattleStatus.SUCCESS)
                         {
@@ -207,9 +207,10 @@ namespace Nekoyume.Game.Battle
                     await UniTask.Delay(1000); // 1 second interval
                 }
 
-                if (battleResponse == null && battleResponse.BattleStatus == BattleStatus.SUCCESS)
+                if (battleResponse == null || battleResponse.BattleStatus != BattleStatus.SUCCESS)
                 {
-                    NcDebug.LogError("[Arena] Response is null after polling.");
+                    NcDebug.LogError($"[Arena] Response is null after polling.");
+                    return null;
                 }
             }
             return battleResponse;
