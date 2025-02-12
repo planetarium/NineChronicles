@@ -50,7 +50,6 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<List<SeasonResponse>> ArenaSeasonResponses => _arenaSeasonResponses;
         #endregion RxPropObservable
 
-        private static long _arenaInfoTupleUpdatedBlockIndex;
         private static int _currentSeasonId = -1;
         private static int _lastBattleLogId;
 
@@ -181,8 +180,6 @@ namespace Nekoyume.State
             // 로비화면에서 티켓정보를 보여주기 위해 인포 초기화
             await ArenaInfo.UpdateAsync(_agent.BlockTipStateRootHash);
 
-            _arenaInfoTupleUpdatedBlockIndex = 0;
-
             // 중복 구독을 방지
             if (!_hasSubscribedArenaTicketProgress)
             {
@@ -268,13 +265,6 @@ namespace Nekoyume.State
             {
                 return null;
             }
-
-            if (_arenaInfoTupleUpdatedBlockIndex == _agent.BlockIndex)
-            {
-                return arenaInfo;
-            }
-
-            _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
             try
             {
