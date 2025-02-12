@@ -475,26 +475,66 @@ namespace Nekoyume.UI.Module
         }
 #endif
 
-        private void AutoSelect20()
+        private bool CanAutoSelect(InventoryItem item)
         {
-            if (_selectedItemsForGrind.Count > 0)
+            if (item == null)
             {
-                ClearSelectedItems();
+                return false;
             }
 
+            if (item.ItemBase is Equipment { level: > 0, })
+            {
+                return false;
+            }
+
+            return !item.Equipped.Value;
+        }
+
+        private void AutoSelect20()
+        {
+            const int selectCount = 20;
+
+            var isFirst = _selectedItemsForGrind.Count == 0;
             var inventoryData = States.Instance.CurrentAvatarState.inventory;
-            inventoryData.Equipments
+            var equipmentItems = inventoryData.Equipments
                 .OrderBy(equipment => equipment.Grade)
                 .ThenBy(CPHelper.GetCP)
-                .Take(20)
-                .ToList()
-                .ForEach(equipment =>
-                {
-                    grindInventory.TryGetModel(equipment, out var inventoryItem);
-                    _selectedItemsForGrind.Add(inventoryItem);
-                });
+                .Select(equipment => grindInventory.TryGetModel(equipment, out var inventoryItem)
+                    ? inventoryItem
+                    : null)
+                .Where(CanAutoSelect)
+                .ToList();
 
-            animator.SetTrigger(FirstRegister);
+            var itemCount = equipmentItems.Count;
+            var selectedCount = _selectedItemsForGrind.Count;
+            var remainder = selectedCount % selectCount;
+            // 이미 선택된 아이템을 제외하고 필요 수량만큼 선택할 여분이 없으면 아이템 추가 선택 안함
+            if (itemCount - (selectedCount - remainder) < selectCount)
+            {
+                return;
+            }
+
+            var i = selectedCount % selectCount;
+            foreach (var cachedItem in equipmentItems)
+            {
+                if (cachedItem.SelectCountEnabled.Value)
+                {
+                    continue;
+                }
+
+                _selectedItemsForGrind.Add(cachedItem);
+                i++;
+
+                if (i >= selectCount)
+                {
+                    break;
+                }
+            }
+
+            if (isFirst)
+            {
+                animator.SetTrigger(FirstRegister);
+            }
         }
 
         private void ClearSelectedItems()
