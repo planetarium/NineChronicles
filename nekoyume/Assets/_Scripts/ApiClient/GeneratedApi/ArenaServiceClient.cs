@@ -49,9 +49,9 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         [JsonPropertyName("currentRoundLoseChange")]
         public int CurrentRoundLoseChange { get; set; }
         [JsonPropertyName("battleTicketStatus")]
-        public TicketStatusResponse BattleTicketStatus { get; set; }
+        public BattleTicketStatusResponse BattleTicketStatus { get; set; }
         [JsonPropertyName("refreshTicketStatus")]
-        public TicketStatusResponse RefreshTicketStatus { get; set; }
+        public RefreshTicketStatusResponse RefreshTicketStatus { get; set; }
     }
 
     [JsonConverter(typeof(ArenaTypeTypeConverter))]
@@ -202,6 +202,55 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         }
     }
 
+    public class BattleTicketStatusResponse
+    {
+        /// <summary>
+        /// <para>현재 시즌에서 구매한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("ticketsPurchasedPerSeason")]
+        public int TicketsPurchasedPerSeason { get; set; }
+        /// <summary>
+        /// <para>현재 시즌에서 사용한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("ticketsUsedPerSeason")]
+        public int TicketsUsedPerSeason { get; set; }
+        /// <summary>
+        /// <para>현재 시즌에서 구매 가능한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("remainingPurchasableTicketsPerSeason")]
+        public int RemainingPurchasableTicketsPerSeason { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 구매한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("ticketsPurchasedPerRound")]
+        public int TicketsPurchasedPerRound { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 사용한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("ticketsUsedPerRound")]
+        public int TicketsUsedPerRound { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 사용 가능한(남아있는) 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("remainingTicketsPerRound")]
+        public int RemainingTicketsPerRound { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 구매 가능한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("remainingPurchasableTicketsPerRound")]
+        public int RemainingPurchasableTicketsPerRound { get; set; }
+        /// <summary>
+        /// <para>아직 티켓을 사용한 적이 없음</para>
+        /// </summary>
+        [JsonPropertyName("isUnused")]
+        public bool IsUnused { get; set; }
+        /// <summary>
+        /// <para>다음에 지불해야할 NCG</para>
+        /// </summary>
+        [JsonPropertyName("nextNCGCosts")]
+        public List<decimal> NextNCGCosts { get; set; }
+    }
+
     public class BattleTokenResponse
     {
         [JsonPropertyName("token")]
@@ -299,6 +348,40 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public decimal PurchasePrice { get; set; }
         [JsonPropertyName("txId")]
         public string TxId { get; set; }
+    }
+
+    public class RefreshTicketStatusResponse
+    {
+        /// <summary>
+        /// <para>현재 라운드에서 구매한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("ticketsPurchasedPerRound")]
+        public int TicketsPurchasedPerRound { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 사용한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("ticketsUsedPerRound")]
+        public int TicketsUsedPerRound { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 사용 가능한(남아있는) 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("remainingTicketsPerRound")]
+        public int RemainingTicketsPerRound { get; set; }
+        /// <summary>
+        /// <para>현재 라운드에서 구매 가능한 티켓의 개수</para>
+        /// </summary>
+        [JsonPropertyName("remainingPurchasableTicketsPerRound")]
+        public int RemainingPurchasableTicketsPerRound { get; set; }
+        /// <summary>
+        /// <para>아직 티켓을 사용한 적이 없음</para>
+        /// </summary>
+        [JsonPropertyName("isUnused")]
+        public bool IsUnused { get; set; }
+        /// <summary>
+        /// <para>다음에 지불해야할 NCG</para>
+        /// </summary>
+        [JsonPropertyName("nextNCGCosts")]
+        public List<decimal> NextNCGCosts { get; set; }
     }
 
     public class RoundResponse
@@ -2011,6 +2094,9 @@ public class ArenaServiceClient
     /// <response code="201">
     /// <para>Ok</para>
     /// </response>
+    /// <response code="400">
+    /// <para>Status400BadRequest</para>
+    /// </response>
     /// <response code="401">
     /// <para>Status401Unauthorized</para>
     /// </response>
@@ -2021,6 +2107,8 @@ public class ArenaServiceClient
         string Authorization, UserRegisterRequest requestBody, 
         // Ok
         Action<string> on201 = null, 
+        // Status400BadRequest
+        Action<string> on400 = null, 
         // Status401Unauthorized
         Action<string> on401 = null, 
         // Status409Conflict
@@ -2051,16 +2139,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                PostUsersAsyncProcessResponse(request, on201, on401, on409, onError);
+                PostUsersAsyncProcessResponse(request, on201, on400, on401, on409, onError);
             }
             catch (Exception ex)
             {
-                PostUsersAsyncProcessResponse(request, on201, on401, on409, onError);
+                PostUsersAsyncProcessResponse(request, on201, on400, on401, on409, onError);
             }
         }
     }
 
-    private void PostUsersAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on201, Action<string> on401, Action<string> on409, Action<string> onError)
+    private void PostUsersAsyncProcessResponse(UnityWebRequest webRequest, Action<string> on201, Action<string> on400, Action<string> on401, Action<string> on409, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 201) // Ok
@@ -2068,6 +2156,18 @@ public class ArenaServiceClient
             if (on201 != null)
             {
                 on201(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 400) // Status400BadRequest
+        {
+            if (on400 != null)
+            {
+                on400(responseText);
             }
             else if (onError != null)
             {
