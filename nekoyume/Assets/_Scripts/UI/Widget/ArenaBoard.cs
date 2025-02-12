@@ -100,15 +100,7 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
 
-                //캐싱한 시즌정보들에 시즌이없는경우 다음구간 시즌리스트를 가져와야해서 비동기 실행으로 변경.
-                if (RxProps.GetSeasonResponseByBlockIndex(Game.Game.instance.Agent.BlockIndex) == null)
-                {
-                    Find<ArenaJoin>().ShowAsync().Forget();
-                }
-                else
-                {
-                    Find<ArenaJoin>().Show();
-                }
+                Find<ArenaJoin>().ShowAsync().Forget();
                 Close();
             }).AddTo(gameObject);
 
