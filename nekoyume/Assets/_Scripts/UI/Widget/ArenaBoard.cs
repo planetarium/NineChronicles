@@ -310,11 +310,13 @@ namespace Nekoyume.UI
             _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
             if (currentInfo.ClanInfo != null)
             {
-                _clanEmptyIcon.SetActive(false);
+                _clanEmptyIcon.SetActive(true);
+                _myClanIcon.gameObject.SetActive(false);
                 Util.DownloadTexture(currentInfo.ClanInfo.ImageURL).ContinueWith((result) =>
                 {
                     if (result != null)
                     {
+                        _clanEmptyIcon.SetActive(false);
                         _myClanIcon.sprite = result;
                         _myClanIcon.gameObject.SetActive(true);
                     }
