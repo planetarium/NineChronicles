@@ -44,7 +44,7 @@ namespace Nekoyume.Helper
             Upgrade // Upgrade icon is same as Craft.
         }
 
-#region AcquisitionPlace
+        #region AcquisitionPlace
 
         // For Material
         public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
@@ -54,25 +54,17 @@ namespace Nekoyume.Helper
             bool? isTradable = null)
         {
             var acquisitionPlaceList = new List<AcquisitionPlaceButton.Model>();
-
-            // For FoodMaterial or Arena season medal
-            if (TableSheets.Instance.WeeklyArenaRewardSheet.Values
-                .Any(row => row.Reward.ItemId == itemId))
+            if (Action.ItemEnhancement.HammerIds.Contains(itemId))
             {
-                acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Arena));
+                acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
             }
-            else
-            {
-                if (Action.ItemEnhancement.HammerIds.Contains(itemId))
-                {
-                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
-                }
 
-                switch (itemSubType)
-                {
-                    case ItemSubType.EquipmentMaterial
-                        or ItemSubType.MonsterPart
-                        or ItemSubType.NormalMaterial:
+            switch (itemSubType)
+            {
+                case ItemSubType.EquipmentMaterial
+                    or ItemSubType.MonsterPart
+                    or ItemSubType.NormalMaterial
+                    or ItemSubType.FoodMaterial:
                     {
                         var stages = TableSheets.Instance.StageSheet
                             .GetStagesContainsReward(itemId)
@@ -86,9 +78,9 @@ namespace Nekoyume.Helper
                         acquisitionPlaceList.AddRange(stages);
                         break;
                     }
-                    case ItemSubType.Hourglass or ItemSubType.ApStone:
-                        AcquisitionPlaceButton.Model shopByPlatform = null;
-                        // Hourglass and AP Stone can get in both platform.
+                case ItemSubType.Hourglass or ItemSubType.ApStone:
+                    AcquisitionPlaceButton.Model shopByPlatform = null;
+                    // Hourglass and AP Stone can get in both platform.
 #if UNITY_ANDROID || UNITY_IOS
                     if (Game.Game.instance.IAPStoreManager.TryGetCategoryName(itemId, out var categoryName))
                     {
@@ -99,23 +91,23 @@ namespace Nekoyume.Helper
                         shopByPlatform = GetAcquisitionPlace(caller, PlaceType.PCShop);
 #endif
 
-                        if (!isTradable.HasValue || isTradable.Value)
+                    if (!isTradable.HasValue || isTradable.Value)
+                    {
+                        if (shopByPlatform != null)
                         {
-                            if (shopByPlatform != null)
-                            {
-                                acquisitionPlaceList.Add(shopByPlatform);
-                            }
-
-                            acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
+                            acquisitionPlaceList.Add(shopByPlatform);
                         }
 
-                        if (!isTradable.HasValue || !isTradable.Value)
-                        {
-                            acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
-                        }
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
+                    }
 
-                        break;
-                    case ItemSubType.Circle:
+                    if (!isTradable.HasValue || !isTradable.Value)
+                    {
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
+                    }
+
+                    break;
+                case ItemSubType.Circle:
                     {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.WorldBoss));
@@ -133,12 +125,11 @@ namespace Nekoyume.Helper
 
                         break;
                     }
-                    case ItemSubType.Scroll:
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
-                        break;
-                }
+                case ItemSubType.Scroll:
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
+                    break;
             }
 
             if (RxProps.EventScheduleRowForDungeon.HasValue)
@@ -446,9 +437,9 @@ namespace Nekoyume.Helper
             return result;
         }
 
-#endregion
+        #endregion
 
-#region Shortcut
+        #region Shortcut
 
         public static void ShortcutActionForStage(
             int worldId,
@@ -540,7 +531,7 @@ namespace Nekoyume.Helper
             {
                 case WorldBossStatus.Season:
                     caller.CloseWithOtherWidgets();
-                        Widget.Find<WorldBoss>().ShowAsync().Forget();
+                    Widget.Find<WorldBoss>().ShowAsync().Forget();
                     break;
                 case WorldBossStatus.OffSeason:
                     if (WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var next))
@@ -657,6 +648,6 @@ namespace Nekoyume.Helper
             };
         }
 
-#endregion
+        #endregion
     }
 }
