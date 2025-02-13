@@ -515,16 +515,16 @@ namespace Nekoyume.UI.Module
                 .Where(CanAutoSelect)
                 .ToList();
 
-            var itemCount = equipmentItems.Count;
             var selectedCount = _selectedItemsForGrind.Count;
-            var remainder = selectedCount % selectCount;
-            // 이미 선택된 아이템을 제외하고 필요 수량만큼 선택할 여분이 없으면 아이템 추가 선택 안함
-            if (itemCount - (selectedCount - remainder) < selectCount)
+            if (selectedCount >= LimitGrindingCount)
             {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_NOT_GRINDING_OVER", LimitGrindingCount),
+                    NotificationCell.NotificationType.Alert);
                 return;
             }
 
-            var i = selectedCount % selectCount;
+            var i = 0;
             foreach (var cachedItem in equipmentItems)
             {
                 if (cachedItem.SelectCountEnabled.Value)
@@ -535,7 +535,7 @@ namespace Nekoyume.UI.Module
                 _selectedItemsForGrind.Add(cachedItem);
                 i++;
 
-                if (i >= selectCount)
+                if (i >= selectCount || i + selectedCount >= LimitGrindingCount)
                 {
                     break;
                 }
