@@ -230,10 +230,11 @@ namespace Nekoyume.UI.Module
         {
             var selectedItems = _selectedItemsForGrind.ToList();
             _selectedItemsForGrind.Clear();
+            var cachedList = grindInventory.GetModels(ItemType.Equipment);
             foreach (var selectedItem in selectedItems)
             {
                 // Check if the item is still in the inventory.
-                if (inventory.TryGetModel(selectedItem.ItemBase, out var item))
+                if (inventory.TryGetModel(selectedItem.ItemBase, cachedList, out var item))
                 {
                     _selectedItemsForGrind.Add(item);
                 }
@@ -508,8 +509,9 @@ namespace Nekoyume.UI.Module
                 return gradeCompare != 0 ? gradeCompare : a.CP.CompareTo(b.CP);
             });
 
+            var cachedList = grindInventory.GetModels(ItemType.Equipment);
             var equipmentItems = equipmentWithCpList
-                .Select(x => grindInventory.TryGetModel(x.Equip, out var inventoryItem) ? inventoryItem : null)
+                .Select(x => grindInventory.TryGetModel(x.Equip, cachedList, out var inventoryItem) ? inventoryItem : null)
                 .Where(CanAutoSelect)
                 .ToList();
 

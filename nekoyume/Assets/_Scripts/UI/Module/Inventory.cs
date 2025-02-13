@@ -389,7 +389,7 @@ namespace Nekoyume.UI.Module
             };
         }
 
-        private List<InventoryItem> GetModels(ItemType itemType)
+        public List<InventoryItem> GetModels(ItemType itemType)
         {
             return itemType switch
             {
@@ -431,7 +431,7 @@ namespace Nekoyume.UI.Module
                 result.AddRange(pair.Value);
             }
 
-            var cpMap = new Dictionary<Equipment, int>();
+            var cpMap = new Dictionary<Guid, int>();
             result = result
                 .OrderByDescending(x => x.Equipped.Value)
                 .ThenByDescending(x => bestItemSet.Contains(x))
@@ -451,13 +451,13 @@ namespace Nekoyume.UI.Module
                         return 0;
                     }
 
-                    if (cpMap.TryGetValue(eq, out var cpValue))
+                    if (cpMap.TryGetValue(eq.ItemId, out var cpValue))
                     {
                         return cpValue;
                     }
 
                     cpValue = CPHelper.GetCP(eq);
-                    cpMap[eq] = cpValue;
+                    cpMap[eq.ItemId] = cpValue;
                     return cpValue;
                 })
                 .ToList();
@@ -1086,6 +1086,43 @@ namespace Nekoyume.UI.Module
                         return true;
                     }
                 }
+            }
+
+            return false;
+        }
+
+        public bool TryGetModel(ItemBase itemBase, List<InventoryItem> cachedList, out InventoryItem result)
+        {
+            result = null;
+            if (itemBase is null || cachedList is null)
+            {
+                return false;
+            }
+
+            if (itemBase.ItemType == ItemType.Consumable)
+            {
+                return TryGetConsumable(itemBase.Id, out result);
+            }
+
+            if (itemBase is not INonFungibleItem item)
+            {
+                return false;
+            }
+
+            foreach (var model in cachedList)
+            {
+                if (model.ItemBase is not INonFungibleItem nonFungibleItem)
+                {
+                    continue;
+                }
+
+                if (!nonFungibleItem.NonFungibleId.Equals(item.NonFungibleId))
+                {
+                    continue;
+                }
+
+                result = model;
+                return true;
             }
 
             return false;
