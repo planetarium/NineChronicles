@@ -416,6 +416,14 @@ namespace Nekoyume.UI.Module
         private List<InventoryItem> GetOrganizedEquipments()
         {
             var bestItems = GetUsableBestEquipments();
+            var bestItemSet = new HashSet<InventoryItem>(bestItems);
+
+            HashSet<ElementalType> elementalTypeSet = null;
+            if (_elementalTypes.Any())
+            {
+                elementalTypeSet = new HashSet<ElementalType>(_elementalTypes);
+            }
+
             UpdateEquipmentNotification(bestItems);
             var result = new List<InventoryItem>();
             foreach (var pair in _equipments)
@@ -423,26 +431,42 @@ namespace Nekoyume.UI.Module
                 result.AddRange(pair.Value);
             }
 
+            var cpMap = new Dictionary<Equipment, int>();
             result = result
                 .OrderByDescending(x => x.Equipped.Value)
-                .ThenByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .ThenByDescending(x => bestItemSet.Contains(x))
                 .ThenBy(x =>
                 {
                     if (x.ItemBase.ItemSubType == ItemSubType.Aura)
                     {
                         return 0;
                     }
-
                     return (int)x.ItemBase.ItemSubType;
                 })
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
-                .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                .ThenByDescending(x =>
+                {
+                    if (x.ItemBase is not Equipment eq)
+                    {
+                        return 0;
+                    }
+
+                    if (cpMap.TryGetValue(eq, out var cpValue))
+                    {
+                        return cpValue;
+                    }
+
+                    cpValue = CPHelper.GetCP(eq);
+                    cpMap[eq] = cpValue;
+                    return cpValue;
+                })
                 .ToList();
 
-            if (_elementalTypes.Any())
+            if (elementalTypeSet != null)
             {
-                result = result.OrderByDescending(x =>
-                    _elementalTypes.Exists(y => y.Equals(x.ItemBase.ElementalType))).ToList();
+                result = result
+                    .OrderByDescending(x => elementalTypeSet.Contains(x.ItemBase.ElementalType))
+                    .ToList();
             }
 
             return result;

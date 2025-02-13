@@ -496,12 +496,20 @@ namespace Nekoyume.UI.Module
 
             var isFirst = _selectedItemsForGrind.Count == 0;
             var inventoryData = States.Instance.CurrentAvatarState.inventory;
-            var equipmentItems = inventoryData.Equipments
-                .OrderBy(equipment => equipment.Grade)
-                .ThenBy(CPHelper.GetCP)
-                .Select(equipment => grindInventory.TryGetModel(equipment, out var inventoryItem)
-                    ? inventoryItem
-                    : null)
+
+            var equipmentWithCpList = new List<(Equipment Equip, int CP)>();
+            foreach (var eq in inventoryData.Equipments) {
+                var cp = CPHelper.GetCP(eq);
+                equipmentWithCpList.Add((eq, cp));
+            }
+
+            equipmentWithCpList.Sort((a, b) => {
+                var gradeCompare = a.Equip.Grade.CompareTo(b.Equip.Grade);
+                return gradeCompare != 0 ? gradeCompare : a.CP.CompareTo(b.CP);
+            });
+
+            var equipmentItems = equipmentWithCpList
+                .Select(x => grindInventory.TryGetModel(x.Equip, out var inventoryItem) ? inventoryItem : null)
                 .Where(CanAutoSelect)
                 .ToList();
 
