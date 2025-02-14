@@ -471,7 +471,7 @@ namespace Nekoyume.UI
             {
                 var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.FirstOrDefault();
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString(CultureInfo.InvariantCulture));
 
                 int logId = -1;
                 try
@@ -681,7 +681,7 @@ namespace Nekoyume.UI
                 {
                     var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.FirstOrDefault();
                     var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                    var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
+                    var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString(CultureInfo.InvariantCulture));
                     Find<PaymentPopup>().ShowCheckPaymentNCG(
                         States.Instance.GoldBalanceState.Gold,
                         cost,
