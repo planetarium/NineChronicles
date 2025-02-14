@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Nekoyume.Game;
-using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 
@@ -64,35 +62,26 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateArenaSeasonTitle(long blockIndex)
         {
-            ArenaSheet.RoundData currentRoundData;
-            try
-            {
-                currentRoundData =
-                    TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            }
-            catch (Exception)
+            var currentSeasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+            if (currentSeasonData == null)
             {
                 _seasonGameObject.SetActive(false);
                 _championshipGameObject.SetActive(false);
                 return;
             }
 
-            switch (currentRoundData.ArenaType)
+            switch (currentSeasonData.ArenaType)
             {
-                case ArenaType.OffSeason:
+                case GeneratedApiNamespace.ArenaServiceClient.ArenaType.OFF_SEASON:
                     _seasonGameObject.SetActive(false);
                     _championshipGameObject.SetActive(false);
                     break;
-                case ArenaType.Season:
-                    _seasonText.text = TableSheets.Instance.ArenaSheet
-                        .GetSeasonNumber(
-                            blockIndex,
-                            currentRoundData.Round)
-                        .ToString();
+                case GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON:
+                    _seasonText.text = currentSeasonData.SeasonGroupId.ToString();
                     _seasonGameObject.SetActive(true);
                     _championshipGameObject.SetActive(false);
                     break;
-                case ArenaType.Championship:
+                case GeneratedApiNamespace.ArenaServiceClient.ArenaType.CHAMPIONSHIP:
                     _seasonGameObject.SetActive(false);
                     _championshipGameObject.SetActive(true);
                     break;

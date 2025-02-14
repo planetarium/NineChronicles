@@ -124,6 +124,10 @@ namespace Nekoyume
                 {
                     methodParameters[i] = EditorGUILayout.IntField(paramName + " (int)", (int)methodParameters[i]);
                 }
+                else if (paramType == typeof(Int64))
+                {
+                    methodParameters[i] = EditorGUILayout.LongField(paramName + " (Int64)", (Int64)methodParameters[i]);
+                }
                 else if (paramType == typeof(float))
                 {
                     methodParameters[i] = EditorGUILayout.FloatField(paramName + " (float)", (float)methodParameters[i]);
@@ -376,12 +380,19 @@ namespace Nekoyume
 
         private void GenericCallback<T>(T obj)
         {
-            var options = new JsonSerializerOptions
+            if (obj is string || obj is int || obj is float || obj is bool)
             {
-                WriteIndented = true
-            };
-            var serializedData = JsonSerializer.Serialize(obj, options);
-            responseMessage = $"{serializedData}";
+                responseMessage = obj.ToString();
+            }
+            else
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                var serializedData = JsonSerializer.Serialize(obj, options);
+                responseMessage = $"{serializedData}";
+            }
             Repaint();
         }
     }
@@ -406,7 +417,6 @@ namespace Nekoyume
             var window = GetWindow(typeof(OpenApiGenerator));
             window.Show();
         }
-
         private void OnGUI()
         {
             RefreshGeneratedInfo();
@@ -451,7 +461,18 @@ namespace Nekoyume
 
                     if (GUILayout.Button("TesterWindow"))
                     {
-                        GeneratedApiTester.ShowWindow(data.Value.Replace("/openapi.json", ""), data.Key);
+                        var baseUrl = data.Value;
+                        var comIndex = baseUrl.IndexOf(".com");
+                        if (comIndex >= 0)
+                        {
+                            baseUrl = baseUrl.Substring(0, comIndex + 4);
+                        }
+                        var swaggerIndex = baseUrl.IndexOf("/swagger");
+                        if (swaggerIndex >= 0)
+                        {
+                            baseUrl = baseUrl.Substring(0, swaggerIndex);
+                        }
+                        GeneratedApiTester.ShowWindow(baseUrl, data.Key);
                     }
 
                     GUILayout.EndHorizontal();
@@ -526,6 +547,10 @@ namespace Nekoyume
             sb.AppendLine("// </auto-generated>");
             sb.AppendLine("//------------------------------------------------------------------------------");
 
+            sb.AppendLine();
+            sb.AppendLine("#nullable enable");
+            sb.AppendLine();
+
             sb.AppendLine("using System.Text.Json.Serialization;");
             sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine("using System;");
@@ -540,25 +565,26 @@ namespace Nekoyume
 
             sb.AppendLine();
 
-            sb.AppendLine($"public class {rootClassName}");
-            sb.AppendLine("{");
-            sb.AppendLine("    private string Url;");
-            sb.AppendLine();
-            sb.AppendLine($"    public {rootClassName}(string url)");
-            sb.AppendLine("    {");
-            sb.AppendLine($"        Url = url;");
-            sb.AppendLine("    }");
-            sb.AppendLine();
-            sb.AppendLine("    public void Dispose()");
-            sb.AppendLine("    {");
-            sb.AppendLine("    }");
-            sb.AppendLine();
+            // 네임스페이스 추가
+            sb.AppendLine($"namespace GeneratedApiNamespace.{rootClassName}{{");
 
             if (rootNode["components"]?["schemas"] is JsonObject schemas)
             {
                 foreach (var schema in schemas)
                 {
                     var className = schema.Key;
+                    var classDescription = schema.Value["description"]?.ToString();
+
+                    // Add class summary if description exists
+                    if (!string.IsNullOrEmpty(classDescription))
+                    {
+                        sb.AppendLine("    /// <summary>");
+                        string processedDescription = classDescription
+                            .Replace("\r\n", "\r\n    /// ")
+                            .Replace("\n", "\n    /// ");
+                        sb.AppendLine($"    /// <para>{processedDescription}</para>");
+                        sb.AppendLine("    /// </summary>");
+                    }
 
                     if (schema.Value["enum"] is JsonArray enumValues)
                     {
@@ -566,13 +592,12 @@ namespace Nekoyume
                         sb.AppendLine($"    public enum {schema.Key}");
                         sb.AppendLine("    {");
 
-                        var description = schema.Value["description"]?.ToString() ?? string.Empty;
                         var enumMapping = new Dictionary<string, string>();
 
                         var enumType = schema.Value["type"]?.ToString();
-                        if (enumType != "string")
+                        if (enumType != "string" && classDescription != null)
                         {
-                            foreach (var line in description.Split('\n'))
+                            foreach (var line in classDescription.Split('\n'))
                             {
                                 if (line.Contains(":"))
                                 {
@@ -617,7 +642,7 @@ namespace Nekoyume
                             }
                         }
 
-                        if(invalidEnumMapping.Count > 0)
+                        if (invalidEnumMapping.Count > 0)
                         {
                             inValidEnumTypeList.Add(schema.Key);
                         }
@@ -655,7 +680,7 @@ namespace Nekoyume
                         sb.AppendLine($"            {schema.Key} value,");
                         sb.AppendLine("            JsonSerializerOptions options)");
                         sb.AppendLine("        {");
-                        if(enumType == "string")
+                        if (enumType == "string")
                         {
                             sb.AppendLine("            var enumString = value.ToString();");
                             sb.AppendLine("            if (InvalidEnumMapping.ContainsValue(enumString))");
@@ -699,6 +724,19 @@ namespace Nekoyume
                         foreach (var property in properties)
                         {
                             var propName = property.Key;
+                            var propertyDescription = property.Value["description"]?.ToString();
+
+                            // Add property summary if description exists
+                            if (!string.IsNullOrEmpty(propertyDescription))
+                            {
+                                sb.AppendLine("        /// <summary>");
+                                string processedDescription = propertyDescription
+                                    .Replace("\r\n", "\r\n    /// ")
+                                    .Replace("\n", "\n    /// ");
+                                sb.AppendLine($"        /// <para>{processedDescription}</para>");
+                                sb.AppendLine("        /// </summary>");
+                            }
+
                             var propType = ConvertToCSharpType(property.Value);
 
                             if (property.Value["type"]?.ToString() == "array")
@@ -723,9 +761,23 @@ namespace Nekoyume
                 }
             }
 
+            sb.AppendLine($"public class {rootClassName}");
+            sb.AppendLine("{");
+            sb.AppendLine("    private string Url;");
+            sb.AppendLine();
+            sb.AppendLine($"    public {rootClassName}(string url)");
+            sb.AppendLine("    {");
+            sb.AppendLine($"        Url = url;");
+            sb.AppendLine("    }");
+            sb.AppendLine();
+            sb.AppendLine("    public void Dispose()");
+            sb.AppendLine("    {");
+            sb.AppendLine("    }");
+            sb.AppendLine();
+
             var paths = rootNode["paths"];
             AppendWebRequestsFromPaths(sb, paths);
-            sb.AppendLine("}");
+            sb.AppendLine("}}");
 
             return sb.ToString();
         }
@@ -749,10 +801,13 @@ namespace Nekoyume
 
             switch (jsonType)
             {
-                case "string": return "string";
-                case "integer": return "int";
-                case "boolean": return "bool";
-                case "number": return "decimal";
+                case "string": return "string" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                case "integer":
+                    if (jsonNode["format"]?.ToString() == "int64")
+                        return "Int64" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                    return "int" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                case "boolean": return "bool" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
+                case "number": return "decimal" + (jsonNode["nullable"]?.ToString() == "true" ? "?" : "");
 
                 default: return "object";
             }
@@ -785,24 +840,27 @@ namespace Nekoyume
                         var parameters = method.Value["parameters"];
                         if (parameters != null)
                         {
+                            // todo : Parameters  required 관련 처리 작업진행해야함.
                             var queryParameters = new List<string>();
                             var headerParameters = new List<string>();
 
                             var parameterTypeDict = new Dictionary<string, string>();
                             foreach (var parameter in parameters as JsonArray)
                             {
-                                var parameterName = parameter["name"].ToString();
+                                var parameterName = parameter["name"].ToString()
+                                    .Replace(" ", "_")
+                                    .Replace("-", "_");
                                 var parameterType = ConvertToCSharpType(parameter["schema"]);
-                                parameterDefinitions.Append($"{parameterType} {parameterName.Replace("-", "_")}, ");
+                                parameterDefinitions.Append($"{parameterType} {parameterName}, ");
 
-                                parameterTypeDict[parameterName] = parameterType.Replace("?", "");
+                                parameterTypeDict[parameter["name"].ToString()] = parameterType.Replace("?", "");
                                 switch (parameter["in"].ToString())
                                 {
                                     case "query":
-                                        queryParameters.Add($"{parameterName}={{{parameterName}}}");
+                                        queryParameters.Add($"{parameter["name"]}={{{parameterName}}}");
                                         break;
                                     case "header":
-                                        headerParameters.Add(parameterName);
+                                        headerParameters.Add(parameter["name"].ToString());
                                         break;
                                 }
                             }
@@ -885,6 +943,13 @@ namespace Nekoyume
 
                                 hasReturnType = true;
                             }
+
+                            var convert = ConvertToCSharpType(responseSchema);
+                            if (convert != "object")
+                            {
+                                returnType = convert;
+                                hasReturnType = true;
+                            }
                         }
 
                         // 중복 체크를 위해 key 생성
@@ -900,41 +965,174 @@ namespace Nekoyume
                             methodNameCounter[key] = 1; // 처음 발견된 경우
                         }
 
-                        sb.AppendLine($"    public async Task {methodName}({parameterDefinitions}Action<{returnType}> onSuccess, Action<string> onError)");
+                        var callbacks = new StringBuilder();
+                        var responseHandling = new StringBuilder();
+
+                        JsonObject responses = method.Value["responses"] as JsonObject;
+                        if (responses != null)
+                        {
+                            foreach (var response in responses)
+                            {
+                                var statusCode = response.Key;
+                                var responseType = "string";
+
+                                // 응답 설명 가져오기
+                                var description = response.Value["description"]?.ToString() ?? "";
+                                // 설명에서 유효한 파라미터 이름 생성
+                                var descriptionPart = Regex.Replace(description, @"[^a-zA-Z0-9]", "");
+                                if (descriptionPart.Length > 30)
+                                {
+                                    descriptionPart = descriptionPart.Substring(0, 30);
+                                }
+
+                                var callbackName = $"on{statusCode}";
+
+                                var responseSchema2 = response.Value["content"]?["application/json"]?["schema"];
+                                if (responseSchema2 != null)
+                                {
+                                    if (responseSchema2["$ref"] != null)
+                                    {
+                                        var schemaRef = responseSchema2["$ref"].ToString();
+                                        var parts = schemaRef.Split('/');
+                                        responseType = parts[parts.Length - 1];
+                                    }
+                                    else if (responseSchema2["type"]?.ToString() == "array" && responseSchema2["items"] != null)
+                                    {
+                                        if (responseSchema2["items"]["$ref"] != null)
+                                        {
+                                            var schemaRef = responseSchema2["items"]["$ref"].ToString();
+                                            var parts = schemaRef.Split('/');
+                                            responseType = $"{parts[parts.Length - 1]}[]";
+                                        }
+                                        else if (responseSchema2["items"]["type"] != null)
+                                        {
+                                            responseType = $"{responseSchema2["items"]["type"]}[]";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        responseType = ConvertToCSharpType(responseSchema2);
+                                    }
+                                }
+
+                                // 콜백 파라미터에 설명 주석 추가
+                                callbacks.AppendLine($"        // {description}");
+                                callbacks.AppendLine($"        Action<{responseType}> {callbackName} = null, ");
+
+                                responseHandling.AppendLine($"        if (webRequest.responseCode == {statusCode}) // {description}");
+                                responseHandling.AppendLine("        {");
+                                responseHandling.AppendLine($"            if ({callbackName} != null)");
+                                responseHandling.AppendLine("            {");
+                                if (responseType != "string")
+                                {
+                                    responseHandling.AppendLine($"                {responseType} responseData;");
+                                    responseHandling.AppendLine($"                try {{ responseData = System.Text.Json.JsonSerializer.Deserialize<{responseType}>(responseText); }}");
+                                    responseHandling.AppendLine("                catch (JsonException ex) { onError(ex.Message + \" \\n\\nResponse Text: \" + responseText); return; }");
+                                    responseHandling.AppendLine($"                {callbackName}(responseData);");
+                                }
+                                else
+                                {
+                                    responseHandling.AppendLine($"                {callbackName}(responseText);");
+                                }
+                                responseHandling.AppendLine("            }");
+                                responseHandling.AppendLine("            else if (onError != null)");
+                                responseHandling.AppendLine("            {");
+                                responseHandling.AppendLine("                onError(responseText);");
+                                responseHandling.AppendLine("            }");
+                                responseHandling.AppendLine("            return;");
+                                responseHandling.AppendLine("        }");
+                            }
+                        }
+
+                        // Add method summary with operation description and parameters
+                        var operationDescription = method.Value["description"]?.ToString();
+                        var operationSummary = method.Value["summary"]?.ToString();
+
+                        if (!string.IsNullOrEmpty(operationSummary) || !string.IsNullOrEmpty(operationDescription))
+                        {
+                            sb.AppendLine("    /// <summary>");
+                            if (!string.IsNullOrEmpty(operationSummary))
+                                sb.AppendLine($"    /// <para>{operationSummary.Replace("\r\n", "\r\n    /// ").Replace("\n", "\n    /// ")}</para>");
+                            if (!string.IsNullOrEmpty(operationDescription))
+                                sb.AppendLine($"    /// <para>{operationDescription.Replace("\r\n", "\r\n    /// ").Replace("\n", "\n    /// ")}</para>");
+                            sb.AppendLine("    /// </summary>");
+                        }
+
+                        // Add parameter documentation
+                        if (parameters != null)
+                        {
+                            foreach (var parameter in parameters as JsonArray)
+                            {
+                                var paramName = parameter["name"].ToString();
+                                var parameterDescription = parameter["description"]?.ToString();
+                                if (!string.IsNullOrEmpty(parameterDescription))
+                                {
+                                    sb.AppendLine($"    /// <param name=\"{paramName}\">");
+                                    sb.AppendLine($"    /// <para>{parameterDescription}</para>");
+                                    sb.AppendLine("    /// </param>");
+                                }
+                            }
+                        }
+
+                        // Add response documentation
+                        if (method.Value["responses"] is JsonObject responsesDoc)
+                        {
+                            foreach (var response in responsesDoc)
+                            {
+                                var statusCode = response.Key;
+                                var responseDescription = response.Value["description"]?.ToString();
+                                if (!string.IsNullOrEmpty(responseDescription))
+                                {
+                                    sb.AppendLine($"    /// <response code=\"{statusCode}\">");
+                                    sb.AppendLine($"    /// <para>{responseDescription}</para>");
+                                    sb.AppendLine("    /// </response>");
+                                }
+                            }
+                        }
+
+                        // 메서드 생성
+                        sb.AppendLine($"    public async Task {methodName}(");
+                        sb.AppendLine($"        {parameterDefinitions}");
+                        sb.Append(callbacks);
+                        sb.AppendLine("        Action<string> onError = null)");
                         sb.AppendLine("    {");
                         sb.AppendLine($"        string url = $\"{{Url}}{path}\";");
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
+                        sb.AppendLine("            try");
+                        sb.AppendLine("            {");
                         sb.Append(parameterUsages);
                         sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
-
                         sb.AppendLine($"            request.SetRequestHeader(\"accept\", \"application/json\");");
                         sb.AppendLine($"            request.SetRequestHeader(\"Content-Type\", \"application/json\");");
                         sb.AppendLine($"            request.timeout = {_timeOut};");
-                        sb.AppendLine("            try");
-                        sb.AppendLine("            {");
-                        sb.AppendLine("                await request.SendWebRequest();");
-                        sb.AppendLine("                if (request.result != UnityWebRequest.Result.Success)");
-                        sb.AppendLine("                {");
-                        sb.AppendLine("                    onError?.Invoke(request.error);");
-                        sb.AppendLine("                    return;");
-                        sb.AppendLine("                }");
-                        sb.AppendLine("                string responseBody = request.downloadHandler.text;");
-                        if (hasReturnType)
-                        {
-                            sb.AppendLine($"                {returnType} result = System.Text.Json.JsonSerializer.Deserialize<{returnType}>(responseBody);");
-                            sb.AppendLine("                onSuccess?.Invoke(result);");
-                        }
-                        else
-                        {
-                            sb.AppendLine("                onSuccess?.Invoke(responseBody);");
-                        }
-
                         sb.AppendLine("            }");
                         sb.AppendLine("            catch (Exception ex)");
                         sb.AppendLine("            {");
-                        sb.AppendLine("                onError?.Invoke(ex.Message);");
+                        sb.AppendLine($"                onError(ex.Message);");
+                        sb.AppendLine($"                return;");
                         sb.AppendLine("            }");
+                        sb.AppendLine("            try");
+                        sb.AppendLine("            {");
+                        sb.AppendLine("                await request.SendWebRequest();");
+                        sb.AppendLine($"                {methodName}ProcessResponse(request, " + string.Join(", ", GetCallbackNames(responses)) + ", onError);");
+                        sb.AppendLine("            }");
+                        sb.AppendLine("            catch (Exception ex)");
+                        sb.AppendLine("            {");
+                        sb.AppendLine($"                {methodName}ProcessResponse(request, " + string.Join(", ", GetCallbackNames(responses)) + ", onError);");
+                        sb.AppendLine("            }");
+                        sb.AppendLine("        }");
+                        sb.AppendLine("    }");
+                        sb.AppendLine();
+
+                        // ProcessResponse 메서드 생성
+                        sb.AppendLine($"    private void {methodName}ProcessResponse(UnityWebRequest webRequest, {GetCallbackParameters(responses)}, Action<string> onError)");
+                        sb.AppendLine("    {");
+                        sb.AppendLine("        string responseText = webRequest.downloadHandler?.text ?? string.Empty;");
+                        sb.Append(responseHandling);
+                        sb.AppendLine("        if (onError != null)");
+                        sb.AppendLine("        {");
+                        sb.AppendLine("            onError(webRequest.error);");
                         sb.AppendLine("        }");
                         sb.AppendLine("    }");
                         sb.AppendLine();
@@ -1044,6 +1242,70 @@ namespace Nekoyume
             }
 
             return validName;
+        }
+
+        private static string GetCallbackParameters(JsonObject responses)
+        {
+            var parameters = new List<string>();
+            foreach (var response in responses)
+            {
+                var statusCode = response.Key;
+                var description = response.Value["description"]?.ToString() ?? "";
+                var descriptionPart = Regex.Replace(description, @"[^a-zA-Z0-9]", "");
+                if (descriptionPart.Length > 30)
+                {
+                    descriptionPart = descriptionPart.Substring(0, 30);
+                }
+
+                var responseType = "string";
+                var responseSchema = response.Value["content"]?["application/json"]?["schema"];
+                if (responseSchema != null)
+                {
+                    if (responseSchema["$ref"] != null)
+                    {
+                        var schemaRef = responseSchema["$ref"].ToString();
+                        var parts = schemaRef.Split('/');
+                        responseType = parts[parts.Length - 1];
+                    }
+                    else if (responseSchema["type"]?.ToString() == "array" && responseSchema["items"] != null)
+                    {
+                        if (responseSchema["items"]["$ref"] != null)
+                        {
+                            var schemaRef = responseSchema["items"]["$ref"].ToString();
+                            var parts = schemaRef.Split('/');
+                            responseType = $"{parts[parts.Length - 1]}[]";
+                        }
+                        else if (responseSchema["items"]["type"] != null)
+                        {
+                            responseType = $"{responseSchema["items"]["type"]}[]";
+                        }
+                    }
+                    else
+                    {
+                        responseType = ConvertToCSharpType(responseSchema);
+                    }
+                }
+
+                parameters.Add($"Action<{responseType}> on{statusCode}");
+            }
+            return string.Join(", ", parameters);
+        }
+
+        private static string[] GetCallbackNames(JsonObject responses)
+        {
+            var names = new List<string>();
+            foreach (var response in responses)
+            {
+                var statusCode = response.Key;
+                var description = response.Value["description"]?.ToString() ?? "";
+                var descriptionPart = Regex.Replace(description, @"[^a-zA-Z0-9]", "");
+                if (descriptionPart.Length > 30)
+                {
+                    descriptionPart = descriptionPart.Substring(0, 30);
+                }
+                names.Add($"on{statusCode}");
+            }
+            return names.ToArray();
         }
     }
 }

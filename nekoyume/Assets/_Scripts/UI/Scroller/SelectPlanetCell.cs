@@ -1,3 +1,4 @@
+using Nekoyume.L10n;
 using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -14,6 +15,7 @@ namespace Nekoyume.UI.Scroller
             public string PlanetName;
             public bool IsNew;
             public bool IsSelected;
+            public bool HasError;
         }
 
         [SerializeField]
@@ -31,7 +33,7 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(_ => Context.OnClickCellSubject.OnNext((this, _viewModel)))
                 .AddTo(gameObject);
             button.OnClickDisabledSubject
-                .Subscribe(_ => Context.OnClickCellSubject.OnNext((this, _viewModel)))
+                .Subscribe(_ => Context.OnClickDisableCellSubject.OnNext((this, _viewModel)))
                 .AddTo(gameObject);
         }
 
@@ -47,10 +49,19 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            button.Interactable = _viewModel.IsSelected;
             button.Text = string.IsNullOrEmpty(_viewModel.PlanetName)
                 ? "null"
                 : _viewModel.PlanetName;
+
+            if (_viewModel.HasError)
+            {
+                button.Interactable = false;
+                button.Text = $"{button.Text} ({L10nManager.Localize("ERROR_UNABLE_CONNECT_MARK")})";
+                newMarkGO.SetActive(false);
+                return;
+            }
+
+            button.Interactable = _viewModel.IsSelected;
             newMarkGO.SetActive(_viewModel.IsNew);
         }
     }

@@ -6,21 +6,26 @@ using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using GeneratedApiNamespace.ArenaServiceClient;
 
 namespace Nekoyume.UI.Module.Arena.Join
 {
+    using System.Globalization;
+    using Nekoyume.L10n;
     using UniRx;
 
     public class ArenaJoinSeasonInfo : MonoBehaviour
     {
-        [Flags][Serializable]
+        [Flags]
+        [Serializable]
         public enum RewardType
         {
             None = 0,
             Medal = 1,
             NCG = 2,
             Food = 4,
-            Costume = 8
+            Costume = 8,
+            Courage = 16,
         }
 
         [SerializeField]
@@ -48,11 +53,17 @@ namespace Nekoyume.UI.Module.Arena.Join
         private GameObject _costumeReward;
 
         [SerializeField]
+        private GameObject _courageReward;
+        [SerializeField]
         private List<Image> _currentRoundMedalImages;
+        [SerializeField]
+        private TextMeshProUGUI _totalPrice;
+        [SerializeField]
+        private ConditionalButton _viewDetail;
 
         private readonly List<IDisposable> _disposablesFromOnEnable = new();
 
-        private ArenaSheet.RoundData _roundData;
+        private SeasonResponse _seasonData;
 
         private readonly Subject<Unit> _onSeasonBeginning = new();
         public IObservable<Unit> OnSeasonBeginning => _onSeasonBeginning;
@@ -60,11 +71,24 @@ namespace Nekoyume.UI.Module.Arena.Join
         private readonly Subject<Unit> _onSeasonEnded = new();
         public IObservable<Unit> OnSeasonEnded => _onSeasonEnded;
 
+        void Awake()
+        {
+            _viewDetail.OnClickSubject.Subscribe(_ =>
+            {
+                if (string.IsNullOrEmpty(_seasonData?.PrizeDetailSiteURL))
+                {
+                    NcDebug.LogError("The prize detail site URL is empty.");
+                    return;
+                }
+                Application.OpenURL(_seasonData?.PrizeDetailSiteURL);
+            }).AddTo(gameObject);
+        }
+
         private void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(blockIndex =>
-                    SetSliderAndText(_roundData.GetSeasonProgress(blockIndex)))
+                    SetSliderAndText(_seasonData.GetSeasonProgress(blockIndex)))
                 .AddTo(_disposablesFromOnEnable);
         }
 
@@ -74,7 +98,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         }
 
         /// <param name="title">Season Name</param>
-        /// <param name="roundData"></param>
+        /// <param name="seasonData"></param>
         /// <param name="rewardType">
         ///   Reward types.
         ///   (e.g., RewardType.None or RewardType.Medal | RewardType.NCG)
@@ -82,17 +106,18 @@ namespace Nekoyume.UI.Module.Arena.Join
         /// <param name="medalItemId">Season Medal ItemId on ItemSheet</param>
         public void SetData(
             string title,
-            ArenaSheet.RoundData roundData,
+            SeasonResponse seasonData,
             RewardType rewardType,
             int? medalItemId)
         {
             _titleText.text = title;
-            _roundData = roundData;
+            _seasonData = seasonData;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            SetSliderAndText(_roundData.GetSeasonProgress(blockIndex));
+            SetSliderAndText(_seasonData.GetSeasonProgress(blockIndex));
             SetRewards(rewardType);
-            SetMedalImages(medalItemId);
+            //SetMedalImages(medalItemId);
+            _totalPrice.text = L10nManager.Localize("UI_ARENAJOIN_NCG", seasonData.TotalPrize.ToString("N0", CultureInfo.CurrentCulture));
         }
 
         private void SetSliderAndText((long beginning, long end, long current) tuple)
@@ -143,6 +168,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             _medalReward.SetActive(false);
             _ncgReward.SetActive(false);
             _foodReward.SetActive(false);
+            _courageReward.SetActive(false);
 
             if (rewardType == RewardType.None)
             {
@@ -167,6 +193,11 @@ namespace Nekoyume.UI.Module.Arena.Join
             if ((rewardType & RewardType.Costume) == RewardType.Costume)
             {
                 _costumeReward.SetActive(true);
+            }
+
+            if ((rewardType & RewardType.Courage) == RewardType.Courage)
+            {
+                _courageReward.SetActive(true);
             }
         }
 

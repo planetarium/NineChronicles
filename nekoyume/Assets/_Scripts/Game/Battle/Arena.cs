@@ -2,20 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using GeneratedApiNamespace.ArenaServiceClient;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
+using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.Game.Battle
 {
@@ -117,7 +123,97 @@ namespace Nekoyume.Game.Battle
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
-            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
+            BattleResponse battleResponse = null;
+            yield return PollBattleResponse(myAvatarAddress).ToCoroutine(response => battleResponse = response);
+            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount, battleResponse));
+        }
+
+        private async UniTask<BattleResponse> PollBattleResponse(Address myAvatarAddress)
+        {
+            //이미 배틀 시뮬레이션이 실행되며 서비스에 데이터가 준비될시간이 확보되는것으로가정하여 바로 1초로 다음 요청 진행
+            //극단적으로 빠르게 시뮬레이션이 끝나는경우도있어서 요청시간 밸런싱
+            int[] initialPollingIntervals = { 1000, 5000, 1000 }; // 초기 요청시간: 1s, 5s, 1s
+            int maxAdditionalAttempts = 10; // 1초가된후 최대 요청개수
+
+            // 처음에 바로 시도
+            var battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
+
+            if (battleResponse == null || battleResponse.BattleStatus != BattleStatus.SUCCESS)
+            {
+                if (battleResponse != null)
+                {
+                    if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
+                        battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
+                        battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
+                        battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                    {
+                        NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
+                        //폴링 실패시 처리.
+                        return null;
+                    }
+                }
+
+                bool isPollingSuccessful = false; // 폴링 성공 여부를 저장할 변수
+
+                // 초기 요청시간을 줄여가며 폴링 시작
+                foreach (var interval in initialPollingIntervals)
+                {
+                    battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
+
+                    if (battleResponse != null)
+                    {
+                        if (battleResponse.BattleStatus == BattleStatus.SUCCESS)
+                        {
+                            NcDebug.Log("[Arena] Battle response received.");
+                            isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                            break; // 성공 시 더 이상 요청하지 않도록 break
+                        }
+                        if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
+                            battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
+                            battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
+                            battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                        {
+                            NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
+                            //폴링 실패시 처리.
+                            return null;
+                        }
+                    }
+                    await UniTask.Delay(interval); // milliseconds to seconds
+                }
+
+                // 1초 간격으로 추가 폴링
+                for (int i = 0; i < maxAdditionalAttempts && !isPollingSuccessful; i++) // 성공하지 않은 경우에만 추가 요청
+                {
+                    battleResponse = await ApiClients.Instance.Arenaservicemanager.GetBattleAsync(RxProps.LastBattleId, myAvatarAddress.ToHex());
+
+                    if (battleResponse != null)
+                    {
+                        if (battleResponse.BattleStatus == BattleStatus.SUCCESS)
+                        {
+                            NcDebug.Log("[Arena] Battle response received.");
+                            isPollingSuccessful = true; // 폴링 성공 시 플래그 설정
+                            break; // 성공 시 더 이상 요청하지 않도록 break
+                        }
+                        if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
+                            battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
+                            battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
+                            battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                        {
+                            NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
+                            //폴링 실패시 처리.
+                            return null;
+                        }
+                    }
+                    await UniTask.Delay(1000); // 1 second interval
+                }
+
+                if (battleResponse == null || battleResponse.BattleStatus != BattleStatus.SUCCESS)
+                {
+                    NcDebug.LogError($"[Arena] Response is null after polling.");
+                    return null;
+                }
+            }
+            return battleResponse;
         }
 
         private IEnumerator CoStart(
@@ -145,7 +241,8 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoEnd(
             ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
-            (int, int)? winDefeatCount = null)
+            (int, int)? winDefeatCount = null,
+            BattleResponse battleResponse = null)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             ActionRenderHandler.Instance.Pending = false;
@@ -161,7 +258,7 @@ namespace Nekoyume.Game.Battle
             arenaCharacter.ShowSpeech("PLAYER_WIN");
             arenaCharacter.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
             Widget.Find<ArenaBattle>().Close();
-            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount);
+            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount, battleResponse);
             yield return null;
         }
 

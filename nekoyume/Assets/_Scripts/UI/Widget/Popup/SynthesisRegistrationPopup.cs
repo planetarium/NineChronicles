@@ -41,6 +41,8 @@ namespace Nekoyume.UI
 
         private SynthesizeModel? _synthesizeModel;
 
+        public bool HasModel(SynthesizeModel model) => _synthesizeModel != null && _synthesizeModel == model;
+
 #region MonoBehaviour
 
         protected override void Awake()
@@ -204,6 +206,15 @@ namespace Nekoyume.UI
             Action<IList<InventoryItem>, SynthesizeModel> registerAction,
             bool ignoreShowAnimation = false)
         {
+            var isSameModel = _synthesizeModel == model;
+            if (isSameModel)
+            {
+                base.Show(ignoreShowAnimation);
+                _registerMaterials = registerAction;
+                synthesisInventory.Show(model);
+                return;
+            }
+
             _synthesizeModel = model;
             _registerMaterials = registerAction;
 
@@ -213,6 +224,14 @@ namespace Nekoyume.UI
             SetHeaderText(model);
 
             synthesisInventory.Show(model);
+            synthesisInventory.UpdateInventory();
+        }
+
+        public void Clear()
+        {
+            _registerMaterials = null;
+            _synthesizeModel = null;
+            synthesisInventory.UpdateInventory();
         }
 
         private void SetAutoSelectButtonText(SynthesizeModel model)
@@ -267,7 +286,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            equipmentTooltip.Show(item, string.Empty, false, null);
+            if (equipmentTooltip.gameObject.activeSelf)
+            {
+                    equipmentTooltip.Show(item, string.Empty, false, null);
+            }
+
             equipmentTooltip.OnEnterButtonArea(true);
         }
 

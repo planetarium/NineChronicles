@@ -615,8 +615,12 @@ namespace Nekoyume.Helper
                     return null;
                 }
 
-                var result = CreateSprite(rawData);
-                CachedDownloadTextures.Add(url, result);
+                if (!CachedDownloadTextures.TryGetValue(url, out var result))
+                {
+                    result = CreateSprite(rawData);
+                    CachedDownloadTextures.Add(url, result);
+                }
+
                 return result;
             }
             catch (Exception e)

@@ -14,7 +14,6 @@ using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.ActionExtensions;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -32,6 +31,7 @@ using Nekoyume.Action.Guild;
 using Nekoyume.Action.ValidatorDelegation;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module;
+using GeneratedApiNamespace.ArenaServiceClient;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -39,6 +39,8 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.Blockchain
 {
+    using System.Threading.Tasks;
+    using Nekoyume.ApiClient;
     using UniRx;
 
     /// <summary>
@@ -59,6 +61,8 @@ namespace Nekoyume.Blockchain
         private readonly List<IDisposable> _disposables = new();
 
         public static ActionManager Instance => Game.Game.instance.ActionManager;
+
+        private List<Tuple<ActionBase, System.Action<TxId>>> _cachedPostProcessedActions = new();
 
         public static bool IsLastBattleActionId(Guid actionId)
         {
@@ -104,6 +108,12 @@ namespace Nekoyume.Blockchain
                 foreach (var gameAction in gameActions)
                 {
                     _actionIdToTxIdBridge[gameAction.Id] = (tx.Id, _agent.BlockIndex);
+                    var existingAction = _cachedPostProcessedActions.FirstOrDefault(a => ReferenceEquals(a.Item1, gameAction));
+                    if (existingAction != null)
+                    {
+                        existingAction.Item2?.Invoke(tx.Id);
+                        _cachedPostProcessedActions.Remove(existingAction);
+                    }
                 }
             }).AddTo(_disposables);
         }
@@ -119,12 +129,12 @@ namespace Nekoyume.Blockchain
             return true;
         }
 
-        private void ProcessAction<T>(T actionBase) where T : ActionBase
+        private void ProcessAction<T>(T actionBase, Func<TxId, Task<bool>> onTxIdReceived = null) where T : ActionBase
         {
             var actionType = actionBase.GetActionTypeAttribute();
             NcDebug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
 
-            _agent.EnqueueAction(actionBase);
+            _agent.EnqueueAction(actionBase, onTxIdReceived);
 
             if (actionBase is GameAction gameAction)
             {
@@ -936,35 +946,33 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
-        public IObservable<ActionEvaluation<BattleArena>> BattleArena(
+        public void BattleArena(
             Address enemyAvatarAddress,
             List<Guid> costumes,
             List<Guid> equipments,
             List<RuneSlotInfo> runeInfos,
             int championshipId,
-            int round,
-            int ticket
+            BattleTokenResponse token
         )
         {
+            // TODO: 아레나 서비스
+            // 티켓이나 라운드 정보 조회 및 소모 기능 추가 후 적용
             try
             {
-                var action = new BattleArena
+                var action = new Action.Arena.Battle
                 {
                     myAvatarAddress = States.Instance.CurrentAvatarState.address,
                     enemyAvatarAddress = enemyAvatarAddress,
                     costumes = costumes,
                     equipments = equipments,
                     runeInfos = runeInfos,
-                    championshipId = championshipId,
-                    round = round,
-                    ticket = ticket
+                    memo = token.Token
                 };
 
                 var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
                     new Dictionary<string, Value>()
                     {
                         ["championshipId"] = championshipId,
-                        ["round"] = round,
                         ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -972,33 +980,50 @@ namespace Nekoyume.Blockchain
 
                 var evt = new AirbridgeEvent("BattleArena");
                 evt.SetValue(championshipId);
-                evt.AddCustomAttribute("round", round);
                 evt.AddCustomAttribute("enemy-avatar-address", enemyAvatarAddress.ToString());
                 evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
                 evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
                 AirbridgeUnity.TrackEvent(evt);
 
-                ProcessAction(action);
-                _lastBattleActionId = action.Id;
-                return _agent.ActionRenderer.EveryRender<BattleArena>()
-                    .Timeout(ActionTimeout)
-                    .Where(eval => eval.Action.Id.Equals(action.Id))
-                    .First()
-                    .ObserveOnMainThread()
-                    .DoOnError(e =>
+                ProcessAction(action, (txId) =>
+                {
+                    // todo: 아레나 서비스
+                    // 타입변경되면 수정해야함
+                    // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
+                    var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleId, States.Instance.CurrentAvatarState.address.ToHex());
+                    return task.ContinueWith(t =>
                     {
-                        if (_lastBattleActionId == action.Id)
+                        if (t.IsFaulted || t.Result == null)
                         {
-                            _lastBattleActionId = null;
+                            // 오류 처리
+                            NcDebug.LogError($"[ActionManager] 아레나 서비스 요청 실패: {t.Exception?.Message}");
+                            Game.Game.BackToMainAsync(t.Exception).Forget();
+                            return false;
                         }
+                        _lastBattleActionId = action.Id;
+                        _agent.ActionRenderer.EveryRender<Action.Arena.Battle>()
+                            .Timeout(ActionTimeout)
+                            .Where(eval => eval.Action.Id.Equals(action.Id))
+                            .First()
+                            .ObserveOnMainThread()
+                            .DoOnError(e =>
+                            {
+                                if (_lastBattleActionId == action.Id)
+                                {
+                                    _lastBattleActionId = null;
+                                }
 
-                        Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                    }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                                Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                            }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace)).Subscribe();
+
+                        return true;
+                    });
+                });
             }
             catch (Exception e)
             {
                 Game.Game.BackToMainAsync(e).Forget();
-                return null;
+                return;
             }
         }
 
@@ -1325,7 +1350,7 @@ namespace Nekoyume.Blockchain
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => HandleException(action.Id, e))
-                .Finally(() => {  });
+                .Finally(() => { });
         }
 
         public IObservable<ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
@@ -1765,6 +1790,83 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 // .DoOnError(e => HandleException(action.Id, e));
                 .DoOnError(e => { });
+        }
+
+        public Task<int> TransferAssetsForArenaBoardRefresh(
+            Address sender,
+            Address recipient,
+            FungibleAssetValue amount)
+        {
+            var action = new TransferAsset(sender, recipient, amount);
+            var tcs = new TaskCompletionSource<int>();
+            ProcessAction(action, (txid) =>
+                    {
+                        var task = ApiClients.Instance.Arenaservicemanager.PostTicketsRefreshPurchaseAsync(txid.ToString(), amount, States.Instance.CurrentAvatarState.address.ToHex());
+                        return task.ContinueWith(t =>
+                        {
+                            if (t.IsFaulted)
+                            {
+                                tcs.SetException(t.Exception);
+                                return false;
+                            }
+                            if (t.Result == -1)
+                            {
+                                tcs.SetResult(t.Result);
+                                tcs.SetException(t.Exception);
+                                return false;
+                            }
+                            _agent.ActionRenderer.EveryRender<TransferAsset>()
+                                    .Timeout(ActionTimeout)
+                                    .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                                    .First()
+                                    .ObserveOnMainThread()
+                                    .DoOnError(e => { })
+                                    .Subscribe();
+
+                            tcs.SetResult(t.Result);
+                            return true;
+                        });
+                    });
+            return tcs.Task;
+        }
+
+        public Task<int> TransferAssetsForBattleTicketPurchase(
+            Address sender,
+            Address recipient,
+            int ticketCount,
+            FungibleAssetValue amount)
+        {
+            var action = new TransferAsset(sender, recipient, amount);
+            var tcs = new TaskCompletionSource<int>();
+            ProcessAction(action, (txid) =>
+                    {
+                        var task = ApiClients.Instance.Arenaservicemanager.PostTicketsBattlePurchaseAsync(txid.ToString(), ticketCount, amount, States.Instance.CurrentAvatarState.address.ToHex());
+                        return task.ContinueWith(t =>
+                        {
+                            if (t.IsFaulted)
+                            {
+                                tcs.SetException(t.Exception);
+                                return false;
+                            }
+                            if (t.Result == -1)
+                            {
+                                tcs.SetResult(t.Result);
+                                tcs.SetException(t.Exception);
+                                return false;
+                            }
+                            _agent.ActionRenderer.EveryRender<TransferAsset>()
+                                    .Timeout(ActionTimeout)
+                                    .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                                    .First()
+                                    .ObserveOnMainThread()
+                                    .DoOnError(e => { })
+                                    .Subscribe();
+
+                            tcs.SetResult(t.Result);
+                            return true;
+                        });
+                    });
+            return tcs.Task;
         }
 
         public IObservable<ActionEvaluation<Stake>> Stake(BigInteger amount, Address avatarAddress)

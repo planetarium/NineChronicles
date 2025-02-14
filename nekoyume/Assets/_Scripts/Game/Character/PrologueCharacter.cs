@@ -226,6 +226,10 @@ namespace Nekoyume.Game.Character
             Animator.CastAttack();
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
             var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_target.gameObject, buff, TableSheets.Instance);
+            if (effect == null)
+            {
+                yield break;
+            }
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }

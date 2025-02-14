@@ -54,7 +54,7 @@ namespace Nekoyume.Blockchain
     {
         private const int RpcConnectionRetryCount = 6;
         private const float TxProcessInterval = 1.0f;
-        private readonly ConcurrentQueue<ActionBase> _queuedActions = new();
+        private readonly ConcurrentQueue<(ActionBase, Func<TxId, Task<bool>>)> _queuedActions = new();
 
         private readonly TransactionMap _transactions = new(20);
 
@@ -98,7 +98,7 @@ namespace Nekoyume.Blockchain
 
         public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new();
 
-        public readonly Subject<bool> OnTxStageEnded = new ();
+        public readonly Subject<bool> OnTxStageEnded = new();
 
         public BlockHash BlockTipHash { get; private set; }
 
@@ -723,12 +723,12 @@ namespace Nekoyume.Blockchain
         {
         }
 
-        public void EnqueueAction(ActionBase actionBase)
+        public void EnqueueAction(ActionBase actionBase, Func<TxId, Task<bool>> onTxIdReceived = null)
         {
-            _queuedActions.Enqueue(actionBase);
+            _queuedActions.Enqueue((actionBase, onTxIdReceived));
         }
 
-#region Mono
+        #region Mono
 
         private void Awake()
         {
@@ -813,7 +813,7 @@ namespace Nekoyume.Blockchain
             cancellationTokenSource?.Dispose();
         }
 
-#endregion
+        #endregion
 
         private IEnumerator CoJoin(Action<bool> callback)
         {
@@ -903,7 +903,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 NcDebug.Log($"[RPCAgent] CoTxProcessor()... before MakeTransaction.({++i})");
-                var task = Task.Run(async () => { await MakeTransaction(new List<ActionBase> { action }); });
+                var task = Task.Run(async () => { await MakeTransaction(action); });
                 yield return new WaitUntil(() => task.IsCompleted);
                 NcDebug.Log("[RPCAgent] CoTxProcessor()... after MakeTransaction." +
                     $" task completed({task.IsCompleted})");
@@ -921,29 +921,38 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private async Task MakeTransaction(List<ActionBase> actions)
+        private async Task MakeTransaction((ActionBase, Func<TxId, Task<bool>>) action)
         {
             var nonce = await GetNonceAsync();
-            var gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
+            var gasLimit = action.Item1 is ITransferAsset or ITransferAssets ? 4L : 1L;
             var tx = NCTx.Create(
                 nonce,
                 PrivateKey,
                 _genesis?.Hash,
-                actions.Select(action => action.PlainValue),
+                new List<IValue> { action.Item1.PlainValue },
                 FungibleAssetValue.Parse(Currencies.Mead, "0.00001"),
                 gasLimit
             );
 
-            var actionsText = string.Join(", ", actions.Select(action =>
+            if (action.Item2 is not null)
             {
-                if (action is GameAction gameAction)
+                bool callBackResult = await action.Item2(tx.Id);
+                if (!callBackResult)
                 {
-                    return $"{action.GetActionTypeAttribute().TypeIdentifier}" +
-                        $"({gameAction.Id.ToString()})";
+                    NcDebug.LogError($"[RPCAgent] MakeTransaction()... callBackResult is false. TxId: {tx.Id}");
+                    return;
                 }
+            }
 
-                return action.GetActionTypeAttribute().TypeIdentifier.ToString();
-            }));
+            var actionsText = action.Item1.GetActionTypeAttribute().TypeIdentifier.ToString();
+            Guid gameActionId = Guid.Empty;
+            if (action.Item1 is GameAction gameAction)
+            {
+                actionsText = $"{action.Item1.GetActionTypeAttribute().TypeIdentifier}" +
+                    $"({gameAction.Id.ToString()})";
+                gameActionId = gameAction.Id;
+            }
+
             NcDebug.Log("[RPCAgent] MakeTransaction()... w/" +
                 $" nonce={nonce}" +
                 $" PrivateKeyAddr={PrivateKey.Address.ToString()}" +
@@ -951,15 +960,12 @@ namespace Nekoyume.Blockchain
                 $" TxId={tx.Id}" +
                 $" Actions=[{actionsText}]");
 
-            _onMakeTransactionSubject.OnNext((tx, actions));
+            _onMakeTransactionSubject.OnNext((tx, new List<ActionBase> { action.Item1 }));
             var result = await _service.PutTransaction(tx.Serialize());
             OnTxStageEnded.OnNext(result);
-            foreach (var action in actions)
+            if (gameActionId != Guid.Empty)
             {
-                if (action is GameAction gameAction)
-                {
-                    _transactions.TryAdd(gameAction.Id, tx.Id);
-                }
+                _transactions.TryAdd(gameActionId, tx.Id);
             }
         }
 

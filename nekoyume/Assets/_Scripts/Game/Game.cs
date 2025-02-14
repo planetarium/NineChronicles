@@ -163,10 +163,6 @@ namespace Nekoyume.Game
 
         public bool IsGuestLogin { get; set; }
 
-        public string GuildBucketUrl => _guildBucketUrl;
-
-        public GuildServiceClient.GuildModel[] GuildModels { get; private set; } = { };
-
         private CommandLineOptions _commandLineOptions;
 
         public CommandLineOptions CommandLineOptions => _commandLineOptions;
@@ -180,8 +176,6 @@ namespace Nekoyume.Game
 
         private Thread _headlessThread;
         private Thread _marketThread;
-
-        private string _guildBucketUrl;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -924,8 +918,8 @@ namespace Nekoyume.Game
         public static async UniTaskVoid BackToMainAsync(Exception exc,
             bool showLoadingScreen = false)
         {
+            await UniTask.SwitchToMainThread();
             NcDebug.LogException(exc);
-
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
             Lobby.Enter(showLoadingScreen);
             instance.Lobby.OnLobbyEnterEnd

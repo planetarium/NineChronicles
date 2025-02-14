@@ -171,9 +171,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            System.Action showRegistrationPopup = () => Find<SynthesisRegistrationPopup>().Show(model, RegisterItems);
+            var registrationPopup = Find<SynthesisRegistrationPopup>();
+            System.Action showRegistrationPopup = () => registrationPopup.Show(model, RegisterItems);
 
-            if (synthesisModule.PossibleSynthesis)
+            if (synthesisModule.PossibleSynthesis && !registrationPopup.HasModel(model))
             {
                 Find<TwoButtonSystem>().Show(
                     L10nManager.Localize("UI_SYNTHESIZE_MATERIAL_CHANGE"),

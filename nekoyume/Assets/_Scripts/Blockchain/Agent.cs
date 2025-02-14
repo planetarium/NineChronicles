@@ -253,7 +253,7 @@ namespace Nekoyume.Blockchain
             disposed = true;
         }
 
-        public void EnqueueAction(ActionBase actionBase)
+        public void EnqueueAction(ActionBase actionBase, Func<TxId, Task<bool>> onTxIdReceived = null)
         {
             NcDebug.LogFormat("Enqueue GameAction: {0}", actionBase);
             _queuedActions.Enqueue(actionBase);

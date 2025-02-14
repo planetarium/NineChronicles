@@ -9,7 +9,10 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Module.Arena.Board
 {
+    using Cysharp.Threading.Tasks;
+    using Nekoyume.State;
     using UniRx;
+    using Unity.Mathematics;
 
     [Serializable]
     public class ArenaBoardPlayerItemData
@@ -26,6 +29,10 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool canFight;
         public string address;
         public string guildName;
+        public string guildImgUrl;
+        public bool? isVictory;
+        public int scoreOnWin;
+        public int scoreOnLose;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -64,6 +71,8 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         [SerializeField]
         private TextMeshProUGUI _plusRatingText;
+        [SerializeField]
+        private TextMeshProUGUI _minusRatingText;
 
         [SerializeField]
         private ConditionalButton _choiceButton;
@@ -73,6 +82,17 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         [SerializeField]
         private Image guildMarkEmpty;
+
+        [SerializeField]
+        private GameObject winImage;
+        [SerializeField]
+        private GameObject loseImage;
+        [SerializeField]
+        private TextMeshProUGUI apCount;
+        [SerializeField]
+        private Color apEnoughColor;
+        [SerializeField]
+        private Color apNotEnoughColor;
 
         private ArenaBoardPlayerItemData _currentData;
 
@@ -92,6 +112,22 @@ namespace Nekoyume.UI.Module.Arena.Board
             _choiceButton.OnClickSubject
                 .Subscribe(_ => Context.onClickChoice?.Invoke(Index))
                 .AddTo(gameObject);
+
+            ReactiveAvatarState.ObservableActionPoint
+                .Subscribe(x => SetActionPoint(x))
+                .AddTo(gameObject);
+        }
+
+        private void SetActionPoint(long x)
+        {
+            if (x < Action.Arena.Battle.CostAp)
+            {
+                apCount.color = apNotEnoughColor;
+            }
+            else
+            {
+                apCount.color = apEnoughColor;
+            }
         }
 
         public override void UpdateContent(ArenaBoardPlayerItemData itemData)
@@ -110,19 +146,35 @@ namespace Nekoyume.UI.Module.Arena.Board
                     _currentData.level.ToString("N0", CultureInfo.CurrentCulture));
             }
 
+            SetActionPoint(ReactiveAvatarState.ActionPoint);
+
             _nameText.text = _currentData.name;
             _cpText.text = _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
             _ratingText.text = _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
             _plusRatingText.gameObject.SetActive(_currentData.canFight);
             _plusRatingText.text = _currentData.expectWinDeltaScore.ToString("N0", CultureInfo.CurrentCulture);
+            _minusRatingText.gameObject.SetActive(_currentData.canFight);
+            
+            _minusRatingText.text = math.abs(_currentData.scoreOnLose).ToString("N0", CultureInfo.CurrentCulture);
 
             _choiceButton.gameObject.SetActive(_currentData.canFight);
+            if (_currentData.canFight)
+            {
+                winImage.SetActive(false);
+                loseImage.SetActive(false);
+            }
+            else
+            {
+                winImage.SetActive(_currentData.isVictory.Value);
+                loseImage.SetActive(!_currentData.isVictory.Value);
+            }
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
             var guildEnabled = !string.IsNullOrEmpty(_currentData.guildName);
             if (guildEnabled)
             {
-                var url = $"{Game.Game.instance.GuildBucketUrl}/{_currentData.guildName}.png";
-                guildMark.sprite = Util.GetTexture(url);
+                Util.DownloadTexture(_currentData.guildImgUrl).ContinueWith(guildImg =>{
+                    guildMark.sprite = guildImg;
+                });
                 NcDebug.Log($"[Guild]Set guild image {_currentData.guildName}");
             }
 

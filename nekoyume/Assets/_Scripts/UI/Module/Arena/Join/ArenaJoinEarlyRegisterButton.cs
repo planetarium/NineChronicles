@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         }
 
         public void Show(
-            ArenaType arenaType,
+            GeneratedApiNamespace.ArenaServiceClient.ArenaType arenaType,
             int championshipId,
             int round,
             bool isRegistered,
@@ -75,10 +75,10 @@ namespace Nekoyume.UI.Module.Arena.Join
 
             switch (arenaType)
             {
-                case ArenaType.OffSeason:
+                case GeneratedApiNamespace.ArenaServiceClient.ArenaType.OFF_SEASON:
                     Hide();
                     return;
-                case ArenaType.Season:
+                case GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON:
                     var seasonNumber = TableSheets.Instance.ArenaSheet
                         .GetSeasonNumber(
                             Game.Game.instance.Agent.BlockIndex,
@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     _seasonArenaEmblem.Show(seasonNumber, !isRegistered);
                     _championshipArenaEmblem.Hide();
                     break;
-                case ArenaType.Championship:
+                case GeneratedApiNamespace.ArenaServiceClient.ArenaType.CHAMPIONSHIP:
                     _seasonArenaEmblem.Hide();
                     _championshipArenaEmblem.Show(_championshipId, !isRegistered);
                     break;
