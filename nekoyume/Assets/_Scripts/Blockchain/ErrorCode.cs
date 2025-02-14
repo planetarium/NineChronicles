@@ -310,6 +310,10 @@ namespace Nekoyume.Blockchain
                     code = "1067";
                     errorMsg = exc.Message;
                     break;
+                case ArenaServiceException _:
+                    key = exc.Message;
+                    code = "1068";
+                    break;
 #endregion Client Error
             }
 

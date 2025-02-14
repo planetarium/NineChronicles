@@ -985,7 +985,7 @@ namespace Nekoyume
                                     descriptionPart = descriptionPart.Substring(0, 30);
                                 }
 
-                                var callbackName = $"on{statusCode}{descriptionPart}";
+                                var callbackName = $"on{statusCode}";
 
                                 var responseSchema2 = response.Value["content"]?["application/json"]?["schema"];
                                 if (responseSchema2 != null)
@@ -1099,12 +1099,19 @@ namespace Nekoyume
                         sb.AppendLine($"        string url = $\"{{Url}}{path}\";");
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
+                        sb.AppendLine("            try");
+                        sb.AppendLine("            {");
                         sb.Append(parameterUsages);
                         sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
-
                         sb.AppendLine($"            request.SetRequestHeader(\"accept\", \"application/json\");");
                         sb.AppendLine($"            request.SetRequestHeader(\"Content-Type\", \"application/json\");");
                         sb.AppendLine($"            request.timeout = {_timeOut};");
+                        sb.AppendLine("            }");
+                        sb.AppendLine("            catch (Exception ex)");
+                        sb.AppendLine("            {");
+                        sb.AppendLine($"                onError(ex.Message);");
+                        sb.AppendLine($"                return;");
+                        sb.AppendLine("            }");
                         sb.AppendLine("            try");
                         sb.AppendLine("            {");
                         sb.AppendLine("                await request.SendWebRequest();");
@@ -1279,7 +1286,7 @@ namespace Nekoyume
                     }
                 }
 
-                parameters.Add($"Action<{responseType}> on{statusCode}{descriptionPart}");
+                parameters.Add($"Action<{responseType}> on{statusCode}");
             }
             return string.Join(", ", parameters);
         }
@@ -1296,7 +1303,7 @@ namespace Nekoyume
                 {
                     descriptionPart = descriptionPart.Substring(0, 30);
                 }
-                names.Add($"on{statusCode}{descriptionPart}");
+                names.Add($"on{statusCode}");
             }
             return names.ToArray();
         }

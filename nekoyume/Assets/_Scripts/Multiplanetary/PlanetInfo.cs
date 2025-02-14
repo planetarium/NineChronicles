@@ -22,6 +22,8 @@ namespace Nekoyume.Multiplanetary
 
         [JsonPropertyName("guildIconBucket")]
         public string GuildIconBucket { get; set; }
+
+        public PlanetContext.ErrorType? ErrorType { get; set; }
     }
 
     public class RpcEndpoints

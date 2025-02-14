@@ -25,7 +25,8 @@ namespace Nekoyume.ApiClient
             if (string.IsNullOrEmpty(url))
             {
                 NcDebug.LogError($"ArenaServiceManager Initialized Fail url is Null");
-                return;
+                // url이 없더라도 생성해야 NRE문제를 피할수있음.
+                url = string.Empty;
             }
             Client = new ArenaServiceClient(url);
         }
@@ -81,7 +82,7 @@ namespace Nekoyume.ApiClient
                 var models = new List<ArenaParticipantModel>();
                 await UniTask.SwitchToMainThread();
                 await Client.GetAvailableopponentsAsync(jwt,
-                    on200AvailableOpponents: result =>
+                    on200: result =>
                     {
                         models.AddRange(
                             result.Select(opponent => new ArenaParticipantModel
@@ -109,7 +110,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"[ArenaServiceManager] Failed to get available opponents | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
         }
 
@@ -137,9 +138,24 @@ namespace Nekoyume.ApiClient
                 int response = -1;
 
                 await Client.PostTicketsRefreshPurchaseAsync(jwt, request,
-                    on201PurchaseLogId: result =>
+                    on201: result =>
                     {
                         response = result;
+                    },
+                    on423: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Locked | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"}");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
+                    },
+                    on401: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_REFRESH_TICKET_PURCHASE_FAILED_401");
+                    },
+                    on503: _ =>
+                    {
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_REFRESH_TICKET_PURCHASE_FAILED_503");
                     },
                     onError: error =>
                     {
@@ -157,7 +173,7 @@ namespace Nekoyume.ApiClient
                     $"TxId: {txId} | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
         }
 
@@ -185,9 +201,38 @@ namespace Nekoyume.ApiClient
                 int response = -1;
 
                 await Client.PostTicketsBattlePurchaseAsync(jwt, request,
-                    on201PurchaseLogId: result =>
+                    on201: result =>
                     {
                         response = result;
+                    },
+                    on423: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Locked | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | " +
+                            $"Error: {_}");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_LOCKED");
+                    },
+                    on400: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | ");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED_400");
+                    },
+                    on401: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | ");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED_401");
+                    },
+                    on503: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] Failed to post battle ticket purchase | " +
+                            $"TxId: {txId} | " +
+                            $"AvatarAddress: {avatarAddress ?? "null"} | ");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED_503");
                     },
                     onError: error =>
                     {
@@ -195,6 +240,7 @@ namespace Nekoyume.ApiClient
                             $"TxId: {txId} | " +
                             $"AvatarAddress: {avatarAddress ?? "null"} | " +
                             $"Error: {error}");
+                        throw new ArenaServiceException("UI_ARENA_SERVICE_BATTLE_TICKET_PURCHASE_FAILED");
                     });
 
                 return response;
@@ -205,7 +251,7 @@ namespace Nekoyume.ApiClient
                     $"TxId: {txId} | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
         }
 
@@ -222,7 +268,7 @@ namespace Nekoyume.ApiClient
                 // TODO: 아레나 서비스에서 타입변경되면 다시 수정해야함
                 await UniTask.SwitchToMainThread();
                 await Client.GetSeasonsByblockAsync((int)blockIndex,
-                    on200OK: result =>
+                    on200: result =>
                     {
                         currentSeason = result;
                     }, onError: error =>
@@ -239,7 +285,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"[ArenaServiceManager] Failed to get season by block | " +
                     $"BlockIndex: {blockIndex} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
         }
 
@@ -264,7 +310,7 @@ namespace Nekoyume.ApiClient
                 string seasonResponse = null;
                 string jwt = CreateJwt(Game.Game.instance.Agent.PrivateKey, avatarAddress);
                 await Client.PostUsersAsync(jwt, request,
-                    on201Created: result =>
+                    on201: result =>
                     {
                         seasonResponse = result;
                     },
@@ -282,7 +328,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"[ArenaServiceManager] Failed to post users | " +
                     $"AvatarAddress: {avatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
         }
 
@@ -298,15 +344,21 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                await Client.GetBattleTokenAsync(opponentAvatarAddress, jwt,
-                    on201Created: result =>
+                await Client.PostBattleTokenAsync(opponentAvatarAddress, jwt,
+                    on201: result =>
                     {
                         token = result;
                     },
-                    on401Unauthorized: _ =>
+                    on401: _ =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Authentication failed | " +
                             $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
+                    },
+                    on423: _ =>
+                    {
+                        NcDebug.LogError($"[ArenaServiceManager] {_ ?? "null"} | " +
+                            $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
+                        throw new ArenaServiceException("ERROR_ARENA_BATTLE_TOKEN_LOCKED");
                     },
                     onError: error =>
                     {
@@ -320,7 +372,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"[ArenaServiceManager] Exception while getting battle token | " +
                     $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
 
             return token;
@@ -339,17 +391,17 @@ namespace Nekoyume.ApiClient
             {
                 await UniTask.SwitchToMainThread();
                 await Client.PostBattleRequestAsync(logId, jwt, new BattleRequest { TxId = txId },
-                    on200OK: result =>
+                    on200: result =>
                     {
                         response = result;
                     },
-                    on401Unauthorized: unauthorizedResult =>
+                    on401: unauthorizedResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
                             $"TxId: {txId} | " +
                             $"LogId: {logId}");
                     },
-                    on404NotFound: notFoundResult =>
+                    on404: notFoundResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Not found | " +
                             $"TxId: {txId} | " +
@@ -369,7 +421,7 @@ namespace Nekoyume.ApiClient
                     $"TxId: {txId} | " +
                     $"LogId: {logId} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
 
             return response;
@@ -388,16 +440,16 @@ namespace Nekoyume.ApiClient
             {
                 await UniTask.SwitchToMainThread();
                 await Client.GetBattleAsync(battleLogId, jwt,
-                    on200OK: result =>
+                    on200: result =>
                     {
                         battleResponse = result;
                     },
-                    on401Unauthorized: unauthorizedResult =>
+                    on401: unauthorizedResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | " +
                             $"BattleLogId: {battleLogId}");
                     },
-                    on404NotFound: notFoundResult =>
+                    on404: notFoundResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Not found | " +
                             $"BattleLogId: {battleLogId}");
@@ -414,7 +466,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError($"[ArenaServiceManager] Exception while getting seasons battle | " +
                     $"BattleLogId: {battleLogId} | " +
                     $"Error: {e.Message}");
-                throw;
+                throw e;
             }
 
             return battleResponse;
@@ -434,15 +486,15 @@ namespace Nekoyume.ApiClient
                 // todo : 아레나서비스
                 // 인터페이스 수정후 작업해야함
                 await Client.GetInfoAsync(jwt,
-                    on200ArenaInfoResponse: result =>
+                    on200: result =>
                     {
                         arenaInfoResponse = result;
                     },
-                    on401Status401Unauthorized: unauthorizedResult =>
+                    on401: unauthorizedResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Unauthorized access | AvatarAddress: {avatarAddress}");
                     },
-                    on404Status404NotFound: notFoundResult =>
+                    on404: notFoundResult =>
                     {
                         NcDebug.LogError($"[ArenaServiceManager] Not found | AvatarAddress: {avatarAddress}");
                     },
@@ -454,7 +506,7 @@ namespace Nekoyume.ApiClient
             catch (Exception e)
             {
                 NcDebug.LogError($"[ArenaServiceManager] Exception while getting arena info | AvatarAddress: {avatarAddress} | Error: {e.Message}");
-                throw;
+                throw e;
             }
 
             return arenaInfoResponse;
@@ -473,7 +525,8 @@ public static class ArenaServiceExtentions
             blockIndex);
     }
 
-    public static RoundResponse GetCurrentRound(this SeasonResponse seasonData, long blockIndex){
+    public static RoundResponse GetCurrentRound(this SeasonResponse seasonData, long blockIndex)
+    {
         var round = seasonData.Rounds.FirstOrDefault(r => r.StartBlockIndex <= blockIndex && blockIndex <= r.EndBlockIndex);
         if (round == null)
         {

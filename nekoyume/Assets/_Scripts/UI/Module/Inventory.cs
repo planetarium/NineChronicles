@@ -1109,6 +1109,7 @@ namespace Nekoyume.UI.Module
                 data = data
                     .OrderByDescending(x => x.ItemBase is ITradableItem)
                     .ThenByDescending(x => x.ItemBase.Grade)
+                    .ThenBy(x => x.ItemBase.ItemSubType)
                     .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
                     .ToList();
             }
@@ -1135,6 +1136,7 @@ namespace Nekoyume.UI.Module
                 data = data
                     .OrderByDescending(x => x.ItemBase is ITradableItem)
                     .ThenByDescending(x => x.ItemBase.Grade)
+                    .ThenBy(x => x.ItemBase.ItemSubType)
                     .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Costume, costumeSheet))
                     .ToList();
             }

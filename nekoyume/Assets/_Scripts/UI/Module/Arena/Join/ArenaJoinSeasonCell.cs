@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             {
                 ArenaType.OFF_SEASON => "off-season",
                 ArenaType.SEASON => $"season #{SeasonNumber}",
-                ArenaType.CHAMPIONSHIP => $"championship #{SeasonData.Id}",
+                ArenaType.CHAMPIONSHIP => $"championship #{SeasonData.SeasonGroupId}",
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

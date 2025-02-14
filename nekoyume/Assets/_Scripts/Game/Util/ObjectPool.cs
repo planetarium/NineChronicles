@@ -190,7 +190,8 @@ namespace Nekoyume.Game.Util
 
                 if (!go)
                 {
-                    throw new NullReferenceException($"Set `{objName}` first in ObjectPool.");
+                    NcDebug.LogError($"Set `{objName}` first in ObjectPool.");
+                    return null;
                 }
 
                 go.transform.position = position;

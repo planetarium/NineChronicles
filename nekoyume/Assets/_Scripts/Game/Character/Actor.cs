@@ -401,8 +401,8 @@ namespace Nekoyume.Game.Character
             var source = GetAnimatorHitPointBoxCollider();
             if (!source)
             {
-                throw new NullReferenceException(
-                    $"{nameof(GetAnimatorHitPointBoxCollider)}() returns null.");
+                NcDebug.LogError("GetAnimatorHitPointBoxCollider() returns null.");
+                return;
             }
 
             var scale = Animator.Target.transform.localScale;
@@ -615,6 +615,11 @@ namespace Nekoyume.Game.Character
 
             var buff = info.Buff;
             var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff, tableSheets);
+            if (effect is null)
+            {
+                NcDebug.LogError($"[ProcessBuff] [Buff] {info.Buff.BuffInfo.Id}");
+                return;
+            }
             effect.Target = target;
             effect.Buff = buff;
 

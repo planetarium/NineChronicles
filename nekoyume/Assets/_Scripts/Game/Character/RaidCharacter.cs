@@ -767,6 +767,10 @@ namespace Nekoyume.Game.Character
 
             var buff = info.Buff;
             var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff, TableSheets.Instance);
+            if (effect == null)
+            {
+                return;
+            }
             effect.Target = target;
             effect.Buff = buff;
 

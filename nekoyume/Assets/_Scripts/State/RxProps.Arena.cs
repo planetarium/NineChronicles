@@ -12,11 +12,14 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using GeneratedApiNamespace.ArenaServiceClient;
+using Nekoyume.Game;
+using System.Reactive.Linq;
 
 namespace Nekoyume.State
 {
     using Libplanet.Common;
-    using System.Reactive.Linq;
+    using Nekoyume.L10n;
+    using Nekoyume.UI;
     using System.Security.Cryptography;
     using UniRx;
 
@@ -47,9 +50,10 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<List<SeasonResponse>> ArenaSeasonResponses => _arenaSeasonResponses;
         #endregion RxPropObservable
 
-        private static long _arenaInfoTupleUpdatedBlockIndex;
         private static int _currentSeasonId = -1;
         private static int _lastBattleLogId;
+
+        private static int _lastRoundIndex = -1;
 
         public static int CurrentArenaSeasonId
         {
@@ -69,7 +73,7 @@ namespace Nekoyume.State
         {
             return ArenaSeasonResponses.Value
                     .Where(seasonResponse => seasonResponse.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON)
-                    .Select(seasonResponse => seasonResponse.Id)
+                    .Select(seasonResponse => seasonResponse.SeasonGroupId)
                     .ToList();
         }
 
@@ -97,12 +101,32 @@ namespace Nekoyume.State
         {
             if (_isUpdatingSeasonResponses) return;
 
-            if (_arenaSeasonResponses.Value.Count != 0 && _arenaSeasonResponses.Value.Last().EndBlockIndex > blockIndex) return;
+            //이미 Classifybychampionship된 응답을 한번 받은경우.
+            if (_arenaSeasonResponses.Value.Count != 0)
+            {
+                var currentSeason = _arenaSeasonResponses.Value.Find(item =>
+                    item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                );
+                // 받은 응답에서 현재 시즌에 해당하는것이 없을경우 예외처리.
+                if (currentSeason == null)
+                {
+                    _currentSeasonId = -1;
+                    _isUpdatingSeasonResponses = false;
+                    NcDebug.LogError("current season is null");
+                    return;
+                }
+                _currentSeasonId = currentSeason.Id;
+                _lastRoundIndex = currentSeason.GetCurrentRound(blockIndex)?.Id ?? -1;
+
+                //이미 받은응답의 마지막 블록인덱스가 현재인댁스보다 큰경우 Classifybychampionship이 바뀌지않은것임으로 중복요청 방지.
+                if (_arenaSeasonResponses.Value.Last().EndBlockIndex > blockIndex)
+                    return;
+            }
 
             _isUpdatingSeasonResponses = true;
 
             await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
-                on200OK: response =>
+                on200: response =>
                 {
                     _arenaSeasonResponses.SetValueAndForceNotify(response.Seasons.ToList());
 
@@ -119,6 +143,7 @@ namespace Nekoyume.State
                     }
 
                     _currentSeasonId = currentSeason.Id;
+                    _lastRoundIndex = currentSeason.GetCurrentRound(blockIndex)?.Id ?? -1;
 
                     OperationAccountAddress = response.OperationAccountAddress;
                     _isUpdatingSeasonResponses = false;
@@ -154,8 +179,6 @@ namespace Nekoyume.State
 
             // 로비화면에서 티켓정보를 보여주기 위해 인포 초기화
             await ArenaInfo.UpdateAsync(_agent.BlockTipStateRootHash);
-
-            _arenaInfoTupleUpdatedBlockIndex = 0;
 
             // 중복 구독을 방지
             if (!_hasSubscribedArenaTicketProgress)
@@ -210,6 +233,28 @@ namespace Nekoyume.State
                 currentArenaInfo.BattleTicketStatus.TicketsPurchasedPerRound);
             _arenaTicketsProgress.SetValueAndForceNotify(
                 _arenaTicketsProgress.Value);
+
+            var currentBlockIndex = currentSeason.GetCurrentRound(blockIndex);
+            if (currentBlockIndex?.Id != _lastRoundIndex)
+            {
+                _lastRoundIndex = currentBlockIndex?.Id ?? _lastRoundIndex;
+                //라운드 바뀌는순간.
+                if (Widget.Find<ArenaBoard>().IsActive() ||
+                    Widget.Find<ArenaBattlePreparation>().IsActive())
+                {
+                    Lobby.Enter(false);
+                    Game.Game.instance.Lobby.OnLobbyEnterEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            Widget.Find<LobbyMenu>().Close();
+                            Widget.Find<ArenaJoin>().ShowAsync().Forget();
+                            Widget.Find<OneButtonSystem>().Show(L10nManager.Localize("UI_ARENA_ROUND_CHAGED"), L10nManager.Localize("UI_OK"), null);
+                            ArenaInfo.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash);
+                        });
+                    MainCanvas.instance.InitWidgetInMain();
+                }
+            }
         }
 
         private static async Task<ArenaInfoResponse>
@@ -221,13 +266,6 @@ namespace Nekoyume.State
             {
                 return null;
             }
-
-            if (_arenaInfoTupleUpdatedBlockIndex == _agent.BlockIndex)
-            {
-                return arenaInfo;
-            }
-
-            _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
             try
             {

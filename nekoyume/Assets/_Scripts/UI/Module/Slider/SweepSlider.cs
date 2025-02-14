@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -96,6 +97,10 @@ namespace Nekoyume
             var each = max / multiplier;
             var interval = sliderMaxWidth / each;
             var width = Mathf.Max(sliderMinWidth, interval * sliderMaxValue);
+            if (math.isnan(width))
+            {
+                width = sliderMinWidth;
+            }
             _rectTransform.sizeDelta = new Vector2(width, _rectTransform.sizeDelta.y);
         }
 
