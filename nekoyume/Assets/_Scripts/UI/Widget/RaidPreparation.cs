@@ -346,6 +346,7 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
+            States.Instance.LogItemSlotStates();
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;

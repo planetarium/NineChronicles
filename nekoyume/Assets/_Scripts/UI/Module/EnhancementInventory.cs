@@ -523,6 +523,7 @@ namespace Nekoyume.UI.Module
                     equipment.Equipped.Value = equipped;
                 }
             }
+            States.Instance.LogItemSlotStates();
         }
 
 #endregion

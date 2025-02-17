@@ -76,7 +76,45 @@ namespace Nekoyume.State
             ItemSlotStates = new();
 
         public ConcurrentDictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
-        public ConcurrentDictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
+
+        private ConcurrentDictionary<BattleType, ItemSlotState> _currentItemSlotStates = new();
+        public ConcurrentDictionary<BattleType, ItemSlotState> CurrentItemSlotStates
+        {
+            get => _currentItemSlotStates;
+            set
+            {
+                _currentItemSlotStates = value;
+                States.Instance.LogItemSlotStates();
+            }
+        }
+
+        public void LogItemSlotStates()
+        {
+            var logMessage = "Item Slot States:\n";
+
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                ItemSlotState itemSlotState = CurrentItemSlotStates?[battleType];
+                if (itemSlotState == null)
+                {
+                    continue;
+                }
+                logMessage += $"BattleType: {battleType} EquipmentsCount: {itemSlotState.Equipments.Count} CostumeCount: {itemSlotState.Costumes.Count} \n";
+
+                foreach (var item in itemSlotState.Equipments)
+                {
+                    logMessage += $" - Equipment GUID: {item}\n";
+                }
+
+                foreach (var costume in itemSlotState.Costumes)
+                {
+                    logMessage += $" - Costume GUID: {costume}\n";
+                }
+            }
+
+            NcDebug.Log(logMessage);
+        }
 
         private class Workshop
         {
@@ -117,7 +155,7 @@ namespace Nekoyume.State
             DeselectAvatar();
         }
 
-#region Setter
+        #region Setter
 
         /// <summary>
         /// 에이전트 상태를 할당한다.
@@ -373,6 +411,7 @@ namespace Nekoyume.State
             var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
             CurrentItemSlotStates[checkedState.BattleType] = checkedState;
             ItemSlotStates[slotIndex][checkedState.BattleType] = checkedState;
+            States.Instance.LogItemSlotStates();
         }
 
         private static ItemSlotState GetVerifiedItemSlotState(
@@ -408,6 +447,7 @@ namespace Nekoyume.State
             }
 
             itemSlotState.UpdateEquipment(checkedItems);
+            States.Instance.LogItemSlotStates();
             return itemSlotState;
         }
 
@@ -726,7 +766,7 @@ namespace Nekoyume.State
             GameConfigStateSubject.OnNext(state);
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// AvatarState를 받아 Update하는 메소드입니다. 무조건 깨끗한 상태의 체인에서 받아온 AvatarState를 넣는걸 목적으로 합니다.

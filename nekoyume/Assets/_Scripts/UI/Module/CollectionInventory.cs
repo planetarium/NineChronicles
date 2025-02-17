@@ -123,6 +123,7 @@ namespace Nekoyume.UI.Module
                     equippedEquipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
                 equipment.Equipped.SetValueAndForceNotify(equipped);
             }
+            States.Instance.LogItemSlotStates();
         }
 
         private static void UpdateCostumeEquipped(List<InventoryItem> costumes)
@@ -139,6 +140,7 @@ namespace Nekoyume.UI.Module
                     equippedCostumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
                 costume.Equipped.SetValueAndForceNotify(equipped);
             }
+            States.Instance.LogItemSlotStates();
         }
 
 #endregion

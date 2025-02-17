@@ -266,6 +266,7 @@ namespace Nekoyume.UI
                     // 성공시 호출할 콜백
                     try
                     {
+                        States.Instance.LogItemSlotStates();
                         var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
                         var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
                         var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]

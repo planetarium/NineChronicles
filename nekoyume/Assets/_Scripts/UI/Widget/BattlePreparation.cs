@@ -562,6 +562,7 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
 
             startButton.gameObject.SetActive(false);
+            States.Instance.LogItemSlotStates();
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;

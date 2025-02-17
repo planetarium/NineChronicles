@@ -854,6 +854,7 @@ namespace Nekoyume.UI.Module
                     equipment.Equipped.SetValueAndForceNotify(equipped);
                 }
             }
+            States.Instance.LogItemSlotStates();
         }
 
         public void ClearSelectedItem()

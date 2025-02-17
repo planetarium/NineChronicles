@@ -272,6 +272,7 @@ namespace Nekoyume.UI.Module
                     equippedEquipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
                 equipment.Equipped.SetValueAndForceNotify(equipped);
             }
+            States.Instance.LogItemSlotStates();
         }
 
         private static void UpdateCostumeEquipped(List<InventoryItem> costumes)
