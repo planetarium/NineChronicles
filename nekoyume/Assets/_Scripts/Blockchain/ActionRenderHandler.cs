@@ -133,11 +133,6 @@ namespace Nekoyume.Blockchain
                             });
 
                         var category = $"ActionRender_{type}";
-                        var evt = new AirbridgeEvent(category);
-                        evt.SetValue(elapsed);
-                        evt.AddCustomAttribute("agent-address", agentState.address.ToString());
-                        evt.AddCustomAttribute("avatar-address", currentAvatarState.address.ToString());
-                        AirbridgeUnity.TrackEvent(evt);
                     }
 
                     var actionTypeName = actionType.TypeIdentifier.Inspect();
@@ -2281,13 +2276,6 @@ namespace Nekoyume.Blockchain
                             States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                     });
-
-                var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
-                evt.SetValue(eval.Action.StageBuffId.Value);
-                evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
-                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
             }
 
             BattleRenderer.Instance.PrepareStage(log);

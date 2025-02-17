@@ -209,7 +209,7 @@ namespace Nekoyume.Game.Scene
             // AudioController 초기화
             // 에디터의 경우 에셋 로드 속도(use asset database)가 비정상적으로 느리기 때문에
             // AudioController의 초기화를 대기하지 않고 아래 로직을 수행한다
-            // AudioController가 초기화되지 않은 상태에서 사운드 재생시 안내 로그 출력 후 사운드가 재생되지 않음 
+            // AudioController가 초기화되지 않은 상태에서 사운드 재생시 안내 로그 출력 후 사운드가 재생되지 않음
 #if UNITY_EDITOR
             game.InitializeAudioControllerAsync().Forget();
 #else
@@ -305,9 +305,6 @@ namespace Nekoyume.Game.Scene
             grayLoadingScreen.ShowProgress(GameInitProgress.ProgressCompleted);
             Analyzer.Instance.Track("Unity/Intro/Start/SecondWidgetCompleted");
 
-            var secondWidgetCompletedEvt = new AirbridgeEvent("Intro_Start_SecondWidgetCompleted");
-            AirbridgeUnity.TrackEvent(secondWidgetCompletedEvt);
-
             yield return game.InitializeStage().ToCoroutine();
 
             // Initialize Rank.SharedModel
@@ -317,9 +314,6 @@ namespace Nekoyume.Game.Scene
                 out var appProtocolVersion);
             Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
             Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
-
-            var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
-            AirbridgeUnity.TrackEvent(showNextEvt);
 
             StartCoroutine(game.CoUpdate());
             game.ReservePushNotifications();

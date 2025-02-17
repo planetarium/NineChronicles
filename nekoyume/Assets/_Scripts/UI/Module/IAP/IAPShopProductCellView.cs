@@ -85,11 +85,6 @@ namespace Nekoyume.UI.Module
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.Sku()));
 
-                var evt = new AirbridgeEvent("IAP_GridCell_Click");
-                evt.SetAction(_data.Sku());
-                evt.AddCustomAttribute("product-id", _data.Sku());
-                AirbridgeUnity.TrackEvent(evt);
-
                 Widget.Find<ShopListPopup>().Show(_data, _purchasingData).Forget();
             });
 

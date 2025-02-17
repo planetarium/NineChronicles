@@ -117,9 +117,6 @@ namespace Nekoyume.UI
             clientSecret = GetClientSecret();
             Application.OpenURL(url);
             Analyzer.Instance.Track("Unity/Portal/1");
-
-            var evt = new AirbridgeEvent("Portal_1");
-            AirbridgeUnity.TrackEvent(evt);
         }
 
         public void OpenPortalRewardUrl()
@@ -146,9 +143,6 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Portal/2");
-
-            var evt = new AirbridgeEvent("Portal_2");
-            AirbridgeUnity.TrackEvent(evt);
 
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
@@ -211,9 +205,6 @@ namespace Nekoyume.UI
         private async void RequestCode(System.Action onSuccess)
         {
             Analyzer.Instance.Track("Unity/Portal/3");
-
-            var evt = new AirbridgeEvent("Portal_3");
-            AirbridgeUnity.TrackEvent(evt);
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
             NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(RequestCode)} invoked: url({url})");
@@ -492,9 +483,6 @@ namespace Nekoyume.UI
             NcDebug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
 
-            var evt = new AirbridgeEvent("Intro_GoogleSignIn_ConnectToPortal");
-            AirbridgeUnity.TrackEvent(evt);
-
             var body = new JsonObject { { "idToken", idToken } };
             var bodyString = body.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
             var request = new UnityWebRequest($"{PortalUrl}{GoogleAuthEndpoint}", "POST");
@@ -510,9 +498,6 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
-
-                var loginEvt = new AirbridgeEvent("Login");
-                AirbridgeUnity.TrackEvent(loginEvt);
 
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
@@ -535,9 +520,6 @@ namespace Nekoyume.UI
             NcDebug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
 
-            var evt = new AirbridgeEvent("Intro_AppleSignIn_ConnectToPortal");
-            AirbridgeUnity.TrackEvent(evt);
-
             var body = new JsonObject { { "idToken", idToken } };
             var bodyString = body.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
             var request = new UnityWebRequest($"{PortalUrl}{AppleAuthEndpoint}", "POST");
@@ -553,9 +535,6 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
-
-                var loginEvt = new AirbridgeEvent("Login");
-                AirbridgeUnity.TrackEvent(loginEvt);
 
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
@@ -833,9 +812,6 @@ namespace Nekoyume.UI
             popup.Show(data.title, message, "OK", false);
             popup.SubmitCallback = Game.Game.ApplicationQuit;
             Analyzer.Instance.Track("Unity/Portal/0");
-
-            var evt = new AirbridgeEvent("Portal_0");
-            AirbridgeUnity.TrackEvent(evt);
         }
     }
 }

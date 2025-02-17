@@ -116,8 +116,6 @@ namespace Nekoyume.Game.OAuth
                     // If a sign in with apple succeeds, we should have obtained the credential with the user id, name, and email, save it
                     PlayerPrefs.SetString(AppleUserIdKey, credential.User);
                     Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
-                    var signedEvt = new AirbridgeEvent("Intro_AppleSignIn_Signed");
-                    AirbridgeUnity.TrackEvent(signedEvt);
                     var appleIdCredential = credential as IAppleIDCredential;
                     Email = appleIdCredential.Email;
                     IdToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
@@ -136,13 +134,9 @@ namespace Nekoyume.Game.OAuth
                 {
                     case SignInState.Signed:
                         Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
-                        var signedEvt = new AirbridgeEvent("Intro_AppleSignIn_Signed");
-                        AirbridgeUnity.TrackEvent(signedEvt);
                         break;
                     case SignInState.Canceled:
                         Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Canceled");
-                        var canceledEvt = new AirbridgeEvent("Intro_AppleSignIn_Canceled");
-                        AirbridgeUnity.TrackEvent(canceledEvt);
                         break;
                 }
             });
