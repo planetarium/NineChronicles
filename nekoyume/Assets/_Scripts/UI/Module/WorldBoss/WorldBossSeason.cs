@@ -44,9 +44,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         private GameObject myRankContainer;
 
         [SerializeField]
-        private GameObject apiMissingContainer;
-
-        [SerializeField]
         private GameObject emptyRecordContainer;
 
         [SerializeField]
@@ -137,11 +134,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             myRankContainer.SetActive(false);
             emptyRecordContainer.SetActive(false);
-            apiMissingContainer.SetActive(!ApiClients.Instance.WorldBossClient.IsInitialized);
-            if (!ApiClients.Instance.WorldBossClient.IsInitialized)
-            {
-                return;
-            }
 
             if (raider != null)
             {

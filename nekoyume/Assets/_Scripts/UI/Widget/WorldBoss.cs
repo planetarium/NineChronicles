@@ -279,41 +279,43 @@ namespace Nekoyume.UI
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
         {
-            if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
+            if (!WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
-                if (_bossId == row.BossId)
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (_bossNamePrefab != null)
-                {
-                    Destroy(_bossNamePrefab);
-                }
+            if (_bossId == row.BossId)
+            {
+                return;
+            }
 
-                if (_bossSpinePrefab != null)
-                {
-                    Destroy(_bossSpinePrefab);
-                }
+            if (_bossNamePrefab != null)
+            {
+                Destroy(_bossNamePrefab);
+            }
 
-                if (_backgroundPrefab != null)
-                {
-                    Destroy(_backgroundPrefab);
-                }
+            if (_bossSpinePrefab != null)
+            {
+                Destroy(_bossSpinePrefab);
+            }
 
-                if (isOffSeason)
-                {
-                    _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
-                }
+            if (_backgroundPrefab != null)
+            {
+                Destroy(_backgroundPrefab);
+            }
 
-                _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
-                _backgroundPrefab = Instantiate(data.backgroundPrefab, backgroundContainer);
-                _bossId = row.BossId;
+            if (isOffSeason)
+            {
+                _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
+            }
 
-                if (string.IsNullOrWhiteSpace(_bgmName))
-                {
-                    _bgmName = data.entranceMusicName;
-                }
+            _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
+            _backgroundPrefab = Instantiate(data.backgroundPrefab, backgroundContainer);
+            _bossId = row.BossId;
+
+            if (string.IsNullOrWhiteSpace(_bgmName))
+            {
+                _bgmName = data.entranceMusicName;
             }
         }
 

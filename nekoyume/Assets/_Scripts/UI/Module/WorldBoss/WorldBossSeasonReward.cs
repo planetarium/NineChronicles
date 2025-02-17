@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using Nekoyume.Helper;
+﻿using Nekoyume.Helper;
 using Nekoyume.Model.State;
-using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {

@@ -1757,7 +1757,6 @@ GameObject:
   - component: {fileID: 5813349506673467889}
   - component: {fileID: 3497788109104027374}
   - component: {fileID: 8609549983271176815}
-  - component: {fileID: 5307624754544511786}
   - component: {fileID: 8269962689890511173}
   m_Layer: 0
   m_Name: MyinfoContainer
@@ -1825,30 +1824,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5307624754544511786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3125198868978431187}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8838e32f60f0476bb1448b3c64d54414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterView: {fileID: 0}
-  rankImage: {fileID: 0}
-  rankText: {fileID: 0}
-  avatarName: {fileID: 0}
-  address: {fileID: 0}
-  cp: {fileID: 0}
-  highScore: {fileID: 0}
-  totalScore: {fileID: 0}
-  gradeContainer: {fileID: 0}
-  rankImageContainer: {fileID: 0}
-  rankTextContainer: {fileID: 0}
-  touchHandler: {fileID: 0}
 --- !u!114 &8269962689890511173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4482,13 +4457,13 @@ MonoBehaviour:
   tutorialActions: 4b420f004d420f00
   categoryToggles:
   - Toggle: {fileID: 1193103898290866311}
-    Type: 3
+    Type: 1
     Item: {fileID: 4282299200609700145}
   - Toggle: {fileID: 2582092715726025894}
     Type: 0
     Item: {fileID: 5395747817718350644}
   - Toggle: {fileID: 4029673474699890890}
-    Type: 4
+    Type: 2
     Item: {fileID: 7637788333484705676}
   backButton: {fileID: 3176906637573235436}
   notification: {fileID: 5040769717617628674}
