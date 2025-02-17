@@ -4,6 +4,7 @@ using System.Numerics;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
+using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -26,12 +27,6 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         [SerializeField]
         private Slider bossHpSlider;
-
-        [SerializeField]
-        private TextMeshProUGUI raidersText;
-
-        [SerializeField]
-        private TextMeshProUGUI myRankText;
 
         [SerializeField]
         private TextMeshProUGUI myBestRecordText;
@@ -97,12 +92,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             _disposables.DisposeAllAndClear();
         }
 
-        public void UpdateUserCount(int count)
-        {
-            raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;
-            ;
-        }
-
         public void UpdateBossInformation(
             int bossId,
             int level,
@@ -139,14 +128,12 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void PrepareRefresh()
         {
-            raidersText.text = string.Empty;
             myTotalScoreText.text = string.Empty;
             myBestRecordText.text = string.Empty;
-            myRankText.text = string.Empty;
             lastUpdatedText.text = string.Empty;
         }
 
-        public void UpdateMyInformation(int bossId, WorldBossRankingRecord record, long blockIndex)
+        public void UpdateMyInformation(int bossId, RaiderState raider)
         {
             myRankContainer.SetActive(false);
             emptyRecordContainer.SetActive(false);
@@ -156,14 +143,13 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            if (record != null)
+            if (raider != null)
             {
                 myRankContainer.SetActive(true);
-                myTotalScoreText.text = $"{record.TotalScore:#,0}";
-                myBestRecordText.text = $"{record.HighScore:#,0}";
-                myRankText.text = $"{record.Ranking:#,0}";
-                lastUpdatedText.text = $"{blockIndex:#,0}";
-                UpdateGrade(bossId, record.HighScore);
+                myTotalScoreText.text = $"{raider.TotalScore:#,0}";
+                myBestRecordText.text = $"{raider.HighScore:#,0}";
+                lastUpdatedText.text = $"{raider.UpdatedBlockIndex:#,0}";
+                UpdateGrade(bossId, raider.HighScore);
             }
             else
             {
@@ -178,14 +164,15 @@ namespace Nekoyume.UI.Module.WorldBoss
                 Destroy(_gradeObject);
             }
 
-            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
-                .TryGetValue(bossId, out var row))
+            if (!Game.Game.instance.TableSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var row))
             {
-                var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(row, highScore);
-                if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
-                {
-                    _gradeObject = Instantiate(prefab, gradeContainer);
-                }
+                return;
+            }
+
+            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(row, highScore);
+            if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
+            {
+                _gradeObject = Instantiate(prefab, gradeContainer);
             }
         }
     }

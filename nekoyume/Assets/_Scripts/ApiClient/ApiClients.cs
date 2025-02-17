@@ -56,7 +56,6 @@ namespace Nekoyume.ApiClient
             RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
                 new NineChroniclesAPIClient(string.Empty) :
                 new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
-            WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             Arenaservicemanager = new ArenaServiceManager(clo.ArenaServiceHost);

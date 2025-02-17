@@ -226,10 +226,10 @@ namespace Nekoyume.UI
                         }
 
                         season.PrepareRefresh();
-                        var (worldBoss, raider, killReward, myRecord, blockIndex, userCount)
+                        var (worldBoss, raider, killReward)
                             = await GetStatesAsync(row);
                         WorldBossStates.UpdateState(avatarAddress, raider, killReward);
-                        UpdateSeason(row, worldBoss, myRecord, blockIndex, userCount);
+                        UpdateSeason(row, raider, worldBoss);
 
                         break;
                     case WorldBossStatus.None:
@@ -260,12 +260,7 @@ namespace Nekoyume.UI
             UpdateBossPrefab(nextRow, true);
         }
 
-        private void UpdateSeason(
-            WorldBossListSheet.Row row,
-            WorldBossState worldBoss,
-            WorldBossRankingRecord myRecord,
-            long blockIndex,
-            int userCount)
+        private void UpdateSeason(WorldBossListSheet.Row row, RaiderState raider, WorldBossState worldBoss)
         {
             offSeasonContainer.SetActive(false);
             seasonContainer.SetActive(true);
@@ -274,8 +269,7 @@ namespace Nekoyume.UI
             UpdateBossName(row);
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            season.UpdateMyInformation(row.BossId, myRecord, blockIndex);
-            season.UpdateUserCount(userCount);
+            season.UpdateMyInformation(row.BossId, raider);
         }
 
         private void UpdateBossName(WorldBossListSheet.Row nextRow)
@@ -348,10 +342,7 @@ namespace Nekoyume.UI
         private async Task<(
                 WorldBossState worldBoss,
                 RaiderState raiderState,
-                WorldBossKillRewardRecord killReward,
-                WorldBossRankingRecord myRecord,
-                long blockIndex,
-                int userCount)>
+                WorldBossKillRewardRecord killReward)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -381,27 +372,11 @@ namespace Nekoyume.UI
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;
 
-                var (record, blockIndex, userCount) = await QueryRankingAsync(row, avatarAddress);
-                return (worldBoss, raider, killReward, record, blockIndex, userCount);
+                return (worldBoss, raider, killReward);
             });
 
             await task;
             return task.Result;
-        }
-
-        private static async Task<(
-                WorldBossRankingRecord myRecord,
-                long blockIndex,
-                int userCount)>
-            QueryRankingAsync(WorldBossListSheet.Row row, Address avatarAddress)
-        {
-            var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
-            var records = response?.WorldBossRanking?.RankingInfo ?? new List<WorldBossRankingRecord>();
-            var myRecord =
-                records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
-            var userCount = response?.WorldBossTotalUsers ?? 0;
-            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
-            return (myRecord, blockIndex, userCount);
         }
 
         private void UpdateBossInformationAsync(WorldBossState state)

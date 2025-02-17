@@ -126,7 +126,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 StartCoroutine(CoSetFirstCategory());
             }
 
-            var (raider, raidId, record, userCount) = await GetDataAsync();
+            var (raider, raidId) = await GetDataAsync();
             CheckRaidId(raidId);
             UpdateTitle();
 
@@ -135,8 +135,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 switch (toggle.Item)
                 {
                     case WorldBossSeasonReward season:
-                        var rank = record?.Ranking ?? 0;
-                        season.Set(raidId, rank, userCount);
+                        season.Set(raider, raidId);
                         break;
                     case WorldBossBattleReward battle:
                         battle.Set(raidId);
@@ -173,12 +172,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
         }
 
-        private async Task<(
-                RaiderState raider,
-                int raidId,
-                WorldBossRankingRecord record,
-                int userCount)>
-            GetDataAsync()
+        private async Task<(RaiderState raider, int raidId)> GetDataAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
@@ -200,7 +194,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     }
                     catch (InvalidOperationException)
                     {
-                        return (null, 0, null, 0);
+                        return (null, 0);
                     }
                 }
 
@@ -211,12 +205,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;
-
-                var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
-                var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
-                var userCount = response?.WorldBossTotalUsers ?? 0;
-                var myRecord = records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
-                return (raider, raidId, myRecord, userCount);
+                return (raider, raidId);
             });
 
             await task;
