@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Bencodex;
 using Bencodex.Types;
@@ -361,7 +362,7 @@ namespace StateViewer.Editor.Features
                 {
                     (
                         new Address(searchingAddrStr),
-                        FungibleAssetValue.Parse(ncg.Value, ncgValue)
+                        FungibleAssetValue.Parse(ncg.Value, ncgValue.ToString(CultureInfo.InvariantCulture))
                     ),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
@@ -379,7 +380,7 @@ namespace StateViewer.Editor.Features
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
                     (new Address(searchingAddrStr),
-                        FungibleAssetValue.Parse(Currencies.Crystal, crystalValue)),
+                        FungibleAssetValue.Parse(Currencies.Crystal, crystalValue.ToString(CultureInfo.InvariantCulture))),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
@@ -398,7 +399,7 @@ namespace StateViewer.Editor.Features
                     ticker: itemTokenTicker,
                     decimalPlaces: 0,
                     minters: null);
-                var fav = FungibleAssetValue.Parse(currency, itemTokenValue);
+                var fav = FungibleAssetValue.Parse(currency, itemTokenValue.ToString(CultureInfo.InvariantCulture));
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
                     (new Address(searchingAddrStr), fav),
