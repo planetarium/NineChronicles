@@ -90,30 +90,38 @@ namespace Nekoyume.State
 
         public void LogItemSlotStates()
         {
-            var logMessage = "Item Slot States:\n";
-
-            for (var i = 1; i < (int)BattleType.End; i++)
+            try
             {
-                var battleType = (BattleType)i;
-                ItemSlotState itemSlotState = CurrentItemSlotStates?[battleType];
-                if (itemSlotState == null)
+                var firstMessage = "Item Slot States: ";
+                var logMessage = "";
+                for (var i = 1; i < (int)BattleType.End; i++)
                 {
-                    continue;
-                }
-                logMessage += $"BattleType: {battleType} EquipmentsCount: {itemSlotState.Equipments.Count} CostumeCount: {itemSlotState.Costumes.Count} \n";
+                    var battleType = (BattleType)i;
+                    if (!CurrentItemSlotStates.TryGetValue(battleType, out var itemSlotState))
+                    {
+                        continue;
+                    }
+                    string logText = $"{battleType} Equip: {itemSlotState.Equipments.Count} Cos: {itemSlotState.Costumes.Count} ";
+                    logMessage += $"{logText} \n";
+                    firstMessage += logText;
 
-                foreach (var item in itemSlotState.Equipments)
-                {
-                    logMessage += $" - Equipment GUID: {item}\n";
-                }
+                    foreach (var item in itemSlotState.Equipments)
+                    {
+                        logMessage += $" - Equipment GUID: {item}\n";
+                    }
 
-                foreach (var costume in itemSlotState.Costumes)
-                {
-                    logMessage += $" - Costume GUID: {costume}\n";
+                    foreach (var costume in itemSlotState.Costumes)
+                    {
+                        logMessage += $" - Costume GUID: {costume}\n";
+                    }
                 }
+                firstMessage += "\n";
+                NcDebug.Log(firstMessage + logMessage);
             }
-
-            NcDebug.Log(logMessage);
+            catch (Exception ex)
+            {
+                NcDebug.LogError(ex.Message);
+            }
         }
 
         private class Workshop
