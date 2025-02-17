@@ -40,13 +40,7 @@ namespace Nekoyume.UI
         public Button rewardButton;
 
         [SerializeField]
-        public Button rankButton;
-
-        [SerializeField]
         public Button informationButton;
-
-        [SerializeField]
-        public Button prevRankButton;
 
         [SerializeField]
         public Button runeButton;
@@ -122,13 +116,8 @@ namespace Nekoyume.UI
 
             rewardButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Reward)).AddTo(gameObject);
-            rankButton.OnClickAsObservable()
-                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rank)).AddTo(gameObject);
             informationButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Information))
-                .AddTo(gameObject);
-            prevRankButton.OnClickAsObservable()
-                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.PreviousRank))
                 .AddTo(gameObject);
             runeButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
@@ -261,7 +250,6 @@ namespace Nekoyume.UI
 
             offSeasonContainer.SetActive(true);
             seasonContainer.SetActive(false);
-            rankButton.gameObject.SetActive(false);
             enterButton.Text = L10nManager.Localize("UI_PRACTICE");
             var begin =
                 WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
@@ -281,7 +269,6 @@ namespace Nekoyume.UI
         {
             offSeasonContainer.SetActive(false);
             seasonContainer.SetActive(true);
-            rankButton.gameObject.SetActive(true);
             enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
             UpdateBossName(row);

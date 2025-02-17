@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private static ReactiveDictionary<Address, bool> _hasGradeRewards { get; } = new();
         private static ReactiveDictionary<Address, bool> _receivingGradeRewards { get; } = new();
-        
+
         private static long _lastUpdatedStateBlockIndex = -1;
 
         public static void SetHasGradeRewards(Address avatarAddress, bool value)
@@ -62,22 +62,22 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public static RaiderState GetRaiderState(Address avatarAddress)
         {
-            return _raiderStates.ContainsKey(avatarAddress)
-                ? _raiderStates[avatarAddress]
+            return _raiderStates.TryGetValue(avatarAddress, out var state)
+                ? state
                 : null;
         }
 
         public static RaiderState GetPreRaiderState(Address avatarAddress)
         {
-            return _preRaiderStates.ContainsKey(avatarAddress)
-                ? _preRaiderStates[avatarAddress]
+            return _preRaiderStates.TryGetValue(avatarAddress, out var state)
+                ? state
                 : null;
         }
 
         public static WorldBossKillRewardRecord GetKillReward(Address avatarAddress)
         {
-            return _killRewards.ContainsKey(avatarAddress)
-                ? _killRewards[avatarAddress]
+            return _killRewards.TryGetValue(avatarAddress, out var reward)
+                ? reward
                 : null;
         }
 
