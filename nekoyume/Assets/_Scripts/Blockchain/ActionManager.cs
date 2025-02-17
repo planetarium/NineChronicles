@@ -855,15 +855,17 @@ namespace Nekoyume.Blockchain
             evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
             AirbridgeUnity.TrackEvent(evt);
 
+            var materialEquipmentGuids = materialEquipments.Select((matEquipment) => matEquipment.NonFungibleId).ToList();
             var action = new ItemEnhancement
             {
                 itemId = baseEquipment.NonFungibleId,
-                materialIds = materialEquipments.Select((matEquipment) => matEquipment.NonFungibleId).ToList(),
+                materialIds = materialEquipmentGuids,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
                 hammers = hammers
             };
             ProcessAction(action);
+            States.Instance.RemoveCurrentItemSlotStates(materialEquipmentGuids);
 
             return _agent.ActionRenderer.EveryRender<ItemEnhancement>()
                 .Timeout(ActionTimeout)
@@ -1272,13 +1274,15 @@ namespace Nekoyume.Blockchain
             evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
             AirbridgeUnity.TrackEvent(evt);
 
+            var equipmentGuids = equipmentList.Select(i => i.ItemId).ToList();
             var action = new Grinding
             {
                 AvatarAddress = avatarAddress,
-                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList(),
+                EquipmentIds = equipmentGuids,
                 ChargeAp = chargeAp
             };
             ProcessAction(action);
+            States.Instance.RemoveCurrentItemSlotStates(equipmentGuids);
 
             return _agent.ActionRenderer.EveryRender<Grinding>()
                 .Timeout(ActionTimeout)
@@ -1325,11 +1329,7 @@ namespace Nekoyume.Blockchain
             }
 
             // TODO: If need sentry or airBridge trace, add it.
-
-            var action = new Synthesize
-            {
-                AvatarAddress = avatarAddress,
-                MaterialIds = itemBaseList.Select(i =>
+            var materialGuids = itemBaseList.Select(i =>
                 {
                     return i switch
                     {
@@ -1337,13 +1337,18 @@ namespace Nekoyume.Blockchain
                         Costume costume => costume.ItemId,
                         _ => throw new InvalidCastException(),
                     };
-                }).ToList(),
+                }).ToList();
+            var action = new Synthesize
+            {
+                AvatarAddress = avatarAddress,
+                MaterialIds = materialGuids,
                 ChargeAp = chargeAp,
                 MaterialGradeId = (int)grade,
                 MaterialItemSubTypeId = (int)itemSubType,
             };
             ProcessAction(action);
-
+            States.Instance.RemoveCurrentItemSlotStates(materialGuids);
+            
             return _agent.ActionRenderer.EveryRender<Synthesize>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
