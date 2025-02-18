@@ -14,7 +14,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Common;
 using Nekoyume.UI.Module.WorldBoss;

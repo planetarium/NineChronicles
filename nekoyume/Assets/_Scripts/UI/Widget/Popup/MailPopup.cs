@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                     {
                         mailRewards.AddRange(
                             claimItemsMail.FungibleAssetValues.Select(fav =>
-                                new MailReward(fav, (int)fav.MajorUnit)));
+                                new MailReward(fav, fav.MajorUnit)));
                     }
 
                     if (claimItemsMail.Items is not null)
@@ -794,7 +794,7 @@ namespace Nekoyume.UI
 
                     foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
                     {
-                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                        mailRewards.Add(new MailReward(fav, fav.MajorUnit, true));
                     }
                 }
 
@@ -808,7 +808,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav.value, (int)fav.value.MajorUnit)));
+                        new MailReward(fav.value, fav.value.MajorUnit)));
             }
 
             if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
@@ -870,7 +870,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     claimItemsMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (claimItemsMail.Items is not null)
@@ -970,7 +970,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     patrolRewardMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (patrolRewardMail.Items is not null)
@@ -1033,7 +1033,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     worldBossRewardMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (worldBossRewardMail.Items is not null)

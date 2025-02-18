@@ -191,10 +191,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             WorldBossListSheet.Row raidRow,
             RaiderState raider,
             WorldBossKillRewardRecord killReward,
-            bool isOnSeason)> GetDataAsync(
-            HashDigest<SHA256> hash,
-            long blockIndex,
-            Address avatarAddress)
+            bool isOnSeason)>
+            GetDataAsync(HashDigest<SHA256> hash, long blockIndex, Address avatarAddress)
         {
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
 
@@ -202,7 +200,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             {
                 WorldBossListSheet.Row raidRow;
                 var isOnSeason = false;
-
                 try
                 {
                     raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
