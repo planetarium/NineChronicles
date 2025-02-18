@@ -324,13 +324,6 @@ namespace Nekoyume.Blockchain
                 ("AgentAddress", Game.Game.instance.Agent.Address.ToString()),
                 ("AvatarAddress", Game.Game.instance.States.CurrentAvatarState.address.ToString()));
 
-            var evt = new AirbridgeEvent("Error");
-            evt.SetValue(Convert.ToInt16(code));
-            evt.AddCustomAttribute("key", key);
-            evt.AddCustomAttribute("agent-address", Game.Game.instance.Agent.Address.ToString());
-            evt.AddCustomAttribute("avatar-address", Game.Game.instance.States.CurrentAvatarState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
-
             errorMsg = errorMsg == string.Empty
                 ? string.Format(
                     L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),

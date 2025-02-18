@@ -337,9 +337,6 @@ namespace Nekoyume.Game
             NcDebug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
-            var tableSheetsInitializedEvt = new AirbridgeEvent("Intro_Start_TableSheetsInitialized");
-            AirbridgeUnity.TrackEvent(tableSheetsInitializedEvt);
-
             RxProps.Start(Agent, States, TableSheets);
 
             AdventureBossData = new AdventureBossData();
@@ -640,9 +637,6 @@ namespace Nekoyume.Game
                     {
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
 
-                        var requestEvt = new AirbridgeEvent("Intro_Pledge_Request");
-                        AirbridgeUnity.TrackEvent(requestEvt);
-
                         swForRequestPledge.Reset();
                         swForRequestPledge.Start();
                         yield return PortalConnect.RequestPledge(
@@ -667,9 +661,6 @@ namespace Nekoyume.Game
                         }
 
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
-
-                        var requestedEvt = new AirbridgeEvent("Intro_Pledge_Requested");
-                        AirbridgeUnity.TrackEvent(requestedEvt);
                     }
                 }
 
@@ -683,9 +674,6 @@ namespace Nekoyume.Game
                     {
                         Analyzer.Instance.Track("Unity/Intro/Pledge/ApproveAction");
 
-                        var approveActionEvt = new AirbridgeEvent("Intro_Start_ApproveAction");
-                        AirbridgeUnity.TrackEvent(approveActionEvt);
-
                         var patronAddress = States.PatronAddress!.Value;
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
@@ -697,9 +685,6 @@ namespace Nekoyume.Game
                         $" finished in {swForRenderingApprovePledge.ElapsedMilliseconds}ms.(elapsed)");
 
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
-
-                    var approveEvt = new AirbridgeEvent("Intro_Start_Approve");
-                    AirbridgeUnity.TrackEvent(approveEvt);
                 }
 
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
@@ -890,9 +875,6 @@ namespace Nekoyume.Game
             {
                 Analyzer.Instance.Track("Unity/Player Quit");
                 Analyzer.Instance.Flush();
-
-                var evt = new AirbridgeEvent("Intro_Player_Quit");
-                AirbridgeUnity.TrackEvent(evt);
             }
         }
 
@@ -1480,10 +1462,6 @@ namespace Nekoyume.Game
             Analyzer.SetAgentAddress(Agent.Address.ToString());
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
 
-            var evt = new AirbridgeEvent("Intro_Start_AgentInitialized");
-            evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
-
             var settingPopup = Widget.Find<SettingPopup>();
             settingPopup.UpdatePrivateKey(_commandLineOptions.PrivateKey);
         }
@@ -1491,10 +1469,6 @@ namespace Nekoyume.Game
         public void OnAgentInitializeFailed()
         {
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
-
-            var evt = new AirbridgeEvent("Intro_Start_AgentInitializeFailed");
-            evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
 
             QuitWithAgentConnectionError(null);
         }

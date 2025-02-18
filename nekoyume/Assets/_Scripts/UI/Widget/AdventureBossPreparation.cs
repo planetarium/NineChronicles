@@ -126,11 +126,6 @@ namespace Nekoyume.UI
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
 
-            var evt = new AirbridgeEvent("Click_AdventureBoss_Prepareation");
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
-
             UpdateStartButton();
             information.UpdateInventory(BattleType.Adventure);
             UpdateRequiredCostByStageId();
