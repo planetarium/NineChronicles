@@ -240,12 +240,6 @@ namespace Nekoyume.UI
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 };
                 Analyzer.Instance.Track("Unity/Number of Purchased Items", props);
-
-                var evt = new AirbridgeEvent("Number_Of_Purchased_Items");
-                evt.SetValue(models.Count);
-                evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
             }
 
             foreach (var model in models)
@@ -258,12 +252,6 @@ namespace Nekoyume.UI
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 };
                 Analyzer.Instance.Track("Unity/BuyProduct", props);
-
-                var evt = new AirbridgeEvent("BuyProduct");
-                evt.SetValue((double)price);
-                evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
 
                 var count = model.Product?.Quantity ?? model.FungibleAssetProduct.Quantity;
                 var itemName = model.ItemBase?.GetLocalizedName() ?? model.FungibleAssetValue.GetLocalizedName();

@@ -870,15 +870,6 @@ namespace Nekoyume.Game.Battle
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             };
             Analyzer.Instance.Track("Unity/Stage End", props);
-
-            var evt = new AirbridgeEvent("Stage_End");
-            evt.SetValue(log.stageId);
-            evt.AddCustomAttribute("cleared-wave", log.clearedWaveNumber);
-            evt.AddCustomAttribute("cp", cp);
-            evt.AddCustomAttribute("food-count", foodCount);
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
         }
 
         private IEnumerator CoSlideBg()

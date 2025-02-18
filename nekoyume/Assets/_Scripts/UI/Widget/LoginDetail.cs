@@ -70,9 +70,6 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             Analyzer.Instance.Track("Unity/Create Click");
 
-            var evt = new AirbridgeEvent("Create_Avatar_Click");
-            AirbridgeUnity.TrackEvent(evt);
-
             var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
             {
@@ -93,9 +90,6 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Choose Nickname");
-
-            var evt = new AirbridgeEvent("Choose_Avatar_Nickname");
-            AirbridgeUnity.TrackEvent(evt);
 
             Find<LoadingScreen>().Show(
                 LoadingScreen.LoadingType.Entering,
@@ -248,9 +242,6 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Analyzer.Instance.Track("Unity/CustomizeAvatar/Show");
-
-            var evt = new AirbridgeEvent("Customize_Avatar");
-            AirbridgeUnity.TrackEvent(evt);
 
             base.Show(ignoreShowAnimation);
             if (_isCreateMode)

@@ -35,7 +35,6 @@ namespace NekoyumeEditor
             SetByCommandLineArguments();
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
-            AirbridgeSettingsWindow.UpdateAndroidManifest();
             AssetDatabase.Refresh();
             Debug.Log("Build Android");
             var options = BuildOptions.None;
@@ -131,7 +130,6 @@ namespace NekoyumeEditor
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.iOS, BuildTarget.iOS);
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             SetByCommandLineArguments();
-            AirbridgeSettingsWindow.UpdateiOSAppSetting();
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;

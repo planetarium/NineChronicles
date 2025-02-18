@@ -359,12 +359,6 @@ namespace Nekoyume.Game.Character
                     ["AgentAddress"] = Game.instance.States.AgentState.address.ToString()
                 });
 
-                var evt = new AirbridgeEvent("User_Level_Up");
-                evt.SetValue(beforeLevel);
-                evt.AddCustomAttribute("agent-address", Game.instance.States.CurrentAvatarState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", Game.instance.States.AgentState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
-
                 Widget.Find<LevelUpCelebratePopup>()?.Show(beforeLevel, Level);
                 for (var interLevel = beforeLevel + 1; interLevel <= Level; interLevel++)
                 {
