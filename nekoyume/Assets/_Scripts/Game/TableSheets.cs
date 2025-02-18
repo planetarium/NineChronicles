@@ -59,7 +59,8 @@ namespace Nekoyume.Game
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
                     sb.Append($" / ({pair.Key}, csv)");
                     sb.Append(" / failed to get property");
-                    throw new Exception(sb.ToString());
+                    NcDebug.LogError(sb.ToString());
+                    continue;
                 }
 
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
@@ -199,8 +200,6 @@ namespace Nekoyume.Game
         public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
 
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
-
-        public ArenaSheet ArenaSheet { get; private set; }
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
 

@@ -3132,10 +3132,6 @@ namespace Nekoyume.Blockchain
             ArenaPlayerDigest? enemyDigest = null;
             CollectionState myCollectionState = null;
             CollectionState enemyCollectionState = null;
-
-            // TODO: 아레나 서비스에서 점수 조회 기능 추가 후 적용
-            // 시점 변경이 필요할듯.
-            var previousMyScore = ArenaScore.ArenaScoreDefault;
             var outMyScore = ArenaScore.ArenaScoreDefault;
 
             var prepareObserve = UniTask.RunOnThreadPool(() =>
@@ -3161,14 +3157,6 @@ namespace Nekoyume.Blockchain
 
             prepareObserve.Subscribe(_ =>
             {
-                // TODO: 아레나 서비스
-                // var hasMedalReward =
-                //     tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
-                //     row.ArenaType != ArenaType.OffSeason;
-                // var medalItem = ItemFactory.CreateMaterial(
-                //     tableSheets.MaterialItemSheet,
-                //     row.MedalId);
-
                 var random = new LocalRandom(eval.RandomSeed);
                 var winCount = 0;
                 var defeatCount = 0;

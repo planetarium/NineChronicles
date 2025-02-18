@@ -61,6 +61,7 @@ using NineChronicles.GoogleServices.Firebase.Runtime;
 namespace Nekoyume.Game
 {
     using Arena;
+    using GeneratedApiNamespace.ArenaServiceClient;
     using Nekoyume.Model.EnumType;
     using TableData;
     using UniRx;
@@ -1088,32 +1089,64 @@ namespace Nekoyume.Game
         public void ReservePushNotifications()
         {
             var currentBlockIndex = Agent.BlockIndex;
-            var tableSheets = TableSheets.Instance;
-            var roundData = tableSheets.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
-            var row = tableSheets.ArenaSheet.GetRowByBlockIndex(currentBlockIndex);
-            var medalTotalCount = States.Instance.CurrentAvatarState != null
-                ? ArenaHelper.GetMedalTotalCount(
-                    row,
-                    States.Instance.CurrentAvatarState)
-                : default;
-            if (medalTotalCount >= roundData.RequiredMedalCount)
-            {
-                ReserveArenaSeasonPush(row, roundData, currentBlockIndex);
-                ReserveArenaTicketPush(roundData, currentBlockIndex);
-            }
-
             ReserveWorldbossSeasonPush(currentBlockIndex);
             ReserveWorldbossTicketPush(currentBlockIndex);
+
+            ReserveArena(currentBlockIndex).Forget();
+        }
+
+        public async UniTask ReserveArena(long blockIndex)
+        {
+            try
+            {
+                SeasonResponse seasonResponse = null;
+                SeasonResponse nextSeasonResponse = null;
+                RoundResponse roundResponse = null;
+                await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
+                    on200: response =>
+                    {
+                        seasonResponse = response.Seasons.Find(item =>
+                            item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                        );
+
+                        nextSeasonResponse = response.Seasons
+                            .Where(seasonResponse => seasonResponse.StartBlockIndex >= blockIndex)
+                            .OrderBy(seasonResponse => seasonResponse.StartBlockIndex)
+                            .FirstOrDefault();
+
+                        if (seasonResponse != null)
+                        {
+                            seasonResponse.Rounds.Find(item =>
+                                item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                            );
+                        }
+                    },
+                    onError: error =>
+                    {
+                        // Handle error case
+                        NcDebug.LogError($"Error fetching seasons: {error}");
+                    });
+
+                if (seasonResponse == null || roundResponse == null)
+                {
+                    return;
+                }
+                ReserveArenaSeasonPush(seasonResponse, nextSeasonResponse, Agent.BlockIndex);
+                ReserveArenaTicketPush(roundResponse, Agent.BlockIndex); ;
+
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"Failed to register arena notification: {e.Message}");
+            }
         }
 
         private static void ReserveArenaSeasonPush(
-            ArenaSheet.Row row,
-            ArenaSheet.RoundData roundData,
+            SeasonResponse seasonData,
+            SeasonResponse nextSeasonData,
             long currentBlockIndex)
         {
-            var arenaSheet = TableSheets.Instance.ArenaSheet;
-            if (roundData.ArenaType == ArenaType.OffSeason &&
-                arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
+            if (seasonData.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.OFF_SEASON && nextSeasonData != null)
             {
                 var prevPushIdentifier =
                     PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
@@ -1123,16 +1156,14 @@ namespace Nekoyume.Game
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var targetBlockIndex = nextRoundData.StartBlockIndex;
+                var targetBlockIndex = nextSeasonData.StartBlockIndex;
                 var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
-                var arenaTypeText = nextRoundData.ArenaType == ArenaType.Season
+                var arenaTypeText = nextSeasonData.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON
                     ? L10nManager.Localize("UI_SEASON")
                     : L10nManager.Localize("UI_CHAMPIONSHIP");
 
-                var arenaSeason = nextRoundData.ArenaType == ArenaType.Championship
-                    ? roundData.ChampionshipId
-                    : row.GetSeasonNumber(nextRoundData.Round);
+                var arenaSeason = nextSeasonData.SeasonGroupId;
 
                 var content = L10nManager.Localize(
                     "PUSH_ARENA_SEASON_START_CONTENT",
@@ -1144,7 +1175,7 @@ namespace Nekoyume.Game
         }
 
         private static void ReserveArenaTicketPush(
-            ArenaSheet.RoundData roundData,
+            RoundResponse roundData,
             long currentBlockIndex)
         {
             var prevPushIdentifier =
@@ -1161,9 +1192,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            var interval = States.Instance.GameConfigState.DailyArenaInterval;
-            var remainingBlockCount = interval -
-                (currentBlockIndex - roundData.StartBlockIndex) % interval;
+            var remainingBlockCount = roundData.EndBlockIndex - currentBlockIndex;
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;

@@ -854,33 +854,6 @@ namespace Nekoyume.Blockchain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionEvaluation<JoinArena>> JoinArena(
-            List<Guid> costumes,
-            List<Guid> equipments,
-            List<RuneSlotInfo> runeInfos,
-            int championshipId,
-            int round
-        )
-        {
-            var action = new JoinArena
-            {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
-                costumes = costumes,
-                equipments = equipments,
-                runeInfos = runeInfos,
-                championshipId = championshipId,
-                round = round
-            };
-            ProcessAction(action);
-            _lastBattleActionId = action.Id;
-            return _agent.ActionRenderer.EveryRender<JoinArena>()
-                .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
-        }
-
         public void BattleArena(
             Address enemyAvatarAddress,
             List<Guid> costumes,
@@ -890,8 +863,6 @@ namespace Nekoyume.Blockchain
             BattleTokenResponse token
         )
         {
-            // TODO: 아레나 서비스
-            // 티켓이나 라운드 정보 조회 및 소모 기능 추가 후 적용
             try
             {
                 var action = new Action.Arena.Battle
@@ -915,9 +886,6 @@ namespace Nekoyume.Blockchain
 
                 ProcessAction(action, (txId) =>
                 {
-                    // todo: 아레나 서비스
-                    // 타입변경되면 수정해야함
-                    // tx나 액션 보내는 시점에따라 추가변경필요할수있음.
                     var task = ApiClients.Instance.Arenaservicemanager.PostSeasonsBattleRequestAsync(txId.ToString(), token.BattleId, States.Instance.CurrentAvatarState.address.ToHex());
                     return task.ContinueWith(t =>
                     {
