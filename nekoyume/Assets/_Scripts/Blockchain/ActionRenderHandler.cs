@@ -208,6 +208,7 @@ namespace Nekoyume.Blockchain
             // World Boss
             Raid();
             ClaimRaidReward();
+            ClaimWorldBossReward();
 
             // Rune
             RuneEnhancement();
@@ -707,6 +708,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareClaimRaidReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimRaidReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimWorldBossReward()
+        {
+            _actionRenderer.EveryRender<ClaimWorldBossReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareClaimWorldBossReward)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimWorldBossReward)
                 .AddTo(_disposables);
         }
 
@@ -3457,6 +3470,47 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+        }
+
+        private (ActionEvaluation<ClaimWorldBossReward>, WorldBossRewardMail, AvatarState) PrepareClaimWorldBossReward(
+            ActionEvaluation<ClaimWorldBossReward> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+
+            var mailBox = avatarState.mailBox;
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
+            var mail = mailBox.OfType<WorldBossRewardMail>()
+                .First(r => r.blockIndex == eval.BlockIndex);
+
+            UpdateCurrentAvatarRuneStoneBalance(eval);
+            UpdateCrystalBalance(eval);
+            UpdateCurrentAvatarInventory(eval);
+
+            return (eval, mail, avatarState);
+        }
+
+        private static void ResponseClaimWorldBossReward((ActionEvaluation<ClaimWorldBossReward> eval, WorldBossRewardMail mail, AvatarState avatarState) prepared)
+        {
+            var eval = prepared.eval;
+            if (eval.Exception is not null)
+            {
+                NcDebug.Log(eval.Exception.Message);
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED_FAILED"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+            LocalLayerModifier.AddNewMail(prepared.avatarState, prepared.mail.id);
+            OneLineSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED"),
+                NotificationCell.NotificationType.Notification);
+            PatrolReward.Claiming.Value = false;
         }
 
         private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone, AllRuneState previousState)

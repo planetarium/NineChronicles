@@ -1500,6 +1500,18 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
+        public IObservable<ActionEvaluation<ClaimWorldBossReward>> ClaimWorldBossReward()
+        {
+            var action = new ClaimWorldBossReward(States.Instance.CurrentAvatarState.address);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimWorldBossReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
+        }
+
         public IObservable<ActionEvaluation<RuneEnhancement>> RuneEnhancement(
             int runeId,
             int tryCount)
