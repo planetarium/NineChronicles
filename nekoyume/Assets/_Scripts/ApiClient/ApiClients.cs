@@ -19,7 +19,7 @@ namespace Nekoyume.ApiClient
         private static readonly string DccUrlJsonPath =
             Platform.GetStreamingAssetsPath("dccUrl.json");
 
-        public NineChroniclesAPIClient WorldBossClient { get; private set; }
+        public NineChroniclesAPIClient DataProviderClient { get; private set; }
 
         public NineChroniclesAPIClient RpcGraphQlClient { get; private set; }
 
@@ -52,11 +52,10 @@ namespace Nekoyume.ApiClient
 
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
-            WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
+            DataProviderClient = new NineChroniclesAPIClient(clo.ApiServerHost);
             RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
                 new NineChroniclesAPIClient(string.Empty) :
                 new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
-            WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             Arenaservicemanager = new ArenaServiceManager(clo.ArenaServiceHost);

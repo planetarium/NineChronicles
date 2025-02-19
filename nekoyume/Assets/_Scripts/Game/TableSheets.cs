@@ -239,6 +239,9 @@ namespace Nekoyume.Game
 
         public WorldBossBattleRewardSheet WorldBossBattleRewardSheet { get; private set; }
 
+        [UsedImplicitly]
+        public WorldBossContributionRewardSheet WorldBossContributionRewardSheet { get; private set; }
+
         public RuneWeightSheet RuneWeightSheet { get; private set; }
 
         public RuneSheet RuneSheet { get; private set; }

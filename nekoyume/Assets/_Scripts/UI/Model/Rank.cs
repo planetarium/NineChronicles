@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Model
 
         public Task Update(int displayCount)
         {
-            var apiClient = ApiClients.Instance.WorldBossClient;
+            var apiClient = ApiClients.Instance.DataProviderClient;
 
             if (apiClient.IsInitialized)
             {

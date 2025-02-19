@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
@@ -20,10 +19,8 @@ namespace Nekoyume.UI
         public enum ToggleType
         {
             Information,
-            PreviousRank,
-            Rank,
             Reward,
-            Rune
+            Rune,
         }
 
         [Serializable]
@@ -113,11 +110,6 @@ namespace Nekoyume.UI
 
         private void UpdateView(ToggleType toggleType)
         {
-            var rankToggle = categoryToggles.FirstOrDefault(x => x.Type == ToggleType.Rank);
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            var itInSeason = WorldBossFrontHelper.IsItInSeason(currentBlockIndex);
-            rankToggle.Toggle.gameObject.SetActive(itInSeason);
-
             foreach (var toggle in categoryToggles.Where(toggle => toggle.Type != toggleType))
             {
                 toggle.Item.gameObject.SetActive(false);
@@ -133,35 +125,18 @@ namespace Nekoyume.UI
                     {
                         information.Show();
                     }
-
-                    break;
-                case ToggleType.PreviousRank:
-                    if (categoryToggle.Item is WorldBossRank previousRank)
-                    {
-                        previousRank.ShowAsync(WorldBossRank.Status.PreviousSeason);
-                    }
-
-                    break;
-                case ToggleType.Rank:
-                    if (categoryToggle.Item is WorldBossRank rank)
-                    {
-                        rank.ShowAsync(WorldBossRank.Status.Season);
-                    }
-
                     break;
                 case ToggleType.Reward:
                     if (categoryToggle.Item is WorldBossReward reward)
                     {
                         reward.ShowAsync();
                     }
-
                     break;
                 case ToggleType.Rune:
                     if (categoryToggle.Item is WorldBossRuneStoneInventory inventory)
                     {
                         inventory.Show();
                     }
-
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

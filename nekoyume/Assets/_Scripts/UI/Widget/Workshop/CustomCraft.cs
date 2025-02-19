@@ -271,12 +271,12 @@ namespace Nekoyume.UI
         private void UpdateCraftCount()
         {
             RequiredUpdateCraftCount = false;
-            if (ApiClients.Instance.WorldBossClient.IsInitialized)
+            if (ApiClients.Instance.DataProviderClient.IsInitialized)
             {
                 UniTask.Run(async () =>
                 {
                     var response = await CustomCraftQuery.GetCustomEquipmentCraftIconCountAsync(
-                        ApiClients.Instance.WorldBossClient);
+                        ApiClients.Instance.DataProviderClient);
                     foreach (var pair in response.customEquipmentCraftIconCount)
                     {
                         _craftCountDict[pair.iconId] = pair.count;

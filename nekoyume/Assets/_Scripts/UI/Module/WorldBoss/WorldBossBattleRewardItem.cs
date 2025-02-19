@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Numerics;
+using Lib9c;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using TMPro;
@@ -66,7 +67,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
         }
 
-        public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
+        public void Set(WorldBossContributionRewardSheet.Row row)
         {
             if (_rankObject != null)
             {
@@ -75,44 +76,33 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             rankText.gameObject.SetActive(false);
             rankingImageContainer.gameObject.SetActive(false);
-            if (row.RankingMin != 0 && row.RankingMax != 0)
+            selected.SetActive(false);
+
+            BigInteger runeSum = 0;
+            BigInteger crystal = 0;
+            var materials = new List<(int itemId, int quantity)>();
+            foreach (var rewardModel in row.Rewards)
             {
-                if (row.RankingMin == row.RankingMax)
+                if (Currencies.IsRuneTicker(rewardModel.Ticker))
                 {
-                    rankingImageContainer.gameObject.SetActive(true);
-                    _rankObject = Instantiate(
-                        WorldBossFrontHelper.GetRankPrefab(row.RankingMin),
-                        rankingImageContainer.transform);
-                    selected.SetActive(row.RankingMin == myRank);
+                    runeSum += rewardModel.Count;
                 }
-                else
+
+                if (Currencies.Crystal.Ticker == rewardModel.Ticker)
                 {
-                    rankText.gameObject.SetActive(true);
-                    rankText.text = $"{row.RankingMin}~{row.RankingMax}";
-                    var value = row.RankingMin <= myRank && myRank <= row.RankingMax;
-                    selected.SetActive(value);
+                    crystal += rewardModel.Count;
+                }
+
+                if (rewardModel.ItemId != 0)
+                {
+                    materials.Add((rewardModel.ItemId, (int)rewardModel.Count));
                 }
             }
-            else
-            {
-                rankText.gameObject.SetActive(true);
-                rankText.text = row.RateMin > 1
-                    ? $"{row.RateMin}%~{row.RateMax}%"
-                    : $"{row.RateMax}%";
 
-                var rate = userCount > 0 ? (int)((float)myRank / userCount * 100) : 0;
-                var value = myRank > 100 && row.RateMin <= rate && rate <= row.RateMax;
-                selected.SetActive(value);
-            }
-
-            var runeSum = row.Runes.Sum(x => x.RuneQty);
-            SetRewardItem((runeSum, runeSum), row.Crystal, row.Materials);
+            SetRewardItem(((int)runeSum, (int)runeSum), (long)crystal, materials);
         }
 
-        private void SetRewardItem(
-            (int min, int max) rune,
-            int crystal,
-            List<(int itemId, int quantity)> materials)
+        private void SetRewardItem((int min, int max) rune, long crystal, List<(int itemId, int quantity)> materials)
         {
             runeItem.container.gameObject.SetActive(rune.max > 0);
             runeItem.text.text = rune.min == rune.max
