@@ -265,7 +265,6 @@ namespace Nekoyume.ApiClient
             try
             {
                 SeasonResponse currentSeason = null;
-                // TODO: 아레나 서비스에서 타입변경되면 다시 수정해야함
                 await UniTask.SwitchToMainThread();
                 await Client.GetSeasonsByblockAsync((int)blockIndex,
                     on200: result =>
@@ -483,8 +482,6 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                // todo : 아레나서비스
-                // 인터페이스 수정후 작업해야함
                 await Client.GetInfoAsync(jwt,
                     on200: result =>
                     {
