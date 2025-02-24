@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using Libplanet.Common;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +35,22 @@ namespace Nekoyume.UI.Module
 
         public void Set(Sprite eventSprite, string url, bool useAgentAddress)
         {
+            var urlRoot = url;
+            var agentAddress = Game.Game.instance.Agent.Address.ToHex();
+            var message = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+            var privateKey = Game.Game.instance.Agent.PrivateKey;
+            var publicKey = privateKey.PublicKey;
+
+            const string Prefix = "DCC CONNECT";
+            var signData = Encoding.UTF8.GetBytes($"{Prefix}{message}");
+            var hexSignData = ByteUtil.Hex(signData);
+            var hash = Helper.Util.ComputeHash(hexSignData);
+            var singed = privateKey.Sign(ByteUtil.ParseHex(hash));
+
+            var signature = ByteUtil.Hex(singed);
+            url = $"{urlRoot}?agentAddress=0x{agentAddress}&agentSignTimestamp={message}&agentSignature={signature}&agentPub={publicKey}";
+
             eventImage.overrideSprite = eventSprite;
             _url = url;
             _useAgentAddress = useAgentAddress;
