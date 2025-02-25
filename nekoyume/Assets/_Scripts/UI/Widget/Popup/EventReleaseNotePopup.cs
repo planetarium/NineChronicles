@@ -257,7 +257,7 @@ namespace Nekoyume.UI
 
         private void RenderNotice(EventNoticeData data)
         {
-            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress);
+            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign);
             LiveAssetManager.instance.AddToCheckedList(data.Description);
         }
     }

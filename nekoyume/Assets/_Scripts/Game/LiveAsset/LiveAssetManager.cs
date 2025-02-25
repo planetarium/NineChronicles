@@ -277,6 +277,8 @@ namespace Nekoyume.Game.LiveAsset
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)
         {
+            var planetIdExist = Game.instance.CurrentPlanetId.HasValue;
+            var isMainnet = planetIdExist && Multiplanetary.PlanetId.IsMainNet(Game.instance.CurrentPlanetId.Value);
             var tasks = new List<UniTask>();
             foreach (var banner in bannerData)
             {
@@ -296,8 +298,15 @@ namespace Nekoyume.Game.LiveAsset
                     Url = banner.Url,
                     UseAgentAddress = banner.UseAgentAddress,
                     Description = banner.Description,
-                    EnableKeys = banner.EnableKeys
+                    EnableKeys = banner.EnableKeys,
+                    WithSign = banner.WithSign,
+                    IsMainnet = banner.IsMainnet,
                 };
+                // Skip add notice if not available mainnet
+                if (isMainnet && !banner.IsMainnet)
+                {
+                    continue;
+                }
                 _bannerData.Add(newData);
 
                 var bannerTask = GetNoticeTexture("Banner", banner.BannerImageName)
