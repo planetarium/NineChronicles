@@ -794,19 +794,19 @@ namespace Nekoyume.Game
                 // Prepare list of sheet names from csvAssets
                 var sheetNames = csvAssets.Select(x => x.name).ToList();
 
-                // Retrieve the current planet ID
                 var planetId = CurrentPlanetId!.Value;
 
                 // Download and save sheets for the current planet
-                await DownloadAndSaveSheet(planetId, sheetNames);
+                var downloadedSheets = await DownloadAndSaveSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
                 sw.Stop();
 
                 // Load the downloaded sheets into csv
-                csvDict = await LoadSheets(planetId, sheetNames);
-
+                var loadedSheets = await LoadSheets(planetId, sheetNames);
+                csvDict = downloadedSheets.Concat(loadedSheets)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
                 sw.Restart();
             }
             TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
@@ -1604,40 +1604,92 @@ namespace Nekoyume.Game
 #endif
         }
 
-        public static async Task DownloadAndSaveSheet(PlanetId planetId, ICollection<string> sheetNames)
+        /// <summary>
+        /// Downloads and saves sheets from a specified bucket URL for a given planet.
+        /// </summary>
+        /// <param name="planetId">The identifier of the planet to download sheets for.</param>
+        /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
+        /// <param name="sheetNames">A collection of sheet names to be downloaded and saved.</param>
+        /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
+        public static async Task<Dictionary<string, string>> DownloadAndSaveSheet(PlanetId planetId,
+            string sheetBuckUrl, ICollection<string> sheetNames)
         {
             var planet = planetId.ToString();
+            var downloadedSheets = new Dictionary<string, string>();
+            const int maxRetries = 3;
+            const float delayBetweenRetries = 2.0f;
+
             foreach (var sheetName in sheetNames)
             {
                 var csvName = $"{sheetName}.csv";
-                var sheetUrl =
-                    $"https://9c-cluster-config.s3.us-east-2.amazonaws.com/{planet}/{csvName}";
-                using (UnityWebRequest request = UnityWebRequest.Get(sheetUrl))
-                {
-                    await request.SendWebRequest();
+                var sheetUrl = $"{sheetBuckUrl}/{planet}/{csvName}";
+                bool success = false;
 
-                    if (request.result == UnityWebRequest.Result.Success)
+                // Retry request if network request failed.
+                for (int attempt = 0; attempt < maxRetries && !success; attempt++)
+                {
+                    using (UnityWebRequest request = UnityWebRequest.Get(sheetUrl))
                     {
-                        FileHelper.WriteAllText(planet, csvName, request.downloadHandler.text);
-                    }
-                    else
-                    {
-                        Debug.LogError("Failed to download sheet: " + request.error);
+                        await request.SendWebRequest();
+
+                        if (request.result == UnityWebRequest.Result.Success)
+                        {
+                            var sheetData = request.downloadHandler.text;
+                            // Store the downloaded text in the dictionary with the sheet name as the key. without save sheet data
+                            downloadedSheets[sheetName] = sheetData;
+                            try
+                            {
+                                FileHelper.WriteAllText(planet, csvName, sheetData);
+                                success = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogError($"Failed to write sheet {csvName}: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
+                            if (attempt < maxRetries - 1)
+                            {
+                                await Task.Delay(TimeSpan.FromSeconds(delayBetweenRetries));
+                            }
+                        }
                     }
                 }
+
+                if (!success)
+                {
+                    Debug.LogError($"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
+                }
             }
+
+            return downloadedSheets;
         }
 
-
+        /// <summary>
+        /// loads sheets into a dictionary from CSV files based on the provided planet ID and sheet names.
+        /// </summary>
+        /// <param name="planetId">The ID of the planet, used to identify the source directory for the CSV files.</param>
+        /// <param name="sheetNames">A list of sheet names to be loaded (without the .csv extension).</param>
+        /// <returns>A dictionary where each key is a sheet name and the value is its content as a string.</returns>
         private async Task<Dictionary<string, string>> LoadSheets(PlanetId planetId, List<string> sheetNames)
         {
             var csv = new Dictionary<string, string>();
             var planet = planetId.ToString();
+
             foreach (var sheetName in sheetNames)
             {
                 var csvName = $"{sheetName}.csv";
-                var data = await FileHelper.ReadAllTextAsync(planet, csvName);
-                csv[sheetName] = data;
+                try
+                {
+                    var data = await FileHelper.ReadAllTextAsync(planet, csvName);
+                    csv[sheetName] = data;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to read sheet {csvName}: {e.Message}");
+                }
             }
 
             return csv;
