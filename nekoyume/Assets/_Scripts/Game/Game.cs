@@ -768,27 +768,25 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            Dictionary<string, string> csv;
+            Dictionary<string, string> csvDict;
             // TODO delete GetSheetsAsync backward compatibility
             if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
             {
-                // Create a map of asset names by deriving table sheets from csvAssets
                 var map = csvAssets.ToDictionary(
                     asset => Addresses.TableSheet.Derive(asset.name),
                     asset => asset.name);
 
-                // Get sheet data asynchronously and store in dict based on map keys
                 var dict = await Agent.GetSheetsAsync(map.Keys);
                 sw.Stop();
 
-                // Log the elapsed time for getting state
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
 
                 sw.Restart();
 
                 // Convert dict to csv using mapping, ensuring Text values are converted to strings
-                csv = dict.ToDictionary(
+                csvDict = dict.ToDictionary(
                     pair => map[pair.Key],
+                    // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
                     pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
             }
             else
@@ -801,16 +799,17 @@ namespace Nekoyume.Game
 
                 // Download and save sheets for the current planet
                 await DownloadAndSaveSheet(planetId, sheetNames);
-                sw.Stop();
-
-                // Load the downloaded sheets into csv
-                csv = await LoadSheets(planetId, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
+                sw.Stop();
+
+                // Load the downloaded sheets into csv
+                csvDict = await LoadSheets(planetId, sheetNames);
+
                 sw.Restart();
             }
-            TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
+            TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
         }
