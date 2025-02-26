@@ -53,6 +53,7 @@ using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
 using Nekoyume.Module.Guild;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -433,6 +434,8 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CommandLineOptions loaded");
             NcDebug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
+            NcDebug.Log($"SelectedPlanetId: {_commandLineOptions.SelectedPlanetId}");
+            NcDebug.Log($"DefaultPlanetId: {_commandLineOptions.DefaultPlanetId}");
         }
 
 #region RPCAgent
@@ -765,18 +768,48 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            var map = csvAssets.ToDictionary(
-                asset => Addresses.TableSheet.Derive(asset.name),
-                asset => asset.name);
-            var dict = await Agent.GetSheetsAsync(map.Keys);
-            sw.Stop();
-            NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
-            sw.Restart();
-            var csv = dict.ToDictionary(
-                pair => map[pair.Key],
-                // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+            Dictionary<string, string> csv;
+            // TODO delete GetSheetsAsync backward compatibility
+            if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
+            {
+                // Create a map of asset names by deriving table sheets from csvAssets
+                var map = csvAssets.ToDictionary(
+                    asset => Addresses.TableSheet.Derive(asset.name),
+                    asset => asset.name);
 
+                // Get sheet data asynchronously and store in dict based on map keys
+                var dict = await Agent.GetSheetsAsync(map.Keys);
+                sw.Stop();
+
+                // Log the elapsed time for getting state
+                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
+
+                sw.Restart();
+
+                // Convert dict to csv using mapping, ensuring Text values are converted to strings
+                csv = dict.ToDictionary(
+                    pair => map[pair.Key],
+                    pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+            }
+            else
+            {
+                // Prepare list of sheet names from csvAssets
+                var sheetNames = csvAssets.Select(x => x.name).ToList();
+
+                // Retrieve the current planet ID
+                var planetId = CurrentPlanetId!.Value;
+
+                // Download and save sheets for the current planet
+                await DownloadAndSaveSheet(planetId, sheetNames);
+                sw.Stop();
+
+                // Load the downloaded sheets into csv
+                csv = await LoadSheets(planetId, sheetNames);
+
+                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
+
+                sw.Restart();
+            }
             TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
@@ -1570,6 +1603,45 @@ namespace Nekoyume.Game
 #else
             Application.Quit();
 #endif
+        }
+
+        public static async Task DownloadAndSaveSheet(PlanetId planetId, ICollection<string> sheetNames)
+        {
+            var planet = planetId.ToString();
+            foreach (var sheetName in sheetNames)
+            {
+                var csvName = $"{sheetName}.csv";
+                var sheetUrl =
+                    $"https://9c-cluster-config.s3.us-east-2.amazonaws.com/{planet}/{csvName}";
+                using (UnityWebRequest request = UnityWebRequest.Get(sheetUrl))
+                {
+                    await request.SendWebRequest();
+
+                    if (request.result == UnityWebRequest.Result.Success)
+                    {
+                        FileHelper.WriteAllText(planet, csvName, request.downloadHandler.text);
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to download sheet: " + request.error);
+                    }
+                }
+            }
+        }
+
+
+        private async Task<Dictionary<string, string>> LoadSheets(PlanetId planetId, List<string> sheetNames)
+        {
+            var csv = new Dictionary<string, string>();
+            var planet = planetId.ToString();
+            foreach (var sheetName in sheetNames)
+            {
+                var csvName = $"{sheetName}.csv";
+                var data = await FileHelper.ReadAllTextAsync(planet, csvName);
+                csv[sheetName] = data;
+            }
+
+            return csv;
         }
     }
 }
