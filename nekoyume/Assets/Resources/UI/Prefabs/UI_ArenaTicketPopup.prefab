@@ -1157,6 +1157,8 @@ MonoBehaviour:
   ticketPriceToBuyText: {fileID: 2701752307472586200}
   startButton: {fileID: 6624913363482709341}
   closeButton: {fileID: 3093391251066596574}
+  IsBuyingTicket:
+    value: 0
 --- !u!1 &1850280734406964865
 GameObject:
   m_ObjectHideFlags: 0
@@ -3038,7 +3040,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 107.68}
+  m_AnchoredPosition: {x: 0, y: 110}
   m_SizeDelta: {x: 377, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1702939531099032952
@@ -3493,7 +3495,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -48}
+  m_AnchoredPosition: {x: 0, y: -20}
   m_SizeDelta: {x: 377, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3322813391012128479
@@ -6428,6 +6430,16 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_ARENA_BATTLE_TICKET_PURCHASE
       objectReference: {fileID: 0}
+    - target: {fileID: 5011484996602453073, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: fixedFontAsset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5011484996602453073, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: fixedFontStyle
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5434321292865560736, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_Enabled
@@ -6484,10 +6496,30 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_ARENA_BATTLE_TICKET_PURCHASE
       objectReference: {fileID: 0}
+    - target: {fileID: 8538072817255672756, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: fixedFontAsset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538072817255672756, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: fixedFontStyle
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8755811113850546753, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: l10nKey
       value: UI_ARENA_BATTLE_TICKET_PURCHASE
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755811113850546753, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: fixedFontAsset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755811113850546753, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: fixedFontStyle
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5423cf792096944a3884ee1f4b0d4183, type: 3}
