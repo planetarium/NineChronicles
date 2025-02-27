@@ -53,6 +53,7 @@ using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
 using Nekoyume.Module.Guild;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -433,6 +434,8 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CommandLineOptions loaded");
             NcDebug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
+            NcDebug.Log($"SelectedPlanetId: {_commandLineOptions.SelectedPlanetId}");
+            NcDebug.Log($"DefaultPlanetId: {_commandLineOptions.DefaultPlanetId}");
         }
 
 #region RPCAgent
@@ -765,19 +768,48 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            var map = csvAssets.ToDictionary(
-                asset => Addresses.TableSheet.Derive(asset.name),
-                asset => asset.name);
-            var dict = await Agent.GetSheetsAsync(map.Keys);
-            sw.Stop();
-            NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
-            sw.Restart();
-            var csv = dict.ToDictionary(
-                pair => map[pair.Key],
-                // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+            Dictionary<string, string> csvDict;
+            // TODO delete GetSheetsAsync backward compatibility
+            if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
+            {
+                var map = csvAssets.ToDictionary(
+                    asset => Addresses.TableSheet.Derive(asset.name),
+                    asset => asset.name);
 
-            TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
+                var dict = await Agent.GetSheetsAsync(map.Keys);
+                sw.Stop();
+
+                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
+
+                sw.Restart();
+
+                // Convert dict to csv using mapping, ensuring Text values are converted to strings
+                csvDict = dict.ToDictionary(
+                    pair => map[pair.Key],
+                    // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
+                    pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+            }
+            else
+            {
+                // Prepare list of sheet names from csvAssets
+                var sheetNames = csvAssets.Select(x => x.name).ToList();
+
+                var planetId = CurrentPlanetId!.Value;
+
+                // Download and save sheets for the current planet
+                var downloadedSheets = await DownloadAndSaveSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+
+                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
+
+                sw.Stop();
+
+                // Load the downloaded sheets into csv
+                var loadedSheets = await LoadSheets(planetId, sheetNames);
+                csvDict = downloadedSheets.Concat(loadedSheets)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
+                sw.Restart();
+            }
+            TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
         }
@@ -1570,6 +1602,97 @@ namespace Nekoyume.Game
 #else
             Application.Quit();
 #endif
+        }
+
+        /// <summary>
+        /// Downloads and saves sheets from a specified bucket URL for a given planet.
+        /// </summary>
+        /// <param name="planetId">The identifier of the planet to download sheets for.</param>
+        /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
+        /// <param name="sheetNames">A collection of sheet names to be downloaded and saved.</param>
+        /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
+        public static async Task<Dictionary<string, string>> DownloadAndSaveSheet(PlanetId planetId,
+            string sheetBuckUrl, ICollection<string> sheetNames)
+        {
+            var planet = planetId.ToString();
+            var downloadedSheets = new Dictionary<string, string>();
+            const int maxRetries = 3;
+            const float delayBetweenRetries = 2.0f;
+
+            foreach (var sheetName in sheetNames)
+            {
+                var csvName = $"{sheetName}.csv";
+                var sheetUrl = $"{sheetBuckUrl}/{planet}/{csvName}";
+                bool success = false;
+
+                // Retry request if network request failed.
+                for (int attempt = 0; attempt < maxRetries && !success; attempt++)
+                {
+                    using (UnityWebRequest request = UnityWebRequest.Get(sheetUrl))
+                    {
+                        await request.SendWebRequest();
+
+                        if (request.result == UnityWebRequest.Result.Success)
+                        {
+                            var sheetData = request.downloadHandler.text;
+                            // Store the downloaded text in the dictionary with the sheet name as the key. without save sheet data
+                            downloadedSheets[sheetName] = sheetData;
+                            try
+                            {
+                                FileHelper.WriteAllText(planet, csvName, sheetData);
+                                success = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogError($"Failed to write sheet {csvName}: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
+                            if (attempt < maxRetries - 1)
+                            {
+                                await Task.Delay(TimeSpan.FromSeconds(delayBetweenRetries));
+                            }
+                        }
+                    }
+                }
+
+                if (!success)
+                {
+                    Debug.LogError($"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
+                }
+            }
+
+            return downloadedSheets;
+        }
+
+        /// <summary>
+        /// loads sheets into a dictionary from CSV files based on the provided planet ID and sheet names.
+        /// </summary>
+        /// <param name="planetId">The ID of the planet, used to identify the source directory for the CSV files.</param>
+        /// <param name="sheetNames">A list of sheet names to be loaded (without the .csv extension).</param>
+        /// <returns>A dictionary where each key is a sheet name and the value is its content as a string.</returns>
+        private async Task<Dictionary<string, string>> LoadSheets(PlanetId planetId, List<string> sheetNames)
+        {
+            var csv = new Dictionary<string, string>();
+            var planet = planetId.ToString();
+
+            foreach (var sheetName in sheetNames)
+            {
+                var csvName = $"{sheetName}.csv";
+                try
+                {
+                    var data = await FileHelper.ReadAllTextAsync(planet, csvName);
+                    csv[sheetName] = data;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to read sheet {csvName}: {e.Message}");
+                }
+            }
+
+            return csv;
         }
     }
 }
