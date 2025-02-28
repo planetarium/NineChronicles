@@ -67,14 +67,14 @@ namespace Nekoyume.UI.Module.WorldBoss
             var worldBossTotalDamage = worldBossState?.TotalDamage ?? 0;
             var userTotalDamage = raider?.TotalScore ?? 0;
 
-            worldBossTotalDamageText.text = worldBossTotalDamage.ToString();
+            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
             float ratio = 0;
             if (worldBossTotalDamage > 0)
             {
                 ratio = userTotalDamage / (float)worldBossTotalDamage;
             }
 
-            userTotalDamageText.text = $"{userTotalDamage.ToString()} ({ratio:P2})";
+            userTotalDamageText.text = $"{userTotalDamage:N0} ({ratio:0.####%})";
             rewardItem.Set(rewardRow);
 
             var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
