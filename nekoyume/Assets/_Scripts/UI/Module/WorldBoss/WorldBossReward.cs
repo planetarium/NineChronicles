@@ -125,7 +125,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 StartCoroutine(CoSetFirstCategory());
             }
 
-            var (worldBoss, raider, raidId, isOnSeason) = await GetDataAsync();
+            var (worldBoss, raider, raidId, isOnSeason) = await WorldBossStates.Set();
             CheckRaidId(raidId);
             UpdateTitle();
 
@@ -169,56 +169,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             title.text = status == WorldBossStatus.Season
                 ? L10nManager.Localize("UI_REWARDS")
                 : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
-        }
-
-        private async Task<(WorldBossState worldBoss, RaiderState raiderState, int raidId, bool isOnSeason)> GetDataAsync()
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            var task = Task.Run(async () =>
-            {
-                WorldBossListSheet.Row raidRow;
-                var isOnSeason = false;
-                try
-                {
-                    raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
-                    isOnSeason = true;
-                }
-                catch (InvalidOperationException)
-                {
-                    try
-                    {
-                        raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return (null, null, 0, false);
-                    }
-                }
-                var raidId = raidRow.Id;
-
-                var worldBossAddress = Addresses.GetWorldBossAddress(raidId);
-                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    worldBossAddress);
-                var worldBoss = worldBossState is Bencodex.Types.List worldBossList
-                    ? new WorldBossState(worldBossList)
-                    : null;
-
-                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
-                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    raiderAddress);
-                var raider = raiderState is Bencodex.Types.List raiderList
-                    ? new RaiderState(raiderList)
-                    : null;
-                return (worldBoss, raider, raidId, isOnSeason);
-            });
-
-            await task;
-            return task.Result;
         }
     }
 }

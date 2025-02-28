@@ -154,7 +154,14 @@ namespace Nekoyume.UI
 
         private void SetRedDot()
         {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var currentState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentState is null)
+            {
+                notification.SetActive(false);
+                return;
+            }
+
+            var avatarAddress = currentState.address;
             var isOnSeason = WorldBossStates.IsOnSeason;
             var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
 
@@ -248,6 +255,7 @@ namespace Nekoyume.UI
                         }
 
                         WorldBossStates.ClearRaiderState();
+                        WorldBossStates.Set().Forget();
                         UpdateOffSeason(currentBlockIndex);
                         break;
                     case WorldBossStatus.Season:

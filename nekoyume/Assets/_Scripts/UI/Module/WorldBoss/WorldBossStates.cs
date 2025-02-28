@@ -118,6 +118,24 @@ namespace Nekoyume.UI.Module.WorldBoss
             SetHasGradeRewards(avatarAddress, IsExistGradeReward(raidRow, raider));
         }
 
+        public static async UniTask<(WorldBossState, RaiderState, int, bool)> Set()
+        {
+            var (worldBoss, raider, raidId, isOnSeason) = await GetDataAsync();
+            if (isOnSeason)
+            {
+                UpdateState(States.Instance.CurrentAvatarState.address, raider, null, true);
+            }
+            else
+            {
+                UpdatePreRaiderState(States.Instance.CurrentAvatarState.address, raider);
+                ClearRaiderState();
+            }
+            _isOnSeason = isOnSeason;
+
+            SetWorldBossState(worldBoss);
+            return (worldBoss, raider, raidId, isOnSeason);
+        }
+
         public static void SubscribeWorldBossState(Action<WorldBossState> callback)
         {
             _worldBossState.Subscribe(callback).AddTo(_disposables);
@@ -251,6 +269,56 @@ namespace Nekoyume.UI.Module.WorldBoss
                     : null;
 
                 return (raidRow, worldBoss, raider, killReward, isOnSeason);
+            });
+
+            await task;
+            return task.Result;
+        }
+
+        private static async Task<(WorldBossState worldBoss, RaiderState raiderState, int raidId, bool isOnSeason)> GetDataAsync()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            var task = Task.Run(async () =>
+            {
+                WorldBossListSheet.Row raidRow;
+                var isOnSeason = false;
+                try
+                {
+                    raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
+                    isOnSeason = true;
+                }
+                catch (InvalidOperationException)
+                {
+                    try
+                    {
+                        raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return (null, null, 0, false);
+                    }
+                }
+                var raidId = raidRow.Id;
+
+                var worldBossAddress = Addresses.GetWorldBossAddress(raidId);
+                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    worldBossAddress);
+                var worldBoss = worldBossState is Bencodex.Types.List worldBossList
+                    ? new WorldBossState(worldBossList)
+                    : null;
+
+                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
+                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    raiderAddress);
+                var raider = raiderState is Bencodex.Types.List raiderList
+                    ? new RaiderState(raiderList)
+                    : null;
+                return (worldBoss, raider, raidId, isOnSeason);
             });
 
             await task;

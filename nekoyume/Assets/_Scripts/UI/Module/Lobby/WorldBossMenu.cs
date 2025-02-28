@@ -68,8 +68,10 @@ namespace Nekoyume.UI.Module.Lobby
             }
         }
 
-        private void Start()
+        protected override void Awake()
         {
+            base.Awake();
+
             WorldBossStates.SubscribeGradeRewards(b => HasGradeRewards = b);
             WorldBossStates.SubscribeWorldBossState(state => WorldBossState = state);
 
@@ -86,7 +88,14 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void SetRedDot()
         {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var currentState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentState is null)
+            {
+                notification.SetActive(false);
+                return;
+            }
+
+            var avatarAddress = currentState.address;
             var isOnSeason = WorldBossStates.IsOnSeason;
             var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
 
