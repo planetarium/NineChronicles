@@ -178,7 +178,7 @@ namespace Nekoyume.UI
                 : 0;
             willBuyTicketText.text = ticketCount.ToString();
             _ticketCountToBuy.SetValueAndForceNotify(ticketCount);
-            ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
+            ticketSlider.Set(0, ticketCount, ticketCount > 0 ? 1 : 0, ticketCount, 1, x => _ticketCountToBuy.Value = x);
             base.Show();
         }
     }
