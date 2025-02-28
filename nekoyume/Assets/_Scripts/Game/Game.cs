@@ -818,63 +818,45 @@ namespace Nekoyume.Game
             var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
             var balance = await Agent.GetStakedByStateRootHashAsync(Agent.BlockTipStateRootHash,
                 States.Instance.AgentState.address);
-            var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-            var stakeRegularRewardSheet = new StakeRegularRewardSheet();
-            var policySheet = TableSheets.StakePolicySheet;
-            Address[] sheetAddr;
+            StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet;
+            StakeRegularRewardSheet stakeRegularRewardSheet;
             Model.Stake.StakeState? stakeState = null;
-            if (!StakeStateUtilsForClient.TryMigrate(
-                stakeStateIValue,
-                States.Instance.GameConfigState,
-                out var stakeStateV2))
+            if (Agent is RPCAgent)
             {
-                if (Agent is RPCAgent)
+                stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                List<string> sheetNames;
+                if (!StakeStateUtilsForClient.TryMigrate(
+                    stakeStateIValue,
+                    States.Instance.GameConfigState,
+                    out var stakeStateV2))
                 {
-                    sheetAddr = new[]
+                    sheetNames = new List<string>
                     {
-                        Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
-                        Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                        TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
+                        TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
                     };
                 }
-                // It is local play. local genesis block not has Stake***Sheet_V*.
-                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
                 else
                 {
-                    sheetAddr = new[]
+                    sheetNames = new List<string>
                     {
-                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
-                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName,
                     };
                 }
+                var sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBuckUrl, sheetNames);
+                stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
+                stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
             }
             else
             {
-                stakeState = stakeStateV2;
-                if (Agent is RPCAgent)
-                {
-                    sheetAddr = new[]
-                    {
-                        Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
-                        Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularRewardSheetTableName)
-                    };
-                }
                 // It is local play. local genesis block not has Stake***Sheet_V*.
                 // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
-                else
-                {
-                    sheetAddr = new[]
-                    {
-                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
-                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
-                    };
-                }
-            }
+                stakeRegularFixedRewardSheet = TableSheets.StakeRegularFixedRewardSheet;
+                stakeRegularRewardSheet = TableSheets.StakeRegularRewardSheet;
 
-            var sheets = await Agent.GetSheetsAsync(sheetAddr);
-            stakeRegularFixedRewardSheet.Set(sheets[sheetAddr[0]].ToDotnetString());
-            stakeRegularRewardSheet.Set(sheets[sheetAddr[1]].ToDotnetString());
+            }
             var level = balance.RawValue > 0
                 ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
                     Agent.Address,
