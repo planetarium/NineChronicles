@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                     {
                         mailRewards.AddRange(
                             claimItemsMail.FungibleAssetValues.Select(fav =>
-                                new MailReward(fav, (int)fav.MajorUnit)));
+                                new MailReward(fav, fav.MajorUnit)));
                     }
 
                     if (claimItemsMail.Items is not null)
@@ -720,13 +720,6 @@ namespace Nekoyume.UI
             popup.Pop(monsterCollectionResult.rewards);
         }
 
-        public void Read(RaidRewardMail raidRewardMail)
-        {
-            raidRewardMail.New = false;
-            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            NcDebug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
-        }
-
         public void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail)
         {
             Analyzer.Instance.Track(
@@ -798,7 +791,7 @@ namespace Nekoyume.UI
 
                     foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
                     {
-                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                        mailRewards.Add(new MailReward(fav, fav.MajorUnit, true));
                     }
                 }
 
@@ -812,7 +805,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav.value, (int)fav.value.MajorUnit)));
+                        new MailReward(fav.value, fav.value.MajorUnit)));
             }
 
             if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
@@ -871,7 +864,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     claimItemsMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (claimItemsMail.Items is not null)
@@ -960,10 +953,10 @@ namespace Nekoyume.UI
         {
             var game = Game.Game.instance;
             patrolRewardMail.New = false;
-            LocalLayerModifier.RemoveNewMail(
-                game.States.CurrentAvatarState.address,
-                patrolRewardMail.id);
+            var avatarAddress = game.States.CurrentAvatarState.address;
+            LocalLayerModifier.RemoveNewMail(avatarAddress, patrolRewardMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
             NcDebug.Log($"[MailRead] MailPopupRead PatrolRewardMail mailid : {patrolRewardMail.id}");
 
             var rewards = new List<MailReward>();
@@ -971,7 +964,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     patrolRewardMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (patrolRewardMail.Items is not null)
@@ -983,6 +976,67 @@ namespace Nekoyume.UI
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    {
+                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                        rewards.Add(new MailReward(item, 1));
+                        continue;
+                    }
+
+                    NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
+                }
+            }
+
+            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+        }
+
+        public void Read(RaidRewardMail raidRewardMail)
+        {
+            raidRewardMail.New = false;
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+            NcDebug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
+        }
+
+        public void Read(WorldBossRewardMail worldBossRewardMail)
+        {
+            var game = Game.Game.instance;
+            worldBossRewardMail.New = false;
+            var avatarAddress = game.States.CurrentAvatarState.address;
+            LocalLayerModifier.RemoveNewMail(avatarAddress, worldBossRewardMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            NcDebug.Log($"[{nameof(WorldBossRewardMail)}] ItemCount: {worldBossRewardMail.id}");
+
+            var rewards = new List<MailReward>();
+            if (worldBossRewardMail.FungibleAssetValues is not null)
+            {
+                rewards.AddRange(
+                    worldBossRewardMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav, fav.MajorUnit)));
+            }
+
+            if (worldBossRewardMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                foreach (var (fungibleId, count) in worldBossRewardMail.Items)
+                {
+                    var row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
