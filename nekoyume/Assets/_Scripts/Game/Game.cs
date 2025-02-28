@@ -797,16 +797,12 @@ namespace Nekoyume.Game
                 var planetId = CurrentPlanetId!.Value;
 
                 // Download and save sheets for the current planet
-                var downloadedSheets = await DownloadAndSaveSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
                 sw.Stop();
 
-                // Load the downloaded sheets into csv
-                var loadedSheets = await LoadSheets(planetId, sheetNames);
-                csvDict = downloadedSheets.Concat(loadedSheets)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
                 sw.Restart();
             }
             TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
@@ -1605,15 +1601,16 @@ namespace Nekoyume.Game
         }
 
         /// <summary>
-        /// Downloads and saves sheets from a specified bucket URL for a given planet.
+        /// Downloads sheets from a specified bucket URL for a given planet.
         /// </summary>
         /// <param name="planetId">The identifier of the planet to download sheets for.</param>
         /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
-        /// <param name="sheetNames">A collection of sheet names to be downloaded and saved.</param>
+        /// <param name="sheetNames">A collection of sheet names to be downloaded.</param>
         /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
-        public static async Task<Dictionary<string, string>> DownloadAndSaveSheet(PlanetId planetId,
+        public static async Task<Dictionary<string, string>> DownloadSheet(PlanetId planetId,
             string sheetBuckUrl, ICollection<string> sheetNames)
         {
+            NcDebug.Log($"[DownloadSheet] {sheetBuckUrl}/{planetId}");
             var planet = planetId.ToString();
             var downloadedSheets = new Dictionary<string, string>();
             const int maxRetries = 3;
@@ -1639,7 +1636,8 @@ namespace Nekoyume.Game
                             downloadedSheets[sheetName] = sheetData;
                             try
                             {
-                                FileHelper.WriteAllText(planet, csvName, sheetData);
+                                // Disable save file
+                                // FileHelper.WriteAllText(planet, csvName, sheetData);
                                 success = true;
                             }
                             catch (Exception ex)
