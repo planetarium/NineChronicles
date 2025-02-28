@@ -32,6 +32,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
+        [SerializeField]
+        private TextMeshProUGUI ticketTotalCountText = null;
+
         private readonly ReactiveProperty<int> _ticketCountToBuy = new();
         private decimal _ticketPrice = 0;
 
@@ -51,10 +54,14 @@ namespace Nekoyume.UI
                         {
                             price += RxProps.ArenaInfo.Value.BattleTicketStatus.NextNCGCosts[i];
                         }
+                        var currentCount = RxProps.ArenaInfo.Value.BattleTicketStatus.TicketsPurchasedPerSeason;
+                        var totalCount = RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerSeason + currentCount;
+                        ticketTotalCountText.text = $"<color=#FFD700>{currentCount}</color> <color=#32CD32>+ {count}</color> <color=#CCCCCC>/</color> <color=#FFD700>{totalCount}</color>";
                     }
                     catch (Exception e)
                     {
                         NcDebug.LogError($"Error calculating ticket price: {e.Message}");
+                        ticketTotalCountText.text = string.Empty;
                     }
                     _ticketPrice = price;
                     ticketPriceToBuyText.text = price.ToString();
