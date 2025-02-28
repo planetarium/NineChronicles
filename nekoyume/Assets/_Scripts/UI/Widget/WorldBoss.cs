@@ -97,6 +97,27 @@ namespace Nekoyume.UI
         private HeaderMenuStatic _headerMenu;
         private readonly List<IDisposable> _disposables = new();
 
+        private bool _hasGradeRewards;
+        private WorldBossState _worldBossState;
+
+        public bool HasGradeRewards
+        {
+            set
+            {
+                _hasGradeRewards = value;
+                SetRedDot();
+            }
+        }
+
+        public WorldBossState WorldBossState
+        {
+            set
+            {
+                _worldBossState = value;
+                SetRedDot();
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -126,7 +147,24 @@ namespace Nekoyume.UI
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
-            WorldBossStates.SubscribeGradeRewards((b) => notification.SetActive(b));
+
+            WorldBossStates.SubscribeGradeRewards(b => HasGradeRewards = b);
+            WorldBossStates.SubscribeWorldBossState(state => WorldBossState = state);
+        }
+
+        private void SetRedDot()
+        {
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var isOnSeason = WorldBossStates.IsOnSeason;
+            var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
+
+            if (preRaiderState is null)
+            {
+                notification.SetActive(false);
+                return;
+            }
+
+            notification.SetActive(_hasGradeRewards || (!isOnSeason && !preRaiderState.HasClaimedReward));
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

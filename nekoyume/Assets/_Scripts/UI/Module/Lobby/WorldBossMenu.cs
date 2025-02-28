@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Libplanet.Crypto;
-using Nekoyume.ApiClient;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
 using UnityEngine;
@@ -51,9 +47,31 @@ namespace Nekoyume.UI.Module.Lobby
 
         private const long SettleSeasonRewardInterval = 7200;
 
+        private bool _hasGradeRewards;
+        private WorldBossState _worldBossState;
+
+        public bool HasGradeRewards
+        {
+            set
+            {
+                _hasGradeRewards = value;
+                SetRedDot();
+            }
+        }
+
+        public WorldBossState WorldBossState
+        {
+            set
+            {
+                _worldBossState = value;
+                SetRedDot();
+            }
+        }
+
         private void Start()
         {
-            WorldBossStates.SubscribeGradeRewards(b => notification.SetActive(b));
+            WorldBossStates.SubscribeGradeRewards(b => HasGradeRewards = b);
+            WorldBossStates.SubscribeWorldBossState(state => WorldBossState = state);
 
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex).AddTo(_disposables);
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
@@ -64,6 +82,21 @@ namespace Nekoyume.UI.Module.Lobby
         {
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
             CheckSeasonRewards();
+        }
+
+        private void SetRedDot()
+        {
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var isOnSeason = WorldBossStates.IsOnSeason;
+            var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
+
+            if (preRaiderState is null)
+            {
+                notification.SetActive(false);
+                return;
+            }
+
+            notification.SetActive(_hasGradeRewards || (!isOnSeason && !preRaiderState.HasClaimedReward));
         }
 
         private void CheckSeasonRewards()

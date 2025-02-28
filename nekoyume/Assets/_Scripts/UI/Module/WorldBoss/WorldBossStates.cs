@@ -27,7 +27,12 @@ namespace Nekoyume.UI.Module.WorldBoss
         private static ReactiveDictionary<Address, bool> _hasGradeRewards { get; } = new();
         private static ReactiveDictionary<Address, bool> _receivingGradeRewards { get; } = new();
 
+        private static ReactiveProperty<WorldBossState> _worldBossState { get; } = new();
+
         private static long _lastUpdatedStateBlockIndex = -1;
+
+        public static bool IsOnSeason => _isOnSeason;
+        private static bool _isOnSeason;
 
         public static void SetHasGradeRewards(Address avatarAddress, bool value)
         {
@@ -59,6 +64,10 @@ namespace Nekoyume.UI.Module.WorldBoss
             _receivingGradeRewards.Add(avatarAddress, value);
         }
 
+        public static void SetWorldBossState(WorldBossState state)
+        {
+            _worldBossState.Value = state;
+        }
 
         public static RaiderState GetRaiderState(Address avatarAddress)
         {
@@ -92,7 +101,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             long blockIndex,
             Address avatarAddress)
         {
-            var (raidRow, raider, killReward, isOnSeason) =
+            var (raidRow, worldBoss, raider, killReward, isOnSeason) =
                 await GetDataAsync(hash, blockIndex, avatarAddress);
             if (isOnSeason)
             {
@@ -103,8 +112,15 @@ namespace Nekoyume.UI.Module.WorldBoss
                 UpdatePreRaiderState(avatarAddress, raider);
                 ClearRaiderState();
             }
+            _isOnSeason = isOnSeason;
 
+            SetWorldBossState(worldBoss);
             SetHasGradeRewards(avatarAddress, IsExistGradeReward(raidRow, raider));
+        }
+
+        public static void SubscribeWorldBossState(Action<WorldBossState> callback)
+        {
+            _worldBossState.Subscribe(callback).AddTo(_disposables);
         }
 
         public static void SubscribeGradeRewards(Action<bool> callback)
@@ -141,23 +157,16 @@ namespace Nekoyume.UI.Module.WorldBoss
             {
                 return;
             }
-            
+
             _lastUpdatedStateBlockIndex = currentBlockIndex;
-            
+
             _raiderStates[avatarAddress] = raiderState;
             _killRewards[avatarAddress] = killReward;
         }
 
         private static void UpdatePreRaiderState(Address avatarAddress, RaiderState raiderState)
         {
-            if (_preRaiderStates.ContainsKey(avatarAddress))
-            {
-                _preRaiderStates[avatarAddress] = raiderState;
-            }
-            else
-            {
-                _preRaiderStates.Add(avatarAddress, raiderState);
-            }
+            _preRaiderStates[avatarAddress] = raiderState;
         }
 
         private static bool IsExistGradeReward(WorldBossListSheet.Row row, RaiderState raiderState)
@@ -189,6 +198,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private static async Task<(
             WorldBossListSheet.Row raidRow,
+            WorldBossState worldBoss,
             RaiderState raider,
             WorldBossKillRewardRecord killReward,
             bool isOnSeason)>
@@ -213,7 +223,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     }
                     catch (InvalidOperationException)
                     {
-                        return (null, null, null, false);
+                        return (null, null, null, null, false);
                     }
                 }
 
@@ -231,7 +241,16 @@ namespace Nekoyume.UI.Module.WorldBoss
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;
 
-                return (raidRow, raider, killReward, isOnSeason);
+                var raidId = raidRow.Id;
+                var worldBossAddress = Addresses.GetWorldBossAddress(raidId);
+                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    worldBossAddress);
+                var worldBoss = worldBossState is Bencodex.Types.List worldBossList
+                    ? new WorldBossState(worldBossList)
+                    : null;
+
+                return (raidRow, worldBoss, raider, killReward, isOnSeason);
             });
 
             await task;

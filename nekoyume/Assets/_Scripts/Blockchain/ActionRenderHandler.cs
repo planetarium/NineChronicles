@@ -3496,6 +3496,10 @@ namespace Nekoyume.Blockchain
         private static void ResponseClaimWorldBossReward((ActionEvaluation<ClaimWorldBossReward> eval, WorldBossRewardMail mail, AvatarState avatarState) prepared)
         {
             var eval = prepared.eval;
+
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress).Forget();
+
             if (eval.Exception is not null)
             {
                 NcDebug.Log(eval.Exception.Message);
