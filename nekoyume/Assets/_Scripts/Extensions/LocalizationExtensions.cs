@@ -263,6 +263,8 @@ namespace Nekoyume
                             customCraftMail.Equipment.ItemType.HasElementType()));
                 case PatrolRewardMail _:
                     return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
+                case WorldBossRewardMail _:
+                    return L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED");
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");

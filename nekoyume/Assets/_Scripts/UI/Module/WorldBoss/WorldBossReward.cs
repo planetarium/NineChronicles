@@ -5,14 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
-using Nekoyume.ApiClient;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 
@@ -126,7 +125,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 StartCoroutine(CoSetFirstCategory());
             }
 
-            var (raider, raidId, record, userCount) = await GetDataAsync();
+            var (worldBoss, raider, raidId, isOnSeason) = await GetDataAsync();
             CheckRaidId(raidId);
             UpdateTitle();
 
@@ -135,8 +134,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 switch (toggle.Item)
                 {
                     case WorldBossSeasonReward season:
-                        var rank = record?.Ranking ?? 0;
-                        season.Set(raidId, rank, userCount);
+                        season.Set(worldBoss, raider, raidId, isOnSeason);
                         break;
                     case WorldBossBattleReward battle:
                         battle.Set(raidId);
@@ -173,12 +171,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
         }
 
-        private async Task<(
-                RaiderState raider,
-                int raidId,
-                WorldBossRankingRecord record,
-                int userCount)>
-            GetDataAsync()
+        private async Task<(WorldBossState worldBoss, RaiderState raiderState, int raidId, bool isOnSeason)> GetDataAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
@@ -186,23 +179,33 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             var task = Task.Run(async () =>
             {
-                int raidId;
-
+                WorldBossListSheet.Row raidRow;
+                var isOnSeason = false;
                 try
                 {
-                    raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
+                    raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
+                    isOnSeason = true;
                 }
                 catch (InvalidOperationException)
                 {
                     try
                     {
-                        raidId = bossSheet.FindPreviousRaidIdByBlockIndex(blockIndex);
+                        raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
                     }
                     catch (InvalidOperationException)
                     {
-                        return (null, 0, null, 0);
+                        return (null, null, 0, false);
                     }
                 }
+                var raidId = raidRow.Id;
+
+                var worldBossAddress = Addresses.GetWorldBossAddress(raidId);
+                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    worldBossAddress);
+                var worldBoss = worldBossState is Bencodex.Types.List worldBossList
+                    ? new WorldBossState(worldBossList)
+                    : null;
 
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
                 var raiderState = await Game.Game.instance.Agent.GetStateAsync(
@@ -211,12 +214,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;
-
-                var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
-                var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
-                var userCount = response?.WorldBossTotalUsers ?? 0;
-                var myRecord = records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
-                return (raider, raidId, myRecord, userCount);
+                return (worldBoss, raider, raidId, isOnSeason);
             });
 
             await task;
