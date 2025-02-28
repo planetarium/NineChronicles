@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -768,7 +769,7 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            Dictionary<string, string> csvDict;
+            IDictionary<string, string> csvDict;
             // TODO delete GetSheetsAsync backward compatibility
             if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
             {
@@ -1607,16 +1608,17 @@ namespace Nekoyume.Game
         /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
         /// <param name="sheetNames">A collection of sheet names to be downloaded.</param>
         /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
-        public static async Task<Dictionary<string, string>> DownloadSheet(PlanetId planetId,
+        public static async Task<IDictionary<string, string>> DownloadSheet(PlanetId planetId,
             string sheetBuckUrl, ICollection<string> sheetNames)
         {
             NcDebug.Log($"[DownloadSheet] {sheetBuckUrl}/{planetId}");
             var planet = planetId.ToString();
-            var downloadedSheets = new Dictionary<string, string>();
+            var downloadedSheets = new ConcurrentDictionary<string, string>();
             const int maxRetries = 3;
             const float delayBetweenRetries = 2.0f;
 
-            foreach (var sheetName in sheetNames)
+            // Create a list to hold all download tasks
+            var downloadTasks = sheetNames.Select(async sheetName =>
             {
                 var csvName = $"{sheetName}.csv";
                 var sheetUrl = $"{sheetBuckUrl}/{planet}/{csvName}";
@@ -1633,7 +1635,7 @@ namespace Nekoyume.Game
                         {
                             var sheetData = request.downloadHandler.text;
                             // Store the downloaded text in the dictionary with the sheet name as the key. without save sheet data
-                            downloadedSheets[sheetName] = sheetData;
+                            downloadedSheets.TryAdd(sheetName, sheetData);
                             try
                             {
                                 // Disable save file
@@ -1642,12 +1644,14 @@ namespace Nekoyume.Game
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogError($"Failed to write sheet {csvName}: {ex.Message}");
+                                Debug.LogError(
+                                    $"Failed to write sheet {csvName}: {ex.Message}");
                             }
                         }
                         else
                         {
-                            Debug.LogError($"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
+                            Debug.LogError(
+                                $"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
                             if (attempt < maxRetries - 1)
                             {
                                 await Task.Delay(TimeSpan.FromSeconds(delayBetweenRetries));
@@ -1658,10 +1662,14 @@ namespace Nekoyume.Game
 
                 if (!success)
                 {
-                    Debug.LogError($"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
+                    await UniTask.SwitchToMainThread();
+                    Debug.LogError(
+                        $"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
                 }
-            }
+            });
 
+            // Wait for all download tasks to complete
+            await UniTask.WhenAll(downloadTasks);
             return downloadedSheets;
         }
 
