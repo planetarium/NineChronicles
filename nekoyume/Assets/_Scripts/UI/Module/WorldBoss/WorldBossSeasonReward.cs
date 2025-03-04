@@ -38,7 +38,8 @@ namespace Nekoyume.UI.Module.WorldBoss
                 .Subscribe(_ => OnClickClaimButton())
                 .AddTo(gameObject);
 
-            claimButton.OnClickDisabledSubject
+            claimButton.OnClickSubject
+                .Where(_ => !claimButton.IsSubmittable)
                 .Subscribe(_ => OnClickDisableClaimButton())
                 .AddTo(gameObject);
         }
