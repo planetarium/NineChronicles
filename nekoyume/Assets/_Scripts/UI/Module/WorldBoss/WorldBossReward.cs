@@ -2,16 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Libplanet.Action.State;
+using JetBrains.Annotations;
 using Libplanet.Crypto;
-using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 
@@ -26,7 +22,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             SeasonRanking,
             BossBattle,
-            BattleGrade
+            BattleGrade,
         }
 
         [Serializable]
@@ -51,6 +47,8 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
         private Address _cachedAvatarAddress;
+
+        private WorldBossSeasonReward SeasonReward => categoryToggles.First(t => t.Type == ToggleType.SeasonRanking).Item as WorldBossSeasonReward;
 
         protected void Awake()
         {
@@ -169,6 +167,16 @@ namespace Nekoyume.UI.Module.WorldBoss
             title.text = status == WorldBossStatus.Season
                 ? L10nManager.Localize("UI_REWARDS")
                 : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
+        }
+
+        public void OnRenderSeasonReward()
+        {
+            if (SeasonReward == null)
+            {
+                return;
+            }
+
+            SeasonReward.OnRender();
         }
     }
 }

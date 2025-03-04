@@ -143,6 +143,17 @@ namespace Nekoyume.UI
             }
         }
 
+        public void OnRenderSeasonReward()
+        {
+            var worldBossReward = categoryToggles.FirstOrDefault(x => x.Type == ToggleType.Reward).Item as WorldBossReward;
+            if (worldBossReward == null)
+            {
+                return;
+            }
+
+            worldBossReward.OnRenderSeasonReward();
+        }
+
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickWorldBossRewardsButton()
         {
