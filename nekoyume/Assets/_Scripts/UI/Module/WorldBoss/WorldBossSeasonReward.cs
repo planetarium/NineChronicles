@@ -47,8 +47,18 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossState worldBossState, RaiderState raider, int raidId, bool isOnSeason)
         {
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
+            if (raider == null || !WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
+                claimButton.SetCondition(() => false);
+                claimButton.UpdateObjects();
+
+                worldBossTotalDamageText.text = "0";
+                userTotalDamageText.text = "0 (0%)";
+
+                foreach (var rewardItemView in rewardItems)
+                {
+                    rewardItemView.gameObject.SetActive(false);
+                }
                 return;
             }
 
@@ -57,25 +67,17 @@ namespace Nekoyume.UI.Module.WorldBoss
             claimButton.UpdateObjects();
 
             var tableSheets = Game.Game.instance.TableSheets;
-            var rewardRow = tableSheets.WorldBossKillRewardSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
-            if (rewardRow == null)
-            {
-                NcDebug.LogError($"Not found WorldBossKillRewardSheet for bossId: {raidRow.BossId}");
-                return;
-            }
-
             var worldBossTotalDamage = worldBossState?.TotalDamage ?? 0;
             var userTotalDamage = raider?.TotalScore ?? 0;
 
-            worldBossTotalDamageText.text = worldBossTotalDamage.ToString();
+            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
             float ratio = 0;
             if (worldBossTotalDamage > 0)
             {
                 ratio = userTotalDamage / (float)worldBossTotalDamage;
             }
 
-            userTotalDamageText.text = $"{userTotalDamage.ToString()} ({ratio:P2})";
-            rewardItem.Set(rewardRow);
+            userTotalDamageText.text = $"{userTotalDamage:N0} ({ratio:0.####%})";
 
             var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
             var contributeRow = contributeSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);

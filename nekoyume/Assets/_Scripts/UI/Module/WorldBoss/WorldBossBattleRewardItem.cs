@@ -99,10 +99,10 @@ namespace Nekoyume.UI.Module.WorldBoss
                 }
             }
 
-            SetRewardItem(((int)runeSum, (int)runeSum), (long)crystal, materials);
+            SetRewardItem(((int)runeSum, (int)runeSum), crystal, materials);
         }
 
-        private void SetRewardItem((int min, int max) rune, long crystal, List<(int itemId, int quantity)> materials)
+        private void SetRewardItem((int min, int max) rune, BigInteger crystal, List<(int itemId, int quantity)> materials)
         {
             runeItem.container.gameObject.SetActive(rune.max > 0);
             runeItem.text.text = rune.min == rune.max
