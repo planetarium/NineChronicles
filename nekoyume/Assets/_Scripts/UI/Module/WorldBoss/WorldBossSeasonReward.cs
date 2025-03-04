@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -30,13 +29,17 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private ConditionalButton claimButton;
 
+        [SerializeField]
+        private GameObject loadingIndicator;
+
         private void Awake()
         {
             claimButton.OnSubmitSubject
                 .Subscribe(_ => OnClickClaimButton())
                 .AddTo(gameObject);
 
-            claimButton.OnClickDisabledSubject
+            claimButton.OnClickSubject
+                .Where(_ => !claimButton.IsSubmittable)
                 .Subscribe(_ => OnClickDisableClaimButton())
                 .AddTo(gameObject);
         }
@@ -47,8 +50,18 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossState worldBossState, RaiderState raider, int raidId, bool isOnSeason)
         {
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
+            if (raider == null || !WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
+                claimButton.SetCondition(() => false);
+                claimButton.UpdateObjects();
+
+                worldBossTotalDamageText.text = "0";
+                userTotalDamageText.text = "0 (0%)";
+
+                foreach (var rewardItemView in rewardItems)
+                {
+                    rewardItemView.gameObject.SetActive(false);
+                }
                 return;
             }
 
@@ -57,25 +70,17 @@ namespace Nekoyume.UI.Module.WorldBoss
             claimButton.UpdateObjects();
 
             var tableSheets = Game.Game.instance.TableSheets;
-            var rewardRow = tableSheets.WorldBossKillRewardSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
-            if (rewardRow == null)
-            {
-                NcDebug.LogError($"Not found WorldBossKillRewardSheet for bossId: {raidRow.BossId}");
-                return;
-            }
-
             var worldBossTotalDamage = worldBossState?.TotalDamage ?? 0;
             var userTotalDamage = raider?.TotalScore ?? 0;
 
-            worldBossTotalDamageText.text = worldBossTotalDamage.ToString();
+            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
             float ratio = 0;
             if (worldBossTotalDamage > 0)
             {
                 ratio = userTotalDamage / (float)worldBossTotalDamage;
             }
 
-            userTotalDamageText.text = $"{userTotalDamage.ToString()} ({ratio:P2})";
-            rewardItem.Set(rewardRow);
+            userTotalDamageText.text = $"{userTotalDamage:N0} ({ratio:0.####%})";
 
             var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
             var contributeRow = contributeSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
@@ -117,6 +122,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             ActionManager.Instance.ClaimWorldBossReward().Subscribe();
             claimButton.SetCondition(() => false);
             claimButton.UpdateObjects();
+
+            loadingIndicator.SetActive(true);
         }
 
         private void OnClickDisableClaimButton()
@@ -125,6 +132,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 MailType.System,
                 L10nManager.Localize("UI_BOSS_SEASON_REWARD_CANNOT_CLAIM_INFO"),
                 NotificationCell.NotificationType.Information);
+        }
+
+        public void OnRender()
+        {
+            loadingIndicator.SetActive(false);
         }
     }
 }

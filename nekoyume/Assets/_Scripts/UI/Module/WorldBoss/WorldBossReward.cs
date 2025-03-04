@@ -2,16 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Libplanet.Action.State;
+using JetBrains.Annotations;
 using Libplanet.Crypto;
-using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 
@@ -26,7 +22,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             SeasonRanking,
             BossBattle,
-            BattleGrade
+            BattleGrade,
         }
 
         [Serializable]
@@ -51,6 +47,8 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
         private Address _cachedAvatarAddress;
+
+        private WorldBossSeasonReward SeasonReward => categoryToggles.First(t => t.Type == ToggleType.SeasonRanking).Item as WorldBossSeasonReward;
 
         protected void Awake()
         {
@@ -125,7 +123,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 StartCoroutine(CoSetFirstCategory());
             }
 
-            var (worldBoss, raider, raidId, isOnSeason) = await GetDataAsync();
+            var (worldBoss, raider, raidId, isOnSeason) = await WorldBossStates.Set();
             CheckRaidId(raidId);
             UpdateTitle();
 
@@ -171,54 +169,14 @@ namespace Nekoyume.UI.Module.WorldBoss
                 : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
         }
 
-        private async Task<(WorldBossState worldBoss, RaiderState raiderState, int raidId, bool isOnSeason)> GetDataAsync()
+        public void OnRenderSeasonReward()
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            var task = Task.Run(async () =>
+            if (SeasonReward == null)
             {
-                WorldBossListSheet.Row raidRow;
-                var isOnSeason = false;
-                try
-                {
-                    raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
-                    isOnSeason = true;
-                }
-                catch (InvalidOperationException)
-                {
-                    try
-                    {
-                        raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return (null, null, 0, false);
-                    }
-                }
-                var raidId = raidRow.Id;
+                return;
+            }
 
-                var worldBossAddress = Addresses.GetWorldBossAddress(raidId);
-                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    worldBossAddress);
-                var worldBoss = worldBossState is Bencodex.Types.List worldBossList
-                    ? new WorldBossState(worldBossList)
-                    : null;
-
-                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
-                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    raiderAddress);
-                var raider = raiderState is Bencodex.Types.List raiderList
-                    ? new RaiderState(raiderList)
-                    : null;
-                return (worldBoss, raider, raidId, isOnSeason);
-            });
-
-            await task;
-            return task.Result;
+            SeasonReward.OnRender();
         }
     }
 }

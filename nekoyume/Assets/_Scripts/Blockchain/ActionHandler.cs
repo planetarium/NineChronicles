@@ -81,17 +81,17 @@ namespace Nekoyume.Blockchain
             var agentAddr = States.Instance.AgentState.address;
             var stakeAddr = StakeState.DeriveAddress(agentAddr);
             var agent = Game.Game.instance.Agent;
-            Address[] sheetAddrArr;
+            List<string> sheetNames;
             FungibleAssetValue balance;
             StakeState? nullableStakeState;
             if (!StateGetter.TryGetStakeState(evaluation.OutputState, agentAddr, out var stakeState))
             {
                 nullableStakeState = null;
                 var policySheet = TableSheets.Instance.StakePolicySheet;
-                sheetAddrArr = new[]
+                sheetNames = new List<string>
                 {
-                    Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
-                    Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                    policySheet.StakeRegularFixedRewardSheetValue,
+                    policySheet.StakeRegularRewardSheetValue,
                 };
                 balance = GoldCurrency * 0;
             }
@@ -99,12 +99,10 @@ namespace Nekoyume.Blockchain
             {
                 nullableStakeState = stakeState;
                 balance = await Game.Game.instance.Agent.GetStakedByStateRootHashAsync(evaluation.OutputState, agentAddr);
-                sheetAddrArr = new[]
+                sheetNames = new List<string>
                 {
-                    Addresses.GetSheetAddress(
-                        stakeState.Contract.StakeRegularFixedRewardSheetTableName),
-                    Addresses.GetSheetAddress(
-                        stakeState.Contract.StakeRegularRewardSheetTableName)
+                    stakeState.Contract.StakeRegularFixedRewardSheetTableName,
+                    stakeState.Contract.StakeRegularRewardSheetTableName,
                 };
             }
 
@@ -115,14 +113,12 @@ namespace Nekoyume.Blockchain
                     return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
                 }
 
-                var sheetStates = await agent.GetStateBulkAsync(
-                    agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, sheetAddrArr);
+                var sheets = await Game.Game.DownloadSheet(Game.Game.instance.CurrentPlanetId!.Value, Game.Game.instance.CommandLineOptions.SheetBuckUrl, sheetNames);
                 var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-                stakeRegularFixedRewardSheet.Set(
-                    sheetStates[sheetAddrArr[0]].ToDotnetString());
+                stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 var stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                stakeRegularRewardSheet.Set(
-                    sheetStates[sheetAddrArr[1]].ToDotnetString());
+                stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
+
                 var level = nullableStakeState.HasValue
                     ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
                         agentAddr,

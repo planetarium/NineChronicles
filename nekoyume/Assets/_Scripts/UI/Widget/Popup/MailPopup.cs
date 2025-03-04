@@ -1019,51 +1019,7 @@ namespace Nekoyume.UI
             var avatarAddress = game.States.CurrentAvatarState.address;
             LocalLayerModifier.RemoveNewMail(avatarAddress, worldBossRewardMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
-
             NcDebug.Log($"[{nameof(WorldBossRewardMail)}] ItemCount: {worldBossRewardMail.id}");
-
-            var rewards = new List<MailReward>();
-            if (worldBossRewardMail.FungibleAssetValues is not null)
-            {
-                rewards.AddRange(
-                    worldBossRewardMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, fav.MajorUnit)));
-            }
-
-            if (worldBossRewardMail.Items is not null)
-            {
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-                foreach (var (fungibleId, count) in worldBossRewardMail.Items)
-                {
-                    var row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
-                    if (row != null)
-                    {
-                        var material = ItemFactory.CreateMaterial(row);
-                        rewards.Add(new MailReward(material, count));
-                        continue;
-                    }
-
-                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
-                    if (row != null)
-                    {
-                        var material = ItemFactory.CreateMaterial(row);
-                        rewards.Add(new MailReward(material, count));
-                        continue;
-                    }
-
-                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
-                    {
-                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
-                        rewards.Add(new MailReward(item, 1));
-                        continue;
-                    }
-
-                    NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
-                }
-            }
-
-            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
         }
 
         [Obsolete]
