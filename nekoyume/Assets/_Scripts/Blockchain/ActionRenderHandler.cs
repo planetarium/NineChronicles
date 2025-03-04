@@ -3477,6 +3477,9 @@ namespace Nekoyume.Blockchain
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress).Forget();
 
+            var worldBossReward = Widget.Find<WorldBossDetail>();
+            worldBossReward.OnRenderSeasonReward();
+
             if (eval.Exception is not null)
             {
                 NcDebug.Log(eval.Exception.Message);

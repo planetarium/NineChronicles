@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -29,6 +28,9 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         [SerializeField]
         private ConditionalButton claimButton;
+
+        [SerializeField]
+        private GameObject loadingIndicator;
 
         private void Awake()
         {
@@ -119,6 +121,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             ActionManager.Instance.ClaimWorldBossReward().Subscribe();
             claimButton.SetCondition(() => false);
             claimButton.UpdateObjects();
+
+            loadingIndicator.SetActive(true);
         }
 
         private void OnClickDisableClaimButton()
@@ -127,6 +131,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 MailType.System,
                 L10nManager.Localize("UI_BOSS_SEASON_REWARD_CANNOT_CLAIM_INFO"),
                 NotificationCell.NotificationType.Information);
+        }
+
+        public void OnRender()
+        {
+            loadingIndicator.SetActive(false);
         }
     }
 }
