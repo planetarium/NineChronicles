@@ -78,6 +78,20 @@ namespace Nekoyume.State
         public ConcurrentDictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
         public ConcurrentDictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
 
+        public void RemoveCurrentItemSlotStates(List<Guid> removeItems)
+        {
+            // removeItems에 있는 아이템을 CurrentItemSlotStates에서 제거합니다.
+            foreach (var item in removeItems)
+            {
+                foreach (var battleType in CurrentItemSlotStates.Keys.ToList())
+                {
+                    var itemSlotState = CurrentItemSlotStates[battleType];
+                    itemSlotState.Equipments.Remove(item);
+                    itemSlotState.Costumes.Remove(item);
+                }
+            }
+        }
+
         private class Workshop
         {
             private readonly ConcurrentDictionary<int, CombinationSlotState> _states = new();
@@ -874,5 +888,7 @@ namespace Nekoyume.State
         {
             ClaimedGiftIds = claimedGiftIds;
         }
+
+
     }
 }

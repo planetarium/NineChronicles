@@ -44,10 +44,6 @@ namespace Nekoyume.Game
                 ["AgentAddress"] = Game.instance.States.AgentState.address.ToString()
             });
 
-            var evt = new AirbridgeEvent("Prologue_Battle_Start");
-            evt.AddCustomAttribute("agent-address", Game.instance.States.AgentState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
-
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);

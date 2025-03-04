@@ -133,11 +133,6 @@ namespace Nekoyume.Blockchain
                             });
 
                         var category = $"ActionRender_{type}";
-                        var evt = new AirbridgeEvent(category);
-                        evt.SetValue(elapsed);
-                        evt.AddCustomAttribute("agent-address", agentState.address.ToString());
-                        evt.AddCustomAttribute("avatar-address", currentAvatarState.address.ToString());
-                        AirbridgeUnity.TrackEvent(evt);
                     }
 
                     var actionTypeName = actionType.TypeIdentifier.Inspect();
@@ -2294,13 +2289,6 @@ namespace Nekoyume.Blockchain
                             States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                     });
-
-                var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
-                evt.SetValue(eval.Action.StageBuffId.Value);
-                evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
-                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
             }
 
             BattleRenderer.Instance.PrepareStage(log);
@@ -3157,10 +3145,6 @@ namespace Nekoyume.Blockchain
             ArenaPlayerDigest? enemyDigest = null;
             CollectionState myCollectionState = null;
             CollectionState enemyCollectionState = null;
-
-            // TODO: 아레나 서비스에서 점수 조회 기능 추가 후 적용
-            // 시점 변경이 필요할듯.
-            var previousMyScore = ArenaScore.ArenaScoreDefault;
             var outMyScore = ArenaScore.ArenaScoreDefault;
 
             var prepareObserve = UniTask.RunOnThreadPool(() =>
@@ -3186,14 +3170,6 @@ namespace Nekoyume.Blockchain
 
             prepareObserve.Subscribe(_ =>
             {
-                // TODO: 아레나 서비스
-                // var hasMedalReward =
-                //     tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
-                //     row.ArenaType != ArenaType.OffSeason;
-                // var medalItem = ItemFactory.CreateMaterial(
-                //     tableSheets.MaterialItemSheet,
-                //     row.MedalId);
-
                 var random = new LocalRandom(eval.RandomSeed);
                 var winCount = 0;
                 var defeatCount = 0;

@@ -16,5 +16,7 @@ namespace Nekoyume.UI.Model
         public bool UseAgentAddress { get; set; }
         public string Description { get; set; }
         public string[] EnableKeys { get; set; }
+        public bool WithSign { get; set; }
+        public bool IsMainnet { get; set; }
     }
 }

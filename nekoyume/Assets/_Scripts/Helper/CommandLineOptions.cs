@@ -120,6 +120,8 @@ namespace Nekoyume.Helper
 
         private bool _mixpanelDebugWarning;
 
+        private string _sheetBucketUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -642,6 +644,16 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("sheet-bucket-url", Required = false, HelpText = "table sheets bucket url")]
+        public string SheetBuckUrl
+        {
+            get => _sheetBucketUrl;
+            set
+            {
+                _sheetBucketUrl = value;
+                Empty = false;
+            }
+        }
 
         public override string ToString()
         {

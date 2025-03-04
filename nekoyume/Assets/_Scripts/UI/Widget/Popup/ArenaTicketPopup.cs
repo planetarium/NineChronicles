@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Globalization;
     using Cysharp.Threading.Tasks;
     using GeneratedApiNamespace.ArenaServiceClient;
     using Libplanet.Crypto;
@@ -69,7 +70,7 @@ namespace Nekoyume.UI
 
                 var ticketCount = _ticketCountToBuy.Value;
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString());
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString(CultureInfo.InvariantCulture));
 
                 if (States.Instance.GoldBalanceState.Gold < cost)
                 {
@@ -94,7 +95,7 @@ namespace Nekoyume.UI
                 catch (Exception e)
                 {
                     NcDebug.LogError($"[ArenaTicketPopup] 티켓 구매 중 예외 발생: {e.Message}");
-                    
+
                     Find<IconAndButtonSystem>().Show(
                         "UI_ERROR",
                         e.InnerException != null ? e.InnerException.Message : e.Message,

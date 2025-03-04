@@ -725,9 +725,6 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track(
                 "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
 
-            var evt = new AirbridgeEvent("UnloadFromMyGaragesRecipientMail_ReceiveButton_Click");
-            AirbridgeUnity.TrackEvent(evt);
-
             var game = Game.Game.instance;
             unloadFromMyGaragesRecipientMail.New = false;
             LocalLayerModifier.RemoveNewMail(
@@ -853,9 +850,6 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track(
                 "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
-
-            var evt = new AirbridgeEvent("ClaimItemsMail_ReceiveButton_Click");
-            AirbridgeUnity.TrackEvent(evt);
 
             var game = Game.Game.instance;
             claimItemsMail.New = false;

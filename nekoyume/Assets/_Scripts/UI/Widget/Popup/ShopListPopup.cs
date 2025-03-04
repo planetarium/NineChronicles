@@ -109,11 +109,6 @@ namespace Nekoyume.UI
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku()));
 
-                var evt = new AirbridgeEvent("IAP_ShopListPopup_Close");
-                evt.SetAction(_data.Sku());
-                evt.AddCustomAttribute("product-id", _data.Sku());
-                AirbridgeUnity.TrackEvent(evt);
-
                 Close();
             });
             CloseWidget = () => Close();
@@ -137,11 +132,6 @@ namespace Nekoyume.UI
                 NcDebug.Log($"Purchase: {_data.Sku()}");
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku()));
-
-                var evt = new AirbridgeEvent("IAP_ShopListPopup_PurchaseButton_Click");
-                evt.SetAction(_data.Sku());
-                evt.AddCustomAttribute("product-id", _data.Sku());
-                AirbridgeUnity.TrackEvent(evt);
 
                 switch (_data.ProductType)
                 {

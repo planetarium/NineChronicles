@@ -309,13 +309,6 @@ namespace Nekoyume.UI
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 });
-
-                var evt = new AirbridgeEvent("Click_Yggdrasil");
-                evt.AddCustomAttribute("agent-address",
-                    States.Instance.AgentState.address.ToString());
-                evt.AddCustomAttribute("avatar-address",
-                    States.Instance.CurrentAvatarState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
             }
 
             Push();

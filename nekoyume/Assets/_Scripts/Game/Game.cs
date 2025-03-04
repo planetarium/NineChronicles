@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -53,6 +54,7 @@ using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
 using Nekoyume.Module.Guild;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -61,6 +63,7 @@ using NineChronicles.GoogleServices.Firebase.Runtime;
 namespace Nekoyume.Game
 {
     using Arena;
+    using GeneratedApiNamespace.ArenaServiceClient;
     using Nekoyume.Model.EnumType;
     using TableData;
     using UniRx;
@@ -337,9 +340,6 @@ namespace Nekoyume.Game
             NcDebug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
-            var tableSheetsInitializedEvt = new AirbridgeEvent("Intro_Start_TableSheetsInitialized");
-            AirbridgeUnity.TrackEvent(tableSheetsInitializedEvt);
-
             RxProps.Start(Agent, States, TableSheets);
 
             AdventureBossData = new AdventureBossData();
@@ -435,6 +435,8 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CommandLineOptions loaded");
             NcDebug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
+            NcDebug.Log($"SelectedPlanetId: {_commandLineOptions.SelectedPlanetId}");
+            NcDebug.Log($"DefaultPlanetId: {_commandLineOptions.DefaultPlanetId}");
         }
 
 #region RPCAgent
@@ -640,9 +642,6 @@ namespace Nekoyume.Game
                     {
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
 
-                        var requestEvt = new AirbridgeEvent("Intro_Pledge_Request");
-                        AirbridgeUnity.TrackEvent(requestEvt);
-
                         swForRequestPledge.Reset();
                         swForRequestPledge.Start();
                         yield return PortalConnect.RequestPledge(
@@ -667,9 +666,6 @@ namespace Nekoyume.Game
                         }
 
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
-
-                        var requestedEvt = new AirbridgeEvent("Intro_Pledge_Requested");
-                        AirbridgeUnity.TrackEvent(requestedEvt);
                     }
                 }
 
@@ -683,9 +679,6 @@ namespace Nekoyume.Game
                     {
                         Analyzer.Instance.Track("Unity/Intro/Pledge/ApproveAction");
 
-                        var approveActionEvt = new AirbridgeEvent("Intro_Start_ApproveAction");
-                        AirbridgeUnity.TrackEvent(approveActionEvt);
-
                         var patronAddress = States.PatronAddress!.Value;
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
@@ -697,9 +690,6 @@ namespace Nekoyume.Game
                         $" finished in {swForRenderingApprovePledge.ElapsedMilliseconds}ms.(elapsed)");
 
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
-
-                    var approveEvt = new AirbridgeEvent("Intro_Start_Approve");
-                    AirbridgeUnity.TrackEvent(approveEvt);
                 }
 
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
@@ -779,19 +769,44 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            var map = csvAssets.ToDictionary(
-                asset => Addresses.TableSheet.Derive(asset.name),
-                asset => asset.name);
-            var dict = await Agent.GetSheetsAsync(map.Keys);
-            sw.Stop();
-            NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
-            sw.Restart();
-            var csv = dict.ToDictionary(
-                pair => map[pair.Key],
-                // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+            IDictionary<string, string> csvDict;
+            // TODO delete GetSheetsAsync backward compatibility
+            if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
+            {
+                var map = csvAssets.ToDictionary(
+                    asset => Addresses.TableSheet.Derive(asset.name),
+                    asset => asset.name);
 
-            TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
+                var dict = await Agent.GetSheetsAsync(map.Keys);
+                sw.Stop();
+
+                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
+
+                sw.Restart();
+
+                // Convert dict to csv using mapping, ensuring Text values are converted to strings
+                csvDict = dict.ToDictionary(
+                    pair => map[pair.Key],
+                    // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
+                    pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+            }
+            else
+            {
+                // Prepare list of sheet names from csvAssets
+                var sheetNames = csvAssets.Select(x => x.name).ToList();
+
+                var planetId = CurrentPlanetId!.Value;
+
+                // Download and save sheets for the current planet
+                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+
+                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
+
+                sw.Stop();
+
+                sw.Restart();
+            }
+            TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
         }
@@ -803,63 +818,45 @@ namespace Nekoyume.Game
             var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
             var balance = await Agent.GetStakedByStateRootHashAsync(Agent.BlockTipStateRootHash,
                 States.Instance.AgentState.address);
-            var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-            var stakeRegularRewardSheet = new StakeRegularRewardSheet();
-            var policySheet = TableSheets.StakePolicySheet;
-            Address[] sheetAddr;
+            StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet;
+            StakeRegularRewardSheet stakeRegularRewardSheet;
             Model.Stake.StakeState? stakeState = null;
-            if (!StakeStateUtilsForClient.TryMigrate(
-                stakeStateIValue,
-                States.Instance.GameConfigState,
-                out var stakeStateV2))
+            if (Agent is RPCAgent)
             {
-                if (Agent is RPCAgent)
+                stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                List<string> sheetNames;
+                if (!StakeStateUtilsForClient.TryMigrate(
+                    stakeStateIValue,
+                    States.Instance.GameConfigState,
+                    out var stakeStateV2))
                 {
-                    sheetAddr = new[]
+                    sheetNames = new List<string>
                     {
-                        Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
-                        Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                        TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
+                        TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
                     };
                 }
-                // It is local play. local genesis block not has Stake***Sheet_V*.
-                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
                 else
                 {
-                    sheetAddr = new[]
+                    sheetNames = new List<string>
                     {
-                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
-                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName,
                     };
                 }
+                var sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBuckUrl, sheetNames);
+                stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
+                stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
             }
             else
             {
-                stakeState = stakeStateV2;
-                if (Agent is RPCAgent)
-                {
-                    sheetAddr = new[]
-                    {
-                        Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
-                        Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularRewardSheetTableName)
-                    };
-                }
                 // It is local play. local genesis block not has Stake***Sheet_V*.
                 // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
-                else
-                {
-                    sheetAddr = new[]
-                    {
-                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
-                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
-                    };
-                }
-            }
+                stakeRegularFixedRewardSheet = TableSheets.StakeRegularFixedRewardSheet;
+                stakeRegularRewardSheet = TableSheets.StakeRegularRewardSheet;
 
-            var sheets = await Agent.GetSheetsAsync(sheetAddr);
-            stakeRegularFixedRewardSheet.Set(sheets[sheetAddr[0]].ToDotnetString());
-            stakeRegularRewardSheet.Set(sheets[sheetAddr[1]].ToDotnetString());
+            }
             var level = balance.RawValue > 0
                 ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
                     Agent.Address,
@@ -890,9 +887,6 @@ namespace Nekoyume.Game
             {
                 Analyzer.Instance.Track("Unity/Player Quit");
                 Analyzer.Instance.Flush();
-
-                var evt = new AirbridgeEvent("Intro_Player_Quit");
-                AirbridgeUnity.TrackEvent(evt);
             }
         }
 
@@ -1106,32 +1100,64 @@ namespace Nekoyume.Game
         public void ReservePushNotifications()
         {
             var currentBlockIndex = Agent.BlockIndex;
-            var tableSheets = TableSheets.Instance;
-            var roundData = tableSheets.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
-            var row = tableSheets.ArenaSheet.GetRowByBlockIndex(currentBlockIndex);
-            var medalTotalCount = States.Instance.CurrentAvatarState != null
-                ? ArenaHelper.GetMedalTotalCount(
-                    row,
-                    States.Instance.CurrentAvatarState)
-                : default;
-            if (medalTotalCount >= roundData.RequiredMedalCount)
-            {
-                ReserveArenaSeasonPush(row, roundData, currentBlockIndex);
-                ReserveArenaTicketPush(roundData, currentBlockIndex);
-            }
-
             ReserveWorldbossSeasonPush(currentBlockIndex);
             ReserveWorldbossTicketPush(currentBlockIndex);
+
+            ReserveArena(currentBlockIndex).Forget();
+        }
+
+        public async UniTask ReserveArena(long blockIndex)
+        {
+            try
+            {
+                SeasonResponse seasonResponse = null;
+                SeasonResponse nextSeasonResponse = null;
+                RoundResponse roundResponse = null;
+                await ApiClients.Instance.Arenaservicemanager.Client.GetSeasonsClassifybychampionshipAsync(blockIndex,
+                    on200: response =>
+                    {
+                        seasonResponse = response.Seasons.Find(item =>
+                            item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                        );
+
+                        nextSeasonResponse = response.Seasons
+                            .Where(seasonResponse => seasonResponse.StartBlockIndex >= blockIndex)
+                            .OrderBy(seasonResponse => seasonResponse.StartBlockIndex)
+                            .FirstOrDefault();
+
+                        if (seasonResponse != null)
+                        {
+                            seasonResponse.Rounds.Find(item =>
+                                item.StartBlockIndex <= blockIndex && item.EndBlockIndex >= blockIndex
+                            );
+                        }
+                    },
+                    onError: error =>
+                    {
+                        // Handle error case
+                        NcDebug.LogError($"Error fetching seasons: {error}");
+                    });
+
+                if (seasonResponse == null || roundResponse == null)
+                {
+                    return;
+                }
+                ReserveArenaSeasonPush(seasonResponse, nextSeasonResponse, Agent.BlockIndex);
+                ReserveArenaTicketPush(roundResponse, Agent.BlockIndex); ;
+
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"Failed to register arena notification: {e.Message}");
+            }
         }
 
         private static void ReserveArenaSeasonPush(
-            ArenaSheet.Row row,
-            ArenaSheet.RoundData roundData,
+            SeasonResponse seasonData,
+            SeasonResponse nextSeasonData,
             long currentBlockIndex)
         {
-            var arenaSheet = TableSheets.Instance.ArenaSheet;
-            if (roundData.ArenaType == ArenaType.OffSeason &&
-                arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
+            if (seasonData.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.OFF_SEASON && nextSeasonData != null)
             {
                 var prevPushIdentifier =
                     PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
@@ -1141,16 +1167,14 @@ namespace Nekoyume.Game
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var targetBlockIndex = nextRoundData.StartBlockIndex;
+                var targetBlockIndex = nextSeasonData.StartBlockIndex;
                 var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
-                var arenaTypeText = nextRoundData.ArenaType == ArenaType.Season
+                var arenaTypeText = nextSeasonData.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON
                     ? L10nManager.Localize("UI_SEASON")
                     : L10nManager.Localize("UI_CHAMPIONSHIP");
 
-                var arenaSeason = nextRoundData.ArenaType == ArenaType.Championship
-                    ? roundData.ChampionshipId
-                    : row.GetSeasonNumber(nextRoundData.Round);
+                var arenaSeason = nextSeasonData.SeasonGroupId;
 
                 var content = L10nManager.Localize(
                     "PUSH_ARENA_SEASON_START_CONTENT",
@@ -1162,7 +1186,7 @@ namespace Nekoyume.Game
         }
 
         private static void ReserveArenaTicketPush(
-            ArenaSheet.RoundData roundData,
+            RoundResponse roundData,
             long currentBlockIndex)
         {
             var prevPushIdentifier =
@@ -1179,9 +1203,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            var interval = States.Instance.GameConfigState.DailyArenaInterval;
-            var remainingBlockCount = interval -
-                (currentBlockIndex - roundData.StartBlockIndex) % interval;
+            var remainingBlockCount = roundData.EndBlockIndex - currentBlockIndex;
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
@@ -1480,10 +1502,6 @@ namespace Nekoyume.Game
             Analyzer.SetAgentAddress(Agent.Address.ToString());
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
 
-            var evt = new AirbridgeEvent("Intro_Start_AgentInitialized");
-            evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
-
             var settingPopup = Widget.Find<SettingPopup>();
             settingPopup.UpdatePrivateKey(_commandLineOptions.PrivateKey);
         }
@@ -1491,10 +1509,6 @@ namespace Nekoyume.Game
         public void OnAgentInitializeFailed()
         {
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
-
-            var evt = new AirbridgeEvent("Intro_Start_AgentInitializeFailed");
-            evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
 
             QuitWithAgentConnectionError(null);
         }
@@ -1567,6 +1581,106 @@ namespace Nekoyume.Game
 #else
             Application.Quit();
 #endif
+        }
+
+        /// <summary>
+        /// Downloads sheets from a specified bucket URL for a given planet.
+        /// </summary>
+        /// <param name="planetId">The identifier of the planet to download sheets for.</param>
+        /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
+        /// <param name="sheetNames">A collection of sheet names to be downloaded.</param>
+        /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
+        public static async Task<IDictionary<string, string>> DownloadSheet(PlanetId planetId,
+            string sheetBuckUrl, ICollection<string> sheetNames)
+        {
+            NcDebug.Log($"[DownloadSheet] {sheetBuckUrl}/{planetId}");
+            var planet = planetId.ToString();
+            var downloadedSheets = new ConcurrentDictionary<string, string>();
+            const int maxRetries = 3;
+            const float delayBetweenRetries = 2.0f;
+
+            // Create a list to hold all download tasks
+            var downloadTasks = sheetNames.Select(async sheetName =>
+            {
+                var csvName = $"{sheetName}.csv";
+                var sheetUrl = $"{sheetBuckUrl}/{planet}/{csvName}";
+                bool success = false;
+
+                // Retry request if network request failed.
+                for (int attempt = 0; attempt < maxRetries && !success; attempt++)
+                {
+                    using (UnityWebRequest request = UnityWebRequest.Get(sheetUrl))
+                    {
+                        await request.SendWebRequest();
+
+                        if (request.result == UnityWebRequest.Result.Success)
+                        {
+                            var sheetData = request.downloadHandler.text;
+                            // Store the downloaded text in the dictionary with the sheet name as the key. without save sheet data
+                            downloadedSheets.TryAdd(sheetName, sheetData);
+                            try
+                            {
+                                // Disable save file
+                                // FileHelper.WriteAllText(planet, csvName, sheetData);
+                                success = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogError(
+                                    $"Failed to write sheet {csvName}: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError(
+                                $"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
+                            if (attempt < maxRetries - 1)
+                            {
+                                await Task.Delay(TimeSpan.FromSeconds(delayBetweenRetries));
+                            }
+                        }
+                    }
+                }
+
+                if (!success)
+                {
+                    await UniTask.SwitchToMainThread();
+                    Debug.LogError(
+                        $"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
+                }
+            });
+
+            // Wait for all download tasks to complete
+            await UniTask.WhenAll(downloadTasks);
+            return downloadedSheets;
+        }
+
+        /// <summary>
+        /// loads sheets into a dictionary from CSV files based on the provided planet ID and sheet names.
+        /// </summary>
+        /// <param name="planetId">The ID of the planet, used to identify the source directory for the CSV files.</param>
+        /// <param name="sheetNames">A list of sheet names to be loaded (without the .csv extension).</param>
+        /// <returns>A dictionary where each key is a sheet name and the value is its content as a string.</returns>
+        private async Task<Dictionary<string, string>> LoadSheets(PlanetId planetId, List<string> sheetNames)
+        {
+            var csv = new Dictionary<string, string>();
+            var planet = planetId.ToString();
+
+            foreach (var sheetName in sheetNames)
+            {
+                var csvName = $"{sheetName}.csv";
+                try
+                {
+                    var data = await FileHelper.ReadAllTextAsync(planet, csvName);
+                    csv[sheetName] = data;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to read sheet {csvName}: {e.Message}");
+                }
+            }
+
+            return csv;
         }
     }
 }
