@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -768,7 +769,7 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            Dictionary<string, string> csvDict;
+            IDictionary<string, string> csvDict;
             // TODO delete GetSheetsAsync backward compatibility
             if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
             {
@@ -797,16 +798,12 @@ namespace Nekoyume.Game
                 var planetId = CurrentPlanetId!.Value;
 
                 // Download and save sheets for the current planet
-                var downloadedSheets = await DownloadAndSaveSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
                 sw.Stop();
 
-                // Load the downloaded sheets into csv
-                var loadedSheets = await LoadSheets(planetId, sheetNames);
-                csvDict = downloadedSheets.Concat(loadedSheets)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
                 sw.Restart();
             }
             TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
@@ -821,63 +818,45 @@ namespace Nekoyume.Game
             var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
             var balance = await Agent.GetStakedByStateRootHashAsync(Agent.BlockTipStateRootHash,
                 States.Instance.AgentState.address);
-            var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-            var stakeRegularRewardSheet = new StakeRegularRewardSheet();
-            var policySheet = TableSheets.StakePolicySheet;
-            Address[] sheetAddr;
+            StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet;
+            StakeRegularRewardSheet stakeRegularRewardSheet;
             Model.Stake.StakeState? stakeState = null;
-            if (!StakeStateUtilsForClient.TryMigrate(
-                stakeStateIValue,
-                States.Instance.GameConfigState,
-                out var stakeStateV2))
+            if (Agent is RPCAgent)
             {
-                if (Agent is RPCAgent)
+                stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                List<string> sheetNames;
+                if (!StakeStateUtilsForClient.TryMigrate(
+                    stakeStateIValue,
+                    States.Instance.GameConfigState,
+                    out var stakeStateV2))
                 {
-                    sheetAddr = new[]
+                    sheetNames = new List<string>
                     {
-                        Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
-                        Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                        TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
+                        TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
                     };
                 }
-                // It is local play. local genesis block not has Stake***Sheet_V*.
-                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
                 else
                 {
-                    sheetAddr = new[]
+                    sheetNames = new List<string>
                     {
-                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
-                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName,
                     };
                 }
+                var sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBuckUrl, sheetNames);
+                stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
+                stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
             }
             else
             {
-                stakeState = stakeStateV2;
-                if (Agent is RPCAgent)
-                {
-                    sheetAddr = new[]
-                    {
-                        Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
-                        Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularRewardSheetTableName)
-                    };
-                }
                 // It is local play. local genesis block not has Stake***Sheet_V*.
                 // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
-                else
-                {
-                    sheetAddr = new[]
-                    {
-                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
-                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
-                    };
-                }
-            }
+                stakeRegularFixedRewardSheet = TableSheets.StakeRegularFixedRewardSheet;
+                stakeRegularRewardSheet = TableSheets.StakeRegularRewardSheet;
 
-            var sheets = await Agent.GetSheetsAsync(sheetAddr);
-            stakeRegularFixedRewardSheet.Set(sheets[sheetAddr[0]].ToDotnetString());
-            stakeRegularRewardSheet.Set(sheets[sheetAddr[1]].ToDotnetString());
+            }
             var level = balance.RawValue > 0
                 ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
                     Agent.Address,
@@ -1605,21 +1584,23 @@ namespace Nekoyume.Game
         }
 
         /// <summary>
-        /// Downloads and saves sheets from a specified bucket URL for a given planet.
+        /// Downloads sheets from a specified bucket URL for a given planet.
         /// </summary>
         /// <param name="planetId">The identifier of the planet to download sheets for.</param>
         /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
-        /// <param name="sheetNames">A collection of sheet names to be downloaded and saved.</param>
+        /// <param name="sheetNames">A collection of sheet names to be downloaded.</param>
         /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
-        public static async Task<Dictionary<string, string>> DownloadAndSaveSheet(PlanetId planetId,
+        public static async Task<IDictionary<string, string>> DownloadSheet(PlanetId planetId,
             string sheetBuckUrl, ICollection<string> sheetNames)
         {
+            NcDebug.Log($"[DownloadSheet] {sheetBuckUrl}/{planetId}");
             var planet = planetId.ToString();
-            var downloadedSheets = new Dictionary<string, string>();
+            var downloadedSheets = new ConcurrentDictionary<string, string>();
             const int maxRetries = 3;
             const float delayBetweenRetries = 2.0f;
 
-            foreach (var sheetName in sheetNames)
+            // Create a list to hold all download tasks
+            var downloadTasks = sheetNames.Select(async sheetName =>
             {
                 var csvName = $"{sheetName}.csv";
                 var sheetUrl = $"{sheetBuckUrl}/{planet}/{csvName}";
@@ -1636,20 +1617,23 @@ namespace Nekoyume.Game
                         {
                             var sheetData = request.downloadHandler.text;
                             // Store the downloaded text in the dictionary with the sheet name as the key. without save sheet data
-                            downloadedSheets[sheetName] = sheetData;
+                            downloadedSheets.TryAdd(sheetName, sheetData);
                             try
                             {
-                                FileHelper.WriteAllText(planet, csvName, sheetData);
+                                // Disable save file
+                                // FileHelper.WriteAllText(planet, csvName, sheetData);
                                 success = true;
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogError($"Failed to write sheet {csvName}: {ex.Message}");
+                                Debug.LogError(
+                                    $"Failed to write sheet {csvName}: {ex.Message}");
                             }
                         }
                         else
                         {
-                            Debug.LogError($"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
+                            Debug.LogError(
+                                $"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
                             if (attempt < maxRetries - 1)
                             {
                                 await Task.Delay(TimeSpan.FromSeconds(delayBetweenRetries));
@@ -1660,10 +1644,14 @@ namespace Nekoyume.Game
 
                 if (!success)
                 {
-                    Debug.LogError($"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
+                    await UniTask.SwitchToMainThread();
+                    Debug.LogError(
+                        $"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
                 }
-            }
+            });
 
+            // Wait for all download tasks to complete
+            await UniTask.WhenAll(downloadTasks);
             return downloadedSheets;
         }
 
