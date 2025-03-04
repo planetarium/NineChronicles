@@ -394,6 +394,30 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public Int64 EndBlockIndex { get; set; }
     }
 
+    public class SeasonAndRoundResponse
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("seasonGroupId")]
+        public int SeasonGroupId { get; set; }
+        [JsonPropertyName("arenaType")]
+        public ArenaType ArenaType { get; set; }
+        [JsonPropertyName("startBlockIndex")]
+        public Int64 StartBlockIndex { get; set; }
+        [JsonPropertyName("endBlockIndex")]
+        public Int64 EndBlockIndex { get; set; }
+        [JsonPropertyName("roundInterval")]
+        public int RoundInterval { get; set; }
+        [JsonPropertyName("requiredMedalCount")]
+        public int RequiredMedalCount { get; set; }
+        [JsonPropertyName("totalPrize")]
+        public int TotalPrize { get; set; }
+        [JsonPropertyName("prizeDetailSiteURL")]
+        public string PrizeDetailSiteURL { get; set; }
+        [JsonPropertyName("round")]
+        public RoundResponse Round { get; set; }
+    }
+
     public class SeasonResponse
     {
         [JsonPropertyName("id")]
@@ -1328,15 +1352,77 @@ public class ArenaServiceClient
     }
 
     /// <response code="200">
-    /// <para>SeasonResponse</para>
+    /// <para>Ranking Count Response</para>
+    /// </response>
+    public async Task GetLeaderboardCountAsync(
+        int seasonId, int roundId, 
+        // Ranking Count Response
+        Action<int> on200 = null, 
+        Action<string> onError = null)
+    {
+        string url = $"{Url}/leaderboard/count";
+        using (var request = new UnityWebRequest(url, "GET"))
+        {
+            try
+            {
+            url += $"?seasonId={seasonId}&roundId={roundId}";
+            request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
+            try
+            {
+                await request.SendWebRequest();
+                GetLeaderboardCountAsyncProcessResponse(request, on200, onError);
+            }
+            catch (Exception ex)
+            {
+                GetLeaderboardCountAsyncProcessResponse(request, on200, onError);
+            }
+        }
+    }
+
+    private void GetLeaderboardCountAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // Ranking Count Response
+        {
+            if (on200 != null)
+            {
+                int responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
+        }
+    }
+
+    /// <response code="200">
+    /// <para>SeasonAndRoundResponse</para>
     /// </response>
     /// <response code="404">
     /// <para>Status404NotFound</para>
     /// </response>
     public async Task GetSeasonsByblockAsync(
         Int64 blockIndex, 
-        // SeasonResponse
-        Action<SeasonResponse> on200 = null, 
+        // SeasonAndRoundResponse
+        Action<SeasonAndRoundResponse> on200 = null, 
         // Status404NotFound
         Action<string> on404 = null, 
         Action<string> onError = null)
@@ -1369,15 +1455,15 @@ public class ArenaServiceClient
         }
     }
 
-    private void GetSeasonsByblockAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonResponse> on200, Action<string> on404, Action<string> onError)
+    private void GetSeasonsByblockAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonAndRoundResponse> on200, Action<string> on404, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // SeasonResponse
+        if (webRequest.responseCode == 200) // SeasonAndRoundResponse
         {
             if (on200 != null)
             {
-                SeasonResponse responseData;
-                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseText); }
+                SeasonAndRoundResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonAndRoundResponse>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on200(responseData);
             }

@@ -255,7 +255,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<SeasonResponse> GetSeasonByBlockAsync(Int64 blockIndex)
+        public async Task<SeasonAndRoundResponse> GetSeasonByBlockAsync(Int64 blockIndex)
         {
             if (!IsInitialized)
             {
@@ -264,7 +264,7 @@ namespace Nekoyume.ApiClient
 
             try
             {
-                SeasonResponse currentSeason = null;
+                SeasonAndRoundResponse currentSeason = null;
                 await UniTask.SwitchToMainThread();
                 await Client.GetSeasonsByblockAsync((int)blockIndex,
                     on200: result =>
