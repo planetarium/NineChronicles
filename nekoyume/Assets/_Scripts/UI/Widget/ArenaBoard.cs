@@ -542,7 +542,8 @@ namespace Nekoyume.UI
                         pollingResult == PurchaseStatus.INSUFFICIENT_PAYMENT ||
                         pollingResult == PurchaseStatus.INVALID_RECIPIENT ||
                         pollingResult == PurchaseStatus.DUPLICATE_TRANSACTION ||
-                        pollingResult == PurchaseStatus.TX_FAILED)
+                        pollingResult == PurchaseStatus.TX_FAILED ||
+                        pollingResult == PurchaseStatus.NO_REMAINING_PURCHASE_COUNT)
                     {
                         NcDebug.LogError("[ArenaBoard] Refresh failed due to an error in polling.");
                         isPollingSuccessful = true; // 실패케이스로 폴링 멈추도록 플래그 설정
@@ -565,7 +566,8 @@ namespace Nekoyume.UI
                         pollingResult == PurchaseStatus.INSUFFICIENT_PAYMENT ||
                         pollingResult == PurchaseStatus.INVALID_RECIPIENT ||
                         pollingResult == PurchaseStatus.DUPLICATE_TRANSACTION ||
-                        pollingResult == PurchaseStatus.TX_FAILED)
+                        pollingResult == PurchaseStatus.TX_FAILED ||
+                        pollingResult == PurchaseStatus.NO_REMAINING_PURCHASE_COUNT)
                     {
                         NcDebug.LogError("[ArenaBoard] Refresh failed due to an error in polling.");
                         isPollingSuccessful = true; // 실패케이스로 폴링 멈추도록 플래그 설정
