@@ -70,12 +70,34 @@ namespace Nekoyume.Game
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
                     sb.Append($" / ({pair.Key}, csv)");
                     sb.Append($" / failed to cast to {nameof(ISheet)}");
-                    throw new Exception(sb.ToString());
+                    var errorMessage = sb.ToString();
+                    NcDebug.LogError(errorMessage);
+                    Game.QuitWithMessage("ERROR_INITIALIZE_FAILED", errorMessage);
+                    throw new Exception(errorMessage);
                 }
 
-                if (pair.Value is not null)
+                if (!string.IsNullOrEmpty(pair.Value))
                 {
-                    iSheet.Set(pair.Value);
+                    try
+                    {
+                        iSheet.Set(pair.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        var sb = new StringBuilder($"[{nameof(TableSheets)}]");
+                        sb.Append($" / ({pair.Key}, csv)");
+                        sb.Append($" / failed to set sheet data: {e.Message}");
+                        var errorMessage = sb.ToString();
+                        NcDebug.LogError(errorMessage);
+                        Game.QuitWithMessage("ERROR_INITIALIZE_FAILED", errorMessage);
+                        throw;
+                    }
+                }
+                else
+                {
+                    var errorMessage = $"[{nameof(TableSheets)}] The value for {pair.Key} is empty.";
+                    NcDebug.LogError(errorMessage);
+                    Game.QuitWithMessage("ERROR_INITIALIZE_FAILED", errorMessage);
                 }
 
                 sheetPropertyInfo.SetValue(this, sheetObject);
@@ -168,8 +190,6 @@ namespace Nekoyume.Game
         public GameConfigSheet GameConfigSheet { get; private set; }
 
         public RedeemRewardSheet RedeemRewardSheet { get; private set; }
-
-        public RedeemCodeListSheet RedeemCodeListSheet { get; private set; }
 
         public CombinationEquipmentQuestSheet CombinationEquipmentQuestSheet { get; private set; }
 
