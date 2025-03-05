@@ -6,9 +6,6 @@
             url "https://maven.google.com"
         }
         maven {
-            url "https://sdk-download.airbridge.io/maven" // Assets/Airbridge/Plugins/Editor/Dependencies.xml:8
-        }
-        maven {
             url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Assets/Firebase/Editor/AnalyticsDependencies.xml:18, Assets/Firebase/Editor/AppDependencies.xml:22
         }
         maven {
@@ -32,7 +29,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-app-unity:12.1.0' // Assets/Firebase/Editor/AppDependencies.xml:22
     implementation 'com.google.firebase:firebase-common:21.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
     implementation 'com.google.signin:google-signin-support:1.0.4' // Assets/GoogleSignIn/Editor/GoogleSignInSupportDependencies.xml:9
-    implementation 'io.airbridge:sdk-android:2.21.1' // Assets/Airbridge/Plugins/Editor/Dependencies.xml:8
 // Android Resolver Dependencies End
 **DEPS**}
 

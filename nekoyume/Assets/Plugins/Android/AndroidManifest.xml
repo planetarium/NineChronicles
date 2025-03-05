@@ -29,19 +29,6 @@
         <data android:scheme="ninechroniclesmobile" />
       </intent-filter>
     </activity>
-    <meta-data android:name="co.ab180.airbridge.sdk.app_name" android:value="airbridge==ninechronicles" />
-    <meta-data android:name="co.ab180.airbridge.sdk.app_token" android:value="airbridge==c476471c40544e479b367e2ddee1e587" />
-    <meta-data android:name="co.ab180.airbridge.sdk.sdk_signature_secret_id" android:value="airbridge==" />
-    <meta-data android:name="co.ab180.airbridge.sdk.sdk_signature_secret" android:value="airbridge==" />
-    <meta-data android:name="co.ab180.airbridge.sdk.log_level" android:value="5" />
-    <meta-data android:name="co.ab180.airbridge.sdk.custom_domain" android:value="" />
-    <meta-data android:name="co.ab180.airbridge.sdk.session_timeout_seconds" android:value="300" />
-    <meta-data android:name="co.ab180.airbridge.sdk.user_info_hash_enabled" android:value="true" />
-    <meta-data android:name="co.ab180.airbridge.sdk.location_collection_enabled" android:value="true" />
-    <meta-data android:name="co.ab180.airbridge.sdk.track_airbridge_link_only" android:value="false" />
-    <meta-data android:name="co.ab180.airbridge.sdk.auto_start_tracking_enabled" android:value="true" />
-    <meta-data android:name="co.ab180.airbridge.sdk.facebook_deferred_app_link_enabled" android:value="true" />
-    <provider android:name="co.ab180.airbridge.unity.AirbridgeContentProvider" android:authorities="com.planetariumlabs.ninechroniclesmobile.co.ab180.airbridge.unity.AirbridgeContentProvider" android:exported="false" />
     <!--This was added by the AnalyticsFixPropertyRemover. If you want to prevent the generation of this, have "AnalyticsFixPropertyRemover" included in a comment-->
     <property tools:node="removeAll" />
   </application>
