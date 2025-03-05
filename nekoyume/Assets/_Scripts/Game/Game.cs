@@ -771,7 +771,7 @@ namespace Nekoyume.Game
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
             IDictionary<string, string> csvDict;
             // TODO delete GetSheetsAsync backward compatibility
-            if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
+            if (string.IsNullOrEmpty(_commandLineOptions.SheetBucketUrl))
             {
                 var map = csvAssets.ToDictionary(
                     asset => Addresses.TableSheet.Derive(asset.name),
@@ -798,7 +798,7 @@ namespace Nekoyume.Game
                 var planetId = CurrentPlanetId!.Value;
 
                 // Download and save sheets for the current planet
-                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBucketUrl, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
