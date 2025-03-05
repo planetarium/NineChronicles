@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet.Action.State;
@@ -113,7 +114,20 @@ namespace Nekoyume.Blockchain
                     return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
                 }
 
-                var sheets = await Game.Game.DownloadSheet(Game.Game.instance.CurrentPlanetId!.Value, Game.Game.instance.CommandLineOptions.SheetBuckUrl, sheetNames);
+                IDictionary<string, string> sheets;
+                if (string.IsNullOrEmpty(Game.Game.instance.CommandLineOptions.SheetBucketUrl))
+                {
+                    var map = sheetNames.ToDictionary(i => Addresses.TableSheet.Derive(i), i => i);
+                    var dict = await Game.Game.instance.Agent.GetSheetsAsync(map.Keys);
+                    sheets = dict.ToDictionary(
+                        pair => map[pair.Key],
+                        // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
+                        pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+                }
+                else
+                {
+                    sheets = await Game.Game.DownloadSheet(Game.Game.instance.CurrentPlanetId!.Value, Game.Game.instance.CommandLineOptions.SheetBucketUrl, sheetNames);
+                }
                 var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                 stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 var stakeRegularRewardSheet = new StakeRegularRewardSheet();

@@ -845,7 +845,21 @@ namespace Nekoyume.Game
                         stakeStateV2.Contract.StakeRegularRewardSheetTableName,
                     };
                 }
-                var sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBuckUrl, sheetNames);
+
+                IDictionary<string, string> sheets;
+                if (string.IsNullOrEmpty(CommandLineOptions.SheetBucketUrl))
+                {
+                    var map = sheetNames.ToDictionary(i => Addresses.TableSheet.Derive(i), i => i);
+                    var dict = await Agent.GetSheetsAsync(map.Keys);
+                    sheets = dict.ToDictionary(
+                        pair => map[pair.Key],
+                        // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
+                        pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+                }
+                else
+                {
+                    sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBucketUrl, sheetNames);
+                }
                 stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
             }
