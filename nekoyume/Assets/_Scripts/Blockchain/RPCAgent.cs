@@ -880,6 +880,7 @@ namespace Nekoyume.Blockchain
 
             if (currencyTask.IsFaulted)
             {
+                NcDebug.LogError($"[RPCAgent] CoJoin()... Failed to get currency. {currencyTask.Exception}");
                 callback?.Invoke(false);
                 yield break;
             }
