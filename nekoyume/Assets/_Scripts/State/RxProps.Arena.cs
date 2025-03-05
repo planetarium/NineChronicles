@@ -177,9 +177,6 @@ namespace Nekoyume.State
             // 아바타 최초 아레나등록
             await PostUserAsync();
 
-            // 로비화면에서 티켓정보를 보여주기 위해 인포 초기화
-            await ArenaInfo.UpdateAsync(_agent.BlockTipStateRootHash);
-
             // 중복 구독을 방지
             if (!_hasSubscribedArenaTicketProgress)
             {
