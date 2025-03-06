@@ -106,13 +106,25 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var currentItem = contributeRow.Rewards[i];
                 if (!string.IsNullOrEmpty(currentItem.Ticker))
                 {
+                    var amount = (decimal)currentItem.Count * (decimal)ratio;
+                    if (amount <= 0)
+                    {
+                        continue;
+                    }
+
                     rewardItems[i].gameObject.SetActive(true);
-                    rewardItems[i].ItemViewSetCurrencyData(currentItem.Ticker, (decimal)currentItem.Count * (decimal)ratio);
+                    rewardItems[i].ItemViewSetCurrencyData(currentItem.Ticker, amount);
                 }
                 else if (currentItem.ItemId > 0)
                 {
+                    var amount = (int)((decimal)currentItem.Count * (decimal)ratio);
+                    if (amount <= 0)
+                    {
+                        continue;
+                    }
+
                     rewardItems[i].gameObject.SetActive(true);
-                    rewardItems[i].ItemViewSetItemData(currentItem.ItemId, (int)((decimal)currentItem.Count * (decimal)ratio));
+                    rewardItems[i].ItemViewSetItemData(currentItem.ItemId, amount);
                 }
             }
         }
