@@ -85,6 +85,8 @@ namespace Nekoyume.UI
         private ConditionalButton _refreshBtn;
         [SerializeField]
         private TextMeshProUGUI _refeshCountText;
+        [SerializeField]
+        private TextMeshProUGUI _roundText;
 
         private SeasonResponse _seasonData;
         private List<AvailableOpponentResponse> _boundedData;
@@ -264,6 +266,9 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
+
+            var currentRoundIndex = _seasonData.Rounds.FindIndex(r => r.StartBlockIndex <= blockIndex && blockIndex <= r.EndBlockIndex);
+            _roundText.text = L10nManager.Localize("UI_ARENA_ROUND_TEXT", currentRoundIndex + 1, _seasonData.Rounds.Count);
 
             // 리스트 갱신요청 풀링하는동안에는 버튼갱신하지않도록 예외처리
             if (!_loadingObj.activeSelf)
