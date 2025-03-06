@@ -821,30 +821,32 @@ namespace Nekoyume.Game
             StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet;
             StakeRegularRewardSheet stakeRegularRewardSheet;
             Model.Stake.StakeState? stakeState = null;
+            List<string> sheetNames;
+            if (!StakeStateUtilsForClient.TryMigrate(
+                stakeStateIValue,
+                States.Instance.GameConfigState,
+                out var stakeStateV2))
+            {
+                sheetNames = new List<string>
+                {
+                    TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
+                    TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
+                };
+            }
+            else
+            {
+                sheetNames = new List<string>
+                {
+                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
+                    stakeStateV2.Contract.StakeRegularRewardSheetTableName,
+                };
+                stakeState = stakeStateV2;
+            }
+
             if (Agent is RPCAgent)
             {
                 stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                 stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                List<string> sheetNames;
-                if (!StakeStateUtilsForClient.TryMigrate(
-                    stakeStateIValue,
-                    States.Instance.GameConfigState,
-                    out var stakeStateV2))
-                {
-                    sheetNames = new List<string>
-                    {
-                        TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
-                        TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
-                    };
-                }
-                else
-                {
-                    sheetNames = new List<string>
-                    {
-                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
-                        stakeStateV2.Contract.StakeRegularRewardSheetTableName,
-                    };
-                }
 
                 IDictionary<string, string> sheets;
                 if (string.IsNullOrEmpty(CommandLineOptions.SheetBucketUrl))
