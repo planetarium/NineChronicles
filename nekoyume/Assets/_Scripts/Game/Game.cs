@@ -771,7 +771,7 @@ namespace Nekoyume.Game
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
             IDictionary<string, string> csvDict;
             // TODO delete GetSheetsAsync backward compatibility
-            if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
+            if (string.IsNullOrEmpty(_commandLineOptions.SheetBucketUrl))
             {
                 var map = csvAssets.ToDictionary(
                     asset => Addresses.TableSheet.Derive(asset.name),
@@ -798,7 +798,7 @@ namespace Nekoyume.Game
                 var planetId = CurrentPlanetId!.Value;
 
                 // Download and save sheets for the current planet
-                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBucketUrl, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
@@ -821,31 +821,47 @@ namespace Nekoyume.Game
             StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet;
             StakeRegularRewardSheet stakeRegularRewardSheet;
             Model.Stake.StakeState? stakeState = null;
+            List<string> sheetNames;
+            if (!StakeStateUtilsForClient.TryMigrate(
+                stakeStateIValue,
+                States.Instance.GameConfigState,
+                out var stakeStateV2))
+            {
+                sheetNames = new List<string>
+                {
+                    TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
+                    TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
+                };
+            }
+            else
+            {
+                sheetNames = new List<string>
+                {
+                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
+                    stakeStateV2.Contract.StakeRegularRewardSheetTableName,
+                };
+                stakeState = stakeStateV2;
+            }
+
             if (Agent is RPCAgent)
             {
                 stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                 stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                List<string> sheetNames;
-                if (!StakeStateUtilsForClient.TryMigrate(
-                    stakeStateIValue,
-                    States.Instance.GameConfigState,
-                    out var stakeStateV2))
+
+                IDictionary<string, string> sheets;
+                if (string.IsNullOrEmpty(CommandLineOptions.SheetBucketUrl))
                 {
-                    sheetNames = new List<string>
-                    {
-                        TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
-                        TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
-                    };
+                    var map = sheetNames.ToDictionary(i => Addresses.TableSheet.Derive(i), i => i);
+                    var dict = await Agent.GetSheetsAsync(map.Keys);
+                    sheets = dict.ToDictionary(
+                        pair => map[pair.Key],
+                        // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
+                        pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
                 }
                 else
                 {
-                    sheetNames = new List<string>
-                    {
-                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
-                        stakeStateV2.Contract.StakeRegularRewardSheetTableName,
-                    };
+                    sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBucketUrl, sheetNames);
                 }
-                var sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBuckUrl, sheetNames);
                 stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
             }
