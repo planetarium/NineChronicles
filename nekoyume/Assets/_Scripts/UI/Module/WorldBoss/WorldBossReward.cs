@@ -108,6 +108,12 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
                 foreach (var notification in notificationsSeasonReward)
                 {
+                    if (preRaiderState is null)
+                    {
+                        notification.SetActive(false);
+                        return;
+                    }
+
                     notification.SetActive(!isOnSeason && !preRaiderState.HasClaimedReward);
                 }
             });
