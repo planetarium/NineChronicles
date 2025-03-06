@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -113,7 +114,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 if (!string.IsNullOrEmpty(currentItem.Ticker))
                 {
                     var amount = (decimal)currentItem.Count * (decimal)ratio;
-                    if (amount <= 0)
+                    if (Math.Floor(amount) <= 0)
                     {
                         continue;
                     }
