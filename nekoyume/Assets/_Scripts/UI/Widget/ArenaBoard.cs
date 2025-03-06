@@ -267,8 +267,21 @@ namespace Nekoyume.UI
             UpdateBillboard();
             UpdateScrolls();
 
-            var currentRoundIndex = _seasonData.Rounds.FindIndex(r => r.StartBlockIndex <= blockIndex && blockIndex <= r.EndBlockIndex);
-            _roundText.text = L10nManager.Localize("UI_ARENA_ROUND_TEXT", currentRoundIndex + 1, _seasonData.Rounds.Count);
+            if (_seasonData != null)
+            {
+                int currentRoundIndex = _seasonData.Rounds.FindIndex(r => r.StartBlockIndex <= blockIndex && blockIndex <= r.EndBlockIndex);
+                if (currentRoundIndex < 0)
+                {
+                    NcDebug.LogError($"블록 인덱스: {blockIndex}에 대한 현재 라운드를 찾을 수 없습니다. " +
+                                    $"시즌 ID: {_seasonData.Id}, 라운드 수: {_seasonData.Rounds.Count}. " +
+                                    "시즌 데이터와 블록 인덱스의 유효성을 확인하세요.");
+                    _roundText.text = string.Empty;
+                }
+                else
+                {
+                    _roundText.text = L10nManager.Localize("UI_ARENA_ROUND_TEXT", currentRoundIndex + 1, _seasonData.Rounds.Count);
+                }
+            }
 
             // 리스트 갱신요청 풀링하는동안에는 버튼갱신하지않도록 예외처리
             if (!_loadingObj.activeSelf)
