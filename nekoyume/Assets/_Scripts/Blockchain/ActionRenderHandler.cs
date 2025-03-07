@@ -3489,11 +3489,6 @@ namespace Nekoyume.Blockchain
                     NotificationCell.NotificationType.Alert);
                 return;
             }
-            LocalLayerModifier.AddNewMail(prepared.avatarState, prepared.mail.id);
-            OneLineSystem.Push(
-                MailType.System,
-                L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED"),
-                NotificationCell.NotificationType.Notification);
 
             var rewards = new List<MailReward>();
             if (worldBossRewardMail.FungibleAssetValues is not null)
