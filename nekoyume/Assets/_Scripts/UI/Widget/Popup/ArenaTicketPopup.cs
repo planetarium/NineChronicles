@@ -173,7 +173,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var ticketMaxCount = RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null
+            var ticketMaxCount = RxProps.ArenaInfo != null && RxProps.ArenaInfo.HasValue
                 ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
             var ticketCount = ticketMaxCount > 0 ? 1 : 0;
