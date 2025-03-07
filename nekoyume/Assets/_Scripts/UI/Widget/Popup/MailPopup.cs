@@ -1012,14 +1012,9 @@ namespace Nekoyume.UI
             NcDebug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
         }
 
+        [Obsolete]
         public void Read(WorldBossRewardMail worldBossRewardMail)
         {
-            var game = Game.Game.instance;
-            worldBossRewardMail.New = false;
-            var avatarAddress = game.States.CurrentAvatarState.address;
-            LocalLayerModifier.RemoveNewMail(avatarAddress, worldBossRewardMail.id);
-            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
-            NcDebug.Log($"[{nameof(WorldBossRewardMail)}] ItemCount: {worldBossRewardMail.id}");
         }
 
         [Obsolete]
