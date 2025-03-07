@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -59,19 +60,21 @@ namespace Nekoyume.UI.Module.WorldBoss
             var tableSheets = Game.Game.instance.TableSheets;
             var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
             var contributeRow = contributeSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
-            if (contributeRow == null)
+            if (contributeRow == null || worldBossState == null)
             {
-                NcDebug.LogError($"Not found WorldBossContributionRewardSheet for bossId: {raidRow.BossId}");
+                NcDebug.LogError($"Not found WorldBoss Data: {raidRow.BossId}");
                 return;
             }
             rewardItem.Set(contributeRow);
+
+            var worldBossTotalDamage = worldBossState.TotalDamage;
+            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
 
             if (raider == null)
             {
                 claimButton.SetCondition(() => false);
                 claimButton.UpdateObjects();
 
-                worldBossTotalDamageText.text = "0";
                 userTotalDamageText.text = "0 (0%)";
 
                 foreach (var rewardItemView in rewardItems)
@@ -85,10 +88,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             claimButton.SetCondition(() => canClaim);
             claimButton.UpdateObjects();
 
-            var worldBossTotalDamage = worldBossState?.TotalDamage ?? 0;
-            var userTotalDamage = raider?.TotalScore ?? 0;
-
-            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
+            var userTotalDamage = raider.TotalScore;
             float ratio = 0;
             if (worldBossTotalDamage > 0)
             {
@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 if (!string.IsNullOrEmpty(currentItem.Ticker))
                 {
                     var amount = (decimal)currentItem.Count * (decimal)ratio;
-                    if (amount <= 0)
+                    if (Math.Floor(amount) <= 0)
                     {
                         continue;
                     }
