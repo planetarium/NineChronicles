@@ -67,9 +67,8 @@ namespace Nekoyume.UI.Module
             switch (season)
             {
                 case Season.Arena:
-                    var arenaSheet = Game.Game.instance.TableSheets.ArenaSheet;
-                    var arenaRoundData = arenaSheet.GetRoundByBlockIndex(blockIndex);
-                    inSeason = arenaRoundData.ArenaType == ArenaType.Season &&
+                    var seasonData = RxProps.GetSeasonResponseByBlockIndex(blockIndex);
+                    inSeason = seasonData?.ArenaType == GeneratedApiNamespace.ArenaServiceClient.ArenaType.SEASON &&
                         !Game.LiveAsset.GameConfig.IsKoreanBuild;
                     break;
                 case Season.WorldBoss:

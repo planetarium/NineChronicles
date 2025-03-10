@@ -400,9 +400,6 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
 
-            var evt = new AirbridgeEvent("PatrolReward_Request_Claim_Reward");
-            AirbridgeUnity.TrackEvent(evt);
-
             PatrolReward.ClaimReward(null);
         }
 

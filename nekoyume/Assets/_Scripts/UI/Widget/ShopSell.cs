@@ -31,7 +31,7 @@ namespace Nekoyume.UI
     public class ShopSell : Widget
     {
         private const int APCost = 5;
-        
+
         [SerializeField]
         private Inventory inventory;
 
@@ -69,7 +69,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
                     CostType.ActionPoint, APCost,
-                    state => SubscribeConditionalButtonForChargeAp(state, 
+                    state => SubscribeConditionalButtonForChargeAp(state,
                         "UI_SHOP_UPDATESELLALL",
                         SubscribeReRegisterProduct));
             });
@@ -80,8 +80,8 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
                     CostType.ActionPoint, APCost,
-                    state => SubscribeConditionalButtonForChargeAp(state, 
-                        "UI_SHOP_CANCELLATIONALL", 
+                    state => SubscribeConditionalButtonForChargeAp(state,
+                        "UI_SHOP_CANCELLATIONALL",
                         SubscribeCancelProductRegistration));
             });
 
@@ -120,7 +120,7 @@ namespace Nekoyume.UI
                 .Subscribe(tuple =>
                 {
                     var (state, data) = tuple;
-                    SubscribeConditionalButtonForChargeAp(state, "UI_SELL", 
+                    SubscribeConditionalButtonForChargeAp(state, "UI_SELL",
                         chargeAp =>
                     {
                         data.ChargeAp.Value = chargeAp;
@@ -177,7 +177,7 @@ namespace Nekoyume.UI
             var inventory = States.Instance.CurrentAvatarState.inventory;
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             var apStoneCount = inventory.GetUsableItemCount(CostType.ApPotion, blockIndex);
-            
+
             if (model.ItemBase is not null)
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
@@ -190,7 +190,7 @@ namespace Nekoyume.UI
                     },
                     state =>
                     {
-                        SubscribeConditionalButtonForChargeAp(state, 
+                        SubscribeConditionalButtonForChargeAp(state,
                             "UI_REREGISTER",
                             chargeAp => ShowRetrievePopup(model, chargeAp));
                     },
@@ -199,10 +199,10 @@ namespace Nekoyume.UI
             else
             {
                 Find<FungibleAssetTooltip>().Show(model, apStoneCount,
-                    state => SubscribeConditionalButtonForChargeAp(state, 
+                    state => SubscribeConditionalButtonForChargeAp(state,
                         "UI_RETRIEVE",
                         chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
-                    state => SubscribeConditionalButtonForChargeAp(state, 
+                    state => SubscribeConditionalButtonForChargeAp(state,
                         "UI_REREGISTER",
                         chargeAp => ShowRetrievePopup(model, chargeAp)),
                     view.ClearSelectedItem);
@@ -417,12 +417,6 @@ namespace Nekoyume.UI
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
-
-            var evt = new AirbridgeEvent("ReRegisterProduct_All");
-            evt.SetValue(reRegisterInfos.Count);
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
 
             string message;
             if (reRegisterInfos.Count() > 1)
@@ -734,11 +728,6 @@ namespace Nekoyume.UI
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
-
-            var evt = new AirbridgeEvent("ReRegisterProduct");
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
-            AirbridgeUnity.TrackEvent(evt);
         }
 
         private static (IProductInfo, IRegisterInfo) GetReRegisterInfo(Guid productId, int newPrice)

@@ -238,9 +238,16 @@ namespace Nekoyume
             _disposables.DisposeAllAndClear();
             gameObject.SetActive(true);
             ClearItem();
+
             ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
             CountText.text = ((BigInteger)amount).ToCurrencyNotation();
             GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(ticker));
+
+            touchHandler.OnClick.Subscribe(_ =>
+            {
+                var tooltip = Widget.Find<FungibleAssetTooltip>();
+                tooltip.Show(ticker, CountText.text, null);
+            }).AddTo(_disposables);
         }
 
         public bool ItemViewSetCurrencyData(int favId, decimal amount)

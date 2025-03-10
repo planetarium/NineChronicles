@@ -39,6 +39,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            challengeButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"));
             challengeButton.OnClickSubject.Subscribe(_ =>
             {
                 Find<AdventureBossPreparation>()

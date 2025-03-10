@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.Model.EnumType;
-using Nekoyume.TableData;
+using GeneratedApiNamespace.ArenaServiceClient;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.Arena.Join
@@ -80,7 +79,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         1,
-                        ArenaType.OffSeason,
+                        ArenaType.OFF_SEASON,
                         0,
                         100,
                         0,
@@ -97,7 +96,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         2,
-                        ArenaType.Season,
+                        ArenaType.SEASON,
                         101,
                         200,
                         0,
@@ -116,7 +115,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         3,
-                        ArenaType.OffSeason,
+                        ArenaType.OFF_SEASON,
                         201,
                         300,
                         0,
@@ -133,7 +132,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         4,
-                        ArenaType.Season,
+                        ArenaType.SEASON,
                         301,
                         400,
                         0,
@@ -152,7 +151,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         5,
-                        ArenaType.OffSeason,
+                        ArenaType.OFF_SEASON,
                         401,
                         500,
                         0,
@@ -169,7 +168,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         6,
-                        ArenaType.Season,
+                        ArenaType.SEASON,
                         501,
                         600,
                         0,
@@ -188,7 +187,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         7,
-                        ArenaType.OffSeason,
+                        ArenaType.OFF_SEASON,
                         601,
                         700,
                         0,
@@ -205,7 +204,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     RoundDataBridge = new RoundDataBridge(
                         1,
                         8,
-                        ArenaType.Championship,
+                        ArenaType.CHAMPIONSHIP,
                         701,
                         800,
                         8,

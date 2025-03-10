@@ -133,11 +133,6 @@ namespace Nekoyume.Blockchain
                             });
 
                         var category = $"ActionRender_{type}";
-                        var evt = new AirbridgeEvent(category);
-                        evt.SetValue(elapsed);
-                        evt.AddCustomAttribute("agent-address", agentState.address.ToString());
-                        evt.AddCustomAttribute("avatar-address", currentAvatarState.address.ToString());
-                        AirbridgeUnity.TrackEvent(evt);
                     }
 
                     var actionTypeName = actionType.TypeIdentifier.Inspect();
@@ -208,6 +203,7 @@ namespace Nekoyume.Blockchain
             // World Boss
             Raid();
             ClaimRaidReward();
+            ClaimWorldBossReward();
 
             // Rune
             RuneEnhancement();
@@ -707,6 +703,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareClaimRaidReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimRaidReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimWorldBossReward()
+        {
+            _actionRenderer.EveryRender<ClaimWorldBossReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareClaimWorldBossReward)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimWorldBossReward)
                 .AddTo(_disposables);
         }
 
@@ -2281,13 +2289,6 @@ namespace Nekoyume.Blockchain
                             States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                     });
-
-                var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
-                evt.SetValue(eval.Action.StageBuffId.Value);
-                evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
-                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
             }
 
             BattleRenderer.Instance.PrepareStage(log);
@@ -3144,10 +3145,6 @@ namespace Nekoyume.Blockchain
             ArenaPlayerDigest? enemyDigest = null;
             CollectionState myCollectionState = null;
             CollectionState enemyCollectionState = null;
-
-            // TODO: 아레나 서비스에서 점수 조회 기능 추가 후 적용
-            // 시점 변경이 필요할듯.
-            var previousMyScore = ArenaScore.ArenaScoreDefault;
             var outMyScore = ArenaScore.ArenaScoreDefault;
 
             var prepareObserve = UniTask.RunOnThreadPool(() =>
@@ -3173,14 +3170,6 @@ namespace Nekoyume.Blockchain
 
             prepareObserve.Subscribe(_ =>
             {
-                // TODO: 아레나 서비스
-                // var hasMedalReward =
-                //     tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
-                //     row.ArenaType != ArenaType.OffSeason;
-                // var medalItem = ItemFactory.CreateMaterial(
-                //     tableSheets.MaterialItemSheet,
-                //     row.MedalId);
-
                 var random = new LocalRandom(eval.RandomSeed);
                 var winCount = 0;
                 var defeatCount = 0;
@@ -3457,6 +3446,97 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+        }
+
+        private (ActionEvaluation<ClaimWorldBossReward>, WorldBossRewardMail, AvatarState) PrepareClaimWorldBossReward(
+            ActionEvaluation<ClaimWorldBossReward> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+
+            var mailBox = avatarState.mailBox;
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
+            var mail = mailBox.OfType<WorldBossRewardMail>()
+                .First(r => r.blockIndex == eval.BlockIndex);
+
+            UpdateCurrentAvatarRuneStoneBalance(eval);
+            UpdateCrystalBalance(eval);
+            UpdateCurrentAvatarInventory(eval);
+
+            return (eval, mail, avatarState);
+        }
+
+        private static void ResponseClaimWorldBossReward((ActionEvaluation<ClaimWorldBossReward> eval, WorldBossRewardMail mail, AvatarState avatarState) prepared)
+        {
+            var eval = prepared.eval;
+            var worldBossRewardMail = prepared.mail;
+
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress).Forget();
+
+            var worldBossReward = Widget.Find<WorldBossDetail>();
+            worldBossReward.OnRenderSeasonReward();
+
+            if (eval.Exception is not null)
+            {
+                NcDebug.Log(eval.Exception.Message);
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED_FAILED"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+            LocalLayerModifier.AddNewMail(prepared.avatarState, prepared.mail.id);
+            OneLineSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED"),
+                NotificationCell.NotificationType.Notification);
+
+            var rewards = new List<MailReward>();
+            if (worldBossRewardMail.FungibleAssetValues is not null)
+            {
+                rewards.AddRange(
+                    worldBossRewardMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav, fav.MajorUnit)));
+            }
+
+            if (worldBossRewardMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                foreach (var (fungibleId, count) in worldBossRewardMail.Items)
+                {
+                    var row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    {
+                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                        rewards.Add(new MailReward(item, 1));
+                        continue;
+                    }
+
+                    NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
+                }
+            }
+
+            Widget.Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
         }
 
         private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone, AllRuneState previousState)

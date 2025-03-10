@@ -25,6 +25,11 @@ namespace Nekoyume
             return Path.Combine(PersistentDataPath, fileName);
         }
 
+        public static string GetPersistentDataDirectoryPath(string directoryName)
+        {
+            return Path.Combine(PersistentDataPath, directoryName);
+        }
+
         [RuntimeInitializeOnLoadMethod]
         private static void OnRuntimeMethodLoad()
         {

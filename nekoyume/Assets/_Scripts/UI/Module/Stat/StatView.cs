@@ -39,6 +39,7 @@ namespace Nekoyume.UI.Module
         {
             statTypeText.enabled = false;
             valueText.enabled = false;
+            gameObject.SetActive(false);
         }
     }
 }

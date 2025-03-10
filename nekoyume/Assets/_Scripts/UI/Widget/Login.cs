@@ -68,9 +68,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             Analyzer.Instance.Track("Unity/LoginImpression");
 
-            var evt = new AirbridgeEvent("Login_Impression");
-            AirbridgeUnity.TrackEvent(evt);
-
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];

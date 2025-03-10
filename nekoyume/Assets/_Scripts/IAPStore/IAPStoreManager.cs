@@ -497,12 +497,6 @@ namespace Nekoyume.IAPStore
                 ("result", p.reason.ToString()),
                 ("message", p.message.ToString()));
 
-            var evt = new AirbridgeEvent("IAP_Failed");
-            evt.SetAction(p.productId);
-            evt.SetLabel(p.reason.ToString());
-            evt.AddCustomAttribute("product-id", p.productId);
-            AirbridgeUnity.TrackEvent(evt);
-
             Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
             Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
 
@@ -732,15 +726,6 @@ namespace Nekoyume.IAPStore
                             ("product-id", e.purchasedProduct.definition.id),
                             ("result", "Complete"),
                             ("transaction-id", e.purchasedProduct.transactionID));
-
-                        var evt = new AirbridgeEvent("IAP");
-                        evt.SetAction(e.purchasedProduct.definition.id);
-                        evt.SetLabel("iap");
-                        evt.SetCurrency(e.purchasedProduct.metadata.isoCurrencyCode);
-                        evt.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
-                        evt.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
-                        evt.SetTransactionId(e.purchasedProduct.transactionID);
-                        AirbridgeUnity.TrackEvent(evt);
 
                         if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var product) && product.Mileage > 0)
                         {

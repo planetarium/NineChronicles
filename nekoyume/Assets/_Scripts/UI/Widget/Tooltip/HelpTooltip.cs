@@ -163,10 +163,6 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Click HelpPopup", props);
 
-            var evt = new AirbridgeEvent("Click_Help_Popup");
-            evt.SetValue(id);
-            AirbridgeUnity.TrackEvent(evt);
-
 #pragma warning disable 618
             Instance.Show();
 #pragma warning restore 618

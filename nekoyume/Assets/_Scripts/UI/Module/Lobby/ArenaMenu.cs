@@ -53,8 +53,16 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateTicket(RxProps.TicketProgress ticketProgress)
         {
-            _ticketCountGO.SetActive(ticketProgress.currentTickets > 0);
-            _ticketCount.text = ticketProgress.currentTickets.ToString(CultureInfo.InvariantCulture);
+            if (!RxProps.ArenaInfo.HasValue || RxProps.ArenaInfo.Value == null)
+            {
+                _ticketCountGO.SetActive(true);
+                _ticketCount.text = "!";
+            }
+            else
+            {
+                _ticketCountGO.SetActive(ticketProgress.currentTickets > 0);
+                _ticketCount.text = ticketProgress.currentTickets.ToString(CultureInfo.InvariantCulture);
+            }
 
             long remainingBlock = ticketProgress.totalBlockRange - ticketProgress.progressedBlockRange;
             _ticketResetTime.SetTimeBlock($"{remainingBlock:#,0}", remainingBlock.BlockRangeToTimeSpanString());

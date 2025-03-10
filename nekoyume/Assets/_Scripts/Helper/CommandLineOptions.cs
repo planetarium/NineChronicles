@@ -120,6 +120,8 @@ namespace Nekoyume.Helper
 
         private bool _mixpanelDebugWarning;
 
+        private string _sheetBucketUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -442,6 +444,7 @@ namespace Nekoyume.Helper
         /// <summary>
         /// WorldBoss Host.
         /// </summary>
+        [Obsolete]
         [Option("on-boarding-host", Required = false, HelpText = "on boarding host")]
         public string OnBoardingHost
         {
@@ -641,6 +644,16 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("sheet-bucket-url", Required = false, HelpText = "table sheets bucket url")]
+        public string SheetBucketUrl
+        {
+            get => _sheetBucketUrl;
+            set
+            {
+                _sheetBucketUrl = value;
+                Empty = false;
+            }
+        }
 
         public override string ToString()
         {

@@ -98,21 +98,6 @@ namespace Nekoyume.UI
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
-        public void Show(IReadOnlyList<SeasonRewards> rewards)
-        {
-            base.Show();
-            titleText.text = L10nManager.Localize("UI_BOSS_SEASON_REWARDS");
-            UpdateRewardItems(rewards);
-            graphicAlphaTweener.Play();
-            PlayEffects();
-            if (_coCloseCoroutine != null)
-            {
-                StopCoroutine(_coCloseCoroutine);
-            }
-
-            _coCloseCoroutine = StartCoroutine(CoClose());
-        }
-
         public override void Close(bool ignoreCloseAnimation = false)
         {
             StopEffects();
@@ -212,44 +197,6 @@ namespace Nekoyume.UI
                 runes[index].Object.SetActive(true);
                 runes[index].Count.text = $"{count:#,0}";
                 runes[index].Icon.sprite = SpriteHelper.GetItemIcon(material.Id);
-
-                index++;
-            }
-        }
-
-        private void UpdateRewardItems(IReadOnlyList<SeasonRewards> rewards)
-        {
-            var crystalReward = rewards
-                .Where(x => x.ticker == "CRYSTAL")
-                .Sum(x => Convert.ToInt32(x.amount));
-            crystalCountText.text = $"{crystalReward:#,0}";
-
-            foreach (var rune in runes)
-            {
-                rune.Object.SetActive(false);
-            }
-
-            var totalRuneRewards = new Dictionary<string, int>();
-            foreach (var runeReward in rewards.Where(x => x.ticker != "CRYSTAL"))
-            {
-                var key = runeReward.ticker;
-                if (!totalRuneRewards.ContainsKey(key))
-                {
-                    totalRuneRewards.Add(key, 0);
-                }
-
-                totalRuneRewards[key] += runeReward.amount;
-            }
-
-            var index = 0;
-            foreach (var (ticker, count) in totalRuneRewards)
-            {
-                runes[index].Object.SetActive(true);
-                runes[index].Count.text = $"{count:#,0}";
-                if (RuneFrontHelper.TryGetRuneStoneIcon(ticker, out var icon))
-                {
-                    runes[index].Icon.sprite = icon;
-                }
 
                 index++;
             }
