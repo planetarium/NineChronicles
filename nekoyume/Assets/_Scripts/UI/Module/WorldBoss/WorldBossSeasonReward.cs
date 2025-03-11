@@ -84,27 +84,28 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
+            var userTotalDamage = raider.TotalScore;
+
+            if (userTotalDamage == 0 || worldBossTotalDamage == 0)
+            {
+                userTotalDamageText.text = $"{userTotalDamage:N0} (0%)";
+                return;
+            }
+
             var canClaim = !isOnSeason && !raider.HasClaimedReward;
             claimButton.SetCondition(() => canClaim);
             claimButton.UpdateObjects();
 
-            var userTotalDamage = raider.TotalScore;
             float ratio = 0;
             if (worldBossTotalDamage > 0)
             {
                 ratio = userTotalDamage / (float)worldBossTotalDamage;
             }
-
             userTotalDamageText.text = $"{userTotalDamage:N0} ({ratio:0.####%})";
 
             foreach (var rewardItemView in rewardItems)
             {
                 rewardItemView.gameObject.SetActive(false);
-            }
-
-            if (userTotalDamage == 0)
-            {
-                return;
             }
 
             for (var i = 0; i < contributeRow.Rewards.Count; ++i)
