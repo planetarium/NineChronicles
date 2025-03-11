@@ -173,12 +173,13 @@ namespace Nekoyume.UI
         public void Show()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var ticketCount = RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null
+            var ticketMaxCount = RxProps.ArenaInfo != null && RxProps.ArenaInfo.HasValue
                 ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
+            var ticketCount = ticketMaxCount > 0 ? 1 : 0;
             willBuyTicketText.text = ticketCount.ToString();
             _ticketCountToBuy.SetValueAndForceNotify(ticketCount);
-            ticketSlider.Set(0, ticketCount, ticketCount > 0 ? 1 : 0, ticketCount, 1, x => _ticketCountToBuy.Value = x);
+            ticketSlider.Set(0, ticketMaxCount, ticketCount, ticketMaxCount, 1, x => _ticketCountToBuy.Value = x);
             base.Show();
         }
     }

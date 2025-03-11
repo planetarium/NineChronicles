@@ -771,7 +771,7 @@ namespace Nekoyume.Game
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
             IDictionary<string, string> csvDict;
             // TODO delete GetSheetsAsync backward compatibility
-            if (string.IsNullOrEmpty(_commandLineOptions.SheetBuckUrl))
+            if (string.IsNullOrEmpty(_commandLineOptions.SheetBucketUrl))
             {
                 var map = csvAssets.ToDictionary(
                     asset => Addresses.TableSheet.Derive(asset.name),
@@ -798,7 +798,7 @@ namespace Nekoyume.Game
                 var planetId = CurrentPlanetId!.Value;
 
                 // Download and save sheets for the current planet
-                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBuckUrl, sheetNames);
+                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBucketUrl, sheetNames);
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
@@ -821,31 +821,47 @@ namespace Nekoyume.Game
             StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet;
             StakeRegularRewardSheet stakeRegularRewardSheet;
             Model.Stake.StakeState? stakeState = null;
+            List<string> sheetNames;
+            if (!StakeStateUtilsForClient.TryMigrate(
+                stakeStateIValue,
+                States.Instance.GameConfigState,
+                out var stakeStateV2))
+            {
+                sheetNames = new List<string>
+                {
+                    TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
+                    TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
+                };
+            }
+            else
+            {
+                sheetNames = new List<string>
+                {
+                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
+                    stakeStateV2.Contract.StakeRegularRewardSheetTableName,
+                };
+                stakeState = stakeStateV2;
+            }
+
             if (Agent is RPCAgent)
             {
                 stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                 stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                List<string> sheetNames;
-                if (!StakeStateUtilsForClient.TryMigrate(
-                    stakeStateIValue,
-                    States.Instance.GameConfigState,
-                    out var stakeStateV2))
+
+                IDictionary<string, string> sheets;
+                if (string.IsNullOrEmpty(CommandLineOptions.SheetBucketUrl))
                 {
-                    sheetNames = new List<string>
-                    {
-                        TableSheets.StakePolicySheet.StakeRegularFixedRewardSheetValue,
-                        TableSheets.StakePolicySheet.StakeRegularRewardSheetValue,
-                    };
+                    var map = sheetNames.ToDictionary(i => Addresses.TableSheet.Derive(i), i => i);
+                    var dict = await Agent.GetSheetsAsync(map.Keys);
+                    sheets = dict.ToDictionary(
+                        pair => map[pair.Key],
+                        // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
+                        pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
                 }
                 else
                 {
-                    sheetNames = new List<string>
-                    {
-                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName,
-                        stakeStateV2.Contract.StakeRegularRewardSheetTableName,
-                    };
+                    sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBucketUrl, sheetNames);
                 }
-                var sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBuckUrl, sheetNames);
                 stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
             }
@@ -1599,6 +1615,9 @@ namespace Nekoyume.Game
             const int maxRetries = 3;
             const float delayBetweenRetries = 2.0f;
 
+            // Create a cancellation token source for the entire operation
+            using var cts = new CancellationTokenSource();
+
             // Create a list to hold all download tasks
             var downloadTasks = sheetNames.Select(async sheetName =>
             {
@@ -1607,51 +1626,87 @@ namespace Nekoyume.Game
                 bool success = false;
 
                 // Retry request if network request failed.
-                for (int attempt = 0; attempt < maxRetries && !success; attempt++)
+                for (int attempt = 0; attempt < maxRetries && !success && !cts.Token.IsCancellationRequested; attempt++)
                 {
                     using (UnityWebRequest request = UnityWebRequest.Get(sheetUrl))
                     {
-                        await request.SendWebRequest();
-
-                        if (request.result == UnityWebRequest.Result.Success)
+                        try
                         {
-                            var sheetData = request.downloadHandler.text;
-                            // Store the downloaded text in the dictionary with the sheet name as the key. without save sheet data
-                            downloadedSheets.TryAdd(sheetName, sheetData);
-                            try
+                            // UnityWebRequest를 UniTask로 변환
+                            var operation = request.SendWebRequest();
+                            while (!operation.isDone && !cts.Token.IsCancellationRequested)
                             {
-                                // Disable save file
-                                // FileHelper.WriteAllText(planet, csvName, sheetData);
+                                await UniTask.Yield();
+                            }
+
+                            if (cts.Token.IsCancellationRequested)
+                            {
+                                throw new OperationCanceledException();
+                            }
+
+                            if (request.result == UnityWebRequest.Result.Success)
+                            {
+                                var sheetData = request.downloadHandler.text;
+                                downloadedSheets.TryAdd(sheetName, sheetData);
                                 success = true;
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Debug.LogError(
-                                    $"Failed to write sheet {csvName}: {ex.Message}");
+                                var errorMessage = $"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}";
+                                Debug.LogError(errorMessage);
+                                if (attempt < maxRetries - 1)
+                                {
+                                    await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenRetries), cancellationToken: cts.Token);
+                                }
+                                else
+                                {
+                                    await UniTask.SwitchToMainThread();
+                                    Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
+                                }
                             }
                         }
-                        else
+                        catch (OperationCanceledException)
                         {
-                            Debug.LogError(
-                                $"Failed to download sheet {csvName} (Attempt {attempt + 1}): {request.error}");
-                            if (attempt < maxRetries - 1)
-                            {
-                                await Task.Delay(TimeSpan.FromSeconds(delayBetweenRetries));
-                            }
+                            throw;
+                        }
+                        catch (Exception e)
+                        {
+                            var errorMessage = $"Error downloading sheet {csvName}: {e.Message}";
+                            Debug.LogError(errorMessage);
+                            await UniTask.SwitchToMainThread();
+                            Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
                         }
                     }
                 }
 
-                if (!success)
+                if (!success && !cts.Token.IsCancellationRequested)
                 {
                     await UniTask.SwitchToMainThread();
-                    Debug.LogError(
-                        $"Failed to download and save sheet {csvName} after {maxRetries} attempts.");
+                    var errorMessage = $"Failed to download and save sheet {csvName} after {maxRetries} attempts.";
+                    Debug.LogError(errorMessage);
+                    Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
                 }
             });
 
-            // Wait for all download tasks to complete
-            await UniTask.WhenAll(downloadTasks);
+            try
+            {
+                // Wait for all download tasks to complete
+                await UniTask.WhenAll(downloadTasks);
+            }
+            catch (OperationCanceledException)
+            {
+                NcDebug.Log("[DownloadSheet] Operation was cancelled.");
+                throw;
+            }
+            catch (Exception e)
+            {
+                var errorMessage = $"Error during sheet download operation: {e.Message}";
+                Debug.LogError(errorMessage);
+                await UniTask.SwitchToMainThread();
+                Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
+                throw;
+            }
+
             return downloadedSheets;
         }
 
@@ -1676,7 +1731,11 @@ namespace Nekoyume.Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Failed to read sheet {csvName}: {e.Message}");
+                    var errorMessage = $"Failed to read sheet {csvName}: {e.Message}";
+                    Debug.LogError(errorMessage);
+                    await UniTask.SwitchToMainThread();
+                    Game.QuitWithMessage("ERROR_INITIALIZE_FAILED", errorMessage);
+                    throw;
                 }
             }
 

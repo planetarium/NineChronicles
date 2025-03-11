@@ -168,6 +168,8 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         DUPLICATE_TRANSACTION,
         TX_FAILED,
         SUCCESS,
+        NO_REMAINING_TICKET,
+        EXPIRED,
     }
 
     public class BattleStatusTypeConverter : JsonConverter<BattleStatus>
@@ -306,6 +308,7 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         DUPLICATE_TRANSACTION,
         TX_FAILED,
         SUCCESS,
+        NO_REMAINING_PURCHASE_COUNT,
     }
 
     public class PurchaseStatusTypeConverter : JsonConverter<PurchaseStatus>
@@ -392,6 +395,30 @@ namespace GeneratedApiNamespace.ArenaServiceClient{
         public Int64 StartBlockIndex { get; set; }
         [JsonPropertyName("endBlockIndex")]
         public Int64 EndBlockIndex { get; set; }
+    }
+
+    public class SeasonAndRoundResponse
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("seasonGroupId")]
+        public int SeasonGroupId { get; set; }
+        [JsonPropertyName("arenaType")]
+        public ArenaType ArenaType { get; set; }
+        [JsonPropertyName("startBlockIndex")]
+        public Int64 StartBlockIndex { get; set; }
+        [JsonPropertyName("endBlockIndex")]
+        public Int64 EndBlockIndex { get; set; }
+        [JsonPropertyName("roundInterval")]
+        public int RoundInterval { get; set; }
+        [JsonPropertyName("requiredMedalCount")]
+        public int RequiredMedalCount { get; set; }
+        [JsonPropertyName("totalPrize")]
+        public int TotalPrize { get; set; }
+        [JsonPropertyName("prizeDetailSiteURL")]
+        public string PrizeDetailSiteURL { get; set; }
+        [JsonPropertyName("round")]
+        public RoundResponse Round { get; set; }
     }
 
     public class SeasonResponse
@@ -795,19 +822,28 @@ public class ArenaServiceClient
     /// <para>AvailableOpponents</para>
     /// </response>
     /// <response code="400">
-    /// <para>Free refresh is not available at this time. Additional cost is required.</para>
+    /// <para>Status400BadRequest</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="423">
+    /// <para>Status423Locked</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
     /// </response>
     public async Task PostAvailableopponentsRefreshAsync(
         string Authorization, 
         // AvailableOpponents
         Action<AvailableOpponentResponse[]> on200 = null, 
-        // Free refresh is not available at this time. Additional cost is required.
+        // Status400BadRequest
         Action<string> on400 = null, 
-        // 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status423Locked
         Action<string> on423 = null, 
-        // 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -858,7 +894,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 400) // Free refresh is not available at this time. Additional cost is required.
+        if (webRequest.responseCode == 400) // Status400BadRequest
         {
             if (on400 != null)
             {
@@ -870,7 +906,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -882,7 +918,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 423) // 
+        if (webRequest.responseCode == 423) // Status423Locked
         {
             if (on423 != null)
             {
@@ -894,7 +930,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -1268,10 +1304,20 @@ public class ArenaServiceClient
     /// <response code="200">
     /// <para>ClanLeaderboardResponse</para>
     /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Status404NotFound</para>
+    /// </response>
     public async Task GetClansLeaderboardAsync(
         string Authorization, 
         // ClanLeaderboardResponse
         Action<ClanLeaderboardResponse> on200 = null, 
+        // Status401Unauthorized
+        Action<string> on401 = null, 
+        // Status404NotFound
+        Action<string> on404 = null, 
         Action<string> onError = null)
     {
         string url = $"{Url}/clans/leaderboard";
@@ -1294,16 +1340,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetClansLeaderboardAsyncProcessResponse(request, on200, onError);
+                GetClansLeaderboardAsyncProcessResponse(request, on200, on401, on404, onError);
             }
             catch (Exception ex)
             {
-                GetClansLeaderboardAsyncProcessResponse(request, on200, onError);
+                GetClansLeaderboardAsyncProcessResponse(request, on200, on401, on404, onError);
             }
         }
     }
 
-    private void GetClansLeaderboardAsyncProcessResponse(UnityWebRequest webRequest, Action<ClanLeaderboardResponse> on200, Action<string> onError)
+    private void GetClansLeaderboardAsyncProcessResponse(UnityWebRequest webRequest, Action<ClanLeaderboardResponse> on200, Action<string> on401, Action<string> on404, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // ClanLeaderboardResponse
@@ -1321,6 +1367,30 @@ public class ArenaServiceClient
             }
             return;
         }
+        if (webRequest.responseCode == 401) // Status401Unauthorized
+        {
+            if (on401 != null)
+            {
+                on401(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Status404NotFound
+        {
+            if (on404 != null)
+            {
+                on404(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
         if (onError != null)
         {
             onError(webRequest.error);
@@ -1328,15 +1398,94 @@ public class ArenaServiceClient
     }
 
     /// <response code="200">
-    /// <para>SeasonResponse</para>
+    /// <para>Ranking Count Response</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Status404NotFound</para>
+    /// </response>
+    public async Task GetLeaderboardCountAsync(
+        int seasonId, int roundId, 
+        // Ranking Count Response
+        Action<int> on200 = null, 
+        // Status404NotFound
+        Action<string> on404 = null, 
+        Action<string> onError = null)
+    {
+        string url = $"{Url}/leaderboard/count";
+        using (var request = new UnityWebRequest(url, "GET"))
+        {
+            try
+            {
+            url += $"?seasonId={seasonId}&roundId={roundId}";
+            request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            }
+            catch (Exception ex)
+            {
+                onError(ex.Message);
+                return;
+            }
+            try
+            {
+                await request.SendWebRequest();
+                GetLeaderboardCountAsyncProcessResponse(request, on200, on404, onError);
+            }
+            catch (Exception ex)
+            {
+                GetLeaderboardCountAsyncProcessResponse(request, on200, on404, onError);
+            }
+        }
+    }
+
+    private void GetLeaderboardCountAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on200, Action<string> on404, Action<string> onError)
+    {
+        string responseText = webRequest.downloadHandler?.text ?? string.Empty;
+        if (webRequest.responseCode == 200) // Ranking Count Response
+        {
+            if (on200 != null)
+            {
+                int responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<int>(responseText); }
+                catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
+                on200(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Status404NotFound
+        {
+            if (on404 != null)
+            {
+                on404(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (onError != null)
+        {
+            onError(webRequest.error);
+        }
+    }
+
+    /// <response code="200">
+    /// <para>SeasonAndRoundResponse</para>
     /// </response>
     /// <response code="404">
     /// <para>Status404NotFound</para>
     /// </response>
     public async Task GetSeasonsByblockAsync(
         Int64 blockIndex, 
-        // SeasonResponse
-        Action<SeasonResponse> on200 = null, 
+        // SeasonAndRoundResponse
+        Action<SeasonAndRoundResponse> on200 = null, 
         // Status404NotFound
         Action<string> on404 = null, 
         Action<string> onError = null)
@@ -1369,15 +1518,15 @@ public class ArenaServiceClient
         }
     }
 
-    private void GetSeasonsByblockAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonResponse> on200, Action<string> on404, Action<string> onError)
+    private void GetSeasonsByblockAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonAndRoundResponse> on200, Action<string> on404, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
-        if (webRequest.responseCode == 200) // SeasonResponse
+        if (webRequest.responseCode == 200) // SeasonAndRoundResponse
         {
             if (on200 != null)
             {
-                SeasonResponse responseData;
-                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonResponse>(responseText); }
+                SeasonAndRoundResponse responseData;
+                try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonAndRoundResponse>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on200(responseData);
             }
@@ -1408,10 +1557,15 @@ public class ArenaServiceClient
     /// <response code="200">
     /// <para>SeasonResponse</para>
     /// </response>
+    /// <response code="404">
+    /// <para>Status404NotFound</para>
+    /// </response>
     public async Task GetSeasonsClassifybychampionshipAsync(
         Int64 blockIndex, 
         // SeasonResponse
         Action<SeasonsResponse> on200 = null, 
+        // Status404NotFound
+        Action<string> on404 = null, 
         Action<string> onError = null)
     {
         string url = $"{Url}/seasons/classify-by-championship/{blockIndex}";
@@ -1433,16 +1587,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetSeasonsClassifybychampionshipAsyncProcessResponse(request, on200, onError);
+                GetSeasonsClassifybychampionshipAsyncProcessResponse(request, on200, on404, onError);
             }
             catch (Exception ex)
             {
-                GetSeasonsClassifybychampionshipAsyncProcessResponse(request, on200, onError);
+                GetSeasonsClassifybychampionshipAsyncProcessResponse(request, on200, on404, onError);
             }
         }
     }
 
-    private void GetSeasonsClassifybychampionshipAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonsResponse> on200, Action<string> onError)
+    private void GetSeasonsClassifybychampionshipAsyncProcessResponse(UnityWebRequest webRequest, Action<SeasonsResponse> on200, Action<string> on404, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // SeasonResponse
@@ -1453,6 +1607,18 @@ public class ArenaServiceClient
                 try { responseData = System.Text.Json.JsonSerializer.Deserialize<SeasonsResponse>(responseText); }
                 catch (JsonException ex) { onError(ex.Message + " \n\nResponse Text: " + responseText); return; }
                 on200(responseData);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Status404NotFound
+        {
+            if (on404 != null)
+            {
+                on404(responseText);
             }
             else if (onError != null)
             {
@@ -1472,13 +1638,19 @@ public class ArenaServiceClient
     /// <response code="200">
     /// <para>TicketStatus</para>
     /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
+    /// </response>
     public async Task GetTicketsBattleAsync(
         string Authorization, 
         // TicketStatus
         Action<TicketStatusResponse> on200 = null, 
-        // 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -1529,7 +1701,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -1541,7 +1713,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -1565,13 +1737,19 @@ public class ArenaServiceClient
     /// <response code="200">
     /// <para>TicketStatus</para>
     /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
+    /// </response>
     public async Task GetTicketsRefreshAsync(
         string Authorization, 
         // TicketStatus
         Action<TicketStatusResponse> on200 = null, 
-        // 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -1622,7 +1800,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -1634,7 +1812,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -1658,17 +1836,29 @@ public class ArenaServiceClient
     /// <response code="201">
     /// <para>Purchase Log Id</para>
     /// </response>
+    /// <response code="400">
+    /// <para>Status400BadRequest</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="423">
+    /// <para>Status423Locked</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
+    /// </response>
     public async Task PostTicketsBattlePurchaseAsync(
         string Authorization, PurchaseTicketRequest requestBody, 
         // Purchase Log Id
         Action<int> on201 = null, 
-        // 
+        // Status400BadRequest
         Action<string> on400 = null, 
-        // 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status423Locked
         Action<string> on423 = null, 
-        // 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -1723,7 +1913,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 400) // 
+        if (webRequest.responseCode == 400) // Status400BadRequest
         {
             if (on400 != null)
             {
@@ -1735,7 +1925,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -1747,7 +1937,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 423) // 
+        if (webRequest.responseCode == 423) // Status423Locked
         {
             if (on423 != null)
             {
@@ -1759,7 +1949,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -1783,15 +1973,29 @@ public class ArenaServiceClient
     /// <response code="201">
     /// <para>Purchase Log Id</para>
     /// </response>
+    /// <response code="400">
+    /// <para>Status400BadRequest</para>
+    /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="423">
+    /// <para>Status423Locked</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
+    /// </response>
     public async Task PostTicketsRefreshPurchaseAsync(
         string Authorization, PurchaseTicketRequest requestBody, 
         // Purchase Log Id
         Action<int> on201 = null, 
-        // 
+        // Status400BadRequest
+        Action<string> on400 = null, 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status423Locked
         Action<string> on423 = null, 
-        // 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -1819,16 +2023,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on201, on401, on423, on503, onError);
+                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on201, on400, on401, on423, on503, onError);
             }
             catch (Exception ex)
             {
-                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on201, on401, on423, on503, onError);
+                PostTicketsRefreshPurchaseAsyncProcessResponse(request, on201, on400, on401, on423, on503, onError);
             }
         }
     }
 
-    private void PostTicketsRefreshPurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on201, Action<string> on401, Action<string> on423, Action<string> on503, Action<string> onError)
+    private void PostTicketsRefreshPurchaseAsyncProcessResponse(UnityWebRequest webRequest, Action<int> on201, Action<string> on400, Action<string> on401, Action<string> on423, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 201) // Purchase Log Id
@@ -1846,7 +2050,19 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 400) // Status400BadRequest
+        {
+            if (on400 != null)
+            {
+                on400(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -1858,7 +2074,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 423) // 
+        if (webRequest.responseCode == 423) // Status423Locked
         {
             if (on423 != null)
             {
@@ -1870,7 +2086,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -1894,15 +2110,29 @@ public class ArenaServiceClient
     /// <response code="200">
     /// <para>Purchase Log Id</para>
     /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="403">
+    /// <para>Status403Forbidden</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Status404NotFound</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
+    /// </response>
     public async Task GetTicketsBattlePurchaselogsAsync(
         int logId, string Authorization, 
         // Purchase Log Id
         Action<TicketPurchaseLogResponse> on200 = null, 
-        // 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status403Forbidden
         Action<string> on403 = null, 
-        // 
+        // Status404NotFound
+        Action<string> on404 = null, 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -1926,16 +2156,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200, on401, on403, on503, onError);
+                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200, on401, on403, on404, on503, onError);
             }
             catch (Exception ex)
             {
-                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200, on401, on403, on503, onError);
+                GetTicketsBattlePurchaselogsAsyncProcessResponse(request, on200, on401, on403, on404, on503, onError);
             }
         }
     }
 
-    private void GetTicketsBattlePurchaselogsAsyncProcessResponse(UnityWebRequest webRequest, Action<TicketPurchaseLogResponse> on200, Action<string> on401, Action<string> on403, Action<string> on503, Action<string> onError)
+    private void GetTicketsBattlePurchaselogsAsyncProcessResponse(UnityWebRequest webRequest, Action<TicketPurchaseLogResponse> on200, Action<string> on401, Action<string> on403, Action<string> on404, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // Purchase Log Id
@@ -1953,7 +2183,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -1965,7 +2195,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 403) // 
+        if (webRequest.responseCode == 403) // Status403Forbidden
         {
             if (on403 != null)
             {
@@ -1977,7 +2207,19 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 404) // Status404NotFound
+        {
+            if (on404 != null)
+            {
+                on404(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -2001,13 +2243,29 @@ public class ArenaServiceClient
     /// <response code="200">
     /// <para>Purchase Log Id</para>
     /// </response>
+    /// <response code="401">
+    /// <para>Status401Unauthorized</para>
+    /// </response>
+    /// <response code="403">
+    /// <para>Status403Forbidden</para>
+    /// </response>
+    /// <response code="404">
+    /// <para>Status404NotFound</para>
+    /// </response>
+    /// <response code="503">
+    /// <para>Status503ServiceUnavailable</para>
+    /// </response>
     public async Task GetTicketsRefreshPurchaselogsAsync(
         int logId, string Authorization, 
         // Purchase Log Id
         Action<TicketPurchaseLogResponse> on200 = null, 
-        // 
+        // Status401Unauthorized
         Action<string> on401 = null, 
-        // 
+        // Status403Forbidden
+        Action<string> on403 = null, 
+        // Status404NotFound
+        Action<string> on404 = null, 
+        // Status503ServiceUnavailable
         Action<string> on503 = null, 
         Action<string> onError = null)
     {
@@ -2031,16 +2289,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetTicketsRefreshPurchaselogsAsyncProcessResponse(request, on200, on401, on503, onError);
+                GetTicketsRefreshPurchaselogsAsyncProcessResponse(request, on200, on401, on403, on404, on503, onError);
             }
             catch (Exception ex)
             {
-                GetTicketsRefreshPurchaselogsAsyncProcessResponse(request, on200, on401, on503, onError);
+                GetTicketsRefreshPurchaselogsAsyncProcessResponse(request, on200, on401, on403, on404, on503, onError);
             }
         }
     }
 
-    private void GetTicketsRefreshPurchaselogsAsyncProcessResponse(UnityWebRequest webRequest, Action<TicketPurchaseLogResponse> on200, Action<string> on401, Action<string> on503, Action<string> onError)
+    private void GetTicketsRefreshPurchaselogsAsyncProcessResponse(UnityWebRequest webRequest, Action<TicketPurchaseLogResponse> on200, Action<string> on401, Action<string> on403, Action<string> on404, Action<string> on503, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // Purchase Log Id
@@ -2058,7 +2316,7 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 401) // 
+        if (webRequest.responseCode == 401) // Status401Unauthorized
         {
             if (on401 != null)
             {
@@ -2070,7 +2328,31 @@ public class ArenaServiceClient
             }
             return;
         }
-        if (webRequest.responseCode == 503) // 
+        if (webRequest.responseCode == 403) // Status403Forbidden
+        {
+            if (on403 != null)
+            {
+                on403(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Status404NotFound
+        {
+            if (on404 != null)
+            {
+                on404(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 503) // Status503ServiceUnavailable
         {
             if (on503 != null)
             {
@@ -2214,12 +2496,17 @@ public class ArenaServiceClient
     /// <response code="401">
     /// <para>Status401Unauthorized</para>
     /// </response>
+    /// <response code="404">
+    /// <para>Status404NotFound</para>
+    /// </response>
     public async Task GetUsersAsync(
         string avatarAddress, string Authorization, 
         // UserResponse
         Action<UserResponse> on200 = null, 
         // Status401Unauthorized
         Action<string> on401 = null, 
+        // Status404NotFound
+        Action<string> on404 = null, 
         Action<string> onError = null)
     {
         string url = $"{Url}/users/{avatarAddress}";
@@ -2242,16 +2529,16 @@ public class ArenaServiceClient
             try
             {
                 await request.SendWebRequest();
-                GetUsersAsyncProcessResponse(request, on200, on401, onError);
+                GetUsersAsyncProcessResponse(request, on200, on401, on404, onError);
             }
             catch (Exception ex)
             {
-                GetUsersAsyncProcessResponse(request, on200, on401, onError);
+                GetUsersAsyncProcessResponse(request, on200, on401, on404, onError);
             }
         }
     }
 
-    private void GetUsersAsyncProcessResponse(UnityWebRequest webRequest, Action<UserResponse> on200, Action<string> on401, Action<string> onError)
+    private void GetUsersAsyncProcessResponse(UnityWebRequest webRequest, Action<UserResponse> on200, Action<string> on401, Action<string> on404, Action<string> onError)
     {
         string responseText = webRequest.downloadHandler?.text ?? string.Empty;
         if (webRequest.responseCode == 200) // UserResponse
@@ -2274,6 +2561,18 @@ public class ArenaServiceClient
             if (on401 != null)
             {
                 on401(responseText);
+            }
+            else if (onError != null)
+            {
+                onError(responseText);
+            }
+            return;
+        }
+        if (webRequest.responseCode == 404) // Status404NotFound
+        {
+            if (on404 != null)
+            {
+                on404(responseText);
             }
             else if (onError != null)
             {

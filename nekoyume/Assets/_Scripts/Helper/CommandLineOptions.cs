@@ -645,7 +645,7 @@ namespace Nekoyume.Helper
         }
 
         [Option("sheet-bucket-url", Required = false, HelpText = "table sheets bucket url")]
-        public string SheetBuckUrl
+        public string SheetBucketUrl
         {
             get => _sheetBucketUrl;
             set

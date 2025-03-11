@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -50,12 +51,30 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossState worldBossState, RaiderState raider, int raidId, bool isOnSeason)
         {
-            if (raider == null || !WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
+            {
+                NcDebug.LogError($"Not found WorldBossSheet for raidId: {raidId}");
+                return;
+            }
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
+            var contributeRow = contributeSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
+            if (contributeRow == null || worldBossState == null)
+            {
+                NcDebug.LogError($"Not found WorldBoss Data: {raidRow.BossId}");
+                return;
+            }
+            rewardItem.Set(contributeRow);
+
+            var worldBossTotalDamage = worldBossState.TotalDamage;
+            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
+
+            if (raider == null)
             {
                 claimButton.SetCondition(() => false);
                 claimButton.UpdateObjects();
 
-                worldBossTotalDamageText.text = "0";
                 userTotalDamageText.text = "0 (0%)";
 
                 foreach (var rewardItemView in rewardItems)
@@ -69,11 +88,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             claimButton.SetCondition(() => canClaim);
             claimButton.UpdateObjects();
 
-            var tableSheets = Game.Game.instance.TableSheets;
-            var worldBossTotalDamage = worldBossState?.TotalDamage ?? 0;
-            var userTotalDamage = raider?.TotalScore ?? 0;
-
-            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
+            var userTotalDamage = raider.TotalScore;
             float ratio = 0;
             if (worldBossTotalDamage > 0)
             {
@@ -81,15 +96,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             userTotalDamageText.text = $"{userTotalDamage:N0} ({ratio:0.####%})";
-
-            var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
-            var contributeRow = contributeSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
-            if (contributeRow == null)
-            {
-                NcDebug.LogError($"Not found WorldBossContributionRewardSheet for bossId: {raidRow.BossId}");
-                return;
-            }
-            rewardItem.Set(contributeRow);
 
             foreach (var rewardItemView in rewardItems)
             {
@@ -106,13 +112,25 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var currentItem = contributeRow.Rewards[i];
                 if (!string.IsNullOrEmpty(currentItem.Ticker))
                 {
+                    var amount = (decimal)currentItem.Count * (decimal)ratio;
+                    if (Math.Floor(amount) <= 0)
+                    {
+                        continue;
+                    }
+
                     rewardItems[i].gameObject.SetActive(true);
-                    rewardItems[i].ItemViewSetCurrencyData(currentItem.Ticker, (decimal)currentItem.Count * (decimal)ratio);
+                    rewardItems[i].ItemViewSetCurrencyData(currentItem.Ticker, amount);
                 }
                 else if (currentItem.ItemId > 0)
                 {
+                    var amount = (int)((decimal)currentItem.Count * (decimal)ratio);
+                    if (amount <= 0)
+                    {
+                        continue;
+                    }
+
                     rewardItems[i].gameObject.SetActive(true);
-                    rewardItems[i].ItemViewSetItemData(currentItem.ItemId, (int)((decimal)currentItem.Count * (decimal)ratio));
+                    rewardItems[i].ItemViewSetItemData(currentItem.ItemId, amount);
                 }
             }
         }

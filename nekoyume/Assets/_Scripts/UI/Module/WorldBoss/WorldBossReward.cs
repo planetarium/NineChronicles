@@ -10,6 +10,7 @@ using Nekoyume.L10n;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -37,7 +38,10 @@ namespace Nekoyume.UI.Module.WorldBoss
         private List<CategoryToggle> categoryToggles = null;
 
         [SerializeField]
-        private List<GameObject> notifications;
+        private List<GameObject> notificationsSeasonReward;
+
+        [SerializeField]
+        private List<GameObject> notificationsBattleGrade;
 
         [SerializeField]
         private GameObject emptyContainer;
@@ -81,9 +85,36 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             WorldBossStates.SubscribeGradeRewards((b) =>
             {
-                foreach (var notification in notifications)
+                foreach (var notification in notificationsBattleGrade)
                 {
                     notification.SetActive(b);
+                }
+            });
+
+            WorldBossStates.SubscribeWorldBossState(state =>
+            {
+                var currentState = Game.Game.instance.States.CurrentAvatarState;
+                if (currentState is null)
+                {
+                    foreach (var notification in notificationsSeasonReward)
+                    {
+                        notification.SetActive(false);
+                    }
+                    return;
+                }
+
+                var avatarAddress = currentState.address;
+                var isOnSeason = WorldBossStates.IsOnSeason;
+                var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
+                foreach (var notification in notificationsSeasonReward)
+                {
+                    if (preRaiderState is null)
+                    {
+                        notification.SetActive(false);
+                        return;
+                    }
+
+                    notification.SetActive(!isOnSeason && !preRaiderState.HasClaimedReward);
                 }
             });
         }

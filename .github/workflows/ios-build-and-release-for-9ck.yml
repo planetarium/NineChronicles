@@ -172,7 +172,7 @@ jobs:
           path: build/${{ matrix.targetPlatform }}
           
       - name: Cache restore cocoapods
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         if: ${{ always() }}
         with:
           path: |
