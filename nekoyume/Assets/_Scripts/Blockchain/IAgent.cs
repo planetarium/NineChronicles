@@ -86,7 +86,7 @@ namespace Nekoyume.Blockchain
             HashDigest<SHA256> stateRootHash,
             Address address,
             Currency currency);
-        
+
         Task<Integer> GetUnbondClaimableHeightByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
 
         Task<List> GetClaimableRewardsByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address);
@@ -122,5 +122,7 @@ namespace Nekoyume.Blockchain
             IEnumerable<Address> addressList);
 
         Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList);
+
+        Task<Dictionary<Address, byte[]>> GetSheetsHash(IEnumerable<Address> addressList);
     }
 }
