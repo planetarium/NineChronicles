@@ -62,9 +62,10 @@ using NineChronicles.GoogleServices.Firebase.Runtime;
 
 namespace Nekoyume.Game
 {
-    using Arena;
+    using System.Security.Cryptography;
+    using System.Text;
     using GeneratedApiNamespace.ArenaServiceClient;
-    using Nekoyume.Model.EnumType;
+    using Libplanet.Common;
     using TableData;
     using UniRx;
 
@@ -769,36 +770,66 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            IDictionary<string, string> csvDict;
-            // TODO delete GetSheetsAsync backward compatibility
+            IDictionary<string, string> csvDict = new Dictionary<string, string>();
+            var map = csvAssets.ToDictionary(
+                asset => Addresses.TableSheet.Derive(asset.name),
+                asset => asset.name);
+            var hashDict = await Agent.GetSheetsHash(map.Keys);
+            var sheetsToDownload = new HashSet<Address>();
+            var differentSheetNames = new List<string>();
+            using var sha256 = SHA256.Create();
+            // First, check which sheets need to be downloaded by comparing hashes
+            foreach (var asset in csvAssets)
+            {
+                var derivedAddress = Addresses.TableSheet.Derive(asset.name);
+                var normalizedLocalTableData = NormalizeText(asset.text);
+                var normalizedLocalHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(normalizedLocalTableData));
+                var normalizedLocalHashStr = ByteUtil.Hex(normalizedLocalHash);
+
+                var nodeHash = hashDict.ContainsKey(derivedAddress) ? hashDict[derivedAddress] : null;
+                var nodeHashStr = nodeHash != null ? ByteUtil.Hex(nodeHash) : "None";
+
+                if (nodeHashStr != normalizedLocalHashStr)
+                {
+                    NcDebug.Log($"[SheetHash] {asset.name} - Hash mismatch. Local: {normalizedLocalHashStr}, Node: {nodeHashStr}");
+                    sheetsToDownload.Add(derivedAddress);
+                    differentSheetNames.Add(asset.name);
+                }
+                else
+                {
+                    // Use local data if hashes match
+                    csvDict[asset.name] = asset.text;
+                    NcDebug.Log($"[SheetHash] {asset.name} - Using local data (hash match)");
+                }
+            }
+
             if (string.IsNullOrEmpty(_commandLineOptions.SheetBucketUrl))
             {
-                var map = csvAssets.ToDictionary(
-                    asset => Addresses.TableSheet.Derive(asset.name),
-                    asset => asset.name);
+                // Request only needed sheets from node
+                if (sheetsToDownload.Any())
+                {
+                    var dict = await Agent.GetSheetsAsync(sheetsToDownload);
 
-                var dict = await Agent.GetSheetsAsync(map.Keys);
-                sw.Stop();
-
-                NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
-
-                sw.Restart();
-
-                // Convert dict to csv using mapping, ensuring Text values are converted to strings
-                csvDict = dict.ToDictionary(
-                    pair => map[pair.Key],
-                    // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                    pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
+                    foreach (var pair in dict)
+                    {
+                        if (map.TryGetValue(pair.Key, out var sheetName))
+                        {
+                            csvDict[sheetName] = pair.Value is Text text ? text.ToDotnetString() : null;
+                            NcDebug.Log($"[SheetHash] {sheetName} - Downloaded from node");
+                        }
+                    }
+                }
             }
             else
             {
-                // Prepare list of sheet names from csvAssets
-                var sheetNames = csvAssets.Select(x => x.name).ToList();
-
-                var planetId = CurrentPlanetId!.Value;
+                var planetId = PlanetId.OdinInternal;
 
                 // Download and save sheets for the current planet
-                csvDict = await DownloadSheet(planetId, _commandLineOptions.SheetBucketUrl, sheetNames);
+                var downloadedSheets = await DownloadSheet(planetId, _commandLineOptions.SheetBucketUrl, differentSheetNames);
+                foreach (var pair in downloadedSheets)
+                {
+                    csvDict[pair.Key] = pair.Value;
+                }
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
 
@@ -860,7 +891,7 @@ namespace Nekoyume.Game
                 }
                 else
                 {
-                    sheets = await DownloadSheet(CurrentPlanetId!.Value, CommandLineOptions.SheetBucketUrl, sheetNames);
+                    sheets = await DownloadSheet(PlanetId.OdinInternal, CommandLineOptions.SheetBucketUrl, sheetNames);
                 }
                 stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
@@ -1740,6 +1771,19 @@ namespace Nekoyume.Game
             }
 
             return csv;
+        }
+
+        string NormalizeText(string csvText)
+        {
+            // 줄바꿈 문자를 통일
+            csvText = csvText.Replace("\r\n", "\n");
+
+            // 끝의 빈 줄 제거
+            csvText = csvText.Trim();
+
+            // 인코딩 통일 (예: UTF-8)
+            byte[] bytes = Encoding.UTF8.GetBytes(csvText);
+            return Encoding.UTF8.GetString(bytes);
         }
     }
 }
