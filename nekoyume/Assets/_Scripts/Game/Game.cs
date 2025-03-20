@@ -822,10 +822,8 @@ namespace Nekoyume.Game
             }
             else
             {
-                var planetId = PlanetId.OdinInternal;
-
                 // Download and save sheets for the current planet
-                var downloadedSheets = await DownloadSheet(planetId, _commandLineOptions.SheetBucketUrl, differentSheetNames);
+                var downloadedSheets = await DownloadSheet(CurrentPlanetId.Value, _commandLineOptions.SheetBucketUrl, differentSheetNames);
                 foreach (var pair in downloadedSheets)
                 {
                     csvDict[pair.Key] = pair.Value;
@@ -891,7 +889,7 @@ namespace Nekoyume.Game
                 }
                 else
                 {
-                    sheets = await DownloadSheet(PlanetId.OdinInternal, CommandLineOptions.SheetBucketUrl, sheetNames);
+                    sheets = await DownloadSheet(CurrentPlanetId.Value, CommandLineOptions.SheetBucketUrl, sheetNames);
                 }
                 stakeRegularFixedRewardSheet.Set(sheets[sheetNames[0]]);
                 stakeRegularRewardSheet.Set(sheets[sheetNames[1]]);
