@@ -144,6 +144,7 @@ namespace Nekoyume.Game.Scene
             NcDebug.Log("[LoginScene] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
             if (planetContext.IsSkipped)
             {
+                game.CurrentPlanetId = new PlanetId(game.CommandLineOptions.SelectedPlanetId);
                 NcDebug.LogWarning("[LoginScene] UpdateCurrentPlanetIdAsync()... planetContext.IsSkipped is true." +
                     "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
             }

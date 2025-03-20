@@ -48,6 +48,7 @@ using Random = System.Random;
 
 namespace Nekoyume.Blockchain
 {
+    using System.Text;
     using UniRx;
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
@@ -713,7 +714,7 @@ namespace Nekoyume.Blockchain
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in cd)
             {
-                result[new Address(kv.Key)] = _codec.Decode(MessagePackSerializer.Deserialize<byte[]>(kv.Value, _lz4Options));
+                result[new Address(kv.Key)] = (Text)Encoding.UTF8.GetString(kv.Value);
             }
 
             sw.Stop();
@@ -1260,6 +1261,54 @@ namespace Nekoyume.Blockchain
         public async UniTask<bool> IsTxStagedAsync(TxId txId)
         {
             return await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
+        }
+
+        /// <summary>
+        /// Retrieves sheet hash values for the given address list in parallel.
+        /// </summary>
+        /// <param name="addressList">List of addresses to fetch hash values for</param>
+        /// <returns>Dictionary mapping addresses to their corresponding hash values</returns>
+        /// <remarks>
+        /// - Processes addresses in chunks of 24 in parallel
+        /// - Uses ConcurrentDictionary to ensure thread safety
+        /// - Includes Stopwatch for performance measurement
+        /// </remarks>
+        public async Task<Dictionary<Address, byte[]>> GetSheetsHash(IEnumerable<Address> addressList)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            var cd = new ConcurrentDictionary<byte[], byte[]>();
+            var chunks = addressList
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 24)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+            await chunks
+                .AsParallel()
+                .ParallelForEachAsync(async list =>
+                {
+                    var raw =
+                        await _service.GetSheetsHash(
+                            BlockTipStateRootHash.ToByteArray(),
+                            list.Select(a => a.ToByteArray()));
+                    await raw.ParallelForEachAsync(async pair =>
+                    {
+                        cd.TryAdd(pair.Key, pair.Value);
+                        var size = Buffer.ByteLength(pair.Value);
+                        await Task.CompletedTask;
+                    });
+                });
+            sw.Stop();
+            sw.Restart();
+            var result = new Dictionary<Address, byte[]>();
+            NcDebug.Log($"[{nameof(RPCAgent)}] GetSheetsHash()... {sw.Elapsed}/{cd.Count}");
+            foreach (var kv in cd)
+            {
+                result[new Address(kv.Key)] = kv.Value;
+            }
+
+            sw.Stop();
+            return result;
         }
 
         private async UniTask<BlockHash?> GetBlockHashAsync(long? blockIndex)
