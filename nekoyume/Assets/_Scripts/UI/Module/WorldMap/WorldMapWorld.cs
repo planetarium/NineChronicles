@@ -307,12 +307,10 @@ namespace Nekoyume.UI.Module
                         // StageInformation 위젯에 이벤트 연결
                         ConnectStageToStageInformation(stage);
                     }
-                    
-                    Debug.Log($"페이지 동적 생성: 현재 {pages.Count}개");
                 }
                 else
                 {
-                    Debug.LogError("페이지 프리팹이 설정되지 않았습니다.");
+                    NcDebug.LogError("페이지 프리팹이 설정되지 않았습니다.");
                     break;
                 }
             }
@@ -352,11 +350,10 @@ namespace Nekoyume.UI.Module
                     });
                     
                     toggles.Add(newToggle);
-                    Debug.Log($"토글 동적 생성: 현재 {toggles.Count}개");
                 }
                 else
                 {
-                    Debug.LogError("토글 프리팹이 설정되지 않았습니다.");
+                    NcDebug.LogError("토글 프리팹이 설정되지 않았습니다.");
                     break;
                 }
             }
