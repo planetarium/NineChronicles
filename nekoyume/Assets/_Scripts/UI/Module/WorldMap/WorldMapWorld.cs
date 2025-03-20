@@ -43,6 +43,12 @@ namespace Nekoyume.UI.Module
         private HorizontalScrollSnap horizontalScrollSnap = null;
 
         [SerializeField]
+        private WorldMapPage pagePrefab = null;
+
+        [SerializeField]
+        private Toggle togglePrefab = null;
+
+        [SerializeField]
         private List<WorldMapPage> pages = null;
 
         [SerializeField]
@@ -157,6 +163,11 @@ namespace Nekoyume.UI.Module
             var eventType = stageType == StageType.EventDungeon ? EventManager.GetEventInfo().EventType : EventType.Default;
 
             var stageWaveRowsCount = stageTuples.Count;
+            
+            int requiredPageCount = CalculateRequiredPageCount(stageWaveRowsCount);
+            
+            EnsureEnoughPagesAndToggles(requiredPageCount);
+            
             var stageOffset = 0;
             var nextPageShouldHide = false;
             var pageIndex = 1;
@@ -263,6 +274,119 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposablesForModel);
 
             horizontalScrollSnap.ChangePage(SharedViewModel.CurrentPageNumber.Value - 1);
+        }
+
+        private int CalculateRequiredPageCount(int stageCount)
+        {
+            if (pages == null || pages.Count == 0 || pages[0] == null || pages[0].Stages == null || pages[0].Stages.Count == 0)
+            {
+                return 0;
+            }
+            
+            int stagesPerPage = pages[0].Stages.Count;
+            return Mathf.CeilToInt((float)stageCount / stagesPerPage);
+        }
+
+        private void EnsureEnoughPagesAndToggles(int requiredCount)
+        {
+            // 1. 필요한 경우 페이지 추가
+            while (pages.Count < requiredCount)
+            {
+                if (pagePrefab != null)
+                {
+                    WorldMapPage newPage = Instantiate(pagePrefab, content);
+                    pages.Add(newPage);
+                    
+                    // 새 페이지의 스테이지 버튼에 이벤트 리스너 추가
+                    foreach (var stage in newPage.Stages)
+                    {
+                        // WorldMapWorld의 이벤트 핸들러 추가
+                        stage.onClick.Subscribe(SubscribeOnClick)
+                            .AddTo(gameObject);
+                        
+                        // StageInformation 위젯에 이벤트 연결
+                        ConnectStageToStageInformation(stage);
+                    }
+                    
+                    Debug.Log($"페이지 동적 생성: 현재 {pages.Count}개");
+                }
+                else
+                {
+                    Debug.LogError("페이지 프리팹이 설정되지 않았습니다.");
+                    break;
+                }
+            }
+            
+            // 2. 필요한 만큼만 페이지 활성화, 나머지는 비활성화
+            for (int i = 0; i < pages.Count; i++)
+            {
+                // 요구사항보다 많은 페이지는 완전히 비활성화
+                if (i >= requiredCount)
+                {
+                    pages[i].gameObject.SetActive(false);
+                    pages[i].transform.SetParent(transform); // 부모를 content에서 제거
+                }
+            }
+            
+            // 3. 필요한 경우 토글 추가
+            Transform toggleParent = toggles.Count > 0 ? toggles[0].transform.parent : transform;
+            while (toggles.Count < requiredCount)
+            {
+                if (togglePrefab != null)
+                {
+                    Toggle newToggle = Instantiate(togglePrefab, toggleParent);
+                    int index = toggles.Count;
+                    
+                    newToggle.onValueChanged.AddListener(value =>
+                    {
+                        if (value)
+                        {
+                            if (SharedViewModel.CurrentPageNumber.Value != index + 1)
+                            {
+                                horizontalScrollSnap.ChangePage(index);
+                            }
+
+                            SharedViewModel.CurrentPageNumber.SetValueAndForceNotify(
+                                Mathf.Clamp(index + 1, 1, SharedViewModel.PageCount.Value));
+                        }
+                    });
+                    
+                    toggles.Add(newToggle);
+                    Debug.Log($"토글 동적 생성: 현재 {toggles.Count}개");
+                }
+                else
+                {
+                    Debug.LogError("토글 프리팹이 설정되지 않았습니다.");
+                    break;
+                }
+            }
+            
+            // 4. 필요한 만큼만 토글 활성화, 나머지는 비활성화
+            for (int i = 0; i < toggles.Count; i++)
+            {
+                toggles[i].gameObject.SetActive(i < requiredCount);
+            }
+            
+            // 5. HorizontalScrollSnap을 업데이트하여 페이지 수 반영
+            if (horizontalScrollSnap != null)
+            {
+                // 활성화된 페이지 수에 맞게 HorizontalScrollSnap 업데이트
+                horizontalScrollSnap.UpdateLayout();
+            }
+        }
+
+        // StageInformation 위젯에 스테이지 이벤트 연결
+        private void ConnectStageToStageInformation(WorldMapStage stage)
+        {
+            var stageInfo = Widget.Find<StageInformation>();
+            if (stageInfo != null)
+            {
+                // StageInformation 위젯의 SharedViewModel에 스테이지 이벤트 연결
+                stage.onClick.Subscribe(worldMapStage =>
+                {
+                    stageInfo.SelectStage(worldMapStage);
+                }).AddTo(stageInfo.gameObject);
+            }
         }
 
         public void Set(int openedStageId = -1, int selectedStageId = -1)
