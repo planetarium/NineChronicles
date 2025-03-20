@@ -317,6 +317,8 @@ namespace Nekoyume.Blockchain
 #endregion Client Error
             }
 
+            NcDebug.LogError($"Error Code: {code}, Key: {key}, Message: {exc.Message}");
+
             Analyzer.Instance.Track(
                 "Unity/Error",
                 ("code", code),
