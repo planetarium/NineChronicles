@@ -165,7 +165,7 @@ namespace Nekoyume.UI
 
             if (preRaiderState is null)
             {
-                notification.SetActive(false);
+                notification.SetActive(_hasGradeRewards);
                 return;
             }
 
