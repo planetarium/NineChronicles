@@ -15,7 +15,7 @@ jobs:
           github-token: ${{ secrets.PROJECTS_PAT }}
           script: |
             const allowedAssignees = ['ipdae', 'eugene-doobu', 'sonohoshi', 'U-lis', 'Atralupus'];
-            const projectId = '121'; // 프로젝트 노드 ID
+            const projectId = 'PVT_kwDOAEAFvc4A1PMA'; // 프로젝트 노드 ID(dev daily)
 
             const event = context.payload;
             const isIssue = !!event.issue;
