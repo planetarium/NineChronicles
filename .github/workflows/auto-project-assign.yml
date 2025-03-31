@@ -1,0 +1,47 @@
+name: Auto Add to Project
+
+on:
+  issues:
+    types: [assigned]
+  pull_request:
+    types: [assigned]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECTS_PAT }}
+          script: |
+            const allowedAssignees = ['ipdae', 'eugene-doobu', 'sonohoshi', 'U-lis', 'Atralupus'];
+            const projectId = '121'; // 프로젝트 노드 ID
+
+            const event = context.payload;
+            const isIssue = !!event.issue;
+            const item = isIssue ? event.issue : event.pull_request;
+            const assignee = event.assignee;
+
+            // 허용된 어사인 목록에 있는 경우에만 프로젝트에 추가
+            if (allowedAssignees.includes(assignee.login)) {
+              try {
+                // GraphQL mutation으로 프로젝트에 아이템 추가
+                const mutation = `
+                  mutation {
+                    addProjectV2ItemById(input: {
+                      projectId: "${projectId}"
+                      contentId: "${item.node_id}"
+                    }) {
+                      item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                await github.graphql(mutation);
+                console.log(`Successfully added ${isIssue ? 'issue' : 'PR'} #${item.number} to project`);
+              } catch (error) {
+                console.error('Error adding to project:', error);
+              }
+            }
