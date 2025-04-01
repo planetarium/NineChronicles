@@ -12,8 +12,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Consensus;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
-using UnityEngine;
-using UnityEngine.Networking;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Blockchain
 {
@@ -161,6 +160,8 @@ namespace Nekoyume.Blockchain
             {
                 initialValidatorSet[proposer.PublicKey] = 10_000_000_000_000_000_000;
             }
+
+            tableSheets.Add("RedeemCodeListSheet", "id,reward_id,public_key");
 
             return BlockHelper.ProposeGenesisBlock(
                 new ValidatorSet(initialValidatorSet.Select(v => new Validator(v.Key, v.Value)).ToList()),
