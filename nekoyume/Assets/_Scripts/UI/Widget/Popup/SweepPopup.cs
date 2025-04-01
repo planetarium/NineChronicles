@@ -387,6 +387,7 @@ namespace Nekoyume.UI
 
             if (!TryGetRequiredCP(stageRow.Id, out var row))
             {
+                NcDebug.LogError($"Not found required CP for stageId: {stageRow.Id}");
                 return;
             }
 
