@@ -91,11 +91,7 @@ namespace Nekoyume.UI
 
             foreach (var stage in world.Pages.SelectMany(page => page.Stages))
             {
-                stage.onClick.Subscribe(worldMapStage =>
-                {
-                    _sharedViewModel.SelectedStageId.Value =
-                        worldMapStage.SharedViewModel.stageId;
-                }).AddTo(gameObject);
+                stage.onClick.Subscribe(worldMapStage => SelectStage(worldMapStage)).AddTo(gameObject);
             }
 
             submitButton.OnSubmitSubject
@@ -448,6 +444,11 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public void SelectStage(WorldMapStage worldMapStage)
+        {
+            _sharedViewModel.SelectedStageId.Value = worldMapStage.SharedViewModel.stageId;
         }
     }
 }
