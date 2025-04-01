@@ -53,6 +53,11 @@ namespace Nekoyume.Game
             sw.Start();
             foreach (var pair in sheets)
             {
+                if (pair.Key == "RedeemCodeListSheet")
+                {
+                    continue;
+                }
+
                 var sheetPropertyInfo = type.GetProperty(pair.Key);
                 if (sheetPropertyInfo is null)
                 {
