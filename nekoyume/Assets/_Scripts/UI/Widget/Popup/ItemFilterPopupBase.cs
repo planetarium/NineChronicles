@@ -43,7 +43,8 @@ namespace Nekoyume.UI
             Epic = 1 << 2,
             Unique = 1 << 3,
             Legendary = 1 << 4,
-            Divinity = 1 << 5
+            Divinity = 1 << 5,
+            Mythic = 1 << 6,
         }
 
         [Flags]

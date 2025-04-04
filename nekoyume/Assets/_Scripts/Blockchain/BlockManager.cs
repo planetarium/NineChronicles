@@ -13,6 +13,10 @@ using Libplanet.Types.Consensus;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+#if UNITY_ANDROID
+using UnityEngine;
+using UnityEngine.Networking;
+#endif
 
 namespace Nekoyume.Blockchain
 {
