@@ -1,8 +1,8 @@
 name: Sync Project Status
 
 on:
-  project_card:
-    types: [created, edited, moved]
+  repository_dispatch:
+    types: [project_item_changed]
 
 jobs:
   sync-status:
@@ -12,6 +12,9 @@ jobs:
         with:
           github-token: ${{ secrets.PROJECTS_PAT }}
           script: |
+            const projectId = context.payload.project_id;
+            const itemId = context.payload.item_id;
+
             // 프로젝트 정보 가져오기
             const getProjectInfo = async (orgName, projectNumber) => {
               const query = `
@@ -114,7 +117,7 @@ jobs:
               // 현재 아이템의 상태 가져오기
               const itemStatus = await getItemStatus(
                 sourceProject.organization.projectV2.id,
-                context.payload.projects_v2_item.id
+                itemId
               );
 
               // 상태 필드 값 찾기
@@ -126,7 +129,7 @@ jobs:
                 // 대상 프로젝트에 상태 업데이트
                 await updateStatus(
                   targetProject.organization.projectV2.id,
-                  context.payload.projects_v2_item.id,
+                  itemId,
                   targetProject.organization.projectV2.field.id,
                   statusValue.optionId
                 );
