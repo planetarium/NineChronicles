@@ -1,8 +1,8 @@
 name: Sync Project Status
 
 on:
-  projects_v2_item:
-    types: [edited]
+  project_card:
+    types: [created, edited, moved]
 
 jobs:
   sync-status:
