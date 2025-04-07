@@ -1,0 +1,139 @@
+name: Sync Project Status
+
+on:
+  projects_v2_item:
+    types: [edited]
+
+jobs:
+  sync-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECTS_PAT }}
+          script: |
+            // 프로젝트 정보 가져오기
+            const getProjectInfo = async (orgName, projectNumber) => {
+              const query = `
+                query($orgName: String!, $projectNumber: Int!) {
+                  organization(login: $orgName) {
+                    projectV2(number: $projectNumber) {
+                      id
+                      field(name: "Status") {
+                        ... on ProjectV2SingleSelectField {
+                          id
+                          options {
+                            id
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `;
+
+              const variables = {
+                orgName: orgName,
+                projectNumber: projectNumber
+              };
+
+              return await github.graphql(query, variables);
+            };
+
+            // 아이템의 현재 상태 가져오기
+            const getItemStatus = async (projectId, itemId) => {
+              const query = `
+                query($projectId: ID!, $itemId: ID!) {
+                  node(id: $projectId) {
+                    ... on ProjectV2 {
+                      item(id: $itemId) {
+                        id
+                        fieldValues(first: 100) {
+                          nodes {
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              field {
+                                ... on ProjectV2SingleSelectField {
+                                  name
+                                }
+                              }
+                              optionId
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `;
+
+              const variables = {
+                projectId: projectId,
+                itemId: itemId
+              };
+
+              return await github.graphql(query, variables);
+            };
+
+            // 상태 업데이트
+            const updateStatus = async (projectId, itemId, fieldId, optionId) => {
+              const mutation = `
+                mutation($input: UpdateProjectV2ItemFieldValueInput!) {
+                  updateProjectV2ItemFieldValue(input: $input) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }
+              `;
+
+              const variables = {
+                input: {
+                  projectId: projectId,
+                  itemId: itemId,
+                  fieldId: fieldId,
+                  value: {
+                    singleSelectOptionId: optionId
+                  }
+                }
+              };
+
+              return await github.graphql(mutation, variables);
+            };
+
+            try {
+              // 조직과 프로젝트 정보 설정
+              const orgName = 'NineChronicles';
+              const sourceProjectNumber = 97; // 소스 프로젝트 번호
+              const targetProjectNumber = 121; // 대상 프로젝트 번호
+
+              // 프로젝트 정보 가져오기
+              const sourceProject = await getProjectInfo(orgName, sourceProjectNumber);
+              const targetProject = await getProjectInfo(orgName, targetProjectNumber);
+
+              // 현재 아이템의 상태 가져오기
+              const itemStatus = await getItemStatus(
+                sourceProject.organization.projectV2.id,
+                context.payload.projects_v2_item.id
+              );
+
+              // 상태 필드 값 찾기
+              const statusValue = itemStatus.node.item.fieldValues.nodes.find(
+                node => node.field?.name === 'Status'
+              );
+
+              if (statusValue) {
+                // 대상 프로젝트에 상태 업데이트
+                await updateStatus(
+                  targetProject.organization.projectV2.id,
+                  context.payload.projects_v2_item.id,
+                  targetProject.organization.projectV2.field.id,
+                  statusValue.optionId
+                );
+
+                console.log('프로젝트 상태가 성공적으로 동기화되었습니다.');
+              }
+            } catch (error) {
+              console.error('상태 동기화 중 오류 발생:', error);
+              console.error(error.message);
+            }
