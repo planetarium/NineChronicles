@@ -91,6 +91,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
   - {fileID: 21300000, guid: 833f5ac8afbf841a8afcb0bba773bb3a, type: 3}
   - {fileID: 21300000, guid: b8b531f80d8c54c8fa32aca4b1e0d131, type: 3}
+  - {fileID: 21300000, guid: fc3a6b39f12efc1438c0cad2cd92c5c9, type: 3}
   - {fileID: 21300000, guid: 741b5c49251541a48808f4b8bada183f, type: 3}
   - {fileID: 21300000, guid: 59873f6913f1768459d893e17e71144d, type: 3}
   - {fileID: 21300000, guid: c38cbe89fdcd54cbebec4ae89e0a963f, type: 3}
@@ -102,6 +103,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f, type: 3}
   - {fileID: 21300000, guid: f64aba6b841f29842be539ece55d2a8c, type: 3}
   - {fileID: 21300000, guid: 422257ab05689ed408d38a1f72ecbd0e, type: 3}
+  - {fileID: 21300000, guid: 37ca5bdbcc264134c85dbba5708363e2, type: 3}
   - {fileID: 21300000, guid: 888f99eb2ada04b76b7fe078e4c8f939, type: 3}
   - {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0, type: 3}
   - {fileID: 21300000, guid: a211b81cab9ea4d7983481fb61681507, type: 3}
@@ -123,6 +125,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 92eaf97fa71b14b38ba99a2474f7e55b, type: 3}
   - {fileID: 21300000, guid: 854fb0ff4786a460383fecc53d2aef82, type: 3}
   - {fileID: 21300000, guid: 4ba9c7ff7111fda41801b14ccee7f82c, type: 3}
+  - {fileID: 21300000, guid: 0f5489ff01d20084aa4adff26024ea0c, type: 3}
   m_PackedSpriteNamesToIndex:
   - battle_UI_icon_07
   - bg_worldmap_hardmode_icon_03
@@ -165,6 +168,7 @@ SpriteAtlas:
   - battle_UI_icon_01
   - bg_worldmap_winterevent_icon_03
   - bg_worldmap_muspelheim_icon_03
+  - bg_worldmap_Vanaheim_icon_03
   - battle_UI_icon_09
   - bg_worldmap_ragnarokevent_icon_02
   - bg_worldmap_svartalfaheimr_icon_01
@@ -176,6 +180,7 @@ SpriteAtlas:
   - bg_worldmap_hardmode_icon_02
   - bg_worldmap_anniversaryevent_icon_03
   - bg_worldmap_adventureboss_icon_01
+  - bg_worldmap_Vanaheim_icon_01
   - bg_worldmap_winterevent_icon_02
   - bg_worldmap_svartalfaheimr_icon_03
   - bg_worldmap_yggdrasil_icon_01
@@ -197,6 +202,7 @@ SpriteAtlas:
   - bg_worldmap_event_icon_02
   - bg_worldmap_yggdrasil_icon_02
   - UI_icon_lock_02
+  - bg_worldmap_Vanaheim_icon_02
   m_RenderDataMap: {}
   m_Tag: Atlas_Worldmap
   m_IsVariant: 0
