@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Nekoyume.ApiClient;
 using Nekoyume.GraphQL;
-using Debug = UnityEngine.Debug;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Model
@@ -32,7 +31,7 @@ namespace Nekoyume.UI.Model
 
         public Task Update(int displayCount)
         {
-            var apiClient = ApiClients.Instance.DataProviderClient;
+            var apiClient = ApiClients.Instance.MimirClient;
 
             if (apiClient.IsInitialized)
             {
@@ -42,10 +41,10 @@ namespace Nekoyume.UI.Model
                     sw.Stop();
                     sw.Start();
                     await Task.WhenAll(
-                        LoadAbilityRankingInfos(apiClient, displayCount),
-                        LoadStageRankingInfos(apiClient, displayCount),
-                        LoadCraftRankingInfos(apiClient, displayCount),
-                        LoadEquipmentRankingInfos(apiClient, displayCount)
+                        LoadAbilityRankingInfos(apiClient, 0, displayCount),
+                        LoadStageRankingInfos(apiClient, 0, displayCount)
+                        // LoadCraftRankingInfos(apiClient, displayCount),
+                        // LoadEquipmentRankingInfos(apiClient, displayCount)
                     );
                     IsInitialized = true;
                     sw.Stop();
@@ -56,41 +55,43 @@ namespace Nekoyume.UI.Model
             return Task.CompletedTask;
         }
 
-        private async Task LoadAbilityRankingInfos(NineChroniclesAPIClient apiClient, int displayCount)
+        private async Task LoadAbilityRankingInfos(NineChroniclesAPIClient apiClient, int offset, int displayCount)
         {
-            var query =
-                $@"query {{
-                        abilityRanking(limit: {displayCount}) {{
-                            ranking
-                            avatarAddress
-                            name
-                            avatarLevel
-                            armorId
-                            titleId
-                            cp
+            string fetchAbilityRankingQuery = $@"
+                query FetchAbilityRanking {{
+                  adventureCpRanking(skip: {offset}, take: {displayCount}) {{
+                    items {{
+                      avatar {{
+                        armorId
+                        portraitId
+                        object {{
+                          address
+                          name
+                          level
                         }}
-                    }}";
+                      }}
+                      cp
+                    }}
+                  }}
+                }}";
 
-            var response = await apiClient.GetObjectAsync<AbilityRankingResponse>(query);
+            var response = await apiClient.GetObjectAsync<AdventureCpRankingResponse>(fetchAbilityRankingQuery);
             if (response is null)
             {
-                NcDebug.LogError($"Failed getting response : {nameof(AbilityRankingResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(AdventureCpRankingResponse)}");
                 return;
             }
 
-            AbilityRankingInfos = response.AbilityRanking
-                .Select(e =>
+            AbilityRankingInfos = response.AdventureCpRanking.Items
+                .Select((e, index) => new AbilityRankingModel
                 {
-                    return new AbilityRankingModel
-                    {
-                        Rank = e.Ranking,
-                        AvatarAddress = e.AvatarAddress,
-                        Name = e.Name,
-                        AvatarLevel = e.AvatarLevel,
-                        ArmorId = e.ArmorId,
-                        TitleId = e.TitleId,
-                        Cp = e.Cp
-                    };
+                    Rank = index + 1,
+                    AvatarAddress = e.Avatar.Object.Address,
+                    Name = e.Avatar.Object.Name,
+                    AvatarLevel = e.Avatar.Object.Level,
+                    ArmorId = e.Avatar.ArmorId,
+                    TitleId = e.Avatar.PortraitId,
+                    Cp = e.Cp,
                 })
                 .Select(t => t)
                 .Where(e => e != null)
@@ -99,27 +100,27 @@ namespace Nekoyume.UI.Model
             var avatarStates = States.Instance.AvatarStates.ToList();
             foreach (var pair in avatarStates)
             {
-                var myInfoQuery =
-                    $@"query {{
-                            abilityRanking(avatarAddress: ""{pair.Value.address}"") {{
-                                ranking
-                                avatarAddress
-                                name
-                                avatarLevel
-                                armorId
-                                titleId
-                                cp
-                            }}
-                        }}";
+                string fetchMyAdventureCpRankingQuery = $@"
+                    query FetchMyAdventureCpRanking {{
+                      myAdventureCpRanking(address: ""{pair.Value.address}"") {{
+                        rank
+                        userDocument {{
+                          address
+                          cp
+                          id
+                          storedBlockIndex
+                        }}
+                      }}
+                    }}";
 
-                var myInfoResponse = await apiClient.GetObjectAsync<AbilityRankingResponse>(myInfoQuery);
+                var myInfoResponse = await apiClient.GetObjectAsync<MyAdventureCpRankingResponse>(fetchMyAdventureCpRankingQuery);
                 if (myInfoResponse is null)
                 {
                     NcDebug.LogError("Failed getting my ranking record.");
                     continue;
                 }
 
-                var myRecord = myInfoResponse.AbilityRanking.FirstOrDefault();
+                var myRecord = myInfoResponse.MyAdventureCpRanking;
                 if (myRecord is null)
                 {
                     NcDebug.LogWarning($"{nameof(AbilityRankingRecord)} not exists.");
@@ -128,51 +129,56 @@ namespace Nekoyume.UI.Model
 
                 AgentAbilityRankingInfos[pair.Key] = new AbilityRankingModel
                 {
-                    Rank = myRecord.Ranking,
-                    AvatarAddress = myRecord.AvatarAddress,
-                    Name = myRecord.Name,
-                    AvatarLevel = myRecord.AvatarLevel,
-                    ArmorId = myRecord.ArmorId,
-                    TitleId = myRecord.TitleId,
-                    Cp = myRecord.Cp
+                    Rank = myRecord.Rank,
+                    AvatarAddress = myRecord.UserDocument.Address,
+                    Name = pair.Value.name,
+                    AvatarLevel = pair.Value.level,
+                    ArmorId = pair.Value.GetArmorId(),
+                    TitleId = pair.Value.GetPortraitId(),
+                    Cp = myRecord.UserDocument.Cp,
                 };
             }
         }
 
-        private async Task LoadStageRankingInfos(NineChroniclesAPIClient apiClient, int displayCount)
+        private async Task LoadStageRankingInfos(NineChroniclesAPIClient apiClient, int offset, int displayCount)
         {
-            var query =
-                $@"query {{
-                        stageRanking(limit: {displayCount}) {{
-                            ranking
-                            avatarAddress
-                            name
-                            avatarLevel
-                            armorId
-                            titleId
-                            clearedStageId
+            string fetchStageRanking100Query = $@"
+                query FetchStageRanking100 {{
+                  worldInformationRanking(skip: {offset}, take: {displayCount}) {{
+                    items {{
+                      lastStageClearedId
+                      avatar {{
+                        armorId
+                        portraitId
+                        object {{
+                          address
+                          name
+                          level
                         }}
-                    }}";
+                      }}
+                    }}
+                  }}
+                }}";
 
-            var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
+            var response = await apiClient.GetObjectAsync<WorldInformationRankingResponse>(fetchStageRanking100Query);
             if (response is null)
             {
-                NcDebug.LogError($"Failed getting response : {nameof(StageRankingResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(WorldInformationRankingResponse)}");
                 return;
             }
 
-            StageRankingInfos = response.StageRanking
-                .Select(e =>
+            StageRankingInfos = response.WorldInformationRanking.Items
+                .Select((e, index) =>
                 {
                     return new StageRankingModel
                     {
-                        Rank = e.Ranking,
-                        AvatarAddress = e.AvatarAddress,
-                        Name = e.Name,
-                        AvatarLevel = e.AvatarLevel,
-                        ArmorId = e.ArmorId,
-                        TitleId = e.TitleId,
-                        ClearedStageId = e.ClearedStageId
+                        Rank = index + 1,
+                        AvatarAddress = e.Avatar.Object.Address,
+                        Name = e.Avatar.Object.Name,
+                        AvatarLevel = e.Avatar.Object.Level,
+                        ArmorId = e.Avatar.ArmorId,
+                        TitleId = e.Avatar.PortraitId,
+                        ClearedStageId = e.LastStageClearedId,
                     };
                 })
                 .Select(t => t)
@@ -182,42 +188,42 @@ namespace Nekoyume.UI.Model
             var avatarStates = States.Instance.AvatarStates.ToList();
             foreach (var pair in avatarStates)
             {
-                var myInfoQuery =
-                    $@"query {{
-                            stageRanking(avatarAddress: ""{pair.Value.address}"") {{
-                                ranking
-                                avatarAddress
-                                name
-                                avatarLevel
-                                armorId
-                                titleId
-                                clearedStageId
-                            }}
-                        }}";
+                string fetchMyStageRankingQuery = $@"
+                    query FetchMyStageRanking {{
+                      myWorldInformationRanking(address: ""{pair.Value.address}"") {{
+                        rank
+                        userDocument {{
+                          address
+                          id
+                          lastStageClearedId
+                          storedBlockIndex
+                        }}
+                      }}
+                    }}";
 
-                var myInfoResponse = await apiClient.GetObjectAsync<StageRankingResponse>(myInfoQuery);
+                var myInfoResponse = await apiClient.GetObjectAsync<MyWorldInformationRankingResponse>(fetchMyStageRankingQuery);
                 if (myInfoResponse is null)
                 {
                     NcDebug.LogError("Failed getting my ranking record.");
                     continue;
                 }
 
-                var myRecord = myInfoResponse.StageRanking.FirstOrDefault();
+                var myRecord = myInfoResponse.MyWorldInformationRanking;
                 if (myRecord is null)
                 {
-                    NcDebug.LogWarning($"{nameof(StageRankingRecord)} not exists.");
+                    NcDebug.LogWarning($"{nameof(MyWorldInformationRankingResponse)} not exists.");
                     continue;
                 }
 
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    Rank = myRecord.Ranking,
-                    AvatarAddress = myRecord.AvatarAddress,
-                    Name = myRecord.Name,
-                    AvatarLevel = myRecord.AvatarLevel,
-                    ArmorId = myRecord.ArmorId,
-                    TitleId = myRecord.TitleId,
-                    ClearedStageId = myRecord.ClearedStageId
+                    Rank = myRecord.Rank,
+                    AvatarAddress = myRecord.UserDocument.Address,
+                    Name = pair.Value.name,
+                    AvatarLevel = pair.Value.level,
+                    ArmorId = pair.Value.GetArmorId(),
+                    TitleId = pair.Value.GetPortraitId(),
+                    ClearedStageId = myRecord.UserDocument.LastStageClearedId,
                 };
             }
         }

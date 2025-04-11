@@ -54,5 +54,8 @@ namespace Nekoyume.Multiplanetary
 
         [JsonPropertyName("arena.rest")]
         public List<string> ArenaRest { get; set; } = new();
+
+        [JsonPropertyName("mimir.gql")]
+        public List<string> MimirGql { get; set; } = new();
     }
 }
