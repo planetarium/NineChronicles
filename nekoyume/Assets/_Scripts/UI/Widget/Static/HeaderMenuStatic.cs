@@ -328,15 +328,6 @@ namespace Nekoyume.UI.Module
                             }
                         });
                         break;
-                    case ToggleType.Rank:
-                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
-                        {
-                            if (value)
-                            {
-                                Find<TitleOneButtonSystem>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_MAINTENANCE");
-                            }
-                        });
-                        break;
                     default:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
