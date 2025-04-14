@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Nekoyume.UI.Model
 {
+#region Legacy
     public class RankingModel
     {
         public int? Rank;
@@ -15,7 +16,7 @@ namespace Nekoyume.UI.Model
 
     public class AbilityRankingModel : RankingModel
     {
-        public int Cp;
+        public long Cp;
     }
 
     public class StageRankingModel : RankingModel
@@ -86,4 +87,91 @@ namespace Nekoyume.UI.Model
         public int Cp;
         public int EquipmentId;
     }
+#endregion Legacy
+
+#region Mimir
+    public class GameObjectInfo
+    {
+        public string Address { get; set; }
+        public string Name { get; set; }
+        public int Level { get; set; }
+    }
+
+    public class AvatarInfo
+    {
+        public int ArmorId { get; set; }
+        public int PortraitId { get; set; }
+        public GameObjectInfo Object { get; set; }
+    }
+
+    public class UserDocument
+    {
+        public string Address { get; set; }
+        public int Cp { get; set; }
+        public string Id { get; set; }
+        public int StoredBlockIndex { get; set; }
+    }
+
+    public class AdventureCpRankingItem
+    {
+        public AvatarInfo Avatar { get; set; }
+        public long Cp { get; set; }
+    }
+
+    public class AdventureCpRankingData
+    {
+        public List<AdventureCpRankingItem> Items { get; set; }
+    }
+
+    public class AdventureCpRankingResponse
+    {
+        public AdventureCpRankingData AdventureCpRanking { get; set; }
+    }
+
+    public class MyAdventureCpRankingData
+    {
+        public int Rank { get; set; }
+        public UserDocument UserDocument { get; set; }
+    }
+
+    public class MyAdventureCpRankingResponse
+    {
+        public MyAdventureCpRankingData MyAdventureCpRanking { get; set; }
+    }
+    public class StageRankingItem
+    {
+        public int LastStageClearedId { get; set; }
+        public AvatarInfo Avatar { get; set; }
+    }
+
+    public class WorldInformationRankingData
+    {
+        public List<StageRankingItem> Items { get; set; }
+    }
+
+    public class WorldInformationRankingResponse
+    {
+        public WorldInformationRankingData WorldInformationRanking { get; set; }
+    }
+
+    public class MyWorldInformationRankingData
+    {
+        public int Rank { get; set; }
+        public MyWorldUserDocument UserDocument { get; set; }
+    }
+
+    public class MyWorldUserDocument
+    {
+        public string Address { get; set; }
+        public string Id { get; set; }
+        public int LastStageClearedId { get; set; }
+        public int StoredBlockIndex { get; set; }
+    }
+
+    public class MyWorldInformationRankingResponse
+    {
+        public MyWorldInformationRankingData MyWorldInformationRanking { get; set; }
+    }
+
+#endregion Mimir
 }
