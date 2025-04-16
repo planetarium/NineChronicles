@@ -157,7 +157,7 @@ jobs:
       || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         targetPlatform:
@@ -207,7 +207,7 @@ jobs:
       || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [ extract, release ]
     environment:
       name: ${{ needs.extract.outputs.network }}
