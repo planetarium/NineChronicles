@@ -21,14 +21,14 @@ namespace Nekoyume.UI.Module
         {
             Unlocked,
             Locked,
-            Unlockable
+            Unlockable,
         }
 
         private enum AnimationState
         {
             None,
             Idle,
-            Hover
+            Hover,
         }
 
         [SerializeField]

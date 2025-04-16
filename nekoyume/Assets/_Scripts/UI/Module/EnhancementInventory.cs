@@ -30,7 +30,8 @@ namespace Nekoyume.UI.Module
             Epic,
             Unique,
             Legend,
-            Divinity
+            Divinity,
+            Mythic,
         }
 
         private enum Elemental

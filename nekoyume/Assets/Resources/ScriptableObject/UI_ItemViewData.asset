@@ -26,7 +26,7 @@ MonoBehaviour:
   - grade: 1
     gradeBackground: {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
     gradeHsvRange: 0.5
-    gradeHsvHue: 0
+    gradeHsvHue: 0.004
     gradeHsvSaturation: 0
     gradeHsvValue: 0
     enhancementMaterial: {fileID: 2100000, guid: fffce470be0364f8fac6ed42147cdb68,
@@ -75,5 +75,14 @@ MonoBehaviour:
     gradeHsvSaturation: 0.493
     gradeHsvValue: 0.05
     enhancementMaterial: {fileID: 2100000, guid: 4a37678f75e9c3e4fa67b79e0891e313,
+      type: 2}
+    itemGradeParticleColor: {r: 0, g: 0, b: 0, a: 0}
+  - grade: 7
+    gradeBackground: {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0.135
+    gradeHsvSaturation: 0.16
+    gradeHsvValue: 0.16
+    enhancementMaterial: {fileID: 2100000, guid: 3f27014fefbe1164eb3937537a1474dd,
       type: 2}
     itemGradeParticleColor: {r: 0, g: 0, b: 0, a: 0}
