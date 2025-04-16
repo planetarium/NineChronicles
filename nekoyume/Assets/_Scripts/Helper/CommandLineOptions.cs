@@ -104,6 +104,8 @@ namespace Nekoyume.Helper
 
         private string _appleMarketUrl;
 
+        private string mimirServiceHost;
+
         private bool _requiredUpdate;
 
         private string _guildServiceUrl;
@@ -307,6 +309,17 @@ namespace Nekoyume.Helper
                 {
                     Empty = false;
                 }
+            }
+        }
+
+        [Option("mimir-service-hosts", Required = false, HelpText = "The host names for client mode.")]
+        public string MimirServiceHost
+        {
+            get => mimirServiceHost;
+            set
+            {
+                mimirServiceHost = value;
+                Empty = false;
             }
         }
 

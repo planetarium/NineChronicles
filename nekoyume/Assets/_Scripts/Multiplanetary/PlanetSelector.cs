@@ -367,6 +367,9 @@ namespace Nekoyume.Multiplanetary
             clo.ArenaServiceHost = rpcEndpoints.ArenaRest.Count > 0
                 ? rpcEndpoints.ArenaRest[Random.Range(0, rpcEndpoints.ArenaRest.Count)]
                 : null;
+            clo.MimirServiceHost = rpcEndpoints.MimirGql.Count > 0
+                ? rpcEndpoints.MimirGql[Random.Range(0, rpcEndpoints.MimirGql.Count)]
+                : null;
 
             clo.GuildServiceUrl = rpcEndpoints.GuildRest.Any()
                 ? rpcEndpoints.GuildRest.First()
