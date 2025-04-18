@@ -423,35 +423,90 @@ namespace Nekoyume.UI
 
         private bool ShowManyWorldUnlockPopup(WorldInformation worldInformation)
         {
-            if (worldInformation.TryGetLastClearedStageId(out var stageId))
+            if (!worldInformation.TryGetLastClearedStageId(out var stageId))
             {
-                var tableSheets = TableSheets.Instance;
-                var countOfCanUnlockWorld = Math.Min(stageId / 50,
-                    tableSheets.WorldUnlockSheet.Count - 1);
-                var worldIdListForUnlock = Enumerable.Range(2, countOfCanUnlockWorld)
-                    .Where(i => !SharedViewModel.UnlockedWorldIds.Contains(i))
-                    .ToList();
-
-                if (worldIdListForUnlock.Count > 1)
-                {
-                    var paymentPopup = Find<PaymentPopup>();
-                    var cost = CrystalCalculator.CalculateWorldUnlockCost(worldIdListForUnlock,
-                        tableSheets.WorldUnlockSheet).MajorUnit;
-                    paymentPopup.ShowCheckPaymentCrystal(
-                        States.Instance.CrystalBalance.MajorUnit,
-                        cost,
-                        L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
-                        () =>
-                        {
-                            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);
-                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int)cost)
-                                .Subscribe();
-                        });
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            var stageGap = 50;
+            var worldSheet = TableSheets.Instance.WorldSheet;
+            var currentWorld = worldSheet?
+                .OrderedList?
+                .FirstOrDefault(row => row.StageBegin <= stageId && row.StageEnd >= stageId);
+
+            if (currentWorld is not null)
+            {
+                stageGap = currentWorld.StageEnd - currentWorld.StageBegin + 1;
+            }
+
+            var tableSheets = TableSheets.Instance;
+            var countOfCanUnlockWorld = Math.Min(stageId / stageGap,
+                tableSheets.WorldUnlockSheet.Count - 1);
+            var worldIdListForUnlock = Enumerable.Range(2, countOfCanUnlockWorld)
+                .Where(i => !SharedViewModel.UnlockedWorldIds.Contains(i))
+                .ToList();
+
+            if (worldIdListForUnlock.Count <= 1)
+            {
+                return false;
+            }
+
+            var paymentPopup = Find<PaymentPopup>();
+            var cost = CrystalCalculator.CalculateWorldUnlockCost(worldIdListForUnlock,
+                tableSheets.WorldUnlockSheet).MajorUnit;
+            paymentPopup.ShowCheckPaymentCrystal(
+                States.Instance.CrystalBalance.MajorUnit,
+                cost,
+                L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                () =>
+                {
+                    Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);
+                    ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int)cost)
+                        .Subscribe();
+                });
+
+            return true;
+        }
+
+        private int GetCountOfCanUnlockWorld(int stageId)
+        {
+            var countOfCanUnlockWorld = 0;
+            var copyOfStageId = stageId;
+
+            while(copyOfStageId > 0)
+            {
+                var stageGap = GetStageGap(copyOfStageId);
+                copyOfStageId -= stageGap;
+                countOfCanUnlockWorld++;
+            }
+
+            return countOfCanUnlockWorld;
+        }
+
+        private int GetStageGap(int stageId)
+        {
+            var stageGap = 50;
+            var worldSheet = TableSheets.Instance.WorldSheet;
+            var currentWorld = worldSheet?
+                .OrderedList?
+                .FirstOrDefault(row => row.StageBegin <= stageId && row.StageEnd >= stageId);
+
+            if (currentWorld is null)
+            {
+                return stageGap;
+            }
+
+            stageGap = currentWorld.StageEnd - currentWorld.StageBegin + 1;
+
+            if (stageGap > 0)
+            {
+                return stageGap;
+            }
+
+            NcDebug.LogWarning($"Invalid stage gap computed: {stageGap}. Using default value of 50.");
+            stageGap = 50;
+
+            return stageGap;
         }
 
         private void SetWorldOpenCostTextColor(FungibleAssetValue crystal)
