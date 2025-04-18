@@ -491,10 +491,20 @@ namespace Nekoyume.UI
                 .OrderedList?
                 .FirstOrDefault(row => row.StageBegin <= stageId && row.StageEnd >= stageId);
 
-            if (currentWorld is not null)
+            if (currentWorld is null)
             {
-                stageGap = currentWorld.StageEnd - currentWorld.StageBegin + 1;
+                return stageGap;
             }
+
+            stageGap = currentWorld.StageEnd - currentWorld.StageBegin + 1;
+
+            if (stageGap > 0)
+            {
+                return stageGap;
+            }
+
+            NcDebug.LogWarning($"Invalid stage gap computed: {stageGap}. Using default value of 50.");
+            stageGap = 50;
 
             return stageGap;
         }
