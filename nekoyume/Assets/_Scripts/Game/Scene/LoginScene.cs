@@ -688,7 +688,7 @@ namespace Nekoyume.Game.Scene
         private void ShowMaintenancePopup()
         {
             var w = Widget.Create<IconAndButtonSystem>();
-            w.ConfirmCallback = () => Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
+            w.ConfirmCallback = () => Nekoyume.Helper.Util.OpenURL(LiveAsset.GameConfig.DiscordLink);
             if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
             {
                 w.SetCancelCallbackToBackup();
@@ -717,7 +717,7 @@ namespace Nekoyume.Game.Scene
             {
                 if (result == ConfirmResult.Yes)
                 {
-                    Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
+                    Nekoyume.Helper.Util.OpenURL(LiveAsset.GameConfig.DiscordLink);
                 }
 
                 Game.ApplicationQuit();

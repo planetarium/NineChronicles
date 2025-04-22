@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,11 @@ namespace Nekoyume.Helper
 {
     public static class Util
     {
+#if UNITY_IOS
+        [DllImport("__Internal")]
+        private static extern void _OpenURL(string url);
+#endif
+
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> EventEquipmentRecipes = new() { 158, 159, 160, 256, 257, };
@@ -689,6 +695,15 @@ namespace Nekoyume.Helper
             {
                 NcDebug.LogWarning("[SetActiveSafe] fail");
             }
+        }
+
+        public static void OpenURL(string url)
+        {
+#if UNITY_IOS
+	        _OpenURL(url);
+#else
+            Application.OpenURL(url);
+#endif
         }
     }
 }
