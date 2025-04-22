@@ -1,5 +1,5 @@
-using Nekoyume.Model.State;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Nekoyume.UI.Model
 {
@@ -99,8 +99,8 @@ namespace Nekoyume.UI.Model
 
     public class AvatarInfo
     {
-        public int ArmorId { get; set; }
-        public int PortraitId { get; set; }
+        public int? ArmorId { get; set; }
+        public int? PortraitId { get; set; }
         public GameObjectInfo Object { get; set; }
     }
 
@@ -130,7 +130,8 @@ namespace Nekoyume.UI.Model
 
     public class MyAdventureCpRankingData
     {
-        public int Rank { get; set; }
+        public int? Rank { get; set; }
+        [CanBeNull]
         public UserDocument UserDocument { get; set; }
     }
 
@@ -141,6 +142,7 @@ namespace Nekoyume.UI.Model
     public class StageRankingItem
     {
         public int LastStageClearedId { get; set; }
+        [CanBeNull]
         public AvatarInfo Avatar { get; set; }
     }
 
@@ -156,7 +158,8 @@ namespace Nekoyume.UI.Model
 
     public class MyWorldInformationRankingData
     {
-        public int Rank { get; set; }
+        public int? Rank { get; set; }
+        [CanBeNull]
         public MyWorldUserDocument UserDocument { get; set; }
     }
 
