@@ -80,7 +80,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     NcDebug.LogError("The prize detail site URL is empty.");
                     return;
                 }
-                Application.OpenURL(_seasonData?.PrizeDetailSiteURL);
+                Util.OpenURL(_seasonData?.PrizeDetailSiteURL);
             }).AddTo(gameObject);
         }
 

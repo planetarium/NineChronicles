@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
 
         private void OnClickButton()
         {
-            Application.OpenURL(websiteLink);
+            Helper.Util.OpenURL(websiteLink);
         }
     }
 }

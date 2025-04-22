@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
                     url = string.Format(url, address);
                 }
 
-                Application.OpenURL(url);
+                Helper.Util.OpenURL(url);
             });
         }
 

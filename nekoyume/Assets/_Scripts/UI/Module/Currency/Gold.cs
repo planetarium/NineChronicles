@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module
 
         private void OnClickOnlineShopButton()
         {
-            Application.OpenURL(OnlineShopLink);
+            Helper.Util.OpenURL(OnlineShopLink);
         }
 
         private void ShowMaterialNavigationPopup()

@@ -83,12 +83,12 @@ namespace Nekoyume.UI
                 url = $"{urlRoot}?agentAddress=0x{agentAddress}&agentSignTimestamp={message}&agentSignature={signature}&agentPub={publicKey}";
             }
 
-            Application.OpenURL(url);
+            Helper.Util.OpenURL(url);
         }
 
         private static void ConnectOpenSea()
         {
-            Application.OpenURL(OpenSeaURL);
+            Helper.Util.OpenURL(OpenSeaURL);
         }
     }
 }

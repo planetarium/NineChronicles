@@ -241,10 +241,10 @@ namespace Nekoyume.UI
                 switch (result)
                 {
                     case ConfirmResult.Yes:
-                        Application.OpenURL(seasonPassManager.GoogleMarketURL);
+                        Helper.Util.OpenURL(seasonPassManager.GoogleMarketURL);
                         break;
                     case ConfirmResult.No:
-                        Application.OpenURL(seasonPassManager.AppleMarketURL);
+                        Helper.Util.OpenURL(seasonPassManager.AppleMarketURL);
                         break;
                     default:
                         break;

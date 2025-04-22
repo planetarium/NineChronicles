@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                Application.OpenURL(url);
+                Helper.Util.OpenURL(url);
             }).AddTo(gameObject);
         }
     }

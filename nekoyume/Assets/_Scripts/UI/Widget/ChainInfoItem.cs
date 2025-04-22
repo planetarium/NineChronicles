@@ -67,7 +67,7 @@ namespace Nekoyume.UI
             var targetUrl = thorSchedule is null ? DefaultUrl : thorSchedule.InformationUrl;
 
             NcDebug.Log($"On Open Detail Web Page: {targetUrl}, number of subscribers: {_onOpenDetailWebPage?.GetInvocationList().Length}");
-            Application.OpenURL(targetUrl);
+            Helper.Util.OpenURL(targetUrl);
             _onOpenDetailWebPage?.Invoke();
         }
     }
