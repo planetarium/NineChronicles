@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Model
                     AvatarAddress = e.Avatar.Object.Address,
                     Name = e.Avatar.Object.Name,
                     AvatarLevel = e.Avatar.Object.Level,
-                    ArmorId = e.Avatar.ArmorId,
+                    ArmorId = e.Avatar.ArmorId ?? GameConfig.DefaultAvatarArmorId,
                     Cp = e.Cp,
                 })
                 .Select(t => t)
@@ -171,11 +171,11 @@ namespace Nekoyume.UI.Model
                     return new StageRankingModel
                     {
                         Rank = index + 1,
-                        AvatarAddress = e.Avatar.Object.Address,
-                        Name = e.Avatar.Object.Name,
-                        AvatarLevel = e.Avatar.Object.Level,
-                        ArmorId = e.Avatar.ArmorId,
-                        TitleId = e.Avatar.PortraitId,
+                        AvatarAddress = e.Avatar?.Object.Address,
+                        Name = e.Avatar?.Object.Name,
+                        AvatarLevel = e.Avatar?.Object.Level ?? 0,
+                        ArmorId = e.Avatar?.ArmorId ?? GameConfig.DefaultAvatarArmorId,
+                        TitleId = e.Avatar?.PortraitId,
                         ClearedStageId = e.LastStageClearedId,
                     };
                 })
