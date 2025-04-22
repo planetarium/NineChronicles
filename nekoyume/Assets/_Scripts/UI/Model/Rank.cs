@@ -63,7 +63,6 @@ namespace Nekoyume.UI.Model
                     items {{
                       avatar {{
                         armorId
-                        portraitId
                         object {{
                           address
                           name
@@ -90,7 +89,6 @@ namespace Nekoyume.UI.Model
                     Name = e.Avatar.Object.Name,
                     AvatarLevel = e.Avatar.Object.Level,
                     ArmorId = e.Avatar.ArmorId,
-                    TitleId = e.Avatar.PortraitId,
                     Cp = e.Cp,
                 })
                 .Select(t => t)
