@@ -1616,7 +1616,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            Application.OpenURL(updateUrl);
+            Nekoyume.Helper.Util.OpenURL(updateUrl);
         }
 
         public static void ApplicationQuit()

@@ -442,7 +442,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_CANCEL"),
                 false,
                 IconAndButtonSystem.SystemType.Information);
-            var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Application.OpenURL(linkInfo.GetLinkID()); });
+            var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Util.OpenURL(linkInfo.GetLinkID()); });
             confirmUI.ConfirmCallback = () =>
             {
                 var majorUnit = States.Instance.StakedBalance.MajorUnit;

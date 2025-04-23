@@ -742,7 +742,7 @@ namespace Nekoyume.UI
             popup.SubmitCallback = () =>
             {
                 popup.Close();
-                Application.OpenURL("http://nine-chronicles.com/connect-guide");
+                Util.OpenURL("http://nine-chronicles.com/connect-guide");
             };
             popup.Show(
                 L10nManager.Localize("UI_INFORMATION_CHARACTER_SELECT"),
