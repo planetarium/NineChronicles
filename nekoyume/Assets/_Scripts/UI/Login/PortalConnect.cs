@@ -115,7 +115,7 @@ namespace Nekoyume.UI
             _onPortalEnd = onPortalEnd;
 
             clientSecret = GetClientSecret();
-            Application.OpenURL(url);
+            Util.OpenURL(url);
             Analyzer.Instance.Track("Unity/Portal/1");
         }
 
@@ -123,7 +123,7 @@ namespace Nekoyume.UI
         {
             var url = $"{PortalUrl}{PortalRewardEndpoint}";
             NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortalRewardUrl)} invoked: url({url})");
-            Application.OpenURL(url);
+            Util.OpenURL(url);
         }
 
         private void OnDeepLinkActivated(string url)

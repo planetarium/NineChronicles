@@ -277,6 +277,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Character
+  - m_GUID: 94be04682551f5e4a94bb5227cb0485b
+    m_Address: body_skin_10270000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 61906a4fa556a754c9080c10b1d29554
+    m_Address: 40100044_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
   m_SchemaSet:

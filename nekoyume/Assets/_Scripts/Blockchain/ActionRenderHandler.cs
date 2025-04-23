@@ -3448,34 +3448,27 @@ namespace Nekoyume.Blockchain
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
 
-        private (ActionEvaluation<ClaimWorldBossReward>, WorldBossRewardMail, AvatarState) PrepareClaimWorldBossReward(
+        private (ActionEvaluation<ClaimWorldBossReward>, AvatarState) PrepareClaimWorldBossReward(
             ActionEvaluation<ClaimWorldBossReward> eval)
         {
             var gameStates = Game.Game.instance.States;
-            var agentAddr = gameStates.AgentState.address;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
 
-            var mailBox = avatarState.mailBox;
             UpdateCurrentAvatarStateAsync(avatarState).Forget();
-            var mail = mailBox.OfType<WorldBossRewardMail>()
-                .First(r => r.blockIndex == eval.BlockIndex);
-
             UpdateCurrentAvatarRuneStoneBalance(eval);
             UpdateCrystalBalance(eval);
             UpdateCurrentAvatarInventory(eval);
 
-            return (eval, mail, avatarState);
+            return (eval, avatarState);
         }
 
-        private static void ResponseClaimWorldBossReward((ActionEvaluation<ClaimWorldBossReward> eval, WorldBossRewardMail mail, AvatarState avatarState) prepared)
+        private static void ResponseClaimWorldBossReward((ActionEvaluation<ClaimWorldBossReward> eval, AvatarState avatarState) prepared)
         {
             var eval = prepared.eval;
-            var worldBossRewardMail = prepared.mail;
 
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress).Forget();
 
             var worldBossReward = Widget.Find<WorldBossDetail>();
             worldBossReward.OnRenderSeasonReward();
@@ -3489,54 +3482,67 @@ namespace Nekoyume.Blockchain
                     NotificationCell.NotificationType.Alert);
                 return;
             }
-            LocalLayerModifier.AddNewMail(prepared.avatarState, prepared.mail.id);
-            OneLineSystem.Push(
-                MailType.System,
-                L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED"),
-                NotificationCell.NotificationType.Notification);
 
-            var rewards = new List<MailReward>();
-            if (worldBossRewardMail.FungibleAssetValues is not null)
+            UniTask.Run(async () =>
             {
-                rewards.AddRange(
-                    worldBossRewardMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, fav.MajorUnit)));
-            }
+                var worldBossState = WorldBossStates.GetWorldBossState();
+                await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
 
-            if (worldBossRewardMail.Items is not null)
-            {
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-                foreach (var (fungibleId, count) in worldBossRewardMail.Items)
+                var blockIndex = eval.BlockIndex;
+                var worldBossListSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+                var worldBossContributionRewardSheet = Game.Game.instance.TableSheets.WorldBossContributionRewardSheet;
+                var previousSeasonRow = worldBossListSheet.FindPreviousRowByBlockIndex(blockIndex);
+                var bossId = previousSeasonRow.BossId;
+
+                worldBossState ??= WorldBossStates.GetWorldBossState();
+                var raiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
+                var contribution =
+                    WorldBossHelper.CalculateContribution(worldBossState.TotalDamage,
+                        raiderState.TotalScore);
+
+                var (items, favs) = WorldBossHelper.CalculateContributionReward(worldBossContributionRewardSheet[bossId], contribution);
+
+                var rewards = new List<MailReward>();
+                if (favs is not null)
                 {
-                    var row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
-                    if (row != null)
-                    {
-                        var material = ItemFactory.CreateMaterial(row);
-                        rewards.Add(new MailReward(material, count));
-                        continue;
-                    }
-
-                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
-                    if (row != null)
-                    {
-                        var material = ItemFactory.CreateMaterial(row);
-                        rewards.Add(new MailReward(material, count));
-                        continue;
-                    }
-
-                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
-                    {
-                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
-                        rewards.Add(new MailReward(item, 1));
-                        continue;
-                    }
-
-                    NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
+                    rewards.AddRange(favs.Select(fav => new MailReward(fav, fav.MajorUnit)));
                 }
-            }
 
-            Widget.Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+                if (items is not null)
+                {
+                    var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                    var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                    foreach (var (fungibleId, count) in items)
+                    {
+                        var row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
+                        if (row != null)
+                        {
+                            var material = ItemFactory.CreateMaterial(row);
+                            rewards.Add(new MailReward(material, count));
+                            continue;
+                        }
+
+                        row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                        if (row != null)
+                        {
+                            var material = ItemFactory.CreateMaterial(row);
+                            rewards.Add(new MailReward(material, count));
+                            continue;
+                        }
+
+                        if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                        {
+                            var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                            rewards.Add(new MailReward(item, 1));
+                            continue;
+                        }
+
+                        NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
+                    }
+                }
+
+                Widget.Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+            });
         }
 
         private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone, AllRuneState previousState)

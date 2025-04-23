@@ -32,6 +32,7 @@ MonoBehaviour:
   - TextElement05
   - TextElement06
   - TextGrade05
+  - TextGrade06
   Palette:
   - colorType: 0
     Color: {r: 1, g: 1, b: 1, a: 1}
@@ -69,3 +70,5 @@ MonoBehaviour:
     Color: {r: 1, g: 0.5882353, b: 0, a: 1}
   - colorType: 17
     Color: {r: 0.7490196, g: 0.2509804, b: 0.30588236, a: 1}
+  - colorType: 18
+    Color: {r: 0.22352941, g: 0.65882355, b: 0.5294118, a: 1}

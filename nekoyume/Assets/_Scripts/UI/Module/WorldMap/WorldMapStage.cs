@@ -98,9 +98,10 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            _normalImageScale = normalImage.transform.localScale;
-            _disabledImageScale = disabledImage.transform.localScale;
-            _selectedImageScale = selectedImage.transform.localScale;
+            // 동적 생성시 스케일이 0.7f로 줄어들어서 최소 스케일을 0.7f로 설정
+            _normalImageScale = Vector3.Max(normalImage.transform.localScale, new Vector3(0.7f, 0.7f, 1f));
+            _disabledImageScale = Vector3.Max(disabledImage.transform.localScale, new Vector3(0.7f, 0.7f, 1f));
+            _selectedImageScale = Vector3.Max(selectedImage.transform.localScale, new Vector3(0.7f, 0.7f, 1f));
 
             button.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -250,9 +251,10 @@ namespace Nekoyume.UI.Module
 
         private void ResetScale()
         {
-            normalImage.transform.localScale = _normalImageScale;
-            disabledImage.transform.localScale = _disabledImageScale;
-            selectedImage.transform.localScale = _selectedImageScale;
+            // 동적 생성시 스케일이 0.7f로 줄어들어서 최소 스케일을 0.7f로 설정
+            normalImage.transform.localScale = Vector3.Max(_normalImageScale, new Vector3(0.7f, 0.7f, 1f));
+            disabledImage.transform.localScale = Vector3.Max(_disabledImageScale, new Vector3(0.7f, 0.7f, 1f));
+            selectedImage.transform.localScale = Vector3.Max(_selectedImageScale, new Vector3(0.7f, 0.7f, 1f));
         }
 
         private void SetScale(float scale)

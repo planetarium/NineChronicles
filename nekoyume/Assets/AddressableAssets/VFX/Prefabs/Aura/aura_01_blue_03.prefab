@@ -95,21 +95,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: ad481785690cf244e9a5449c4e675006, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: ad481785690cf244e9a5449c4e675006, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: ad481785690cf244e9a5449c4e675006, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: ad481785690cf244e9a5449c4e675006, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: ad481785690cf244e9a5449c4e675006, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: ad481785690cf244e9a5449c4e675006, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
-  - {fileID: 2100000, guid: 94bf0d1a967e27844b0b879597a5ff6e, type: 2}
-  - {fileID: 2100000, guid: a555c2ade057032439192e542fb0660c, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,6 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: f687972283a751441b2c0b22d67e2938, type: 2}
   initialSkinName: 
+  fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -165,6 +152,8 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
+  updateTiming: 1
+  unscaledTime: 0
   _animationName: 01
   loop: 1
   timeScale: 1

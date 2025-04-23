@@ -86,7 +86,6 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
             StartCoroutine(InitializeThorSchedule());
             InitializeStakingResource().Forget();
-            InitializeEvent();
 
             StartCoroutine(RequestManager.instance.GetJson(
                 _endpoint.EventRewardPopupDataJsonUrl,
@@ -101,7 +100,7 @@ namespace Nekoyume.Game.LiveAsset
                     SetThorScheduleUrl));
         }
 
-        public void InitializeEvent()
+        public async UniTask InitializeEventAsync()
         {
             if (_state != InitializingState.NeedInitialize)
             {
@@ -117,8 +116,10 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => _endpoint.NoticeJsonJapaneseUrl,
                 _ => _endpoint.NoticeJsonUrl
             };
-            StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
-            StartCoroutine(RequestManager.instance.GetJson(noticeUrl, SetNotices));
+
+            await UniTask.WhenAll(
+                RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData).ToUniTask(),
+                RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask());
         }
 
         public IEnumerator InitializeApplicationCLO()
@@ -278,7 +279,7 @@ namespace Nekoyume.Game.LiveAsset
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)
         {
             var planetIdExist = Game.instance.CurrentPlanetId.HasValue;
-            var isMainnet = planetIdExist && Multiplanetary.PlanetId.IsMainNet(Game.instance.CurrentPlanetId.Value);
+            var isMainNet = planetIdExist && Multiplanetary.PlanetId.IsMainNet(Game.instance.CurrentPlanetId.Value);
             var tasks = new List<UniTask>();
             foreach (var banner in bannerData)
             {
@@ -303,7 +304,7 @@ namespace Nekoyume.Game.LiveAsset
                     IsMainnet = banner.IsMainnet,
                 };
                 // Skip add notice if not available mainnet
-                if (isMainnet && !banner.IsMainnet)
+                if (isMainNet && !banner.IsMainnet)
                 {
                     continue;
                 }
