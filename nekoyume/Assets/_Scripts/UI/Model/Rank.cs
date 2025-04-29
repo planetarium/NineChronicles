@@ -128,7 +128,7 @@ namespace Nekoyume.UI.Model
                 AgentAbilityRankingInfos[pair.Key] = new AbilityRankingModel
                 {
                     Rank = myRecord.Rank,
-                    AvatarAddress = myRecord.UserDocument.Address,
+                    AvatarAddress = $"0x{myRecord.UserDocument.Id}",
                     Name = pair.Value.name,
                     AvatarLevel = pair.Value.level,
                     ArmorId = pair.Value.GetArmorId(),
@@ -216,7 +216,7 @@ namespace Nekoyume.UI.Model
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
                     Rank = myRecord.Rank,
-                    AvatarAddress = myRecord.UserDocument.Address,
+                    AvatarAddress = $"0x{myRecord.UserDocument.Id}",
                     Name = pair.Value.name,
                     AvatarLevel = pair.Value.level,
                     ArmorId = pair.Value.GetArmorId(),
@@ -249,18 +249,15 @@ namespace Nekoyume.UI.Model
             }
 
             CraftRankingInfos = response.CraftRanking
-                .Select(e =>
+                .Select(e => new CraftRankingModel
                 {
-                    return new CraftRankingModel
-                    {
-                        Rank = e.Ranking,
-                        AvatarAddress = e.AvatarAddress,
-                        Name = e.Name,
-                        AvatarLevel = e.AvatarLevel,
-                        ArmorId = e.ArmorId,
-                        TitleId = e.TitleId,
-                        CraftCount = e.CraftCount
-                    };
+                    Rank = e.Ranking,
+                    AvatarAddress = e.AvatarAddress,
+                    Name = e.Name,
+                    AvatarLevel = e.AvatarLevel,
+                    ArmorId = e.ArmorId,
+                    TitleId = e.TitleId,
+                    CraftCount = e.CraftCount
                 })
                 .Select(t => t)
                 .Where(e => e != null)
@@ -343,20 +340,17 @@ namespace Nekoyume.UI.Model
                 }
 
                 EquipmentRankingInfosMap[subType] = response.EquipmentRanking
-                    .Select(e =>
+                    .Select(e => new EquipmentRankingModel
                     {
-                        return new EquipmentRankingModel
-                        {
-                            Rank = e.Ranking,
-                            AvatarAddress = e.AvatarAddress,
-                            Name = e.Name,
-                            AvatarLevel = e.AvatarLevel,
-                            ArmorId = e.ArmorId,
-                            TitleId = e.TitleId,
-                            Level = e.Level,
-                            Cp = e.Cp,
-                            EquipmentId = e.EquipmentId
-                        };
+                        Rank = e.Ranking,
+                        AvatarAddress = e.AvatarAddress,
+                        Name = e.Name,
+                        AvatarLevel = e.AvatarLevel,
+                        ArmorId = e.ArmorId,
+                        TitleId = e.TitleId,
+                        Level = e.Level,
+                        Cp = e.Cp,
+                        EquipmentId = e.EquipmentId
                     })
                     .Select(t => t)
                     .Where(e => e != null)
