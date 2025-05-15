@@ -31,6 +31,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 0
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 1
     - serializedVersion: 3
@@ -43,6 +44,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 1
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     - serializedVersion: 3
@@ -55,6 +57,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 1
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
@@ -78,6 +81,19 @@ SpriteAtlas:
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 88f3b2c050784db4d94a14cc3a20b2cd: 21300000
+    - 4684897164ed3794bb0cb3dab70fd408: 21300000
+    - 3c39f5a1597316d4eb9396b028956b3c: 21300000
+    - 4284d2e32f19c6d4baa818713112777b: 21300000
+    - 3582ca445f5c2e845a5609779ef64075: 21300000
+    - fb4b874570dafbb448579e9a6c99f851: 21300000
+    - e04f8e88ea8a2ee4f9463fab4c69943c: 21300000
+    - 6848f839219bc494da9d18d448a79883: 21300000
+    - 91f186994595802409aacfbd6bc51d9d: 21300000
+    - fcd3aa2b5f34a474eaf30b6332dd12b5: 21300000
+    - 48dc9d2d6383ab546a2dbcf94a6bc5d0: 21300000
+    - 833d6abfa28dfe646b12a8c415166664: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 88f3b2c050784db4d94a14cc3a20b2cd, type: 3}

@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
 using AppleAuth.Editor;
+using UnityEditor.Build;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -33,7 +34,7 @@ namespace NekoyumeEditor
         public static void BuildAndroid()
         {
             SetByCommandLineArguments();
-            EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
+            PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.Android, Il2CppCodeGeneration.OptimizeSize);
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
             AssetDatabase.Refresh();
             Debug.Log("Build Android");
@@ -60,7 +61,7 @@ namespace NekoyumeEditor
             var originalArchitecture = UserBuildSettings.architecture;
             try
             {
-                UserBuildSettings.architecture = MacOSArchitecture.x64;
+                UserBuildSettings.architecture = UnityEditor.Build.OSArchitecture.x64;
                 Build(BuildTarget.StandaloneOSX, targetDirName: "StandaloneOSX");
             }
             finally
@@ -128,7 +129,7 @@ namespace NekoyumeEditor
         public static void BuildiOS()
         {
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.iOS, BuildTarget.iOS);
-            EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
+            PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.iOS, Il2CppCodeGeneration.OptimizeSize);
             SetByCommandLineArguments();
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
@@ -229,7 +230,7 @@ namespace NekoyumeEditor
             var originalArchitecture = UserBuildSettings.architecture;
             try
             {
-                UserBuildSettings.architecture = MacOSArchitecture.x64;
+                UserBuildSettings.architecture = UnityEditor.Build.OSArchitecture.x64;
                 Build(BuildTarget.StandaloneOSX, BuildOptions.Development | BuildOptions.AllowDebugging, "macOS", true);
             }
             finally

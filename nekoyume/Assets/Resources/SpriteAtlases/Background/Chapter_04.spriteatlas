@@ -31,6 +31,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 0
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 1
     packingSettings:
@@ -56,6 +57,16 @@ SpriteAtlas:
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 2a1c79504aa12ab48a62d0ced627c954: 21300000
+    - f04cf3700cc272a4b9ffef4b64703289: 21300000
+    - 95798701c64e0481c90e0c81da2cce96: 21300000
+    - cdcae22360543404eb81751e4fd2772f: 21300000
+    - abb312a38382f4665aec136a323cadd4: 21300000
+    - 627da026bd44b4649b0598a911bc1ad3: 21300000
+    - 8ac9239a8223cdd4ab39bf0b85675626: 21300000
+    - 8c01573b137f440dc8d26233bedc2ad6: 21300000
+    - 3cd70a5d5e6bb4603ab5ca4b36efbb5b: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 2a1c79504aa12ab48a62d0ced627c954, type: 3}
