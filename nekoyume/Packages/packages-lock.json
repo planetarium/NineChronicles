@@ -53,39 +53,43 @@
       "hash": "05442994ffb7f6c679f648d702cdf888bd8c01dc"
     },
     "com.esotericsoftware.spine.spine-csharp": {
-      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-csharp/src#4.1",
+      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-csharp/src#4.2",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "42635d2a8feaba0814becffe0949487a3ae4572e"
+      "hash": "23adb6b9b8d2574568c447229e20b5f7d4d23d30"
     },
     "com.esotericsoftware.spine.spine-unity": {
-      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Assets/Spine#4.1",
+      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Assets/Spine#4.2",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.esotericsoftware.spine.spine-csharp": "4.1.0"
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.animation": "1.0.0",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.modules.physics2d": "1.0.0",
+        "com.esotericsoftware.spine.spine-csharp": "4.2.0"
       },
-      "hash": "42635d2a8feaba0814becffe0949487a3ae4572e"
+      "hash": "23adb6b9b8d2574568c447229e20b5f7d4d23d30"
     },
     "com.esotericsoftware.spine.timeline": {
-      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Modules/com.esotericsoftware.spine.timeline#4.1",
+      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Modules/com.esotericsoftware.spine.timeline#4.2",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.timeline": "1.2.10",
-        "com.esotericsoftware.spine.spine-unity": "4.1.13"
+        "com.esotericsoftware.spine.spine-unity": "4.2.13"
       },
-      "hash": "42635d2a8feaba0814becffe0949487a3ae4572e"
+      "hash": "23adb6b9b8d2574568c447229e20b5f7d4d23d30"
     },
     "com.esotericsoftware.spine.urp-shaders": {
-      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Modules/com.esotericsoftware.spine.urp-shaders#4.1",
+      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Modules/com.esotericsoftware.spine.urp-shaders#4.2",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.render-pipelines.universal": "7.1.5"
       },
-      "hash": "42635d2a8feaba0814becffe0949487a3ae4572e"
+      "hash": "23adb6b9b8d2574568c447229e20b5f7d4d23d30"
     },
     "com.laicasaane.texttyper": {
       "version": "https://github.com/laicasaane/unity-text-typer.git?path=Assets/TextTyper#3.1.0",
