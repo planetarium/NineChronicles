@@ -85,6 +85,8 @@ namespace Nekoyume.UI
         private ConditionalButton _refreshBtn;
         [SerializeField]
         private TextMeshProUGUI _refeshCountText;
+        [SerializeField]
+        private TextMeshProUGUI _roundText;
 
         private SeasonResponse _seasonData;
         private List<AvailableOpponentResponse> _boundedData;
@@ -264,6 +266,27 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
+
+            if (_seasonData != null && _seasonData.Rounds != null)
+            {
+                int currentRoundIndex = _seasonData.Rounds.FindIndex(r => r.StartBlockIndex <= blockIndex && blockIndex <= r.EndBlockIndex);
+                if (currentRoundIndex < 0)
+                {
+                    NcDebug.LogError($"Cannot find the current round for block index: {blockIndex}. " +
+                                    $"Season ID: {_seasonData.Id}, Number of Rounds: {_seasonData.Rounds.Count}. " +
+                                    "Please verify the validity of the season data and block index.");
+                    _roundText.text = string.Empty;
+                }
+                else
+                {
+                    _roundText.text = L10nManager.Localize("UI_ARENA_ROUND_TEXT", currentRoundIndex + 1, _seasonData.Rounds.Count);
+                }
+            }
+            else
+            {
+                _roundText.text = string.Empty;
+                NcDebug.LogError("No season data available.");
+            }
 
             // 리스트 갱신요청 풀링하는동안에는 버튼갱신하지않도록 예외처리
             if (!_loadingObj.activeSelf)
@@ -471,7 +494,7 @@ namespace Nekoyume.UI
             {
                 var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.FirstOrDefault();
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString(CultureInfo.InvariantCulture));
 
                 int logId = -1;
                 try
@@ -542,7 +565,8 @@ namespace Nekoyume.UI
                         pollingResult == PurchaseStatus.INSUFFICIENT_PAYMENT ||
                         pollingResult == PurchaseStatus.INVALID_RECIPIENT ||
                         pollingResult == PurchaseStatus.DUPLICATE_TRANSACTION ||
-                        pollingResult == PurchaseStatus.TX_FAILED)
+                        pollingResult == PurchaseStatus.TX_FAILED ||
+                        pollingResult == PurchaseStatus.NO_REMAINING_PURCHASE_COUNT)
                     {
                         NcDebug.LogError("[ArenaBoard] Refresh failed due to an error in polling.");
                         isPollingSuccessful = true; // 실패케이스로 폴링 멈추도록 플래그 설정
@@ -565,7 +589,8 @@ namespace Nekoyume.UI
                         pollingResult == PurchaseStatus.INSUFFICIENT_PAYMENT ||
                         pollingResult == PurchaseStatus.INVALID_RECIPIENT ||
                         pollingResult == PurchaseStatus.DUPLICATE_TRANSACTION ||
-                        pollingResult == PurchaseStatus.TX_FAILED)
+                        pollingResult == PurchaseStatus.TX_FAILED ||
+                        pollingResult == PurchaseStatus.NO_REMAINING_PURCHASE_COUNT)
                     {
                         NcDebug.LogError("[ArenaBoard] Refresh failed due to an error in polling.");
                         isPollingSuccessful = true; // 실패케이스로 폴링 멈추도록 플래그 설정
@@ -681,7 +706,7 @@ namespace Nekoyume.UI
                 {
                     var nextCost = RxProps.ArenaInfo.Value.RefreshTicketStatus.NextNCGCosts.FirstOrDefault();
                     var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                    var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString());
+                    var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, nextCost.ToString(CultureInfo.InvariantCulture));
                     Find<PaymentPopup>().ShowCheckPaymentNCG(
                         States.Instance.GoldBalanceState.Gold,
                         cost,

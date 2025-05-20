@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -91,6 +92,7 @@ namespace Nekoyume.UI
             var liveAssetManager = LiveAssetManager.instance;
             if (!liveAssetManager.IsInitialized || _isInitialized)
             {
+                NcDebug.LogError("LiveAssetManager is not initialized or already initialized.");
                 return;
             }
 
@@ -173,10 +175,21 @@ namespace Nekoyume.UI
             _isInitialized = true;
         }
 
+        private async UniTask InitializeAsync()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            await UniTask.WaitUntil(() => LiveAssetManager.instance.IsInitialized);
+            Initialize();
+        }
+
         protected override void OnEnable()
         {
             base.OnEnable();
-            Initialize();
+            InitializeAsync().Forget();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -195,8 +208,18 @@ namespace Nekoyume.UI
         {
             if (!_isInitialized)
             {
-                Initialize();
+                ShowAsync(ignoreShowAnimation).Forget();
+                return;
             }
+
+            base.Show(ignoreShowAnimation);
+            OnForceToggleOnEventTab();
+            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
+        }
+
+        private async UniTask ShowAsync(bool ignoreShowAnimation = false)
+        {
+            await InitializeAsync();
             base.Show(ignoreShowAnimation);
             OnForceToggleOnEventTab();
             PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
@@ -206,8 +229,21 @@ namespace Nekoyume.UI
         {
             if (!_isInitialized)
             {
-                Initialize();
+                ShowAsync(eventNotice, ignoreStartAnimation).Forget();
+                return;
             }
+            base.Show(ignoreStartAnimation);
+            if (!eventTabButton.IsToggledOn)
+            {
+                OnForceToggleOnEventTab();
+            }
+
+            OnClickEventNoticeItem(_eventBannerItems[eventNotice.Description]);
+        }
+
+        private async UniTask ShowAsync(EventNoticeData eventNotice, bool ignoreStartAnimation = false)
+        {
+            await InitializeAsync();
             base.Show(ignoreStartAnimation);
             if (!eventTabButton.IsToggledOn)
             {
@@ -257,7 +293,7 @@ namespace Nekoyume.UI
 
         private void RenderNotice(EventNoticeData data)
         {
-            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress);
+            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign);
             LiveAssetManager.instance.AddToCheckedList(data.Description);
         }
     }

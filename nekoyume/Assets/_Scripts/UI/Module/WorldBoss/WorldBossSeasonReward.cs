@@ -1,44 +1,161 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using Nekoyume.Blockchain;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
+using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
+    using UniRx;
+
     public class WorldBossSeasonReward : WorldBossRewardItem
     {
         [SerializeField]
-        private List<WorldBossBattleRewardItem> Items;
+        private TMP_Text worldBossTotalDamageText;
+
+        [SerializeField]
+        private WorldBossBattleRewardItem rewardItem;
+
+        [SerializeField]
+        private TMP_Text userTotalDamageText;
+
+        [SerializeField]
+        private BaseItemView[] rewardItems;
+
+        [SerializeField]
+        private ConditionalButton claimButton;
+
+        [SerializeField]
+        private GameObject loadingIndicator;
+
+        private void Awake()
+        {
+            claimButton.OnSubmitSubject
+                .Subscribe(_ => OnClickClaimButton())
+                .AddTo(gameObject);
+
+            claimButton.OnClickSubject
+                .Where(_ => !claimButton.IsSubmittable)
+                .Subscribe(_ => OnClickDisableClaimButton())
+                .AddTo(gameObject);
+        }
 
         public override void Reset()
         {
-            foreach (var item in Items)
+        }
+
+        public void Set(WorldBossState worldBossState, RaiderState raider, int raidId, bool isOnSeason)
+        {
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
-                item.Reset();
+                NcDebug.LogError($"Not found WorldBossSheet for raidId: {raidId}");
+                return;
+            }
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var contributeSheet = tableSheets.WorldBossContributionRewardSheet;
+            var contributeRow = contributeSheet.Values.FirstOrDefault(r => r.BossId == raidRow.BossId);
+            if (contributeRow == null || worldBossState == null)
+            {
+                NcDebug.LogError($"Not found WorldBoss Data: {raidRow.BossId}");
+                return;
+            }
+            rewardItem.Set(contributeRow);
+
+            var worldBossTotalDamage = worldBossState.TotalDamage;
+            worldBossTotalDamageText.text = $"{worldBossTotalDamage:N0}";
+
+            if (raider == null)
+            {
+                claimButton.SetCondition(() => false);
+                claimButton.UpdateObjects();
+
+                userTotalDamageText.text = "0 (0%)";
+
+                foreach (var rewardItemView in rewardItems)
+                {
+                    rewardItemView.gameObject.SetActive(false);
+                }
+                return;
+            }
+
+            var userTotalDamage = raider.TotalScore;
+
+            if (userTotalDamage == 0 || worldBossTotalDamage == 0)
+            {
+                userTotalDamageText.text = $"{userTotalDamage:N0} (0%)";
+                return;
+            }
+
+            var canClaim = !isOnSeason && !raider.HasClaimedReward;
+            claimButton.SetCondition(() => canClaim);
+            claimButton.UpdateObjects();
+
+            float ratio = 0;
+            if (worldBossTotalDamage > 0)
+            {
+                ratio = userTotalDamage / (float)worldBossTotalDamage;
+            }
+            userTotalDamageText.text = $"{userTotalDamage:N0} ({ratio:0.####%})";
+
+            foreach (var rewardItemView in rewardItems)
+            {
+                rewardItemView.gameObject.SetActive(false);
+            }
+
+            for (var i = 0; i < contributeRow.Rewards.Count; ++i)
+            {
+                var currentItem = contributeRow.Rewards[i];
+                if (!string.IsNullOrEmpty(currentItem.Ticker))
+                {
+                    var amount = (decimal)currentItem.Count * (decimal)ratio;
+                    if (Math.Floor(amount) <= 0)
+                    {
+                        continue;
+                    }
+
+                    rewardItems[i].gameObject.SetActive(true);
+                    rewardItems[i].ItemViewSetCurrencyData(currentItem.Ticker, amount);
+                }
+                else if (currentItem.ItemId > 0)
+                {
+                    var amount = (int)((decimal)currentItem.Count * (decimal)ratio);
+                    if (amount <= 0)
+                    {
+                        continue;
+                    }
+
+                    rewardItems[i].gameObject.SetActive(true);
+                    rewardItems[i].ItemViewSetItemData(currentItem.ItemId, amount);
+                }
             }
         }
 
-        public void Set(int raidId, int myRank, int userCount)
+        private void OnClickClaimButton()
         {
-            foreach (var item in Items)
-            {
-                item.gameObject.SetActive(false);
-            }
+            ActionManager.Instance.ClaimWorldBossReward().Subscribe();
+            claimButton.SetCondition(() => false);
+            claimButton.UpdateObjects();
 
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
-            {
-                return;
-            }
+            loadingIndicator.SetActive(true);
+        }
 
-            if (!WorldBossFrontHelper.TryGetRankingRows(raidRow.BossId, out var rankingRows))
-            {
-                return;
-            }
+        private void OnClickDisableClaimButton()
+        {
+            OneLineSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_BOSS_SEASON_REWARD_CANNOT_CLAIM_INFO"),
+                NotificationCell.NotificationType.Information);
+        }
 
-            for (var i = 0; i < rankingRows.Count; i++)
-            {
-                Items[i].Set(rankingRows[i], myRank, userCount);
-                Items[i].gameObject.SetActive(true);
-            }
+        public void OnRender()
+        {
+            loadingIndicator.SetActive(false);
         }
     }
 }

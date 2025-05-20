@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Globalization;
     using Cysharp.Threading.Tasks;
     using GeneratedApiNamespace.ArenaServiceClient;
     using Libplanet.Crypto;
@@ -31,6 +32,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
+        [SerializeField]
+        private TextMeshProUGUI ticketTotalCountText = null;
+
         private readonly ReactiveProperty<int> _ticketCountToBuy = new();
         private decimal _ticketPrice = 0;
 
@@ -50,10 +54,14 @@ namespace Nekoyume.UI
                         {
                             price += RxProps.ArenaInfo.Value.BattleTicketStatus.NextNCGCosts[i];
                         }
+                        var currentCount = RxProps.ArenaInfo.Value.BattleTicketStatus.TicketsPurchasedPerSeason;
+                        var totalCount = RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerSeason + currentCount;
+                        ticketTotalCountText.text = $"<color=#FFD700>{currentCount}</color> <color=#32CD32>+ {count}</color> <color=#CCCCCC>/</color> <color=#FFD700>{totalCount}</color>";
                     }
                     catch (Exception e)
                     {
                         NcDebug.LogError($"Error calculating ticket price: {e.Message}");
+                        ticketTotalCountText.text = string.Empty;
                     }
                     _ticketPrice = price;
                     ticketPriceToBuyText.text = price.ToString();
@@ -69,7 +77,7 @@ namespace Nekoyume.UI
 
                 var ticketCount = _ticketCountToBuy.Value;
                 var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
-                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString());
+                var cost = Libplanet.Types.Assets.FungibleAssetValue.Parse(goldCurrency, _ticketPrice.ToString(CultureInfo.InvariantCulture));
 
                 if (States.Instance.GoldBalanceState.Gold < cost)
                 {
@@ -94,7 +102,7 @@ namespace Nekoyume.UI
                 catch (Exception e)
                 {
                     NcDebug.LogError($"[ArenaTicketPopup] 티켓 구매 중 예외 발생: {e.Message}");
-                    
+
                     Find<IconAndButtonSystem>().Show(
                         "UI_ERROR",
                         e.InnerException != null ? e.InnerException.Message : e.Message,
@@ -165,12 +173,13 @@ namespace Nekoyume.UI
         public void Show()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var ticketCount = RxProps.ArenaInfo.HasValue && RxProps.ArenaInfo.Value != null
+            var ticketMaxCount = RxProps.ArenaInfo != null && RxProps.ArenaInfo.HasValue
                 ? RxProps.ArenaInfo.Value.BattleTicketStatus.RemainingPurchasableTicketsPerRound
                 : 0;
+            var ticketCount = ticketMaxCount > 0 ? 1 : 0;
             willBuyTicketText.text = ticketCount.ToString();
             _ticketCountToBuy.SetValueAndForceNotify(ticketCount);
-            ticketSlider.Set(0, ticketCount, ticketCount, ticketCount, 1, x => _ticketCountToBuy.Value = x);
+            ticketSlider.Set(0, ticketMaxCount, ticketCount, ticketMaxCount, 1, x => _ticketCountToBuy.Value = x);
             base.Show();
         }
     }

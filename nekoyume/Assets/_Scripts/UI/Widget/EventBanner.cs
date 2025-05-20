@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.UI.Module.Common;
 
@@ -29,9 +30,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PageView pageView;
 
-        private IEnumerator Start()
+        private async UniTask InitializeAsync()
         {
-            yield return new WaitUntil(() => LiveAssetManager.instance.IsInitialized);
+            await LiveAssetManager.instance.InitializeEventAsync();
+            await UniTask.WaitUntil(() => LiveAssetManager.instance.IsInitialized);
 
             var dataList = LiveAssetManager.instance.BannerData;
             foreach (var data in dataList)
@@ -64,10 +66,12 @@ namespace Nekoyume.UI.Module
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+
             if (!LiveAssetManager.instance.IsInitialized)
             {
-                LiveAssetManager.instance.InitializeEvent();
+                InitializeAsync().Forget();
             }
+
 #if UNITY_ANDROID || UNITY_IOS
             transform.SetSiblingIndex(Find<LobbyMenu>().transform.GetSiblingIndex()+1);
 #endif

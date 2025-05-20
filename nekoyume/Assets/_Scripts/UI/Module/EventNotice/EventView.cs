@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using Libplanet.Common;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,12 +29,30 @@ namespace Nekoyume.UI.Module
                     url = string.Format(url, address);
                 }
 
-                Application.OpenURL(url);
+                Helper.Util.OpenURL(url);
             });
         }
 
-        public void Set(Sprite eventSprite, string url, bool useAgentAddress)
+        public void Set(Sprite eventSprite, string url, bool useAgentAddress, bool sign)
         {
+            if (sign)
+            {
+                var urlRoot = url;
+                var agentAddress = Game.Game.instance.Agent.Address.ToString();
+                var message = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+                var privateKey = Game.Game.instance.Agent.PrivateKey;
+                var publicKey = privateKey.PublicKey;
+
+                var signData = Encoding.UTF8.GetBytes($"{message}");
+                var hexSignData = ByteUtil.Hex(signData);
+                var hash = Helper.Util.ComputeHash(hexSignData);
+                var singed = privateKey.Sign(ByteUtil.ParseHex(hash));
+
+                var signature = ByteUtil.Hex(singed);
+                url = $"{urlRoot}?app=ninechronicles&agentAddress={agentAddress}&timestamp={message}&signature={signature}&pubkey={publicKey}";
+
+            }
             eventImage.overrideSprite = eventSprite;
             _url = url;
             _useAgentAddress = useAgentAddress;

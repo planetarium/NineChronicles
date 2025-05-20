@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
+using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
@@ -115,6 +116,8 @@ namespace Nekoyume.Blockchain
         private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
 
         public bool disposed;
+
+        private Codec _codec = new ();
 
         public IEnumerator Initialize(
             CommandLineOptions options,
@@ -379,6 +382,22 @@ namespace Nekoyume.Blockchain
                     ReservedAddresses.LegacyAccount,
                     address));
                 dict[address] = result;
+            }
+
+            return dict;
+        }
+
+        public async Task<Dictionary<Address, byte[]>> GetSheetsHash(IEnumerable<Address> addressList)
+        {
+            var dict = new Dictionary<Address, byte[]>();
+            foreach (var address in addressList)
+            {
+                var result = await await Task.FromResult(GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address));
+                using var sha256 = SHA256.Create();
+                var hash = sha256.ComputeHash(_codec.Encode(result));
+                dict[address] = hash;
             }
 
             return dict;

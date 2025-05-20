@@ -84,11 +84,6 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Shop/IAP/LobbyPopup/Click", ("product-id", product.Sku()));
 
-            var evt = new AirbridgeEvent("IAP_LobbyPopup_Click");
-            evt.SetAction(product.Sku());
-            evt.AddCustomAttribute("product-id", product.Sku());
-            AirbridgeUnity.TrackEvent(evt);
-
             Find<ShopListPopup>().Show(product, purchasingData).Forget();
         }
 
@@ -367,10 +362,6 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Shop/IAP/Tab/Click", ("category-name", categoryName));
-
-            var evt = new AirbridgeEvent("IAP_Tab_Click");
-            evt.SetAction(categoryName);
-            AirbridgeUnity.TrackEvent(evt);
 
             foreach (var item in _allProductObjs)
             {

@@ -174,16 +174,48 @@ namespace Nekoyume.Helper
 
         public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
         {
+            // 먼저 주어진 페이지 인덱스로 시도
             var path = string.Format(WorldmapBackgroundPathFormat, imageKey, pageIndex);
             var sprite = Resources.Load<Sprite>(path);
             if (sprite)
             {
                 return sprite;
             }
+            
+            // 리소스가 없고 페이지 인덱스가 3을 초과하는 경우
+            if (pageIndex > 3)
+            {
+                // 페이지 인덱스를 1-3 범위로 순환
+                int cyclicPageIndex = ((pageIndex - 1) % 3) + 1;
+                
+                // 순환된 인덱스로 다시 시도
+                path = string.Format(WorldmapBackgroundPathFormat, imageKey, cyclicPageIndex);
+                sprite = Resources.Load<Sprite>(path);
+                if (sprite)
+                {
+                    return sprite;
+                }
+                
+                // 기본 경로도 순환된 인덱스로 시도
+                var defaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, cyclicPageIndex);
+                var defaultSprite = Resources.Load<Sprite>(defaultPath);
+                if (defaultSprite)
+                {
+                    return defaultSprite;
+                }
+            }
 
-            var defaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, pageIndex);
-            var defaultSprite = Resources.Load<Sprite>(defaultPath);
-            return defaultSprite;
+            // 원래 페이지 인덱스로 기본 경로 시도
+            var originalDefaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, pageIndex);
+            var originalDefaultSprite = Resources.Load<Sprite>(originalDefaultPath);
+            
+            // 그래도 없으면 첫 번째 페이지 기본 이미지로 폴백
+            if (originalDefaultSprite == null && pageIndex != 1)
+            {
+                return Resources.Load<Sprite>(string.Format(WorldmapBackgroundDefaultPathFormat, 1));
+            }
+            
+            return originalDefaultSprite;
         }
 
         public static Sprite GetDialogPortrait(string key, bool isNPC = true)

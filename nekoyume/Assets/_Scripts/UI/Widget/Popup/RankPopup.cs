@@ -79,7 +79,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<Button> maintenancingToggles = null;
 
-        public const int RankingBoardDisplayCount = 100;
+        private const int RankingBoardDisplayCount = 50;
 
         private readonly Dictionary<RankCategory, Toggle> _toggleMap = new();
 

@@ -616,18 +616,7 @@ namespace Nekoyume.UI
                 eventMaterialRow.RequiredMaterialsCount);
             recipeInfo.RecipeId = eventMaterialRow.Id;
 
-            var defaultItemSprite = requiredNormalItemIcons.First().sprite;
-            if (TableSheets.Instance.ArenaSheet.TryGetArenaType(
-                eventMaterialRow.RequiredMaterialsId.First(), out var arenaType))
-            {
-                var itemSprite = requiredNormalItemIcons
-                    .FirstOrDefault(icon => icon.arenaType == arenaType)?.sprite;
-                requiredNormalItemImage.overrideSprite = itemSprite ? itemSprite : defaultItemSprite;
-            }
-            else
-            {
-                requiredNormalItemImage.overrideSprite = defaultItemSprite;
-            }
+            requiredNormalItemImage.overrideSprite = requiredNormalItemIcons.First().sprite;
 
             recipeInfo.Materials = materials;
             recipeInfo.ReplacedMaterials = GetReplacedMaterials(materials);

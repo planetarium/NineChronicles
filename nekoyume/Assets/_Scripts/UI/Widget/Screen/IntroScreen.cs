@@ -150,9 +150,6 @@ namespace Nekoyume.UI
                 NcDebug.Log("[IntroScreen] Click start button.");
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
 
-                var evt = new AirbridgeEvent("Intro_StartButton_Click");
-                AirbridgeUnity.TrackEvent(evt);
-
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
             });
@@ -169,9 +166,6 @@ namespace Nekoyume.UI
                 NcDebug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
 
-                var evt = new AirbridgeEvent("Intro_AppleSignIn_Click");
-                AirbridgeUnity.TrackEvent(evt);
-
                 startButtonContainer.SetActive(false);
                 ProcessAppleSigning();
             });
@@ -179,9 +173,6 @@ namespace Nekoyume.UI
             {
                 NcDebug.Log("[IntroScreen] Click google sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
-
-                var evt = new AirbridgeEvent("Intro_GoogleSignIn_Click");
-                AirbridgeUnity.TrackEvent(evt);
 
                 startButtonContainer.SetActive(false);
                 ProcessGoogleSigning();
@@ -192,9 +183,6 @@ namespace Nekoyume.UI
 
                 Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
 
-                var evt = new AirbridgeEvent("Intro_TwitterSignIn_Click");
-                AirbridgeUnity.TrackEvent(evt);
-
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Twitter);
             });
             discordSignInButton.onClick.AddListener(() =>
@@ -203,18 +191,12 @@ namespace Nekoyume.UI
 
                 Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
 
-                var evt = new AirbridgeEvent("Intro_DiscordSignIn_Click");
-                AirbridgeUnity.TrackEvent(evt);
-
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
             // NOTE: this button is not used now.
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-
-                var evt = new AirbridgeEvent("Intro_SigninButton_Click");
-                AirbridgeUnity.TrackEvent(evt);
 
                 ShowQrCodeGuide(result =>
                 {
@@ -368,9 +350,6 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
 
-            var evt = new AirbridgeEvent("Intro_QRCodeImported");
-            AirbridgeUnity.TrackEvent(evt);
-
             return pk;
         }
 
@@ -431,9 +410,6 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Intro/Show");
 
-            var evt = new AirbridgeEvent("Intro_Show");
-            AirbridgeUnity.TrackEvent(evt);
-
             SetData(keyStorePath, privateKey, planetContext);
 
 #if RUN_ON_MOBILE
@@ -485,9 +461,6 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Intro/Video/End");
 
-            var evt = new AirbridgeEvent("Intro_Video_End");
-            AirbridgeUnity.TrackEvent(evt);
-
             videoImage.gameObject.SetActive(false);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
@@ -519,10 +492,6 @@ namespace Nekoyume.UI
                 else
                 {
                     Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{guideIndex + 1}");
-
-                    var evt = new AirbridgeEvent("Intro_GuideDMX");
-                    evt.SetValue(guideIndex + 1);
-                    AirbridgeUnity.TrackEvent(evt);
 
                     GuideImage(guideIndex);
                 }
@@ -581,9 +550,6 @@ namespace Nekoyume.UI
             guestButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/Guest/Click");
-
-                var evt = new AirbridgeEvent("Intro_Guest_Click");
-                AirbridgeUnity.TrackEvent(evt);
 
                 startButtonContainer.SetActive(false);
                 KeyManager.Instance.SignIn(pk);
@@ -776,7 +742,7 @@ namespace Nekoyume.UI
             popup.SubmitCallback = () =>
             {
                 popup.Close();
-                Application.OpenURL("http://nine-chronicles.com/connect-guide");
+                Util.OpenURL("http://nine-chronicles.com/connect-guide");
             };
             popup.Show(
                 L10nManager.Localize("UI_INFORMATION_CHARACTER_SELECT"),

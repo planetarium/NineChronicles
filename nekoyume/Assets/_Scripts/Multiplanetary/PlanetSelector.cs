@@ -355,20 +355,23 @@ namespace Nekoyume.Multiplanetary
             clo.RpcServerPort = uri.Port;
 
             // FIXME: Other hosts are selected randomly for now.
-            clo.ApiServerHost = rpcEndpoints.DataProviderGql.Count > 0
+            clo.ApiServerHost = rpcEndpoints.DataProviderGql?.Count > 0
                 ? rpcEndpoints.DataProviderGql[Random.Range(0, rpcEndpoints.DataProviderGql.Count)]
                 : null;
-            clo.MarketServiceHost = rpcEndpoints.MarketRest.Count > 0
+            clo.MarketServiceHost = rpcEndpoints.MarketRest?.Count > 0
                 ? rpcEndpoints.MarketRest[Random.Range(0, rpcEndpoints.MarketRest.Count)]
                 : null;
-            clo.OnBoardingHost = rpcEndpoints.WorldBossRest.Count > 0
+            clo.OnBoardingHost = rpcEndpoints.WorldBossRest?.Count > 0
                 ? rpcEndpoints.WorldBossRest[Random.Range(0, rpcEndpoints.WorldBossRest.Count)]
                 : null;
-            clo.ArenaServiceHost = rpcEndpoints.ArenaRest.Count > 0
+            clo.ArenaServiceHost = rpcEndpoints.ArenaRest?.Count > 0
                 ? rpcEndpoints.ArenaRest[Random.Range(0, rpcEndpoints.ArenaRest.Count)]
                 : null;
+            clo.MimirServiceHost = rpcEndpoints.MimirGql?.Count > 0
+                ? rpcEndpoints.MimirGql[Random.Range(0, rpcEndpoints.MimirGql.Count)]
+                : null;
 
-            clo.GuildServiceUrl = rpcEndpoints.GuildRest.Any()
+            clo.GuildServiceUrl = rpcEndpoints.GuildRest?.Any() ?? false
                 ? rpcEndpoints.GuildRest.First()
                 : clo.GuildServiceUrl;
 

@@ -123,13 +123,6 @@ namespace Nekoyume.Helper
             return rows.Any();
         }
 
-        public static bool TryGetRankingRows(int bossId, out List<WorldBossRankingRewardSheet.Row> rows)
-        {
-            var sheet = Game.Game.instance.TableSheets.WorldBossRankingRewardSheet;
-            rows = sheet.Values.Where(x => x.BossId == bossId).ToList();
-            return rows.Any();
-        }
-
         public static WorldBossStatus GetStatus(long currentBlockIndex)
         {
             return IsItInSeason(currentBlockIndex) ? WorldBossStatus.Season : WorldBossStatus.OffSeason;

@@ -255,7 +255,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<SeasonResponse> GetSeasonByBlockAsync(Int64 blockIndex)
+        public async Task<SeasonAndRoundResponse> GetSeasonByBlockAsync(Int64 blockIndex)
         {
             if (!IsInitialized)
             {
@@ -264,8 +264,7 @@ namespace Nekoyume.ApiClient
 
             try
             {
-                SeasonResponse currentSeason = null;
-                // TODO: 아레나 서비스에서 타입변경되면 다시 수정해야함
+                SeasonAndRoundResponse currentSeason = null;
                 await UniTask.SwitchToMainThread();
                 await Client.GetSeasonsByblockAsync((int)blockIndex,
                     on200: result =>
@@ -358,7 +357,7 @@ namespace Nekoyume.ApiClient
                     {
                         NcDebug.LogError($"[ArenaServiceManager] {_ ?? "null"} | " +
                             $"OpponentAvatarAddress: {opponentAvatarAddress ?? "null"}");
-                        throw new ArenaServiceException("ERROR_ARENA_BATTLE_TOKEN_LOCKED");
+                        throw new ArenaServiceException("ERROR_ARENA_BATTLE_TOKEN_LOCKED_" + _);
                     },
                     onError: error =>
                     {
@@ -483,8 +482,6 @@ namespace Nekoyume.ApiClient
             try
             {
                 await UniTask.SwitchToMainThread();
-                // todo : 아레나서비스
-                // 인터페이스 수정후 작업해야함
                 await Client.GetInfoAsync(jwt,
                     on200: result =>
                     {

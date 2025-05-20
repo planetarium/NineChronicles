@@ -197,8 +197,8 @@ namespace Nekoyume.UI.Module
 
         private void OnSliderChange()
         {
-            var current = ((int)sliderAnimator.Value).ToString("N0", CultureInfo.CurrentCulture);
-            var max = ((int)sliderAnimator.MaxValue).ToString("N0", CultureInfo.CurrentCulture);
+            var current = ((int)_currentActionPoint).ToString("N0", CultureInfo.CurrentCulture);
+            var max = DailyReward.ActionPointMax.ToString("N0", CultureInfo.CurrentCulture);
             text.text = $"{current}/{max}";
         }
 
@@ -238,7 +238,7 @@ namespace Nekoyume.UI.Module
             var apStoneCount = Game.Game.instance.States.CurrentAvatarState.inventory
                 .GetUsableItemCount(CostType.ApPotion, blockIndex);
 
-            var itemCountText = $"{sliderAnimator.Value}/{sliderAnimator.MaxValue}";
+            var itemCountText = $"{_currentActionPoint}/{DailyReward.ActionPointMax}";
             var blockRange = (long)dailyBonus.sliderAnimator.Value;
             var maxBlockRange = (long)dailyBonus.sliderAnimator.MaxValue;
             var isInteractable = IsInteractableMaterial(); // 이 경우 버튼 자체를 비활성화

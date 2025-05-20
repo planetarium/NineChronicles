@@ -48,6 +48,7 @@ using Random = System.Random;
 
 namespace Nekoyume.Blockchain
 {
+    using System.Text;
     using UniRx;
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
@@ -249,7 +250,7 @@ namespace Nekoyume.Blockchain
                 accountAddress.ToByteArray(),
                 address.ToByteArray()
             ).ResponseAsync.Result;
-            return _codec.Decode(raw);
+            return DeCompressState(raw);
         }
 
         public IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address)
@@ -259,7 +260,7 @@ namespace Nekoyume.Blockchain
                 accountAddress.ToByteArray(),
                 address.ToByteArray()
             ).ResponseAsync.Result;
-            return _codec.Decode(raw);
+            return DeCompressState(raw);
         }
 
         public async Task<IValue> GetStateAsync(Address accountAddress, Address address)
@@ -295,7 +296,7 @@ namespace Nekoyume.Blockchain
                 blockHash.ToByteArray(),
                 accountAddress.ToByteArray(),
                 address.ToByteArray());
-            var decoded = _codec.Decode(bytes);
+            var decoded = DeCompressState(bytes);
             var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(accountAddress.Derive(address.ToByteArray())))
             {
@@ -316,7 +317,7 @@ namespace Nekoyume.Blockchain
                 stateRootHash.ToByteArray(),
                 accountAddress.ToByteArray(),
                 address.ToByteArray());
-            var decoded = _codec.Decode(bytes);
+            var decoded = DeCompressState(bytes);
             var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(accountAddress.Derive(address.ToByteArray())))
             {
@@ -411,7 +412,7 @@ namespace Nekoyume.Blockchain
                 BlockTipHash.ToByteArray(),
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()));
-            var serialized = (List)_codec.Decode(raw);
+            var serialized = (List)DeCompressState(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
@@ -426,7 +427,7 @@ namespace Nekoyume.Blockchain
                 stateRootHash.ToByteArray(),
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()));
-            var serialized = (List)_codec.Decode(raw);
+            var serialized = (List)DeCompressState(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
@@ -437,7 +438,7 @@ namespace Nekoyume.Blockchain
             var raw = await _service.GetUnbondClaimableHeightByStateRootHash(
                 stateRootHash.ToByteArray(),
                 address.ToByteArray());
-            return (Integer)_codec.Decode(raw);
+            return (Integer)DeCompressState(raw);
         }
 
         /// <summary>
@@ -451,7 +452,7 @@ namespace Nekoyume.Blockchain
             var raw = await _service.GetClaimableRewardsByStateRootHash(
                 stateRootHash.ToByteArray(),
                 address.ToByteArray());
-            return (List)_codec.Decode(raw);
+            return (List)DeCompressState(raw);
         }
 
         /// <summary>
@@ -469,7 +470,7 @@ namespace Nekoyume.Blockchain
             var raw = await _service.GetDelegationInfoByStateRootHash(
                 stateRootHash.ToByteArray(),
                 address.ToByteArray());
-            return (List)_codec.Decode(raw);
+            return (List)DeCompressState(raw);
         }
 
         public async Task<FungibleAssetValue> GetStakedByStateRootHashAsync(HashDigest<SHA256> stateRootHash, Address address)
@@ -477,7 +478,7 @@ namespace Nekoyume.Blockchain
             var raw = await _service.GetStakedByStateRootHash(
                 stateRootHash.ToByteArray(),
                 address.ToByteArray());
-            var serialized = (List)_codec.Decode(raw);
+            var serialized = (List)DeCompressState(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
@@ -516,7 +517,7 @@ namespace Nekoyume.Blockchain
 
         private AgentState ResolveAgentState(byte[] raw)
         {
-            var value = _codec.Decode(raw);
+            var value = DeCompressState(raw);
             if (value is Dictionary dict)
             {
                 return new AgentState(dict);
@@ -541,6 +542,8 @@ namespace Nekoyume.Blockchain
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
             {
+                var size = Buffer.ByteLength(kv.Value);
+                NcDebug.Log($"[GetAvatarState/{kv.Key}] buffer size: {size}");
                 result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
             }
 
@@ -589,7 +592,7 @@ namespace Nekoyume.Blockchain
         private AvatarState ResolveAvatarState(byte[] raw)
         {
             AvatarState avatarState;
-            if (!(_codec.Decode(raw) is List full))
+            if (!(DeCompressState(raw) is List full))
             {
                 NcDebug.LogError("Given raw is not a format of the AvatarState.");
                 return null;
@@ -673,7 +676,7 @@ namespace Nekoyume.Blockchain
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in raw)
             {
-                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
+                result[new Address(kv.Key)] = DeCompressState(kv.Value);
             }
 
             return result;
@@ -711,7 +714,7 @@ namespace Nekoyume.Blockchain
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in cd)
             {
-                result[new Address(kv.Key)] = _codec.Decode(MessagePackSerializer.Deserialize<byte[]>(kv.Value, _lz4Options));
+                result[new Address(kv.Key)] = (Text)Encoding.UTF8.GetString(kv.Value);
             }
 
             sw.Stop();
@@ -1156,7 +1159,7 @@ namespace Nekoyume.Blockchain
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            var dict = (Dictionary)_codec.Decode(newTip);
+            var dict = (Dictionary)DeCompressState(newTip);
             var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             BlockIndex = newTipBlock.Index;
             BlockIndexSubject.OnNext(BlockIndex);
@@ -1260,15 +1263,80 @@ namespace Nekoyume.Blockchain
             return await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
         }
 
+        /// <summary>
+        /// Retrieves sheet hash values for the given address list in parallel.
+        /// </summary>
+        /// <param name="addressList">List of addresses to fetch hash values for</param>
+        /// <returns>Dictionary mapping addresses to their corresponding hash values</returns>
+        /// <remarks>
+        /// - Processes addresses in chunks of 24 in parallel
+        /// - Uses ConcurrentDictionary to ensure thread safety
+        /// - Includes Stopwatch for performance measurement
+        /// </remarks>
+        public async Task<Dictionary<Address, byte[]>> GetSheetsHash(IEnumerable<Address> addressList)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            var cd = new ConcurrentDictionary<byte[], byte[]>();
+            var chunks = addressList
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 24)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+            await chunks
+                .AsParallel()
+                .ParallelForEachAsync(async list =>
+                {
+                    var raw =
+                        await _service.GetSheetsHash(
+                            BlockTipStateRootHash.ToByteArray(),
+                            list.Select(a => a.ToByteArray()));
+                    await raw.ParallelForEachAsync(async pair =>
+                    {
+                        cd.TryAdd(pair.Key, pair.Value);
+                        var size = Buffer.ByteLength(pair.Value);
+                        await Task.CompletedTask;
+                    });
+                });
+            sw.Stop();
+            sw.Restart();
+            var result = new Dictionary<Address, byte[]>();
+            NcDebug.Log($"[{nameof(RPCAgent)}] GetSheetsHash()... {sw.Elapsed}/{cd.Count}");
+            foreach (var kv in cd)
+            {
+                result[new Address(kv.Key)] = kv.Value;
+            }
+
+            sw.Stop();
+            return result;
+        }
+
         private async UniTask<BlockHash?> GetBlockHashAsync(long? blockIndex)
         {
             return blockIndex.HasValue
                 ? _blockHashCache.TryGetBlockHash(blockIndex.Value, out var outBlockHash)
                     ? outBlockHash
-                    : _codec.Decode(await _service.GetBlockHash(blockIndex.Value)) is { } rawBlockHash
+                    : DeCompressState(await _service.GetBlockHash(blockIndex.Value)) is { } rawBlockHash
                         ? new BlockHash(rawBlockHash)
                         : (BlockHash?)null
                 : BlockTipHash;
+        }
+
+        private IValue DeCompressState(byte[] compressed)
+        {
+            using (var cp = new MemoryStream(compressed))
+            {
+                using (var decompressed = new MemoryStream())
+                {
+                    using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+                    {
+                        df.CopyTo(decompressed);
+                        decompressed.Seek(0, SeekOrigin.Begin);
+                        var dec = decompressed.ToArray();
+                        return _codec.Decode(dec);
+                    }
+                }
+            }
         }
     }
 }

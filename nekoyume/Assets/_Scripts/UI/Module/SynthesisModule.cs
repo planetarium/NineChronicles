@@ -141,8 +141,10 @@ namespace Nekoyume.UI.Module
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", 0);
             successRateText.text = L10nManager.Localize("UI_SYNTHESIZE_SUCCESS_RATE", 0);
 
-            var registrationPopup = Widget.Find<SynthesisRegistrationPopup>();
-            registrationPopup.Clear();
+            if (Widget.TryFind<SynthesisRegistrationPopup>(out var registrationPopup))
+            {
+                registrationPopup.Clear();
+            }
         }
 
         private void SetSynthesisButtonState(bool possibleSynthesis)

@@ -2,19 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Libplanet.Action.State;
+using JetBrains.Annotations;
 using Libplanet.Crypto;
-using Nekoyume.ApiClient;
-using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -27,7 +23,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             SeasonRanking,
             BossBattle,
-            BattleGrade
+            BattleGrade,
         }
 
         [Serializable]
@@ -42,7 +38,10 @@ namespace Nekoyume.UI.Module.WorldBoss
         private List<CategoryToggle> categoryToggles = null;
 
         [SerializeField]
-        private List<GameObject> notifications;
+        private List<GameObject> notificationsSeasonReward;
+
+        [SerializeField]
+        private List<GameObject> notificationsBattleGrade;
 
         [SerializeField]
         private GameObject emptyContainer;
@@ -52,6 +51,8 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
         private Address _cachedAvatarAddress;
+
+        private WorldBossSeasonReward SeasonReward => categoryToggles.First(t => t.Type == ToggleType.SeasonRanking).Item as WorldBossSeasonReward;
 
         protected void Awake()
         {
@@ -84,9 +85,36 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             WorldBossStates.SubscribeGradeRewards((b) =>
             {
-                foreach (var notification in notifications)
+                foreach (var notification in notificationsBattleGrade)
                 {
                     notification.SetActive(b);
+                }
+            });
+
+            WorldBossStates.SubscribeWorldBossState(state =>
+            {
+                var currentState = Game.Game.instance.States.CurrentAvatarState;
+                if (currentState is null)
+                {
+                    foreach (var notification in notificationsSeasonReward)
+                    {
+                        notification.SetActive(false);
+                    }
+                    return;
+                }
+
+                var avatarAddress = currentState.address;
+                var isOnSeason = WorldBossStates.IsOnSeason;
+                var preRaiderState = WorldBossStates.GetPreRaiderState(avatarAddress);
+                foreach (var notification in notificationsSeasonReward)
+                {
+                    if (preRaiderState is null)
+                    {
+                        notification.SetActive(false);
+                        return;
+                    }
+
+                    notification.SetActive(!isOnSeason && !preRaiderState.HasClaimedReward);
                 }
             });
         }
@@ -126,7 +154,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 StartCoroutine(CoSetFirstCategory());
             }
 
-            var (raider, raidId, record, userCount) = await GetDataAsync();
+            var (worldBoss, raider, raidId, isOnSeason) = await WorldBossStates.Set();
             CheckRaidId(raidId);
             UpdateTitle();
 
@@ -135,8 +163,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 switch (toggle.Item)
                 {
                     case WorldBossSeasonReward season:
-                        var rank = record?.Ranking ?? 0;
-                        season.Set(raidId, rank, userCount);
+                        season.Set(worldBoss, raider, raidId, isOnSeason);
                         break;
                     case WorldBossBattleReward battle:
                         battle.Set(raidId);
@@ -173,54 +200,14 @@ namespace Nekoyume.UI.Module.WorldBoss
                 : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
         }
 
-        private async Task<(
-                RaiderState raider,
-                int raidId,
-                WorldBossRankingRecord record,
-                int userCount)>
-            GetDataAsync()
+        public void OnRenderSeasonReward()
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            var task = Task.Run(async () =>
+            if (SeasonReward == null)
             {
-                int raidId;
+                return;
+            }
 
-                try
-                {
-                    raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
-                }
-                catch (InvalidOperationException)
-                {
-                    try
-                    {
-                        raidId = bossSheet.FindPreviousRaidIdByBlockIndex(blockIndex);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return (null, 0, null, 0);
-                    }
-                }
-
-                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
-                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    raiderAddress);
-                var raider = raiderState is Bencodex.Types.List raiderList
-                    ? new RaiderState(raiderList)
-                    : null;
-
-                var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
-                var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
-                var userCount = response?.WorldBossTotalUsers ?? 0;
-                var myRecord = records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
-                return (raider, raidId, myRecord, userCount);
-            });
-
-            await task;
-            return task.Result;
+            SeasonReward.OnRender();
         }
     }
 }

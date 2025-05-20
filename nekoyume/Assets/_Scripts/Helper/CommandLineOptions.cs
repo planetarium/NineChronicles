@@ -104,6 +104,8 @@ namespace Nekoyume.Helper
 
         private string _appleMarketUrl;
 
+        private string mimirServiceHost;
+
         private bool _requiredUpdate;
 
         private string _guildServiceUrl;
@@ -119,6 +121,8 @@ namespace Nekoyume.Helper
         private bool _mixpanelDebugException;
 
         private bool _mixpanelDebugWarning;
+
+        private string _sheetBucketUrl;
 
         public bool Empty { get; private set; } = true;
 
@@ -308,6 +312,17 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("mimir-service-hosts", Required = false, HelpText = "The host names for client mode.")]
+        public string MimirServiceHost
+        {
+            get => mimirServiceHost;
+            set
+            {
+                mimirServiceHost = value;
+                Empty = false;
+            }
+        }
+
         [Option("rpc-server-port", Required = false, HelpText = "The port number for client mode.")]
         public int RpcServerPort
         {
@@ -442,6 +457,7 @@ namespace Nekoyume.Helper
         /// <summary>
         /// WorldBoss Host.
         /// </summary>
+        [Obsolete]
         [Option("on-boarding-host", Required = false, HelpText = "on boarding host")]
         public string OnBoardingHost
         {
@@ -641,6 +657,16 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("sheet-bucket-url", Required = false, HelpText = "table sheets bucket url")]
+        public string SheetBucketUrl
+        {
+            get => _sheetBucketUrl;
+            set
+            {
+                _sheetBucketUrl = value;
+                Empty = false;
+            }
+        }
 
         public override string ToString()
         {

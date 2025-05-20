@@ -190,7 +190,7 @@ namespace Nekoyume.UI
             if (_useSo && _so)
             {
                 var championshipSeasonIds = _so.ArenaDataList
-                    .Where(e => e.RoundDataBridge.ArenaType == Nekoyume.Model.EnumType.ArenaType.Season)
+                    .Where(e => e.RoundDataBridge.ArenaType == ArenaType.SEASON)
                     .Select(e => e.RoundDataBridge.Round)
                     .ToList();
                 var arenaDataList = _so.ArenaDataList

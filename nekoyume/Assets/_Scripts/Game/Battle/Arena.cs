@@ -145,7 +145,9 @@ namespace Nekoyume.Game.Battle
                     if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
                         battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
                         battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
-                        battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                        battleResponse.BattleStatus == BattleStatus.TX_FAILED ||
+                        battleResponse.BattleStatus == BattleStatus.NO_REMAINING_TICKET ||
+                        battleResponse.BattleStatus == BattleStatus.EXPIRED)
                     {
                         NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
                         //폴링 실패시 처리.
@@ -171,7 +173,9 @@ namespace Nekoyume.Game.Battle
                         if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
                             battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
                             battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
-                            battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                            battleResponse.BattleStatus == BattleStatus.TX_FAILED ||
+                            battleResponse.BattleStatus == BattleStatus.NO_REMAINING_TICKET ||
+                            battleResponse.BattleStatus == BattleStatus.EXPIRED)
                         {
                             NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
                             //폴링 실패시 처리.
@@ -197,7 +201,9 @@ namespace Nekoyume.Game.Battle
                         if (battleResponse.BattleStatus == BattleStatus.NOT_FOUND_BATTLE_ACTION ||
                             battleResponse.BattleStatus == BattleStatus.INVALID_BATTLE ||
                             battleResponse.BattleStatus == BattleStatus.DUPLICATE_TRANSACTION ||
-                            battleResponse.BattleStatus == BattleStatus.TX_FAILED)
+                            battleResponse.BattleStatus == BattleStatus.TX_FAILED ||
+                            battleResponse.BattleStatus == BattleStatus.NO_REMAINING_TICKET ||
+                            battleResponse.BattleStatus == BattleStatus.EXPIRED)
                         {
                             NcDebug.LogError($"[Arena] 폴링 실패: {battleResponse.BattleStatus} 상태입니다."); // 로그메세지 작성
                             //폴링 실패시 처리.

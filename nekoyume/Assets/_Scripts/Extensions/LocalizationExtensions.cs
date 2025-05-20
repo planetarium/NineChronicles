@@ -263,6 +263,8 @@ namespace Nekoyume
                             customCraftMail.Equipment.ItemType.HasElementType()));
                 case PatrolRewardMail _:
                     return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
+                case WorldBossRewardMail _:
+                    return L10nManager.Localize("NOTIFICATION_WORLDBOSS_REWARD_CLAIMED");
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -674,7 +676,8 @@ namespace Nekoyume
                 4 => Palette.GetColor(EnumType.ColorType.TextGrade03),
                 5 => Palette.GetColor(EnumType.ColorType.TextGrade04),
                 6 => Palette.GetColor(EnumType.ColorType.TextGrade05),
-                _ => Palette.GetColor(EnumType.ColorType.TextGrade00)
+                7 => Palette.GetColor(EnumType.ColorType.TextGrade06),
+                _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }
 
@@ -690,7 +693,7 @@ namespace Nekoyume
                     Palette.GetColor(EnumType.ColorType.TextGrade02),
                 CrystalRandomBuffSheet.Row.BuffRank.B =>
                     Palette.GetColor(EnumType.ColorType.TextGrade00),
-                _ => Palette.GetColor(EnumType.ColorType.TextGrade00)
+                _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }
 

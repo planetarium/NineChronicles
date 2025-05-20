@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                     {
                         mailRewards.AddRange(
                             claimItemsMail.FungibleAssetValues.Select(fav =>
-                                new MailReward(fav, (int)fav.MajorUnit)));
+                                new MailReward(fav, fav.MajorUnit)));
                     }
 
                     if (claimItemsMail.Items is not null)
@@ -720,20 +720,10 @@ namespace Nekoyume.UI
             popup.Pop(monsterCollectionResult.rewards);
         }
 
-        public void Read(RaidRewardMail raidRewardMail)
-        {
-            raidRewardMail.New = false;
-            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            NcDebug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
-        }
-
         public void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail)
         {
             Analyzer.Instance.Track(
                 "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
-
-            var evt = new AirbridgeEvent("UnloadFromMyGaragesRecipientMail_ReceiveButton_Click");
-            AirbridgeUnity.TrackEvent(evt);
 
             var game = Game.Game.instance;
             unloadFromMyGaragesRecipientMail.New = false;
@@ -801,7 +791,7 @@ namespace Nekoyume.UI
 
                     foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
                     {
-                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                        mailRewards.Add(new MailReward(fav, fav.MajorUnit, true));
                     }
                 }
 
@@ -815,7 +805,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav.value, (int)fav.value.MajorUnit)));
+                        new MailReward(fav.value, fav.value.MajorUnit)));
             }
 
             if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
@@ -861,9 +851,6 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track(
                 "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
 
-            var evt = new AirbridgeEvent("ClaimItemsMail_ReceiveButton_Click");
-            AirbridgeUnity.TrackEvent(evt);
-
             var game = Game.Game.instance;
             claimItemsMail.New = false;
             LocalLayerModifier.RemoveNewMail(
@@ -877,7 +864,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     claimItemsMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (claimItemsMail.Items is not null)
@@ -966,10 +953,10 @@ namespace Nekoyume.UI
         {
             var game = Game.Game.instance;
             patrolRewardMail.New = false;
-            LocalLayerModifier.RemoveNewMail(
-                game.States.CurrentAvatarState.address,
-                patrolRewardMail.id);
+            var avatarAddress = game.States.CurrentAvatarState.address;
+            LocalLayerModifier.RemoveNewMail(avatarAddress, patrolRewardMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
             NcDebug.Log($"[MailRead] MailPopupRead PatrolRewardMail mailid : {patrolRewardMail.id}");
 
             var rewards = new List<MailReward>();
@@ -977,7 +964,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     patrolRewardMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int)fav.MajorUnit)));
+                        new MailReward(fav, fav.MajorUnit)));
             }
 
             if (patrolRewardMail.Items is not null)
@@ -1016,6 +1003,18 @@ namespace Nekoyume.UI
             }
 
             Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+        }
+
+        public void Read(RaidRewardMail raidRewardMail)
+        {
+            raidRewardMail.New = false;
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+            NcDebug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
+        }
+
+        [Obsolete]
+        public void Read(WorldBossRewardMail worldBossRewardMail)
+        {
         }
 
         [Obsolete]

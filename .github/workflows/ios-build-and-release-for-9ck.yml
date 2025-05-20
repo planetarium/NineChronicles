@@ -131,7 +131,7 @@ jobs:
 
   build-and-upload:      
     name: Build Archive for iOS and Upload to TestFlight
-    runs-on: macos-13
+    runs-on: macos-15
     timeout-minutes: 60
     needs: build
     if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')|| github.event.inputs.manual_build_option
@@ -172,7 +172,7 @@ jobs:
           path: build/${{ matrix.targetPlatform }}
           
       - name: Cache restore cocoapods
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         if: ${{ always() }}
         with:
           path: |
