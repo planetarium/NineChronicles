@@ -11,6 +11,9 @@ using Unity.Notifications.Android;
 
 #if UNITY_IOS
 using Unity.Notifications.iOS;
+using NotificationServices = UnityEngine.iOS.NotificationServices;
+using NotificationType = UnityEngine.iOS.NotificationType;
+using LocalNotification = UnityEngine.iOS.LocalNotification;
 using UnityEngine.Android;
 #endif
 
