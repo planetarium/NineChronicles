@@ -296,12 +296,22 @@ namespace NekoyumeEditor
                     UpdateDefines(false);
 
                     // Copy readme
-                    FileUtil.CopyFileOrDirectory(
-                        Path.Combine("../", "README.md"),
-                        Path.Combine("../", BuildBasePath, targetDirName, "README.md"));
-                    FileUtil.CopyFileOrDirectory(
-                        Path.Combine("../", "OSS Notice.md"),
-                        Path.Combine("../", BuildBasePath, targetDirName, "OSS Notice.md"));
+                    var targetReadmePath = Path.Combine("../", BuildBasePath, targetDirName, "README.md");
+                    var targetOssNoticePath = Path.Combine("../", BuildBasePath, targetDirName, "OSS Notice.md");
+
+                    if (!File.Exists(targetReadmePath))
+                    {
+                        FileUtil.CopyFileOrDirectory(
+                            Path.Combine("../", "README.md"),
+                            targetReadmePath);
+                    }
+
+                    if (!File.Exists(targetOssNoticePath))
+                    {
+                        FileUtil.CopyFileOrDirectory(
+                            Path.Combine("../", "OSS Notice.md"),
+                            targetOssNoticePath);
+                    }
                     break;
                 case BuildResult.Failed:
                     Debug.LogError("Build failed");
