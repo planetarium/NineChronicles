@@ -1,18 +1,18 @@
 <dependencies>
   <packages>
     <package>com.google.android.gms:play-services-auth:20+</package>
-    <package>com.google.android.gms:play-services-base:18.5.0</package>
-    <package>com.google.firebase:firebase-analytics:22.0.2</package>
-    <package>com.google.firebase:firebase-analytics-unity:12.1.0</package>
-    <package>com.google.firebase:firebase-app-unity:12.1.0</package>
+    <package>com.google.android.gms:play-services-base:18.6.0</package>
+    <package>com.google.firebase:firebase-analytics:22.4.0</package>
+    <package>com.google.firebase:firebase-analytics-unity:12.9.0</package>
+    <package>com.google.firebase:firebase-app-unity:12.9.0</package>
     <package>com.google.firebase:firebase-common:21.0.0</package>
     <package>com.google.signin:google-signin-support:1.0.4</package>
   </packages>
   <files>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.1.0/firebase-analytics-unity-12.1.0.aar</file>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.1.0/firebase-analytics-unity-12.1.0.pom</file>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.1.0/firebase-app-unity-12.1.0.aar</file>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.1.0/firebase-app-unity-12.1.0.pom</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.9.0/firebase-analytics-unity-12.9.0.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.9.0/firebase-analytics-unity-12.9.0.pom</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.9.0/firebase-app-unity-12.9.0.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.9.0/firebase-app-unity-12.9.0.pom</file>
     <file>Assets/GeneratedLocalRepo/GoogleSignIn/Editor/m2repository/com/google/signin/google-signin-support/1.0.4/google-signin-support-1.0.4.aar</file>
     <file>Assets/GeneratedLocalRepo/GoogleSignIn/Editor/m2repository/com/google/signin/google-signin-support/1.0.4/google-signin-support-1.0.4.pom</file>
   </files>
