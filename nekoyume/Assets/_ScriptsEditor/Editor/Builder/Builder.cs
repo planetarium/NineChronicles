@@ -61,7 +61,7 @@ namespace NekoyumeEditor
             var originalArchitecture = UserBuildSettings.architecture;
             try
             {
-                UserBuildSettings.architecture = MacOSArchitecture.x64;
+                UserBuildSettings.architecture = OSArchitecture.x64;
                 Build(BuildTarget.StandaloneOSX, targetDirName: "StandaloneOSX");
             }
             finally
@@ -230,7 +230,7 @@ namespace NekoyumeEditor
             var originalArchitecture = UserBuildSettings.architecture;
             try
             {
-                UserBuildSettings.architecture = MacOSArchitecture.x64;
+                UserBuildSettings.architecture = OSArchitecture.x64;
                 Build(BuildTarget.StandaloneOSX, BuildOptions.Development | BuildOptions.AllowDebugging, "macOS", true);
             }
             finally
