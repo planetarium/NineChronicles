@@ -226,7 +226,7 @@ namespace Nekoyume.UI
             if (_data.Mileage > 0)
             {
                 mileageObject.SetActive(true);
-                mileageText.text = _data.Mileage.ToString("N0");
+                mileageText.text = TextHelper.FormatNumber(_data.Mileage);
             }
             else
             {

@@ -13,6 +13,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
 
     public class BuyItemInformationPopup : PopupWidget
@@ -163,7 +164,7 @@ namespace Nekoyume.UI
             equipmentHeader.gameObject.SetActive(isEquipment);
             if (isEquipment)
             {
-                cpText.text = CPHelper.GetCP((Equipment)item).ToString();
+                cpText.text = TextHelper.FormatNumber(CPHelper.GetCP((Equipment)item));
             }
 
             cpText.transform.parent.gameObject.SetActive(isEquipment);

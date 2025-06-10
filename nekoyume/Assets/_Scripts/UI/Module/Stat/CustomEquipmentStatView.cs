@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Battle;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -54,7 +55,7 @@ namespace Nekoyume.UI.Module
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
             baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
             expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");
-            cpText.SetText($"CP: {relationshipRow.CpGroups.Min(cp => cp.MinCp)}-{relationshipRow.CpGroups.Max(cp => cp.MaxCp)}");
+            cpText.SetText($"CP: {TextHelper.FormatNumber(relationshipRow.CpGroups.Min(cp => cp.MinCp))}-{TextHelper.FormatNumber(relationshipRow.CpGroups.Max(cp => cp.MaxCp))}");
             maxMainStatText.SetText(
                 $"{equipmentRow.Stat.StatType} : MAX {(long)CPHelper.ConvertCpToStat(equipmentRow.Stat.StatType, relationshipRow.CpGroups.Max(cp => cp.MaxCp), 1)}");
             requiredBlockText.SetText($"{customEquipmentCraftRecipeRow.RequiredBlock}");

@@ -70,7 +70,7 @@ namespace Nekoyume.UI
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
             _practiceText.SetActive(false);
-            scoreText.text = score.ToString("N0");
+            scoreText.text = TextHelper.FormatNumber(score);
             seasonBestObject.SetActive(isBest);
 
             if (Game.Game.instance.TableSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var row))
@@ -129,7 +129,7 @@ namespace Nekoyume.UI
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
             _practiceText.SetActive(true);
-            scoreText.text = score.ToString("N0");
+            scoreText.text = TextHelper.FormatNumber(score);
             seasonBestObject.SetActive(false);
 
             foreach (var view in runeRewardViews)

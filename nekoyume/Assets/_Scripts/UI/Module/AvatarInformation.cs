@@ -995,7 +995,7 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             _currentCp = Util.TotalCP(_battleType) + consumables.Sum(CPHelper.GetCP);
             ;
-            cp.text = _currentCp.ToString();
+            cp.text = TextHelper.FormatNumber(_currentCp);
             if (_compareCp.HasValue)
             {
                 cp.color = _currentCp < _compareCp.Value

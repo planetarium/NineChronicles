@@ -17,6 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.Helper;
     using Scroller;
     using UniRx;
 
@@ -133,8 +134,8 @@ namespace Nekoyume.UI.Module
 
         private void OnSliderChange()
         {
-            var current = ((int)sliderAnimator.Value).ToString("N0", CultureInfo.CurrentCulture);
-            var max = ((int)sliderAnimator.MaxValue).ToString("N0", CultureInfo.CurrentCulture);
+            var current = TextHelper.FormatNumber((int)sliderAnimator.Value);
+            var max = TextHelper.FormatNumber((int)sliderAnimator.MaxValue);
             text.text = $"{current}/{max}";
 
             _isFull = sliderAnimator.IsFull;

@@ -204,8 +204,8 @@ namespace Nekoyume.UI.Model
 
             //cpSetting
             cpArrow.SetActive(true);
-            currentCp.text = option.Cp.ToString();
-            nextCp.text = nextOption.Cp.ToString();
+            currentCp.text = TextHelper.FormatNumber(option.Cp);
+            nextCp.text = TextHelper.FormatNumber(nextOption.Cp);
             nextCp.gameObject.SetActive(true);
         }
 
@@ -265,7 +265,7 @@ namespace Nekoyume.UI.Model
 
             //cpSetting
             cpArrow.SetActive(false);
-            currentCp.text = option.Cp.ToString();
+            currentCp.text = TextHelper.FormatNumber(option.Cp);
             nextCp.gameObject.SetActive(false);
         }
 
