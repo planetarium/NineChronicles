@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+**APPLY_PLUGINS**
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+// Android Resolver Dependencies Start
+    implementation 'com.google.android.gms:play-services-auth:20+' // Assets/GoogleSignIn/Editor/GoogleSignInDependencies.xml:10
+    implementation 'com.google.android.gms:play-services-base:18.6.0' // Assets/Firebase/Editor/AppDependencies.xml:17
+    implementation 'com.google.firebase:firebase-analytics:22.4.0' // Assets/Firebase/Editor/AppDependencies.xml:15
+    implementation 'com.google.firebase:firebase-analytics-unity:12.9.0' // Assets/Firebase/Editor/AnalyticsDependencies.xml:18
+    implementation 'com.google.firebase:firebase-app-unity:12.9.0' // Assets/Firebase/Editor/AppDependencies.xml:22
+    implementation 'com.google.firebase:firebase-common:21.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
+    implementation 'com.google.signin:google-signin-support:1.0.4' // Assets/GoogleSignIn/Editor/GoogleSignInSupportDependencies.xml:9
+// Android Resolver Dependencies End
+**DEPS**}
+
+// Android Resolver Exclusions Start
+android {
+  packagingOptions {
+      exclude ('/lib/armeabi/*' + '*')
+      exclude ('/lib/armeabi-v7a/*' + '*')
+      exclude ('/lib/mips/*' + '*')
+      exclude ('/lib/mips64/*' + '*')
+      exclude ('/lib/x86/*' + '*')
+      exclude ('/lib/x86_64/*' + '*')
+  }
+}
+// Android Resolver Exclusions End
+android {
+    compileSdkVersion **APIVERSION**
+    buildToolsVersion '**BUILDTOOLS**'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion **MINSDKVERSION**
+        targetSdkVersion **TARGETSDKVERSION**
+        ndk {
+            abiFilters **ABIFILTERS**
+        }
+        versionCode **VERSIONCODE**
+        versionName '**VERSIONNAME**'
+        consumerProguardFiles 'proguard-unity.txt'**USER_PROGUARD**
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    aaptOptions {
+        noCompress = **BUILTIN_NOCOMPRESS** + unityStreamingAssets.tokenize(', ')
+        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }**PACKAGING_OPTIONS**
+}**REPOSITORIES**
+**IL_CPP_BUILD_SETUP**
+**SOURCE_BUILD_SETUP**
+**EXTERNAL_SOURCES**
