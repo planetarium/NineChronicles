@@ -1,3 +1,4 @@
+using Nekoyume.Helper;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace Nekoyume.UI.Module
         public void SetMaterial(Sprite icon, int quantity, CostType costType)
         {
             iconImage.sprite = icon;
-            countText.text = quantity.ToString("N0");
+            countText.text = TextHelper.FormatNumber(quantity);
             _costType = costType;
         }
 

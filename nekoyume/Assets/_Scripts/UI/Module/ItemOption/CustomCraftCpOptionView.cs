@@ -1,4 +1,5 @@
-﻿using Nekoyume.Model.Stat;
+﻿using Nekoyume.Helper;
+using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Nekoyume.UI.Module
 
         public void UpdateView(long cp, DecimalStat stat)
         {
-            UpdateView(cp.ToString(), $"+{stat.AdditionalValueAsLong}");
+            UpdateView(TextHelper.FormatNumber(cp), $"+{TextHelper.FormatNumber(stat.AdditionalValueAsLong)}");
             statTypeText.SetText(stat.StatType.ToString());
         }
     }

@@ -210,7 +210,7 @@ namespace Nekoyume.UI.Module
             if (_data.Mileage > 0)
             {
                 mileageObj.SetActive(true);
-                mileageText.text = _data.Mileage.ToString("N0");
+                mileageText.text = TextHelper.FormatNumber(_data.Mileage);
             }
             else
             {

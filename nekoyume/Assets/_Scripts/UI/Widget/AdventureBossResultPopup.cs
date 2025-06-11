@@ -15,6 +15,7 @@ namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using DG.Tweening;
+    using Nekoyume.Helper;
     using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
     using UniRx;
@@ -144,7 +145,7 @@ namespace Nekoyume.UI
                 item.SetActive(score > 0);
             }
 
-            scoreText.text = score.ToString("N0");
+            scoreText.text = TextHelper.FormatNumber(score);
 
             var totalScore = 0;
             var start = _prevScore;
@@ -155,10 +156,10 @@ namespace Nekoyume.UI
                 retryButton.SetActive(false);
             }
 
-            cumulativeScoreText.text = start.ToString("N0");
+            cumulativeScoreText.text = TextHelper.FormatNumber(start);
             DOTween.To(() => start, x => start = x, totalScore, 0.3f)
                 .SetDelay(1.1f)
-                .OnUpdate(() => cumulativeScoreText.text = start.ToString("N0"))
+                .OnUpdate(() => cumulativeScoreText.text = TextHelper.FormatNumber(start))
                 .SetEase(Ease.InOutQuad);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.PVPWin);

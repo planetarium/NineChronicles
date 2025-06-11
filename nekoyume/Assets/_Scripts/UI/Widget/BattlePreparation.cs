@@ -276,7 +276,7 @@ namespace Nekoyume.UI
 
                     enemyCpContainer.gameObject.SetActive(true);
                     var cp = row.RequiredCP;
-                    enemyCp.text = $"{cp}";
+                    enemyCp.text = TextHelper.FormatNumber(cp);
                     return cp;
                 case StageType.Mimisbrunnr:
                 case StageType.EventDungeon:

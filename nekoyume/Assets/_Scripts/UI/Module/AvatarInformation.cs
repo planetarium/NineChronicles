@@ -55,6 +55,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button collectionEffectButton;
 
+        [SerializeField]
+        private bool withCp = false;
+
         private GameObject _cachedCharacterTitle;
         private BattleType _battleType = BattleType.Adventure;
         private System.Action _onUpdate;
@@ -994,8 +997,7 @@ namespace Nekoyume.UI.Module
             _previousCp = _currentCp;
             var consumables = GetEquippedConsumables();
             _currentCp = Util.TotalCP(_battleType) + consumables.Sum(CPHelper.GetCP);
-            ;
-            cp.text = _currentCp.ToString();
+            cp.text = withCp ? $"CP {TextHelper.FormatNumber(_currentCp)}" : TextHelper.FormatNumber(_currentCp);
             if (_compareCp.HasValue)
             {
                 cp.color = _currentCp < _compareCp.Value

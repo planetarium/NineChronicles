@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Scroller
         {
             emptyClanIcon.SetActive(true);
             clanIcon.gameObject.SetActive(false);
-            
+
             if (viewModel == null)
             {
                 return;
@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Scroller
             UpdateRank(viewModel.Rank);
 
             clanName.text = viewModel.Name;
-            clanScore.text = viewModel.Score.ToString("N0", CultureInfo.CurrentCulture);
+            clanScore.text = TextHelper.FormatNumber(viewModel.Score);
             if (string.IsNullOrEmpty(viewModel.ImageURL))
             {
                 emptyClanIcon.SetActive(true);

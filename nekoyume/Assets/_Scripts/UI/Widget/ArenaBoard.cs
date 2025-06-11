@@ -307,11 +307,11 @@ namespace Nekoyume.UI
             {
                 _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
                 _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
-                _myCp.text = $"CP {_so.CP.ToString("N0", CultureInfo.CurrentCulture)}";
-                _myRating.text = $"{_so.Rank.ToString("N0", CultureInfo.CurrentCulture)} |";
-                _myScore.text = $" {_so.Rating.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myCp.text = $"CP {TextHelper.FormatNumber(_so.CP)}";
+                _myRating.text = $"{TextHelper.FormatNumber(_so.Rank)} |";
+                _myScore.text = $" {TextHelper.FormatNumber(_so.Rating)}";
                 _myScoreChangesInRound.text = "";
-                _myWinLose.text = $"W {_so.WinCount.ToString("N0", CultureInfo.CurrentCulture)} | L {_so.LoseCount.ToString("N0", CultureInfo.CurrentCulture)}";
+                _myWinLose.text = $"W {TextHelper.FormatNumber(_so.WinCount)} | L {TextHelper.FormatNumber(_so.LoseCount)}";
                 _myWinLoseChangesInRound.text = "";
                 _clanObj.SetActive(false);
                 return;
@@ -327,13 +327,13 @@ namespace Nekoyume.UI
 
             _characterView.SetByAvatarState(States.Instance.CurrentAvatarState);
             _myName.text = States.Instance.CurrentAvatarState.NameWithHash;
-            _myCp.text = $"CP {currentInfo.User.Cp.ToString("N0", CultureInfo.CurrentCulture)}";
-            _myRating.text = $"{currentInfo.Rank.ToString("N0", CultureInfo.CurrentCulture)} |";
-            _myScore.text = $" {currentInfo.Score.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myCp.text = $"CP {TextHelper.FormatNumber(currentInfo.User.Cp)}";
+            _myRating.text = $"{TextHelper.FormatNumber(currentInfo.Rank)} |";
+            _myScore.text = $" {TextHelper.FormatNumber(currentInfo.Score)}";
             _myScoreChangesInRound.text = string.Format("{0:+#;-#;0}", currentInfo.CurrentRoundScoreChange);
             var currentRoundWin = currentInfo.TotalWin - currentInfo.CurrentRoundWinChange;
             var currentRoundLose = currentInfo.TotalLose - currentInfo.CurrentRoundLoseChange;
-            _myWinLose.text = $"W {currentRoundWin.ToString("N0", CultureInfo.CurrentCulture)} <color=#FFFFFF>|</color> L {currentRoundLose.ToString("N0", CultureInfo.CurrentCulture)}";
+            _myWinLose.text = $"W {TextHelper.FormatNumber(currentRoundWin)} <color=#FFFFFF>|</color> L {TextHelper.FormatNumber(currentRoundLose)}";
             _myWinLoseChangesInRound.text = $"{currentInfo.CurrentRoundWinChange} / {currentInfo.CurrentRoundLoseChange}";
             if (currentInfo.ClanInfo != null)
             {

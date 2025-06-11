@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Module
 
         public void UpdateScore(long score)
         {
-            scoreText.text = score.ToString("N0");
+            scoreText.text = TextHelper.FormatNumber(score);
             var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(_currentRow, score);
             if (_currentGrade != grade &&
                 WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))

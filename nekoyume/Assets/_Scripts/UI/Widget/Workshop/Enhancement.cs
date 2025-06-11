@@ -481,7 +481,7 @@ namespace Nekoyume.UI
 
                 levelStateText.text = $"Lv. {targetRow.Level}/{ItemEnhancement.GetEquipmentMaxLevel(equipment, enhancementCostSheet)}";
 
-                currentEquipmentCP.text = CPHelper.GetCP(equipment).ToString();
+                currentEquipmentCP.text = TextHelper.FormatNumber(CPHelper.GetCP(equipment));
 
                 long requiredBlockIndex =
                     targetRow.RequiredBlockIndex - baseItemCostRow.RequiredBlockIndex;
@@ -622,7 +622,7 @@ namespace Nekoyume.UI
                 }
 
                 nextCp *= CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
-                nextEquipmentCP.text = CPHelper.DecimalToInt(nextCp).ToString();
+                nextEquipmentCP.text = TextHelper.FormatNumber(CPHelper.DecimalToInt(nextCp));
             }
         }
 

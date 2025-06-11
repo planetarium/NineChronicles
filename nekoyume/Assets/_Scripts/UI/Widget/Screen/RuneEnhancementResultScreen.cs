@@ -158,7 +158,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            cpText.text = $"CP {option.Cp}";
+            cpText.text = $"CP {TextHelper.FormatNumber(option.Cp)}";
 
             UpdateSkillInformation(option);
             UpdateStatInformation(item, option);

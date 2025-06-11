@@ -1,6 +1,7 @@
 using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -64,7 +65,7 @@ namespace Nekoyume.UI
             cpTextTweener.endValue = currentCP;
 
             levelText.text = afterLevel.ToString();
-            increasedCpText.text = (currentCP - previousCP).ToString();
+            increasedCpText.text = TextHelper.FormatNumber(currentCP - previousCP);
             var beforeStat = row.ToStats(beforeLevel);
             var afterStat = row.ToStats(afterLevel);
 
