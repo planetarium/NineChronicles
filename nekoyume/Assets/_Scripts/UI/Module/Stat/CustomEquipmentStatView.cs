@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
             expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");
             cpText.SetText($"CP: {TextHelper.FormatNumber(relationshipRow.CpGroups.Min(cp => cp.MinCp))}-{TextHelper.FormatNumber(relationshipRow.CpGroups.Max(cp => cp.MaxCp))}");
             maxMainStatText.SetText(
-                $"{equipmentRow.Stat.StatType} : MAX {(long)CPHelper.ConvertCpToStat(equipmentRow.Stat.StatType, relationshipRow.CpGroups.Max(cp => cp.MaxCp), 1)}");
+                $"{equipmentRow.Stat.StatType} : MAX {TextHelper.FormatNumber((long)CPHelper.ConvertCpToStat(equipmentRow.Stat.StatType, relationshipRow.CpGroups.Max(cp => cp.MaxCp), 1))}");
             requiredBlockText.SetText($"{customEquipmentCraftRecipeRow.RequiredBlock}");
             requiredLevelText.SetText(
                 $"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
@@ -85,7 +85,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            var statStrings = maxStats.Select(stat => $"{stat.Key} : MAX {stat.Value}").ToList();
+            var statStrings = maxStats.Select(stat => $"{stat.Key} : MAX {TextHelper.FormatNumber(stat.Value)}").ToList();
             return (statStrings.Take(2).Aggregate((str1, str2) => $"{str1} / {str2}"),
                 statStrings.Skip(2).Aggregate((str1, str2) => $"{str1} / {str2}"));
         }
