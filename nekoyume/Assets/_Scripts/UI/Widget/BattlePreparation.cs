@@ -350,12 +350,9 @@ namespace Nekoyume.UI
                     }
 
                     var eventType = EventManager.GetEventInfo().EventType;
-                    var eventDungeonBackground = eventDungeonBgs
-                        .FirstOrDefault(bg => bg.eventType == eventType)?.background;
-                    if (eventDungeonBackground != null)
-                    {
-                        eventDungeonBackground.SetActive(true);
-                    }
+                    var bg = eventDungeonBgs
+                        .FirstOrDefault(bg => bg.eventType == eventType) ?? eventDungeonBgs.First(bg => bg.eventType == EventType.EventAnniversary);
+                    bg.background.SetActive(true);
 
                     break;
                 default:
