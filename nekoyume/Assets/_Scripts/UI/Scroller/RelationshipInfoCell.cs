@@ -1,4 +1,5 @@
 ﻿using System;
+using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
 
@@ -31,7 +32,7 @@ namespace Nekoyume.UI.Scroller
         {
             relationshipSectionText.SetText(
                 $"{itemData.MinRelationship}-{(itemData.MaxRelationship != 0 ? itemData.MaxRelationship.ToString() : string.Empty)}");
-            cpText.SetText($"{itemData.MinCp}-{itemData.MaxCp}");
+            cpText.SetText($"{TextHelper.FormatNumber(itemData.MinCp)}-{TextHelper.FormatNumber(itemData.MaxCp)}");
             requiredLevelText.SetText(itemData.RequiredLevel.ToString());
             focusObject.SetActive(Context.CurrentModel.MaxRelationship == itemData.MaxRelationship);
         }

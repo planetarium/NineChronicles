@@ -130,7 +130,7 @@ namespace Nekoyume.UI
             _info = info;
 
             _chooseAvatarCp = (int)info.Cp;
-            enemyCp.text = _chooseAvatarCp.ToString();
+            enemyCp.text = TextHelper.FormatNumber(_chooseAvatarCp.Value);
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, _chooseAvatarCp);
             coverToBlockClick.SetActive(false);

@@ -623,7 +623,7 @@ namespace Nekoyume.UI
             remainingBlockText.text = string.Format(
                 RemainingBlockFormat,
                 remainingBlock.BlockRangeToTimeSpanString(),
-                remainingBlock.ToString("N0"));
+                TextHelper.FormatNumber(remainingBlock));
 
             if (!LoadingHelper.ClaimStakeReward.Value)
             {

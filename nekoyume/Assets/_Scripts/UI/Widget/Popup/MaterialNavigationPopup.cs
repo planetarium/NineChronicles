@@ -403,7 +403,7 @@ namespace Nekoyume.UI
             var itemName = L10nManager.Localize("UI_IAP_MILEAGE");
             var content = L10nManager.Localize("UI_IAP_MILEAGE_DESCRIPTION");
             var icon = SpriteHelper.GetFavIcon("SHOPMILEAGE");
-            var count = ApiClients.Instance.IAPServiceManager.CurrentMileage.Value.ToString("N0", System.Globalization.CultureInfo.CurrentCulture);
+            var count = TextHelper.FormatNumber(ApiClients.Instance.IAPServiceManager.CurrentMileage.Value);
             var buttonText = L10nManager.Localize("UI_SHOP");
             System.Action callback = () =>
             {

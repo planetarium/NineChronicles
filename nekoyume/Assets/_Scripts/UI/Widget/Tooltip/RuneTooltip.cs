@@ -193,7 +193,7 @@ namespace Nekoyume.UI
                     statViewList[i].Show(statMap.StatType, statMap.TotalValue, true);
                 }
 
-                cpText.text = $"<size=80%>CP</size> {option.Cp}";
+                cpText.text = $"<size=80%>CP</size> {TextHelper.FormatNumber(option.Cp)}";
             }
 
             scrollbar.value = 1f;
@@ -271,7 +271,7 @@ namespace Nekoyume.UI
                     statViewList[i].Show(statMap.StatType, statMap.TotalValue, true);
                 }
 
-                cpText.text = $"<size=80%>CP</size> {option.Cp}";
+                cpText.text = $"<size=80%>CP</size> {TextHelper.FormatNumber(option.Cp)}";
             }
 
             _onConfirm = onConfirm;

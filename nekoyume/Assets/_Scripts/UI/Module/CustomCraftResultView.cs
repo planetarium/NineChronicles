@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -73,11 +74,11 @@ namespace Nekoyume.UI.Module
                 var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
                 var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.CpGroups.Max(cp => cp.MaxCp) * 100, 1);
                 cpTopPercentText.SetText(L10nManager.Localize("UI_TOP_N_PERCENT_FORMAT", cpRatingPercent));
-                optionCpText.SetText($"{cpSum}");
+                optionCpText.SetText(TextHelper.FormatNumber(cpSum));
             }
             else
             {
-                optionCpText.SetText($"CP {cpSum}");
+                optionCpText.SetText($"CP {TextHelper.FormatNumber(cpSum)}");
             }
         }
 

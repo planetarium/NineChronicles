@@ -208,7 +208,8 @@ namespace Nekoyume.UI
                         .UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
 
                     eventDungeonLockButton.gameObject.SetActive(false);
-                    var eventDungeonObject = eventDungeonObjects.Last(o => o.eventId == value.Id);
+                    var eventDungeonObject = eventDungeonObjects.LastOrDefault(o => o.eventId == value.Id) ??
+                        eventDungeonObjects.First();
                     eventDungeonObject.button.Show();
                     eventDungeonObject.button.HasNotification.Value = true;
                     eventDungeonObject.button.Unlock();
