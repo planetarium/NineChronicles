@@ -770,6 +770,10 @@ namespace Nekoyume.Game
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
+            if (csvAssets == null || csvAssets.Count == 0)
+            {
+                throw new System.Exception("AddressableAssetsContainer.tableCsvAssets is null or empty. Please check the asset in Resources folder.");
+            }
             IDictionary<string, string> csvDict = new Dictionary<string, string>();
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
