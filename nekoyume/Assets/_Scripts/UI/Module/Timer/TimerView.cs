@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
 
@@ -79,7 +80,7 @@ namespace Nekoyume.UI.Module.Timer
 
         private void UpdateTimeText()
         {
-            timeText.text = _time.ToString("N0");
+            timeText.text = TextHelper.FormatNumber(_time);
         }
     }
 }

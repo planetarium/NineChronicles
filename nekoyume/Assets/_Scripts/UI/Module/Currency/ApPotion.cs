@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
@@ -49,9 +50,7 @@ namespace Nekoyume.UI.Module
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
 
-            count.text = inventory
-                .GetUsableItemCount(CostType.ApPotion, blockIndex)
-                .ToString("N0", System.Globalization.CultureInfo.CurrentCulture);
+            count.text = TextHelper.FormatNumber(inventory.GetUsableItemCount(CostType.ApPotion, blockIndex));
         }
 
         public void SetActiveLoading(bool value)

@@ -104,7 +104,7 @@ namespace Nekoyume.UI
                 minCp += CPHelper.GetSkillsMultiplier(skillCount);
                 maxCp += CPHelper.GetSkillsMultiplier(skillCount);
 
-                combatPointText.text = $"CP {(int)minCp} - {(int)maxCp}";
+                combatPointText.text = $"CP {TextHelper.FormatNumber((int)minCp)} - {TextHelper.FormatNumber((int)maxCp)}";
 
                 titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
                 foreach (var iconImage in iconImages)
@@ -134,7 +134,7 @@ namespace Nekoyume.UI
                     statsMap.AddStatValue(r.StatType, r.Stat);
                 }
                 var cp = CPHelper.DecimalToInt(CPHelper.GetStatsCP(statsMap));
-                combatPointText.text = $"CP {cp}";
+                combatPointText.text = $"CP {TextHelper.FormatNumber(cp)}";
 
                 skillTooltip.gameObject.SetActive(true);
                 foreach (Transform child in skillTooltip.transform)

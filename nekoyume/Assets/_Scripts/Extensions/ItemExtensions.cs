@@ -61,13 +61,13 @@ namespace Nekoyume
         public static string GetCPText(this ItemUsable itemUsable)
         {
             var cp = CPHelper.GetCP(itemUsable);
-            return $"CP {cp}";
+            return $"CP {TextHelper.FormatNumber(cp)}";
         }
 
         public static string GetCPText(this Costume costume, CostumeStatSheet sheet)
         {
             var cp = CPHelper.GetCP(costume, sheet);
-            return $"CP {cp}";
+            return $"CP {TextHelper.FormatNumber(cp)}";
         }
 
         public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo)

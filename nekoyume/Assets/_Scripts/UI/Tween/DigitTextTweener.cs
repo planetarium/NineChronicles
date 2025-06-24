@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ namespace Nekoyume.UI.Tween
 
             currentTween = DOTween.To(
                 () => beginValue,
-                value => _text.text = value.ToString(),
+                value => _text.text = TextHelper.FormatNumber(value),
                 endValue,
                 duration);
 

@@ -1,5 +1,6 @@
 using Libplanet.Crypto;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -102,7 +103,7 @@ namespace Nekoyume.UI.Scroller
             switch (rankingInfo)
             {
                 case AbilityRankingModel abilityInfo:
-                    firstElementCpText.text = abilityInfo.Cp.ToString();
+                    firstElementCpText.text = TextHelper.FormatNumber(abilityInfo.Cp);
                     secondElementText.text = rankingInfo.AvatarLevel.ToString();
 
                     firstElementText.gameObject.SetActive(false);
@@ -127,7 +128,7 @@ namespace Nekoyume.UI.Scroller
                     secondElementEquipmentNameText.gameObject.SetActive(false);
                     break;
                 case EquipmentRankingModel equipmentInfo:
-                    firstElementCpText.text = equipmentInfo.Cp.ToString();
+                    firstElementCpText.text = TextHelper.FormatNumber(equipmentInfo.Cp);
 
                     if (Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(equipmentInfo.EquipmentId, out var row))
                     {

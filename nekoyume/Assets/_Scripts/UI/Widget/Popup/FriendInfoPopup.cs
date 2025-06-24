@@ -212,7 +212,7 @@ namespace Nekoyume.UI
 
             var cp = CPHelper.TotalCP(equipments, costumes, runeOptions, level, row, costumeSheet,
                 collectionStatModifiers, runeLevelBonus);
-            cpText.text = $"{cp}";
+            cpText.text = $"CP {TextHelper.FormatNumber(cp)}";
         }
 
         private void UpdateName(AvatarState avatarState)

@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.Helper;
 using Nekoyume.UI.Tween;
 using TMPro;
 using Unity.Mathematics;
@@ -31,12 +32,12 @@ namespace Nekoyume.UI.Module
             if (prevCp < currentCp)
             {
                 increaseCpArea.gameObject.SetActive(true);
-                additionalCpText.text = (currentCp - prevCp).ToString();
+                additionalCpText.text = TextHelper.FormatNumber(currentCp - prevCp);
             }
             else if (prevCp > currentCp)
             {
                 decreaseCpArea.gameObject.SetActive(true);
-                decreaseCpText.text = math.abs(currentCp - prevCp).ToString();
+                decreaseCpText.text = TextHelper.FormatNumber(math.abs(currentCp - prevCp));
             }
         }
     }

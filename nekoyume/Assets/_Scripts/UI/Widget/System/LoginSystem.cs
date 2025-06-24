@@ -191,7 +191,7 @@ namespace Nekoyume.UI
                     submitButton.Text = L10nManager.Localize("UI_GAME_START");
                     loginGroup.SetActive(true);
                     accountGroup.SetActive(true);
-                    findPassphraseButton.gameObject.SetActive(true);
+                    findPassphraseButton.gameObject.SetActive(false);
                     loginField.Select();
                     accountAddressText.gameObject.SetActive(true);
                     break;
@@ -201,7 +201,7 @@ namespace Nekoyume.UI
                     submitButton.Text = L10nManager.Localize("UI_GAME_START");
                     loginGroup.SetActive(true);
                     accountGroup.SetActive(true);
-                    findPassphraseButton.gameObject.SetActive(true);
+                    findPassphraseButton.gameObject.SetActive(false);
                     accountAddressText.gameObject.SetActive(true);
                     break;
                 case States.FindPassphrase:

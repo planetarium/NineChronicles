@@ -305,7 +305,10 @@ namespace Nekoyume.Multiplanetary
                 catch (Exception ex)
                 {
                     NcDebug.LogException(ex);
-                    NcDebug.LogException(ex.InnerException);
+                    if (ex.InnerException != null)
+                    {
+                        NcDebug.LogException(ex.InnerException);
+                    }
                     // ErrorType.QueryPlanetAccountInfoFailed
                     NcDebug.LogError($"[{nameof(PlanetContext)}] Querying agent and avatars failed. Unexpected exception occurred.{ex.GetType().FullName}({ex.InnerException?.GetType().FullName})");
                     continue;

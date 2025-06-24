@@ -149,13 +149,13 @@ namespace Nekoyume.UI.Module.Arena.Board
             SetActionPoint(ReactiveAvatarState.ActionPoint);
 
             _nameText.text = _currentData.name;
-            _cpText.text = _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
-            _ratingText.text = _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
+            _cpText.text = TextHelper.FormatNumber(_currentData.cp);
+            _ratingText.text = TextHelper.FormatNumber(_currentData.score);
             _plusRatingText.gameObject.SetActive(_currentData.canFight);
-            _plusRatingText.text = _currentData.expectWinDeltaScore.ToString("N0", CultureInfo.CurrentCulture);
+            _plusRatingText.text = TextHelper.FormatNumber(_currentData.expectWinDeltaScore);
             _minusRatingText.gameObject.SetActive(_currentData.canFight);
-            
-            _minusRatingText.text = math.abs(_currentData.scoreOnLose).ToString("N0", CultureInfo.CurrentCulture);
+
+            _minusRatingText.text = TextHelper.FormatNumber(math.abs(_currentData.scoreOnLose));
 
             _choiceButton.gameObject.SetActive(_currentData.canFight);
             if (_currentData.canFight)
