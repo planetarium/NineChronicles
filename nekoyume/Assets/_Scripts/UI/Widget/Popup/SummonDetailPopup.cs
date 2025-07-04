@@ -155,6 +155,7 @@ namespace Nekoyume.UI
             {
                 mainStatTexts[0].text = string.Empty;
                 recipeOptionView.SetOptions(model.RuneOptionInfo);
+                combatPointText.text = $"CP {TextHelper.FormatNumber(model.RuneOptionInfo.Cp)}";
                 if (RuneFrontHelper.TryGetRuneData(model.RuneTicker, out var data))
                 {
                     titleText.SetText(LocalizationExtensions.GetLocalizedFavName(data.ticker));
