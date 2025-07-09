@@ -221,7 +221,7 @@ namespace ModelViewer.Runtime
                     row,
                     Guid.NewGuid(),
                     0L);
-                var itemUsable = new Equipment((Dictionary)preItemUsable.Serialize());
+                var itemUsable = new Equipment(preItemUsable.Serialize());
                 itemUsable.LevelUpV1();
                 return new ItemEnhancement13.ResultModel
                 {
