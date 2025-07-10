@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -28,6 +31,34 @@ namespace Nekoyume
             return TryGetEquippedFullCostume(avatarState, out var fullCostume)
                 ? fullCostume.Id
                 : avatarState.GetArmorId();
+        }
+
+        // Copy from https://github.com/planetarium/lib9c/blob/1.28.0/Lib9c/Model/State/AvatarState.cs#L1121
+        public static void EquipEquipments(this AvatarState avatarState, List<Guid> equipmentIds)
+        {
+            // 장비 해제.
+            var inventoryEquipments = avatarState.inventory.Items
+                .Select(i => i.item)
+                .OfType<Equipment>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+#pragma warning disable LAA1002
+            foreach (var equipment in inventoryEquipments)
+#pragma warning restore LAA1002
+            {
+                equipment.Unequip();
+            }
+
+            // 장비 장착.
+            foreach (var equipmentId in equipmentIds)
+            {
+                if (!avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                ((Equipment) outNonFungibleItem).Equip();
+            }
         }
     }
 }
