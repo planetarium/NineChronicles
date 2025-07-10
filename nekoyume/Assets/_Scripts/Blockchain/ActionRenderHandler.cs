@@ -2251,7 +2251,7 @@ namespace Nekoyume.Blockchain
             }
 
             var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            tempPlayer.EquipItems(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.AllRuneState,
