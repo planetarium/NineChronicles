@@ -337,7 +337,7 @@ namespace Nekoyume.ApiClient
                                     && userSeasonPassSchema.Level > userSeasonPassSchema.LastPremiumClaim
                                     && !string.IsNullOrEmpty(userSeasonPassSchema.ClaimLimitTimestamp)
                                     && DateTime.TryParse(userSeasonPassSchema.ClaimLimitTimestamp, out var claimLimitTime)
-                                    && DateTime.UtcNow < claimLimitTime)
+                                    && TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time")) < claimLimitTime)
                                 {
                                     HasPrevClaimPassType.Add(userSeasonPassSchema.SeasonPass.PassType);
                                 }
