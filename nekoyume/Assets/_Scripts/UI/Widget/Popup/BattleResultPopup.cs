@@ -261,11 +261,6 @@ namespace Nekoyume.UI
             _IsAlreadyOut = true;
             AudioController.PlayClick();
 
-            if (SharedModel.IsClear && SharedModel.StageType != StageType.EventDungeon)
-            {
-                yield return CoDialog(SharedModel.StageID);
-            }
-
             var worldClear = false;
             if (States.Instance.CurrentAvatarState.worldInformation
                 .TryGetLastClearedStageId(out var lastClearedStageId))
@@ -381,26 +376,6 @@ namespace Nekoyume.UI
 
             AudioController.PlayClick();
             yield return CoRepeatStage();
-        }
-
-        private IEnumerator CoDialog(int stageId)
-        {
-            var stageDialogs = TableSheets.Instance.StageDialogSheet
-                .OrderedList
-                .Where(i => i.StageId == stageId)
-                .OrderBy(i => i.DialogId)
-                .ToArray();
-            if (!stageDialogs.Any())
-            {
-                yield break;
-            }
-
-            var dialog = Find<DialogPopup>();
-            foreach (var stageDialog in stageDialogs)
-            {
-                dialog.Show(stageDialog.DialogId);
-                yield return new WaitWhile(() => dialog.gameObject.activeSelf);
-            }
         }
 
         public void Show(Model model, bool isBoosted, List<TableData.EquipmentItemRecipeSheet.Row> newRecipes)
