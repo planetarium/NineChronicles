@@ -516,7 +516,11 @@ namespace Nekoyume.L10n
             var count = 0;
             while (true)
             {
-                if (!_dictionary.ContainsKey($"{key}{count}"))
+                var keyWithCount = $"{key}{count}";
+                var existsInMain = _dictionary.ContainsKey(keyWithCount);
+                var existsInAdditional = _additionalDic.ContainsKey(keyWithCount);
+
+                if (!existsInMain && !existsInAdditional)
                 {
                     return count;
                 }

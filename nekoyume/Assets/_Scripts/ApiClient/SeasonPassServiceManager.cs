@@ -93,7 +93,7 @@ namespace Nekoyume.ApiClient
         private async Task FetchSeasonPassDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
         {
             int retryCount = 0;
-            
+
             while (retryCount < maxRetries)
             {
                 var tcs = new TaskCompletionSource<bool>();
@@ -103,7 +103,7 @@ namespace Nekoyume.ApiClient
                     CurrentSeasonPassData[passType] = result;
 
                     // 용기 시즌패스의 경우만 종료일을 설정하고 남은 시간을 갱신한다.
-                    // 현재는 용기시즌패스, 어드벤쳐보스 시즌패스 모두 같은 시즌주기시간을 사용하기때문. 
+                    // 현재는 용기시즌패스, 어드벤쳐보스 시즌패스 모두 같은 시즌주기시간을 사용하기때문.
                     if (passType == SeasonPassServiceClient.PassType.CouragePass)
                     {
                         DateTime.TryParse(result.EndTimestamp, out var endDateTime);
@@ -197,7 +197,7 @@ namespace Nekoyume.ApiClient
             while (retryCount < maxRetries)
             {
                 var tcs = new TaskCompletionSource<bool>();
-                
+
                 await Client.GetSeasonpassExpAsync(passType, seasonIndex, (result) =>
                 {
                     foreach (var item in result)
@@ -333,8 +333,11 @@ namespace Nekoyume.ApiClient
                                 }
 
                                 //이전시즌 보상의경우 프리미엄일때만 체크합니다.
-                                //https://github.com/planetarium/NineChronicles/issues/4731#issuecomment-2044277184
-                                if (userSeasonPassSchema.IsPremium && userSeasonPassSchema.Level > userSeasonPassSchema.LastPremiumClaim)
+                                if (userSeasonPassSchema.IsPremium
+                                    && userSeasonPassSchema.Level > userSeasonPassSchema.LastPremiumClaim
+                                    && !string.IsNullOrEmpty(userSeasonPassSchema.ClaimLimitTimestamp)
+                                    && DateTime.TryParse(userSeasonPassSchema.ClaimLimitTimestamp, out var claimLimitTime)
+                                    && DateTime.UtcNow.AddHours(9) < claimLimitTime)
                                 {
                                     HasPrevClaimPassType.Add(userSeasonPassSchema.SeasonPass.PassType);
                                 }
