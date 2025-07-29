@@ -295,9 +295,7 @@ namespace Nekoyume.Multiplanetary
             if (info is null)
             {
                 NcDebug.LogError($"[PlanetSelector] There is no planet account info for planet id({planetId}).");
-                context.SetError(
-                    PlanetContext.ErrorType.PlanetNotFoundInPlanetRegistry,
-                    planetId.ToLocalizedPlanetName(false));
+
                 return context;
             }
 

@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Scroller
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             var newItemsSource = planetRegistry.PlanetInfos.Where(e =>
             {
-                if (LiveAssetManager.instance.ThorSchedule.IsOpened)
+                if (LiveAssetManager.instance.ThorSchedule != null && LiveAssetManager.instance.ThorSchedule.IsOpened)
                 {
                     return true;
                 }
