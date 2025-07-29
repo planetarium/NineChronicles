@@ -129,8 +129,9 @@ namespace Nekoyume.UI
 
             base.Awake();
 
-            twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
-            discordSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            // TODO delete twitter, discord button
+            twitterSignInButton.gameObject.SetActive(false);
+            discordSignInButton.gameObject.SetActive(false);
             foreach (var logoImage in logoImages)
             {
                 logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild

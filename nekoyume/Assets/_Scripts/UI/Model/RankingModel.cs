@@ -106,10 +106,8 @@ namespace Nekoyume.UI.Model
 
     public class UserDocument
     {
-        public string Address { get; set; }
         public int Cp { get; set; }
         public string Id { get; set; }
-        public int StoredBlockIndex { get; set; }
     }
 
     public class AdventureCpRankingItem
@@ -165,10 +163,8 @@ namespace Nekoyume.UI.Model
 
     public class MyWorldUserDocument
     {
-        public string Address { get; set; }
         public string Id { get; set; }
         public int LastStageClearedId { get; set; }
-        public int StoredBlockIndex { get; set; }
     }
 
     public class MyWorldInformationRankingResponse
