@@ -854,6 +854,12 @@ namespace Nekoyume.Game.Battle
             }
 
             _battleResultModel.ClearedCountForEachWaves[log.clearedWaveNumber] = 1;
+
+            if (isClear && StageType != StageType.EventDungeon)
+            {
+                yield return CoDialog(log.stageId);
+            }
+
             Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti, newRecipes);
             yield return null;
 
@@ -870,6 +876,26 @@ namespace Nekoyume.Game.Battle
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             };
             Analyzer.Instance.Track("Unity/Stage End", props);
+        }
+
+        private IEnumerator CoDialog(int stageId)
+        {
+            var stageDialogs = TableSheets.Instance.StageDialogSheet
+                .OrderedList
+                .Where(i => i.StageId == stageId)
+                .OrderBy(i => i.DialogId)
+                .ToArray();
+            if (!stageDialogs.Any())
+            {
+                yield break;
+            }
+
+            var dialog = Widget.Find<DialogPopup>();
+            foreach (var stageDialog in stageDialogs)
+            {
+                dialog.Show(stageDialog.DialogId);
+                yield return new WaitWhile(() => dialog.gameObject.activeSelf);
+            }
         }
 
         private IEnumerator CoSlideBg()
