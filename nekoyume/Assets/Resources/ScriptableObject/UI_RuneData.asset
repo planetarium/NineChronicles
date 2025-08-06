@@ -161,4 +161,36 @@ MonoBehaviour:
     ticker: RUNESTONE_LOKI_VAMPIRIC2
     icon: {fileID: 21300000, guid: 42bd91361865e314089051115e4c0ec9, type: 3}
     sortingOrder: 2996
+  - id: 10043
+    ticker: RUNESTONE_ODIN_ORDER
+    icon: {fileID: 21300000, guid: 717246b894d834309b8ee907520f3bac, type: 3}
+    sortingOrder: 2800
+  - id: 10044
+    ticker: RUNESTONE_ODIN_CREATOR
+    icon: {fileID: 21300000, guid: 229cac7e82c114512a9fa359a05c7461, type: 3}
+    sortingOrder: 2801
+  - id: 10045
+    ticker: RUNESTONE_ODIN_WORD
+    icon: {fileID: 21300000, guid: 7984c43eff6b24008b1a502122b1a7bf, type: 3}
+    sortingOrder: 2802
+  - id: 10046
+    ticker: RUNESTONE_ODIN_MIMIR
+    icon: {fileID: 21300000, guid: 3c40a1eb1a13e4f80925d55145ec5389, type: 3}
+    sortingOrder: 2803
+  - id: 10047
+    ticker: RUNESTONE_YGGATK
+    icon: {fileID: 21300000, guid: 81b47721f82404f0b94f4177ab87b055, type: 3}
+    sortingOrder: 2804
+  - id: 10048
+    ticker: RUNESTONE_YGGHP
+    icon: {fileID: 21300000, guid: caffc75b65b574bedae9e333ced80836, type: 3}
+    sortingOrder: 2805
+  - id: 10049
+    ticker: RUNESTONE_YGGSPD
+    icon: {fileID: 21300000, guid: dcabba25125a043599750409b1f246ba, type: 3}
+    sortingOrder: 2806
+  - id: 10050
+    ticker: RUNESTONE_YGGCRI
+    icon: {fileID: 21300000, guid: 3929f235d19d64836a60b02a2b484d30, type: 3}
+    sortingOrder: 2807
   DefaultRuneIcon: {fileID: 21300000, guid: 474642c630309ed45a9942c6fa07ebb5, type: 3}
