@@ -102,7 +102,7 @@ namespace Nekoyume.UI
             RuneItem runeItem,
             int tryCount,
             IRandom random,
-            (int previousCp, int currentCp) cp)
+            (long previousCp, long currentCp) cp)
         {
             base.Show(true);
 

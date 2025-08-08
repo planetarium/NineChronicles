@@ -431,7 +431,7 @@ namespace Nekoyume.UI.Module
                 result.AddRange(pair.Value);
             }
 
-            var cpMap = new Dictionary<Guid, int>();
+            var cpMap = new Dictionary<Guid, long>();
             result = result
                 .OrderByDescending(x => x.Equipped.Value)
                 .ThenByDescending(x => bestItemSet.Contains(x))

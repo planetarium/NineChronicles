@@ -299,7 +299,7 @@ namespace Nekoyume.UI
 
             var statsCP = CPHelper.GetStatCP(mainStatType, mainStatTotalValue);
             _cpListForAnimationSteps.Add(statsCP);
-            _resultItem.cpText.text = $"CP {TextHelper.FormatNumber(CPHelper.DecimalToInt(statsCP))}";
+            _resultItem.cpText.text = $"CP {TextHelper.FormatNumber(CPHelper.DecimalToLong(statsCP))}";
 
             var statOptions = _itemOptionInfo.StatOptions;
             foreach (var (type, value, _) in statOptions)
@@ -322,7 +322,7 @@ namespace Nekoyume.UI
             }
 
             if (_itemOptionInfo.CP !=
-                CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))
+                CPHelper.DecimalToLong(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))
             {
                 NcDebug.LogError(
                     $"Wrong CP!!!! {_itemOptionInfo.CP} != {_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]}");
@@ -482,7 +482,7 @@ namespace Nekoyume.UI
             if (_cpListForAnimationSteps.Any())
             {
                 _resultItem.cpText.text =
-                    $"CP {TextHelper.FormatNumber(CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))}";
+                    $"CP {TextHelper.FormatNumber(CPHelper.DecimalToLong(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))}";
             }
 
             PressToContinue();
@@ -564,8 +564,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var from = CPHelper.DecimalToInt(_cpListForAnimationSteps[stepIndex]);
-            var to = CPHelper.DecimalToInt(_cpListForAnimationSteps[stepIndex + 1]);
+            var from = CPHelper.DecimalToLong(_cpListForAnimationSteps[stepIndex]);
+            var to = CPHelper.DecimalToLong(_cpListForAnimationSteps[stepIndex + 1]);
 
             if (_disposableOfCPAnimation != null)
             {
