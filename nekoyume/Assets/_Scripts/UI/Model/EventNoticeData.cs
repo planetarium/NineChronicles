@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Model
 {
@@ -18,5 +19,7 @@ namespace Nekoyume.UI.Model
         public string[] EnableKeys { get; set; }
         public bool WithSign { get; set; }
         public bool IsMainnet { get; set; }
+        public EventButtonType ButtonType { get; set; } = EventButtonType.URL;
+        public InGameNavigationData InGameNavigationData { get; set; }
     }
 }

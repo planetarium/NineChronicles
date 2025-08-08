@@ -8,6 +8,7 @@ using Nekoyume.Helper;
 using Nekoyume.Pattern;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Collections;
 using System.Text.Json.Serialization;
@@ -288,6 +289,30 @@ namespace Nekoyume.Game.LiveAsset
                     continue;
                 }
 
+                var buttonType = EventButtonType.URL;
+                if (!string.IsNullOrEmpty(banner.ButtonType))
+                {
+                    if (Enum.TryParse<EventButtonType>(banner.ButtonType, true, out var parsedButtonType))
+                    {
+                        buttonType = parsedButtonType;
+                    }
+                }
+
+                InGameNavigationData inGameNavigationData = null;
+                if (buttonType == EventButtonType.IN_GAME && !string.IsNullOrEmpty(banner.SummonType))
+                {
+                    inGameNavigationData = new InGameNavigationData();
+
+                    if (Enum.TryParse<Summon.SummonType>(banner.SummonType, true, out var summonType))
+                    {
+                        inGameNavigationData.SummonType = summonType;
+                    }
+                    else
+                    {
+                        inGameNavigationData.SummonType = Summon.SummonType.GRIMORE;
+                    }
+                }
+
                 var newData = new EventNoticeData
                 {
                     Priority = banner.Priority,
@@ -302,6 +327,8 @@ namespace Nekoyume.Game.LiveAsset
                     EnableKeys = banner.EnableKeys,
                     WithSign = banner.WithSign,
                     IsMainnet = banner.IsMainnet,
+                    ButtonType = buttonType,
+                    InGameNavigationData = inGameNavigationData,
                 };
                 // Skip add notice if not available mainnet
                 if (isMainNet && !banner.IsMainnet)
