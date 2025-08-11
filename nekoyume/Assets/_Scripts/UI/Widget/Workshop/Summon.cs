@@ -28,6 +28,14 @@ namespace Nekoyume.UI
     using Toggle = Module.Toggle;
     public class Summon : Widget
     {
+        public enum SummonType
+        {
+            GRIMORE = 0,
+            ARUA = 1,
+            RUNE = 2,
+            COSTUME = 3
+        }
+
         [Serializable]
         public class SummonObject
         {
@@ -111,6 +119,31 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             OnClickSummonTabToggle(summonObjects.First());
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+        }
+
+        public void Show(SummonType summonType, bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            switch (summonType)
+            {
+                case SummonType.GRIMORE:
+                    _selectedSummonObj = summonObjects[0];
+                    break;
+                case SummonType.ARUA:
+                    _selectedSummonObj = summonObjects[1];
+                    break;
+                case SummonType.RUNE:
+                    _selectedSummonObj = summonObjects[2];
+                    break;
+                case SummonType.COSTUME:
+                    _selectedSummonObj = summonObjects[3];
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(summonType), summonType, null);
+            }
+            OnClickSummonTabToggle(_selectedSummonObj);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            Find<SummonProbabilityPopup>().Show(_selectedSummonObj.summonResult);
         }
 
         private void OnClickSummonTabToggle(SummonObject summonObject)

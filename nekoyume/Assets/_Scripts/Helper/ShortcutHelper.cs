@@ -369,6 +369,17 @@ namespace Nekoyume.Helper
                 stageInfo?.stageId ?? 0);
         }
 
+        public static System.Action GetSummonShortcutAction(Widget caller, Summon.SummonType summonType)
+        {
+            System.Action shortcutAction = () =>
+            {
+                caller.CloseWithOtherWidgets();
+                Widget.Find<Summon>().Show(summonType);
+            };
+
+            return shortcutAction;
+        }
+
         /// <summary>
         /// Select recommended stages of Acquisition from StageSheet Rows by priority.
         /// </summary>

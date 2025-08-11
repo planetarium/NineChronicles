@@ -11,11 +11,14 @@ namespace Nekoyume.UI.Model
         public bool UseDateTime { get; set; }
         public string BeginDateTime { get; set; }
         public string EndDateTime { get; set; }
-        public string Url { get; set; }
+        public string? Url { get; set; }
         public bool UseAgentAddress { get; set; }
         public string Description { get; set; }
         public string[] EnableKeys { get; set; }
         public bool WithSign { get; set; }
         public bool IsMainnet { get; set; }
+        public string ButtonType { get; set; }
+        public string? SummonType { get; set; }
+        public string? OpenWithProbabilityPopup { get; set; }
     }
 }
