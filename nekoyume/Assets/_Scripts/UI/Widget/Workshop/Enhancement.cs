@@ -622,7 +622,7 @@ namespace Nekoyume.UI
                 }
 
                 nextCp *= CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
-                nextEquipmentCP.text = TextHelper.FormatNumber(CPHelper.DecimalToInt(nextCp));
+                nextEquipmentCP.text = TextHelper.FormatNumber(CPHelper.DecimalToLong(nextCp));
             }
         }
 
