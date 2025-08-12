@@ -181,7 +181,13 @@ namespace Nekoyume.Game.LiveAsset
         private void SetEventData(string response)
         {
             var responseData = JsonSerializer.Deserialize<EventBanners>(response);
-            MakeNoticeData(responseData?.Banners.OrderBy(x => x.Priority)).Forget();
+            if (responseData?.Banners == null)
+            {
+                NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] EventBanners data is null or empty");
+                return;
+            }
+
+            MakeNoticeData(responseData.Banners.OrderBy(x => x.Priority)).Forget();
         }
 
         private void SetLiveAssetData(string response)
@@ -282,9 +288,17 @@ namespace Nekoyume.Game.LiveAsset
             var planetIdExist = Game.instance.CurrentPlanetId.HasValue;
             var isMainNet = planetIdExist && Multiplanetary.PlanetId.IsMainNet(Game.instance.CurrentPlanetId.Value);
             var tasks = new List<UniTask>();
+
             foreach (var banner in bannerData)
             {
+                // 1. 날짜 필터링 (가장 먼저 체크)
                 if (banner.UseDateTime && !DateTime.UtcNow.IsInTime(banner.BeginDateTime, banner.EndDateTime))
+                {
+                    continue;
+                }
+
+                // 2. 메인넷 필터링 (EventNoticeData 생성 전에 체크)
+                if (isMainNet && !banner.IsMainnet)
                 {
                     continue;
                 }
@@ -295,6 +309,10 @@ namespace Nekoyume.Game.LiveAsset
                     if (Enum.TryParse<EventButtonType>(banner.ButtonType, true, out var parsedButtonType))
                     {
                         buttonType = parsedButtonType;
+                    }
+                    else
+                    {
+                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid ButtonType: {banner.ButtonType}");
                     }
                 }
 
@@ -309,6 +327,7 @@ namespace Nekoyume.Game.LiveAsset
                     }
                     else
                     {
+                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid SummonType: {banner.SummonType}, using default GRIMORE");
                         inGameNavigationData.SummonType = Summon.SummonType.GRIMORE;
                     }
                 }
@@ -330,11 +349,7 @@ namespace Nekoyume.Game.LiveAsset
                     ButtonType = buttonType,
                     InGameNavigationData = inGameNavigationData,
                 };
-                // Skip add notice if not available mainnet
-                if (isMainNet && !banner.IsMainnet)
-                {
-                    continue;
-                }
+
                 _bannerData.Add(newData);
 
                 var bannerTask = GetNoticeTexture("Banner", banner.BannerImageName)
