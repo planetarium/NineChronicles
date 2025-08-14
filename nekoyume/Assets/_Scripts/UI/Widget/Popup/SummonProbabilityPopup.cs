@@ -104,7 +104,7 @@ namespace Nekoyume.UI
                     else
                     {
                         var cellRatio = ratio / ratioSum;
-                        var grade = equipmentRow?.Grade ?? Util.GetTickerGrade(runeTicker);
+                        var grade = equipmentRow?.Grade ?? costumeRow?.Grade ?? Util.GetTickerGrade(runeTicker);
                         var cellModel = new SummonDetailCell.Model
                         {
                             EquipmentRow = equipmentRow,

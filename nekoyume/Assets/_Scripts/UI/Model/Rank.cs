@@ -103,10 +103,8 @@ namespace Nekoyume.UI.Model
                       myAdventureCpRanking(address: ""{pair.Value.address}"") {{
                         rank
                         userDocument {{
-                          address
                           cp
                           id
-                          storedBlockIndex
                         }}
                       }}
                     }}";
@@ -191,10 +189,8 @@ namespace Nekoyume.UI.Model
                       myWorldInformationRanking(address: ""{pair.Value.address}"") {{
                         rank
                         userDocument {{
-                          address
                           id
                           lastStageClearedId
-                          storedBlockIndex
                         }}
                       }}
                     }}";

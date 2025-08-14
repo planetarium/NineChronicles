@@ -44,7 +44,7 @@ namespace Nekoyume.UI
         public void Show(
             CollectionSheet.Row row,
             (int count, int maxCount) completionRate,
-            (int previousCp, int currentCp) cp,
+            (long previousCp, long currentCp) cp,
             bool ignoreShowAnimation = false)
         {
             if (row is null)

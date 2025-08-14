@@ -129,8 +129,9 @@ namespace Nekoyume.UI
 
             base.Awake();
 
-            twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
-            discordSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            // TODO delete twitter, discord button
+            twitterSignInButton.gameObject.SetActive(false);
+            discordSignInButton.gameObject.SetActive(false);
             foreach (var logoImage in logoImages)
             {
                 logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild
@@ -149,6 +150,15 @@ namespace Nekoyume.UI
             {
                 NcDebug.Log("[IntroScreen] Click start button.");
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
+
+                // 플래닛 장애상황 확인
+                if (_planetContext?.HasError == true ||
+                    _planetContext?.SelectedPlanetInfo?.ErrorType != null)
+                {
+                    NcDebug.LogWarning("[IntroScreen] Selected planet has error. Showing planet error popup.");
+                    ShowPlanetErrorPopup();
+                    return;
+                }
 
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
@@ -756,6 +766,33 @@ namespace Nekoyume.UI
         public void OnClickQrReaderBackButton()
         {
             keyImportButton.onClick.Invoke();
+        }
+
+        /// <summary>
+        /// 플래닛 장애상황일 때 팝업을 띄워서 플래닛 선택을 유도
+        /// </summary>
+        private void ShowPlanetErrorPopup()
+        {
+            if (!TryFind<TitleOneButtonSystem>(out var popup))
+            {
+                popup = Create<TitleOneButtonSystem>();
+            }
+
+            var planetName = _planetContext?.SelectedPlanetInfo?.Name ?? "Unknown";
+            var errorMessage = _planetContext?.Error ?? "Unknown error";
+
+            popup.SubmitCallback = () =>
+            {
+                popup.Close();
+                // 플래닛 선택 팝업 열기
+                selectPlanetPopup.SetActive(true);
+            };
+
+            popup.Show(
+                L10nManager.Localize("UI_PLANET_ERROR_TITLE"),
+                L10nManager.Localize("UI_PLANET_ERROR_CONTENT", planetName, errorMessage),
+                L10nManager.Localize("BTN_SELECT_PLANET"),
+                false);
         }
     }
 }
