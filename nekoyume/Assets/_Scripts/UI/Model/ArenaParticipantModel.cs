@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Model
         public int LoseScore;
         public int Level;
         public string NameWithHash;
-        public int Cp;
+        public long Cp;
         public int PortraitId;
         public string GuildName;
     }
