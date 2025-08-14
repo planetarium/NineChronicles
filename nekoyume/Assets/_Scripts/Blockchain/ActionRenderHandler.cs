@@ -4385,6 +4385,9 @@ namespace Nekoyume.Blockchain
             var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
 
             var floorIdList = new List<int>();
+            // 장착 아이템 동기화
+            var avatar = States.Instance.CurrentAvatarState;
+            avatar.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
             for (var fl = firstFloor; fl <= maxFloor; fl++)
             {
                 var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
@@ -4408,7 +4411,7 @@ namespace Nekoyume.Blockchain
                     seasonInfo.BossId,
                     floorRow.Id,
                     random,
-                    States.Instance.CurrentAvatarState,
+                    avatar,
                     fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
                     States.Instance.AllRuneState,
                     States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
