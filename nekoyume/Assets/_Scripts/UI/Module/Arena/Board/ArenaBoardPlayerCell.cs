@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public int level;
         public int fullCostumeOrArmorId;
         public int? titleId;
-        public int cp;
+        public long cp;
         public int score;
         public int rank;
         public int expectWinDeltaScore;

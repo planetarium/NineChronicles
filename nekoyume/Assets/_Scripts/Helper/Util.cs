@@ -362,7 +362,7 @@ namespace Nekoyume.Helper
             return result;
         }
 
-        public static int GetRuneCp(RuneState runeState)
+        public static long GetRuneCp(RuneState runeState)
         {
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
