@@ -23,7 +23,7 @@ on:
         required: false
         default: false
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
@@ -35,7 +35,7 @@ env:
 jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
-    runs-on: 
+    runs-on:
       group: linux-8cores
     defaults:
         run:
@@ -65,13 +65,13 @@ jobs:
       - name: Set CRLF
         run: |
           git config --global core.autocrlf true
-          
+
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           lfs: true
           submodules: true
-          
+
       - name: Cache restore for debug
         uses: actions/cache@v3
         with:
@@ -85,7 +85,7 @@ jobs:
           if [ -n "${{ github.event.inputs.clo }}" ]; then
             echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
           fi
-          
+
       - name: Decode GoogleService-Info.plist File
         run: |
           echo "$GOOGLE_SERVICE_INFO" | base64 -d > ${{ matrix.projectPath }}/Assets/GoogleService-Info.plist
@@ -112,7 +112,7 @@ jobs:
             echo "No images to remove."
           fi
           df -h
-          
+
       - uses: game-ci/unity-builder@v4
         with:
           projectPath: ${{ matrix.projectPath }}
@@ -129,7 +129,7 @@ jobs:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
-  build-and-upload:      
+  build-and-upload:
     name: Build Archive for iOS and Upload to TestFlight
     runs-on: macos-15
     timeout-minutes: 60
@@ -164,13 +164,18 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        
+
       - name: Download iOS Artifact
         uses: actions/download-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
-          
+
+      - name: Select Xcode 16.x
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16'
+
       - name: Cache restore cocoapods
         uses: actions/cache@v4
         if: ${{ always() }}
@@ -180,17 +185,17 @@ jobs:
             ~/.cocoapods/repos
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
-          
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '2.7'
           bundler-cache: true
-          
+
       - name: Archive iOS
         uses: maierj/fastlane-action@v3.0.0
         with:
           lane: 'ios build'
-          
+
       - name: Upload to the App Store
         uses: maierj/fastlane-action@v3.0.0
         with:

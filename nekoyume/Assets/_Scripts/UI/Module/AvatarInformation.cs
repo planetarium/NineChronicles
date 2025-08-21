@@ -61,9 +61,9 @@ namespace Nekoyume.UI.Module
         private GameObject _cachedCharacterTitle;
         private BattleType _battleType = BattleType.Adventure;
         private System.Action _onUpdate;
-        private int? _compareCp;
-        private int _previousCp;
-        private int _currentCp;
+        private long? _compareCp;
+        private long _previousCp;
+        private long _currentCp;
         private bool _isAvatarInfo;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
@@ -466,7 +466,7 @@ namespace Nekoyume.UI.Module
 
                                 break;
                             case 2:
-                                var cp = new Dictionary<Guid, int>();
+                                var cp = new Dictionary<Guid, long>();
                                 foreach (var guid in equipmentRemovalList)
                                 {
                                     var item = items.FirstOrDefault(x => x.ItemId == guid);

@@ -435,18 +435,6 @@ namespace Nekoyume.Blockchain
                 avatarState.address,
                 battleType);
             States.Instance.UpdateItemSlotState(itemSlotState);
-            //simulator에서 CurrentItemSlotStates를 사용하지않고 AvatarState.inventory의 착용정보를 직접사용함으로 인해 추가적으로 갱신
-            foreach (var inventoryItem in States.Instance.CurrentAvatarState.inventory.Items)
-            {
-                if(inventoryItem.item is Equipment equipment)
-                {
-                    equipment.equipped = itemSlotState.Equipments.Exists(e => e == equipment.ItemId);
-                }
-                else if(inventoryItem.item is Costume costume)
-                {
-                    costume.equipped = itemSlotState.Costumes.Exists(c => c == costume.ItemId);
-                }
-            }
         }
 
         protected static void UpdateCurrentAvatarRuneSlotState<T>(

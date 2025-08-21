@@ -91,7 +91,7 @@ namespace Nekoyume.UI
 
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
-        private readonly ReactiveProperty<int> _cp = new();
+        private readonly ReactiveProperty<long> _cp = new();
         private readonly List<IDisposable> _disposables = new();
 
         private StageSheet.Row _stageRow;
@@ -141,7 +141,7 @@ namespace Nekoyume.UI
 
             CloseWidget = () =>
             {
-                Close(); 
+                Close();
             };
         }
 

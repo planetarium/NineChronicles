@@ -219,7 +219,7 @@ namespace Nekoyume.UI
         public void OnActionRender(
             IRandom random,
             FungibleAssetValue fav,
-            (int previousCp, int currentCp) cp)
+            (long previousCp, long currentCp) cp)
         {
             Find<RuneEnhancementResultScreen>().Show(
                 _selectedRuneItem,
@@ -375,7 +375,7 @@ namespace Nekoyume.UI
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
             runeLevelBonus.reward.Set(
-                item.Level < item.CostRow.Cost.Count,
+                item.Level < item.CostRow.Cost.Max(c => c.LevelEnd),
                 _selectedRuneItem.Row.Id, _selectedRuneItem.Level);
         }
 
@@ -467,7 +467,7 @@ namespace Nekoyume.UI
         {
             var paymentPopup = Find<PaymentPopup>();
             var runeCost = _selectedRuneItem.CostRow.Cost[_selectedRuneItem.Level];
-            
+
             if (!_selectedRuneItem.EnoughRuneStone)
             {
                 paymentPopup.ShowLackRuneStone(_selectedRuneItem, runeCost.RuneStoneQuantity);

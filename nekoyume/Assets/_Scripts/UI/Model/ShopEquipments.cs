@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Model
         public string sellerAgentAddress;
         public string sellerAvatarAddress;
         public decimal price;
-        public int combatPoint;
+        public long combatPoint;
         public int level;
         public int id;
         public int itemCount;

@@ -133,7 +133,7 @@ namespace Nekoyume.UI
                 {
                     statsMap.AddStatValue(r.StatType, r.Stat);
                 }
-                var cp = CPHelper.DecimalToInt(CPHelper.GetStatsCP(statsMap));
+                var cp = CPHelper.DecimalToLong(CPHelper.GetStatsCP(statsMap));
                 combatPointText.text = $"CP {TextHelper.FormatNumber(cp)}";
 
                 skillTooltip.gameObject.SetActive(true);

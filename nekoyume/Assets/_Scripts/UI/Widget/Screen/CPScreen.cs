@@ -10,7 +10,7 @@ namespace Nekoyume.UI
 
         private static readonly int HashToShow = Animator.StringToHash("Show");
 
-        public void Show(int prevCp, int currentCp)
+        public void Show(long prevCp, long currentCp)
         {
             base.Show(true);
             Animator.Play(HashToShow);
