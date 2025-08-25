@@ -3295,15 +3295,26 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneStoneBalance(eval);
 
+            return eval;
+        }
+
+        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
+            }
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
                     .First()
                     .Subscribe(stage =>
                     {
-                        var task = UniTask.RunOnThreadPool(() =>
+                        var task = UniTask.RunOnThreadPool(async () =>
                         {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            await UpdateCurrentAvatarStateAsync(eval);
                             var avatarState = States.Instance.CurrentAvatarState;
                             RenderQuest(eval.Action.AvatarAddress,
                                 avatarState.questList.completedQuestIds);
@@ -3315,16 +3326,6 @@ namespace Nekoyume.Blockchain
                             // ReSharper disable once ConvertClosureToMethodGroup
                             .DoOnError(e => NcDebug.LogException(e));
                     });
-            return eval;
-        }
-
-        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
-        {
-            if (eval.Exception is not null)
-            {
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
-                return;
-            }
 
             var worldBoss = Widget.Find<WorldBoss>();
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
