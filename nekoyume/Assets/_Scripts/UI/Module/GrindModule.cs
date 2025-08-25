@@ -498,7 +498,7 @@ namespace Nekoyume.UI.Module
             var isFirst = _selectedItemsForGrind.Count == 0;
             var inventoryData = States.Instance.CurrentAvatarState.inventory;
 
-            var equipmentWithCpList = new List<(Equipment Equip, int CP)>();
+            var equipmentWithCpList = new List<(Equipment Equip, long CP)>();
             foreach (var eq in inventoryData.Equipments) {
                 var cp = CPHelper.GetCP(eq);
                 equipmentWithCpList.Add((eq, cp));

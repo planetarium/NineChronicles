@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI decreaseCpText = null;
 
-        public void PlayAnimation(int prevCp, int currentCp)
+        public void PlayAnimation(long prevCp, long currentCp)
         {
             cpTextValueTweener.Play(prevCp, currentCp);
             increaseCpArea.gameObject.SetActive(false);

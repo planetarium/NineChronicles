@@ -15,6 +15,7 @@ using Libplanet.Action.State;
 using Libplanet.KeyStore;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
+using Nekoyume.Model;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -234,7 +235,7 @@ namespace Nekoyume.Helper
             return count;
         }
 
-        public static int TotalCP(BattleType battleType)
+        public static long TotalCP(BattleType battleType)
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var level = avatarState.level;
@@ -263,7 +264,16 @@ namespace Nekoyume.Helper
                 collectionStatModifiers, runeLevelBonus);
         }
 
-        public static (int previousCP, int currentCP) GetCpChanged(
+        public static long GetCP(Player player, CostumeStatSheet costumeStatSheet)
+        {
+            var levelStatsCP = CPHelper.GetStatsCP(player.Stats.BaseStats, player.Level);
+            var equipmentsCP = player.Equipments.Sum(CPHelper.GetCP);
+            var costumeCP = player.Costumes.Sum(c => CPHelper.GetCP(c, costumeStatSheet));
+
+            return CPHelper.DecimalToLong(levelStatsCP + equipmentsCP + costumeCP);
+        }
+
+        public static (long previousCP, long currentCP) GetCpChanged(
             CollectionState previousState, CollectionState currentState)
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
@@ -291,7 +301,7 @@ namespace Nekoyume.Helper
             return (previousCp, currentCp);
         }
 
-        public static (int previousCP, int currentCP) GetCpChanged(
+        public static (long previousCP, long currentCP) GetCpChanged(
             AllRuneState previousState, AllRuneState currentState)
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
@@ -352,7 +362,7 @@ namespace Nekoyume.Helper
             return result;
         }
 
-        public static int GetRuneCp(RuneState runeState)
+        public static long GetRuneCp(RuneState runeState)
         {
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))

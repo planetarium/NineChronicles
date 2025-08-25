@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         [SerializeField] private int _cp;
 
-        public int CP => _cp;
+        public long CP => _cp;
 
         [SerializeField] private int _rating;
 

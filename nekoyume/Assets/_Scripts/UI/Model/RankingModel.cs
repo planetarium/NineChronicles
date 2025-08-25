@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Model
     public class EquipmentRankingModel : RankingModel
     {
         public int Level;
-        public int Cp;
+        public long Cp;
         public int EquipmentId;
     }
 
@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Model
 
     public class AbilityRankingRecord : RankingRecord
     {
-        public int Cp;
+        public long Cp;
     }
 
     public class StageRankingRecord : RankingRecord
@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Model
     public class EquipmentRankingRecord : RankingRecord
     {
         public int Level;
-        public int Cp;
+        public long Cp;
         public int EquipmentId;
     }
 #endregion Legacy
@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Model
 
     public class UserDocument
     {
-        public int Cp { get; set; }
+        public long Cp { get; set; }
         public string Id { get; set; }
     }
 

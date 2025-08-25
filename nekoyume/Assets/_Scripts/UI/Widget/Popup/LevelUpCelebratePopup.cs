@@ -58,10 +58,10 @@ namespace Nekoyume.UI
             }
 
             _model.Level = beforeLevel;
-            var previousCP = CPHelper.GetCP(_model, costumeStatSheet);
+            var previousCP = Util.GetCP(_model, costumeStatSheet);
             cpTextTweener.beginValue = previousCP;
             _model.Level = afterLevel;
-            var currentCP = CPHelper.GetCP(_model, costumeStatSheet);
+            var currentCP = Util.GetCP(_model, costumeStatSheet);
             cpTextTweener.endValue = currentCP;
 
             levelText.text = afterLevel.ToString();

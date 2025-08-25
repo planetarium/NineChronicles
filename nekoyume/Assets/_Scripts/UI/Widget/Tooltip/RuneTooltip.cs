@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -151,7 +152,7 @@ namespace Nekoyume.UI
             var runeCostSheet = Game.Game.instance.TableSheets.RuneCostSheet;
             if (runeCostSheet.TryGetValue(runeState.RuneId, out var costRow))
             {
-                maxLevelText.text = $"/{costRow.Cost.Count}";
+                maxLevelText.text = $"/{costRow.Cost.Max(c => c.LevelEnd)}";
             }
 
             if (RuneFrontHelper.TryGetRuneIcon(runeState.RuneId, out var icon))
@@ -229,7 +230,7 @@ namespace Nekoyume.UI
             var runeCostSheet = Game.Game.instance.TableSheets.RuneCostSheet;
             if (runeCostSheet.TryGetValue(item.RuneState.RuneId, out var costRow))
             {
-                maxLevelText.text = $"/{costRow.Cost.Count}";
+                maxLevelText.text = $"/{costRow.Cost.Max(c => c.LevelEnd)}";
             }
 
             if (RuneFrontHelper.TryGetRuneIcon(item.RuneState.RuneId, out var icon))

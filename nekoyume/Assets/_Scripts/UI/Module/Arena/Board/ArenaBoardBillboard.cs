@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module.Arena.Board
             int rank = 0,
             int winCount = 0,
             int loseCount = 0,
-            int cp = 0,
+            long cp = 0,
             int score = 0)
         {
             _seasonText.text = season;
