@@ -4564,6 +4564,10 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
+                var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+                var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+                var items = equipments.Concat(costumes).ToList();
+                States.Instance.CurrentAvatarState.EquipItems(items);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
