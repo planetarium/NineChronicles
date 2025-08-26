@@ -663,6 +663,7 @@ namespace Nekoyume.UI
         private IEnumerator CoGoToStage(BattleLog battleLog)
         {
             yield return BattleRenderer.Instance.LoadStageResources(battleLog);
+            Find<LoadingScreen>().Close();
             Close(true);
         }
 
