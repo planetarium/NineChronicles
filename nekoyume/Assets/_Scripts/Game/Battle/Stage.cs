@@ -913,12 +913,19 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSpawnPlayer)}() enter");
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
-            var playerCharacter = RunPlayer(false);
-            playerCharacter.Set(avatarState.address, character, true, TableSheets.Instance);
-            playerCharacter.Run();
+            _stageRunningPlayer = GetPlayer();
+            _stageRunningPlayer.Set(character, TableSheets.Instance, true);
+            var playerTransform = _stageRunningPlayer.transform;
+            Vector2 position = playerTransform.position;
+            position.y = StageStartPosition;
+            playerTransform.position = position;
+            // Set Idle for prepare Run animation state set
+            _stageRunningPlayer.Animator.Idle();
+            _stageRunningPlayer.StartRun();
+            var playerCharacter = _stageRunningPlayer;
             playerCharacter.ShowSpeech("PLAYER_INIT");
-            var player = playerCharacter.gameObject;
-            player.SetActive(true);
+            // Close widget after player update
+            Widget.Find<LoadingScreen>().Close();
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(playerCharacter);
