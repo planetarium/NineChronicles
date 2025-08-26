@@ -2251,7 +2251,10 @@ namespace Nekoyume.Blockchain
             }
 
             var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            tempPlayer.EquipItems(items);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.AllRuneState,
@@ -4388,7 +4391,10 @@ namespace Nekoyume.Blockchain
             var floorIdList = new List<int>();
             // 장착 아이템 동기화
             var avatar = States.Instance.CurrentAvatarState;
-            avatar.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            avatar.EquipItems(items);
             for (var fl = firstFloor; fl <= maxFloor; fl++)
             {
                 var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);

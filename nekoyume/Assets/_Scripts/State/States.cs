@@ -380,13 +380,13 @@ namespace Nekoyume.State
             }
         }
 
-        public void UpdateItemSlotState(ItemSlotState slotState)
+        public void UpdateItemSlotState(ItemSlotState slotState, BattleType battleType)
         {
             var slotIndex = AvatarStates
                 .FirstOrDefault(x => x.Value.address == CurrentAvatarState.address).Key;
             var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
-            CurrentItemSlotStates[checkedState.BattleType] = checkedState;
-            ItemSlotStates[slotIndex][checkedState.BattleType] = checkedState;
+            CurrentItemSlotStates[battleType] = checkedState;
+            ItemSlotStates[slotIndex][battleType] = checkedState;
         }
 
         private static ItemSlotState GetVerifiedItemSlotState(
