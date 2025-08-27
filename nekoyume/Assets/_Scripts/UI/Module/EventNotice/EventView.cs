@@ -40,7 +40,20 @@ namespace Nekoyume.UI.Module
         private EventButtonType _buttonType;
         private InGameNavigationData _inGameNavigationData;
 
-        private void Awake() { }
+        private void Awake()
+        {
+            urlButton.onClick.AddListener(() =>
+            {
+                var url = _url;
+                if (_useAgentAddress)
+                {
+                    var address = States.Instance.AgentState.address;
+                    url = string.Format(url, address);
+                }
+
+                Helper.Util.OpenURL(url);
+            });
+        }
 
         public void Set(Sprite eventSprite, string url, bool useAgentAddress, bool sign)
         {
@@ -85,26 +98,19 @@ namespace Nekoyume.UI.Module
             {
                 urlButton.gameObject.SetActive(true);
                 navigationButton.gameObject.SetActive(false);
-                urlButton.onClick.AddListener(() =>
-                {
-                    var url = _url;
-                    if (_useAgentAddress)
-                    {
-                        var address = States.Instance.AgentState.address;
-                        url = string.Format(url, address);
-                    }
-
-                    Helper.Util.OpenURL(url);
-                });
             }
             else if (_buttonType == EventButtonType.IN_GAME)
             {
                 navigationButton.gameObject.SetActive(true);
                 urlButton.gameObject.SetActive(false);
 
-                if (_inGameNavigationData == null) return;
+                if (_inGameNavigationData == null)
+                    return;
 
-                var action = ShortcutHelper.GetSummonShortcutAction(parent, _inGameNavigationData.SummonType);
+                var action = ShortcutHelper.GetSummonShortcutAction(
+                    parent,
+                    _inGameNavigationData.SummonType
+                );
                 navigationButton.Set(action);
             }
         }
