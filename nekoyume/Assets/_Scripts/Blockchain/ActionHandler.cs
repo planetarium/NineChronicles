@@ -434,7 +434,7 @@ namespace Nekoyume.Blockchain
                 evaluation.OutputState,
                 avatarState.address,
                 battleType);
-            States.Instance.UpdateItemSlotState(itemSlotState);
+            States.Instance.UpdateItemSlotState(itemSlotState, battleType);
         }
 
         protected static void UpdateCurrentAvatarRuneSlotState<T>(
