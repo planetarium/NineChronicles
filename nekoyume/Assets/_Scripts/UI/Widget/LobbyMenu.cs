@@ -651,7 +651,7 @@ namespace Nekoyume.UI
 
             // Close(true);
             // Find<DccMain>().Show();
-            Find<EventReleaseNotePopup>().Show();
+            Find<NcuPopup>().Show();
         }
 
         public void PatrolRewardClick()
