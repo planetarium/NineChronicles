@@ -2251,7 +2251,10 @@ namespace Nekoyume.Blockchain
             }
 
             var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            tempPlayer.EquipItems(items);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.AllRuneState,
@@ -3295,15 +3298,26 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneStoneBalance(eval);
 
+            return eval;
+        }
+
+        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
+            }
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
                     .First()
                     .Subscribe(stage =>
                     {
-                        var task = UniTask.RunOnThreadPool(() =>
+                        var task = UniTask.RunOnThreadPool(async () =>
                         {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            await UpdateCurrentAvatarStateAsync(eval);
                             var avatarState = States.Instance.CurrentAvatarState;
                             RenderQuest(eval.Action.AvatarAddress,
                                 avatarState.questList.completedQuestIds);
@@ -3315,16 +3329,6 @@ namespace Nekoyume.Blockchain
                             // ReSharper disable once ConvertClosureToMethodGroup
                             .DoOnError(e => NcDebug.LogException(e));
                     });
-            return eval;
-        }
-
-        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
-        {
-            if (eval.Exception is not null)
-            {
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
-                return;
-            }
 
             var worldBoss = Widget.Find<WorldBoss>();
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
@@ -4387,7 +4391,10 @@ namespace Nekoyume.Blockchain
             var floorIdList = new List<int>();
             // 장착 아이템 동기화
             var avatar = States.Instance.CurrentAvatarState;
-            avatar.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            avatar.EquipItems(items);
             for (var fl = firstFloor; fl <= maxFloor; fl++)
             {
                 var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
@@ -4557,6 +4564,10 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
+                var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+                var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+                var items = equipments.Concat(costumes).ToList();
+                States.Instance.CurrentAvatarState.EquipItems(items);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =

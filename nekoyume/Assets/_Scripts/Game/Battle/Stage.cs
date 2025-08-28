@@ -597,7 +597,18 @@ namespace Nekoyume.Game.Battle
             AnimationTimeScaleWeight = DefaultAnimationTimeScaleWeight;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
-            RunPlayer();
+            // Initialize player once when start stage
+            // Copy from RunPlayer
+            _stageRunningPlayer = GetPlayer();
+            _stageRunningPlayer.Set(log.First().Character, TableSheets.Instance, true);
+            var playerTransform = _stageRunningPlayer.transform;
+            Vector2 position = playerTransform.position;
+            position.y = StageStartPosition;
+            playerTransform.position = position;
+            // Set Idle for prepare Run animation state set
+            _stageRunningPlayer.Animator.Idle();
+            _stageRunningPlayer.StartRun();
+            ActionCamera.instance.ChaseX(playerTransform);
             ReleaseWhiteList.Clear();
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
@@ -913,12 +924,8 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSpawnPlayer)}() enter");
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
-            var playerCharacter = RunPlayer(false);
-            playerCharacter.Set(avatarState.address, character, true, TableSheets.Instance);
-            playerCharacter.Run();
+            var playerCharacter = _stageRunningPlayer;
             playerCharacter.ShowSpeech("PLAYER_INIT");
-            var player = playerCharacter.gameObject;
-            player.SetActive(true);
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(playerCharacter);
