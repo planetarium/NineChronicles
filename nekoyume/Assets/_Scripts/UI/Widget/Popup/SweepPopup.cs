@@ -89,6 +89,15 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> objectsForRepeat;
 
+        [SerializeField]
+        private GameObject apPotionContainer;
+
+        [SerializeField]
+        private Image apImage;
+
+        [SerializeField]
+        private Image ticketImage;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
         private readonly ReactiveProperty<long> _cp = new();
@@ -99,6 +108,8 @@ namespace Nekoyume.UI
         private int _costAp;
         private bool _useSweep = true;
         private Action<StageType, int, int, bool> _repeatBattleAction;
+        private StageType _stageType;
+        private int _stageId;
 
         private const int UsableApStoneCountWithRepeat = 1;
 
@@ -151,15 +162,54 @@ namespace Nekoyume.UI
             Action<StageType, int, int, bool> repeatBattleAction,
             bool ignoreShowAnimation = false)
         {
-            if (!TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow))
+            Debug.Log($"SweepPopup.Show called - WorldId: {worldId}, StageId: {stageId}");
+
+            // 스테이지 타입 확인
+            _stageType = DetermineStageType(stageId);
+            _stageId = stageId;
+            Debug.Log($"Determined StageType: {_stageType}");
+
+            if (_stageType == StageType.EventDungeon)
             {
-                throw new Exception();
+                if (!TableSheets.Instance.EventDungeonStageSheet.TryGetValue(stageId, out var stageRow))
+                {
+                    Debug.LogError($"Stage not found in StageSheet: {stageId}");
+                    throw new Exception();
+                }
+
+                var haveApCount = RxProps.EventDungeonTicketProgress.Value.currentTickets;
+                haveApText.text = haveApCount.ToString();
+                // ticket count
+                _costAp = 1;
+                apSlider.Set(0,
+                    haveApCount / _costAp,
+                    haveApCount / _costAp,
+                    RxProps.EventDungeonTicketProgress.Value.maxTickets,
+                    _costAp,
+                    x => _ap.Value = x * _costAp);
+
+                apStoneSlider.Set(0,
+                    0,
+                    0,
+                    MaxApStoneCount, 1,
+                    x => _apStoneCount.Value = x);
+
+                _cp.Value = Util.TotalCP(BattleType.Adventure);
+                _useSweep = false;
             }
+            else
+            {
+                if (!TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow))
+                {
+                    Debug.LogError($"Stage not found in StageSheet: {stageId}");
+                    throw new Exception();
+                }
 
-            SubscribeInventory();
+                SubscribeInventory();
 
-            _worldId = worldId;
-            _stageRow = stageRow;
+                _worldId = worldId;
+                _stageRow = stageRow;
+            }
             _apStoneCount.SetValueAndForceNotify(0);
             _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
@@ -169,9 +219,10 @@ namespace Nekoyume.UI
             canvasGroupForRepeat.interactable = !disableRepeat;
             pageToggle.isOn = disableRepeat;
             UpdateByToggle(disableRepeat);
-            contentText.text =
-                $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
+            UpdateUIForStageType();
+            UpdateView();
 
+            Debug.Log($"SweepPopup.Show about to call base.Show");
             base.Show(ignoreShowAnimation);
         }
 
@@ -273,6 +324,7 @@ namespace Nekoyume.UI
 
             var (apPlayCount, apStonePlayCount) =
                 GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
+
             UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
 
             var totalPlayCount = apPlayCount + apStonePlayCount;
@@ -300,12 +352,23 @@ namespace Nekoyume.UI
             int apPlayCount,
             int apStonePlayCount)
         {
-            var earnedExp = GetEarnedExp(avatarState,
-                row,
-                apPlayCount,
-                apStonePlayCount);
-            var maxStar = Math.Min((apPlayCount + apStonePlayCount) * 2,
-                TableSheets.Instance.CrystalStageBuffGachaSheet[row.Id].MaxStar);
+            var earnedExp = 0L;
+            var maxStar = 0;
+            if (_stageType == StageType.EventDungeon)
+            {
+                earnedExp = RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
+                    _stageId.ToEventDungeonStageNumber(),
+                    apPlayCount);
+            }
+            else
+            {
+                earnedExp = GetStageEarnedExp(avatarState,
+                    row,
+                    apPlayCount,
+                    apStonePlayCount);
+                maxStar = Math.Min((apPlayCount + apStonePlayCount) * 2,
+                    TableSheets.Instance.CrystalStageBuffGachaSheet[row.Id].MaxStar);
+            }
             expText.text = $"+{earnedExp}";
             starText.text = $"+{maxStar}";
             expGlow.SetActive(earnedExp > 0);
@@ -340,7 +403,7 @@ namespace Nekoyume.UI
             return (apPlayCount, apStonePlayCount);
         }
 
-        private long GetEarnedExp(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
+        private long GetStageEarnedExp(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
             int apStonePlayCount)
         {
             var levelSheet = TableSheets.Instance.CharacterLevelSheet;
@@ -358,7 +421,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (_useSweep && TryGetRequiredCP(_stageRow.Id, out var row))
+            if (_useSweep && _stageType != StageType.EventDungeon && TryGetRequiredCP(_stageRow.Id, out var row))
             {
                 if (_cp.Value < row.RequiredCP)
                 {
@@ -415,9 +478,49 @@ namespace Nekoyume.UI
 
             Close();
 
-            var earnedExp = GetEarnedExp(avatarState, stageRow, apPlayCount, apStonePlayCount);
+            var earnedExp = GetStageEarnedExp(avatarState, stageRow, apPlayCount, apStonePlayCount);
 
             Find<SweepResultPopup>().Show(stageRow, worldId, apPlayCount, apStonePlayCount, earnedExp);
+        }
+
+        private StageType DetermineStageType(int stageId)
+        {
+            // 이벤트 던전 스테이지인지 확인
+            if (TableSheets.Instance.EventDungeonStageSheet.TryGetValue(stageId, out _))
+            {
+                return StageType.EventDungeon;
+            }
+
+            // 일반 스테이지로 처리
+            return StageType.HackAndSlash;
+        }
+
+        private void UpdateUIForStageType()
+        {
+            if (_stageType == StageType.EventDungeon)
+            {
+                // 이벤트 던전 UI 표시
+                contentText.text = $"({L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")})";
+                apPotionContainer.SetActive(false);
+                apImage.gameObject.SetActive(false);
+                ticketImage.gameObject.SetActive(true);
+
+                // 이벤트 던전 관련 UI 요소들 활성화 (필요시 추가)
+                // 예: eventDungeonContainer?.SetActive(true);
+                //     normalStageContainer?.SetActive(false);
+            }
+            else
+            {
+                // 일반 스테이지 UI 표시
+                contentText.text = $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
+                apPotionContainer.SetActive(true);
+                apImage.gameObject.SetActive(true);
+                ticketImage.gameObject.SetActive(false);
+
+                // 일반 스테이지 관련 UI 요소들 활성화 (필요시 추가)
+                // 예: eventDungeonContainer?.SetActive(false);
+                //     normalStageContainer?.SetActive(true);
+            }
         }
     }
 }

@@ -165,8 +165,12 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             sweepPopupButton.OnClickAsObservable()
-                .Where(_ => !IsFirstStage)
-                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction));
+                .Where(_ => _stageType == StageType.EventDungeon || !IsFirstStage)
+                .Subscribe(_ =>
+                {
+                    Debug.Log($"Repeat button clicked - StageType: {_stageType}, WorldId: {_worldId}, StageId: {_stageId}, IsFirstStage: {IsFirstStage}");
+                    Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction);
+                });
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
@@ -749,7 +753,9 @@ namespace Nekoyume.UI
                     break;
                 case StageType.EventDungeon:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(false);
+                    // 이벤트 던전에서도 Repeat/Sweep 버튼 활성화
+                    sweepPopupButton.gameObject.SetActive(true);
+                    Debug.Log($"EventDungeon - sweepPopupButton activated: {sweepPopupButton.gameObject.activeSelf}");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
