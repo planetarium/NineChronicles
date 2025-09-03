@@ -40,6 +40,7 @@ namespace Nekoyume.Game.LiveAsset
         private const string StakingArenaBonusUrl = "https://assets.nine-chronicles.com/live-assets/Json/arena-bonus-values";
 
         private readonly List<EventNoticeData> _bannerData = new();
+        private readonly List<EventNoticeData> _ncuData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
         private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
@@ -69,6 +70,7 @@ namespace Nekoyume.Game.LiveAsset
 
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
+        public IReadOnlyList<EventNoticeData> NcuData => _ncuData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
         [CanBeNull]
@@ -120,7 +122,8 @@ namespace Nekoyume.Game.LiveAsset
 
             await UniTask.WhenAll(
                 RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData).ToUniTask(),
-                RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask());
+                RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask(),
+                RequestManager.instance.GetJson(_endpoint.NcuJsonUrl, SetNcuData).ToUniTask());
         }
 
         public IEnumerator InitializeApplicationCLO()
@@ -188,6 +191,18 @@ namespace Nekoyume.Game.LiveAsset
             }
 
             MakeNoticeData(responseData.Banners.OrderBy(x => x.Priority)).Forget();
+        }
+
+        private void SetNcuData(string response)
+        {
+            var responseData = JsonSerializer.Deserialize<EventBanners>(response);
+            if (responseData?.Banners == null)
+            {
+                NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] EventBanners data is null or empty");
+                return;
+            }
+
+            MakeNcuData(responseData.Banners.OrderBy(x => x.Priority)).Forget();
         }
 
         private void SetLiveAssetData(string response)
@@ -393,6 +408,77 @@ namespace Nekoyume.Game.LiveAsset
                     }
                 }
             }
+        }
+
+        private async UniTaskVoid MakeNcuData(IEnumerable<EventBannerData> bannerData)
+        {
+            var planetIdExist = Game.instance.CurrentPlanetId.HasValue;
+            var isMainNet = planetIdExist && Multiplanetary.PlanetId.IsMainNet(Game.instance.CurrentPlanetId.Value);
+            var tasks = new List<UniTask>();
+
+            foreach (var banner in bannerData)
+            {
+                // 1. 날짜 필터링 (가장 먼저 체크)
+                if (banner.UseDateTime && !DateTime.UtcNow.IsInTime(banner.BeginDateTime, banner.EndDateTime))
+                {
+                    continue;
+                }
+
+                // 2. 메인넷 필터링 (EventNoticeData 생성 전에 체크)
+                if (isMainNet && !banner.IsMainnet)
+                {
+                    continue;
+                }
+
+                var buttonType = EventButtonType.URL;
+
+                var newData = new EventNoticeData
+                {
+                    Priority = banner.Priority,
+                    BannerImage = null,
+                    PopupImage = null,
+                    UseDateTime = banner.UseDateTime,
+                    BeginDateTime = banner.BeginDateTime,
+                    EndDateTime = banner.EndDateTime,
+                    Url = banner.Url,
+                    UseAgentAddress = banner.UseAgentAddress,
+                    Description = banner.Description,
+                    EnableKeys = banner.EnableKeys,
+                    WithSign = banner.WithSign,
+                    IsMainnet = banner.IsMainnet,
+                    ButtonType = buttonType,
+                    InGameNavigationData = null,
+                };
+
+                _ncuData.Add(newData);
+
+                var bannerTask = GetNoticeTexture("Ncu", banner.BannerImageName)
+                    .ContinueWith(sprite => newData.BannerImage = sprite);
+                var popupTask = GetNoticeTexture("Ncu", banner.PopupImageName)
+                    .ContinueWith(sprite => newData.PopupImage = sprite);
+                tasks.Add(bannerTask);
+                tasks.Add(popupTask);
+            }
+
+            var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            try
+            {
+                await UniTask.WaitUntil(() =>
+                        tasks.TrueForAll(task =>
+                            task.Status == UniTaskStatus.Succeeded) && _notices is not null,
+                    cancellationToken: cancellation.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                if (e.CancellationToken == cancellation.Token)
+                {
+                    _state = InitializingState.NeedInitialize;
+                    NcDebug.Log($"[{nameof(LiveAssetManager)}] NoticeData making failed by timeout.");
+                    return;
+                }
+            }
+
+            _state = InitializingState.Initialized;
         }
 
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)

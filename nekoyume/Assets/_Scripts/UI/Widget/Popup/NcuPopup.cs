@@ -78,7 +78,7 @@ namespace Nekoyume.UI
 
             try
             {
-                var eventData = liveAssetManager.BannerData;
+                var eventData = liveAssetManager.NcuData;
                 foreach (var notice in eventData)
                 {
                     var item = Instantiate(originEventNoticeItem, eventScrollViewport);
