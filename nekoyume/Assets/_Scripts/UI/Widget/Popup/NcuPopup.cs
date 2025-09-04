@@ -33,6 +33,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private EventBannerItem originEventNoticeItem;
 
+        [SerializeField]
+        private Sprite comingSoonBannerSprite;
+
+        [SerializeField]
+        private Sprite comingSoonNoticeSprite;
+
         private readonly Dictionary<string, EventBannerItem> _eventBannerItems = new();
         private EventBannerItem _selectedEventBannerItem;
         private NoticeItem _selectedNoticeItem;
@@ -79,6 +85,8 @@ namespace Nekoyume.UI
             try
             {
                 var eventData = liveAssetManager.NcuData;
+
+                var requiredCount = 4 - eventData.Count;
                 foreach (var notice in eventData)
                 {
                     var item = Instantiate(originEventNoticeItem, eventScrollViewport);
@@ -96,12 +104,23 @@ namespace Nekoyume.UI
                     item.Set(notice,
                         !liveAssetManager.IsAlreadyReadNotice(notice.Description),
                         OnClickEventNoticeItem);
-                    _eventBannerItems.Add(notice.Description, item);
                     if (_selectedEventBannerItem == null)
                     {
                         _selectedEventBannerItem = item;
                         _selectedEventBannerItem.Select();
                     }
+                }
+
+                for (int i = 0; i < requiredCount; i++)
+                {
+                    var item = Instantiate(originEventNoticeItem, eventScrollViewport);
+
+                    if (item is null)
+                    {
+                        NcDebug.LogError("item is Null");
+                    }
+
+                    item.Set(comingSoonBannerSprite, OnClickEventNoticeItem);
                 }
 
                 RenderNotice(_selectedEventBannerItem.Data);
@@ -196,8 +215,15 @@ namespace Nekoyume.UI
 
         private void RenderNotice(EventNoticeData data)
         {
-            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
-            LiveAssetManager.instance.AddToCheckedList(data.Description);
+            if (data is not null)
+            {
+                eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
+                LiveAssetManager.instance.AddToCheckedList(data.Description);
+            }
+            else
+            {
+                eventView.Set(comingSoonNoticeSprite);
+            }
         }
     }
 }
