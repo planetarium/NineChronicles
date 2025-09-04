@@ -2396,46 +2396,37 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var playCount = Action.EventDungeonBattle.PlayCount;
-            // NOTE: This is a temporary solution. The formula is not yet decided.
-            var random = new LocalRandom(eval.RandomSeed);
-            var stageId = eval.Action.EventDungeonStageId;
-            var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
-            var tableSheets = TableSheets.Instance;
-            var simulator = new StageSimulator(
-                random,
-                States.Instance.CurrentAvatarState,
-                eval.Action.Foods,
+            var playCount = eval.Action.TotalPlayCount;
+            var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            tempPlayer.EquipItems(items);
+            var resultModel = eval.GetEventDungeonBattleReward(
+                tempPlayer,
                 States.Instance.AllRuneState,
                 States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                new List<Skill>(),
-                eval.Action.EventDungeonId,
-                stageId,
-                stageRow,
-                TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
-                RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false,
-                RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
-                    stageId.ToEventDungeonStageNumber(),
-                    Action.EventDungeonBattle.PlayCount),
-                TableSheets.Instance.GetStageSimulatorSheets(),
-                TableSheets.Instance.EnemySkillSheet,
-                TableSheets.Instance.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
-                    random,
-                    stageRow,
-                    TableSheets.Instance.MaterialItemSheet,
-                    Action.EventDungeonBattle.PlayCount),
-                States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.BuffLimitSheet,
-                tableSheets.BuffLinkSheet,
-                true,
-                States.Instance.GameConfigState.ShatterStrikeMaxDamage);
-            simulator.Simulate();
+                States.Instance.CollectionState,
+                TableSheets.Instance,
+                out var simulator,
+                out var temporaryAvatar);
             var log = simulator.Log;
             var stage = Game.Game.instance.Stage;
             stage.StageType = StageType.EventDungeon;
             stage.PlayCount = playCount;
-
+            if (eval.Action.TotalPlayCount > 1)
+            {
+                Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
+                if (log.IsClear)
+                {
+                    var currentAvatar = States.Instance.CurrentAvatarState;
+                    currentAvatar.exp = temporaryAvatar.exp;
+                    currentAvatar.level = temporaryAvatar.level;
+                    currentAvatar.inventory = temporaryAvatar.inventory;
+                    currentAvatar.monsterMap = temporaryAvatar.monsterMap;
+                    currentAvatar.eventMap = temporaryAvatar.eventMap;
+                }
+            }
             BattleRenderer.Instance.PrepareStage(log);
         }
 

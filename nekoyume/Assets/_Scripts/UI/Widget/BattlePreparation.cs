@@ -569,6 +569,7 @@ namespace Nekoyume.UI
             stage.IsExitReserved = false;
             stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
+            Debug.Log($"[SendBattleAction] {stageType}, {playCount}, {apStoneCount}, {buyTicketIfNeeded}");
 
             switch (stageType)
             {
@@ -645,7 +646,8 @@ namespace Nekoyume.UI
                             consumables,
                             runeInfos,
                             buyTicketIfNeeded,
-                            _trackGuideQuest)
+                            _trackGuideQuest,
+                            playCount: playCount)
                         .Subscribe();
                     break;
                 }

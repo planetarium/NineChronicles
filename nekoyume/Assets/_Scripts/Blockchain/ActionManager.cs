@@ -256,7 +256,8 @@ namespace Nekoyume.Blockchain
             List<Consumable> foods,
             List<RuneSlotInfo> runeInfos,
             bool buyTicketIfNeeded,
-            bool trackGuideQuest = false)
+            bool trackGuideQuest = false,
+            int playCount = 1)
         {
             if (trackGuideQuest)
             {
@@ -309,7 +310,8 @@ namespace Nekoyume.Blockchain
                 Costumes = costumes,
                 Foods = foods.Select(f => f.ItemId).ToList(),
                 BuyTicketIfNeeded = buyTicketIfNeeded,
-                RuneInfos = runeInfos
+                RuneInfos = runeInfos,
+                TotalPlayCount = playCount,
             };
             ProcessAction(action);
             _lastBattleActionId = action.Id;
@@ -1222,7 +1224,7 @@ namespace Nekoyume.Blockchain
             };
             ProcessAction(action);
             States.Instance.RemoveCurrentItemSlotStates(materialGuids);
-            
+
             return _agent.ActionRenderer.EveryRender<Synthesize>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))

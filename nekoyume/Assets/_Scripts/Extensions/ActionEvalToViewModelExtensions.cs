@@ -4,6 +4,7 @@ using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -83,6 +84,97 @@ namespace Nekoyume
                     simulator.Player.worldInformation.ClearStage(
                         eval.Action.WorldId,
                         eval.Action.StageId,
+                        eval.BlockIndex,
+                        sheets.WorldSheet,
+                        sheets.WorldUnlockSheet
+                    );
+                }
+
+                avatarState.Update(simulator);
+                outSimulator ??= simulator;
+                model.Exp += simulator.Player.Exp.Current - prevExp;
+                model.ClearedCountForEachWaves[simulator.Log.clearedWaveNumber]++;
+                foreach (var (id, count) in simulator.ItemMap)
+                {
+                    model.AddReward(new CountableItem(
+                        ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[id]),
+                        count));
+                }
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Simulate HackAndSlash with action evaluation.
+        /// </summary>
+        /// <param name="eval"></param>
+        /// <param name="avatarState"></param>
+        /// <param name="allRuneState"></param>
+        /// <param name="runeSlotState"></param>
+        /// <param name="collectionState"></param>
+        /// <param name="skillsOnWaveStart"></param>
+        /// <param name="sheets"></param>
+        /// <param name="outSimulator">First simulator or first winning simulator.</param>
+        /// <param name="outAvatarForRendering">The pre-simulate state of the first winning avatar.
+        /// If it is not null, <see cref="outSimulator"></see> must be first winning simulator.</param>
+        /// <returns>Return summary of all Simulating as <see cref="BattleResultPopup.Model"/>.</returns>
+        public static BattleResultPopup.Model GetEventDungeonBattleReward(
+            this ActionEvaluation<EventDungeonBattle> eval,
+            AvatarState avatarState,
+            AllRuneState allRuneState,
+            RuneSlotState runeSlotState,
+            CollectionState collectionState,
+            TableSheets sheets,
+            out StageSimulator outSimulator,
+            out AvatarState outAvatarForRendering)
+        {
+            outSimulator = null;
+            outAvatarForRendering = null;
+            var model = new BattleResultPopup.Model();
+            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
+            var stageId = eval.Action.EventDungeonStageId;
+            var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
+            var worldId = eval.Action.EventDungeonId;
+            for (var i = 0; i < eval.Action.TotalPlayCount; i++)
+            {
+                var prevAvatarState = (AvatarState)avatarState.Clone();
+                var prevExp = avatarState.exp;
+                var simulator = new StageSimulator(
+                    random,
+                    avatarState,
+                    i == 0 ? eval.Action.Foods : new List<Guid>(),
+                    allRuneState,
+                    runeSlotState,
+                    new List<Model.Skill.Skill>(),
+                    worldId,
+                    stageId,
+                    stageRow,
+                    sheets.EventDungeonStageWaveSheet[stageId],
+                    avatarState.worldInformation.IsStageCleared(stageId),
+                    RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
+                        stageId.ToEventDungeonStageNumber()),
+                    sheets.GetStageSimulatorSheets(),
+                    sheets.EnemySkillSheet,
+                    sheets.CostumeStatSheet,
+                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet),
+                    collectionState.GetEffects(sheets.CollectionSheet),
+                    sheets.BuffLimitSheet,
+                    sheets.BuffLinkSheet,
+                    true,
+                    States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+                simulator.Simulate();
+                if (simulator.Log.IsClear)
+                {
+                    if (outAvatarForRendering is null)
+                    {
+                        outAvatarForRendering = prevAvatarState;
+                        outSimulator = simulator;
+                    }
+
+                    simulator.Player.worldInformation.ClearStage(
+                        worldId,
+                        stageId,
                         eval.BlockIndex,
                         sheets.WorldSheet,
                         sheets.WorldUnlockSheet

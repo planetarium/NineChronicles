@@ -382,7 +382,7 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
-            if (isBoosted && model.StageType == StageType.HackAndSlash)
+            if (isBoosted && (model.StageType == StageType.HackAndSlash || model.StageType == StageType.EventDungeon))
             {
                 model = new Model
                 {

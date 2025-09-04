@@ -135,9 +135,9 @@ namespace Nekoyume.UI
                     else
                     {
                         var (count1, count2) = GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value,
-                            States.Instance.StakingLevel);
+                            States.Instance.StakingLevel, _stageType);
                         _repeatBattleAction(
-                            StageType.HackAndSlash,
+                            _stageType,
                             count1 + count2,
                             _apStoneCount.Value,
                             false);
@@ -196,6 +196,7 @@ namespace Nekoyume.UI
 
                 _cp.Value = Util.TotalCP(BattleType.Adventure);
                 _useSweep = false;
+                _ap.SetValueAndForceNotify(haveApCount);
             }
             else
             {
@@ -209,9 +210,9 @@ namespace Nekoyume.UI
 
                 _worldId = worldId;
                 _stageRow = stageRow;
+                _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
             }
             _apStoneCount.SetValueAndForceNotify(0);
-            _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
             _repeatBattleAction = repeatBattleAction;
             var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
@@ -323,7 +324,7 @@ namespace Nekoyume.UI
             }
 
             var (apPlayCount, apStonePlayCount) =
-                GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
+                GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel, _stageType);
 
             UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
 
@@ -352,13 +353,15 @@ namespace Nekoyume.UI
             int apPlayCount,
             int apStonePlayCount)
         {
-            var earnedExp = 0L;
-            var maxStar = 0;
+            int maxStar = 0;
+            long earnedExp = 0L;
             if (_stageType == StageType.EventDungeon)
             {
+                // 이벤트 던전에서도 apStonePlayCount를 고려하여 exp 계산
+                var totalPlayCount = apPlayCount + apStonePlayCount;
                 earnedExp = RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
                     _stageId.ToEventDungeonStageNumber(),
-                    apPlayCount);
+                    totalPlayCount);
             }
             else
             {
@@ -383,8 +386,15 @@ namespace Nekoyume.UI
             StageSheet.Row row,
             int apStoneCount,
             int ap,
-            int stakingLevel)
+            int stakingLevel,
+            StageType stageType)
         {
+            // 이벤트 던전의 경우 직접 계산
+            if (stageType == StageType.EventDungeon)
+            {
+                return (ap, 0);
+            }
+
             if (row is null)
             {
                 return (0, 0);
@@ -437,7 +447,7 @@ namespace Nekoyume.UI
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var (apPlayCount, apStonePlayCount)
-                = GetPlayCount(stageRow, apStoneCount, ap, States.Instance.StakingLevel);
+                = GetPlayCount(stageRow, apStoneCount, ap, States.Instance.StakingLevel,_stageType);
             var totalPlayCount = apPlayCount + apStonePlayCount;
             var actionPoint = apPlayCount * _costAp;
             if (totalPlayCount <= 0)
