@@ -31,9 +31,6 @@ namespace Nekoyume.Game.LiveAsset
 
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
 
-        private const string KoreanImagePostfix = "_KR";
-        private const string JapaneseImagePostfix = "_JP";
-
         // TODO: this is temporary url and file.
         private const string StakingLevelImageUrl = "Etc/NcgStaking.png";
         private const string StakingRewardImageUrl = "Etc/StakingReward.png";
@@ -483,15 +480,7 @@ namespace Nekoyume.Game.LiveAsset
 
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
-            var postfix = L10nManager.CurrentLanguage switch
-            {
-                LanguageType.Korean => Platform.IsMobilePlatform()
-                    ? KoreanImagePostfix
-                    : string.Empty,
-                LanguageType.Japanese => JapaneseImagePostfix,
-                _ => string.Empty
-            };
-            return GetTexture($"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+            return GetTexture($"{_endpoint.ImageRootUrl}/{textureType}/{imageName}.png");
         }
 
         private static async UniTask<Sprite> GetTexture(string uri)
