@@ -102,7 +102,7 @@ namespace Nekoyume.UI
                     }
 
                     item.Set(notice,
-                        !liveAssetManager.IsAlreadyReadNotice(notice.Description),
+                        HasUnread,
                         OnClickEventNoticeItem);
                     if (_selectedEventBannerItem == null)
                     {
