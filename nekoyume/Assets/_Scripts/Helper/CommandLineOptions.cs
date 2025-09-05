@@ -124,6 +124,8 @@ namespace Nekoyume.Helper
 
         private string _sheetBucketUrl;
 
+        private string _formUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -664,6 +666,17 @@ namespace Nekoyume.Helper
             set
             {
                 _sheetBucketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("form-url", Required = false, HelpText = "google form url")]
+        public string FormUrl
+        {
+            get => _formUrl;
+            set
+            {
+                _formUrl = value;
                 Empty = false;
             }
         }

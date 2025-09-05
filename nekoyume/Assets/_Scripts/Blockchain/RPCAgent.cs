@@ -42,7 +42,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
+using UnityEngine.Networking;
 using NCTx = Libplanet.Types.Tx.Transaction;
 using Random = System.Random;
 
@@ -881,6 +881,29 @@ namespace Nekoyume.Blockchain
 
             if (currencyTask.IsFaulted)
             {
+                var e = currencyTask.Exception?.InnerExceptions.OfType<RpcException>()
+                    .FirstOrDefault();
+                if (e is not null)
+                {
+                    if (e.Status.StatusCode == StatusCode.FailedPrecondition)
+                    {
+                        var popup = Widget.Find<IconAndButtonSystem>();
+                        popup.Show(L10nManager.Localize("UI_ERROR"),
+                            e.Message, L10nManager.Localize("UI_OK"), false);
+                        var encoded = UnityWebRequest.EscapeURL(Address.ToString());
+                        var url = $"{Game.Game.instance.CommandLineOptions.FormUrl}{encoded}";
+
+                        popup.ConfirmCallback = () =>
+                        {
+                            Util.OpenURL(url);
+#if UNITY_EDITOR
+                            UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                            UnityEngine.Application.Quit();
+#endif
+                        };
+                    }
+                }
                 callback?.Invoke(false);
                 yield break;
             }
