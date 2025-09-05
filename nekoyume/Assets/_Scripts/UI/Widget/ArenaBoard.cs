@@ -441,7 +441,7 @@ namespace Nekoyume.UI
                     level = e.Level,
                     fullCostumeOrArmorId = e.PortraitId,
                     titleId = null,
-                    cp = (int)e.Cp,
+                    cp = e.Cp,
                     score = e.Score,
                     rank = e.Rank,
                     expectWinDeltaScore = e.ScoreGainOnWin,
