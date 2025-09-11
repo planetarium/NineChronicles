@@ -174,7 +174,8 @@ namespace Nekoyume.Blockchain
                 pendingActivationStates,
                 new AdminState(new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"), 1500000),
                 isActivateAdminAddress: false,
-                privateKey:proposer);
+                minerPrivateKey: proposer,
+                signerPrivateKey: proposer);
         }
 
         public static string BlockPath(string filename)

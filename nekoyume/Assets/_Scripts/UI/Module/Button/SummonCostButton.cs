@@ -5,7 +5,9 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -13,6 +15,15 @@ namespace Nekoyume.UI.Module
 
     public class SummonCostButton : SimpleCostButton
     {
+        [SerializeField]
+        public Image guaranteeImage;
+
+        [SerializeField]
+        public TextMeshProUGUI guaranteeGradeText;
+
+        [SerializeField]
+        public TextMeshProUGUI guaranteeText;
+
         public void Subscribe(GameObject addTo)
         {
             OnClickDisabledSubject.Subscribe(_ =>
@@ -67,6 +78,17 @@ namespace Nekoyume.UI.Module
                 }
             }).AddTo(disposables);
             Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", SummonHelper.CalculateSummonCount(summonCount));
+            var calculatedSummonCount = SummonHelper.CalculateSummonCount(summonCount);
+            // calculate applied to summon count for check guarantee rules
+            var useGuarantee = summonRow.UseGradeGuarantee(calculatedSummonCount);
+            guaranteeImage.gameObject.SetActive(useGuarantee);
+            if (useGuarantee)
+            {
+                var (gradeColor, gradeText, guarantee) = summonRow.GetGradeData(calculatedSummonCount);
+                guaranteeGradeText.text = $"{guarantee} {gradeText}";
+                guaranteeGradeText.color = gradeColor;
+                guaranteeText.text = L10nManager.Localize("UI_SUMMON_GUARANTEED");
+            }
         }
     }
 }
