@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Bencodex;
@@ -29,6 +30,7 @@ using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -888,19 +890,108 @@ namespace Nekoyume.Blockchain
                     if (e.Status.StatusCode == StatusCode.FailedPrecondition)
                     {
                         var popup = Widget.Find<IconAndButtonSystem>();
-                        popup.Show(L10nManager.Localize("UI_ERROR"),
-                            e.Message, L10nManager.Localize("UI_OK"), false);
-                        var encoded = UnityWebRequest.EscapeURL(Address.ToString());
-                        var url = $"{Game.Game.instance.CommandLineOptions.FormUrl}{encoded}";
-
-                        popup.ConfirmCallback = () =>
+                        popup.Show(L10nManager.Localize("UI_NOTICE"),
+                            L10n.L10nManager.Localize("UI_ADDRESS_STATE_SET_REQUIRED"), L10nManager.Localize("UI_OK"), false, type: IconAndButtonSystem.SystemType.Information);
+                        var url = Game.Game.instance.CommandLineOptions.StateRestoreUrl;
+                        var avatarAddresses = States.Instance.AgentState.avatarAddresses;
+                        var timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                        var address = Address.ToString();
+                        var targetAddress = avatarAddresses[0].ToString();
+                        string targetAddress2 = null;
+                        if (avatarAddresses.Count > 1)
                         {
-                            Util.OpenURL(url);
-#if UNITY_EDITOR
-                            UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                            UnityEngine.Application.Quit();
-#endif
+                            targetAddress2 = avatarAddresses[1].ToString();
+                        }
+                        string targetAddress3 = null;
+                        if (avatarAddresses.Count > 2)
+                        {
+                            targetAddress3 = avatarAddresses[2].ToString();
+                        }
+                        var messageParts = new List<string> { timeStamp.ToString(), address, targetAddress, };
+
+                        if (!string.IsNullOrEmpty(targetAddress2))
+                        {
+                            messageParts.Add(targetAddress2);
+                        }
+
+                        if (!string.IsNullOrEmpty(targetAddress3))
+                        {
+                            messageParts.Add(targetAddress3);
+                        }
+
+                        var message = string.Join("&", messageParts);
+                        var signData = Encoding.UTF8.GetBytes(message);
+                        var singed = PrivateKey.Sign(signData);
+                        var signature = ByteUtil.Hex(singed);
+                        var req = new SetAddressStateRequest
+                        {
+                            Address = address,
+                            AccountAddress = Addresses.Inventory.ToString(),
+                            PlanetId = Game.Game.instance.CurrentPlanetId!.ToString(),
+                            TargetAddress = targetAddress,
+                            TargetAddress2 = targetAddress2,
+                            TargetAddress3 = targetAddress3,
+                            PublicKey = PrivateKey.PublicKey.ToString(),
+                            Signature = signature,
+                            Timestamp = timeStamp,
+                        };
+                        var json = JsonSerializer.Serialize(req);
+                        var request = new UnityWebRequest(url, "POST");
+                        request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+                        request.downloadHandler = new DownloadHandlerBuffer();
+                        request.timeout = 180;
+                        request.uploadHandler.contentType = "application/json";
+                        request.SetRequestHeader("accept", "application/json");
+                        request.SetRequestHeader("Content-Type", "application/json");
+
+                        popup.ConfirmCallback = async () =>
+                        {
+                            try
+                            {
+                                await request.SendWebRequest();
+
+                                // 응답 상태 확인
+                                if (request.result == UnityWebRequest.Result.Success)
+                                {
+                                    NcDebug.Log($"[RPCAgent] SetAddressState request successful. Response: {request.downloadHandler.text}");
+
+                                    // 성공 시 사용자에게 알림
+                                    var successPopup = Widget.Find<IconAndButtonSystem>();
+                                    successPopup.Show(L10nManager.Localize("UI_SUCCESS"),
+                                        L10nManager.Localize("UI_ADDRESS_STATE_SET_SUCCESS"),
+                                        L10nManager.Localize("UI_OK"), false, type: IconAndButtonSystem.SystemType.Information);
+                                    successPopup.SetConfirmCallbackToExit();
+                                }
+                                else
+                                {
+                                    // HTTP 에러 처리
+                                    var errorMessage = $"HTTP Error: {request.responseCode} - {request.error}";
+                                    NcDebug.LogError($"[RPCAgent] SetAddressState request failed: {errorMessage}");
+
+                                    // 에러 팝업 표시
+                                    var errorPopup = Widget.Find<IconAndButtonSystem>();
+                                    errorPopup.Show(L10nManager.Localize("UI_ERROR"),
+                                        L10nManager.Localize("UI_ADDRESS_STATE_SET_FAILURE"),
+                                        L10nManager.Localize("UI_OK"), false);
+                                    errorPopup.SetConfirmCallbackToExit();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // 예외 처리
+                                NcDebug.LogError($"[RPCAgent] SetAddressState request exception: {ex.Message}");
+
+                                var exceptionPopup = Widget.Find<IconAndButtonSystem>();
+                                exceptionPopup.Show(L10nManager.Localize("UI_ERROR"),
+                                    L10nManager.Localize("UI_ADDRESS_STATE_SET_FAILURE"),
+                                    L10nManager.Localize("UI_OK"), false);
+                                exceptionPopup.SetConfirmCallbackToExit();
+                            }
+                            finally
+                            {
+                                // 리소스 정리
+                                request?.Dispose();
+                            }
                         };
                     }
                 }

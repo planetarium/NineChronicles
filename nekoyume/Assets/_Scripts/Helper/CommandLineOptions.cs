@@ -124,7 +124,7 @@ namespace Nekoyume.Helper
 
         private string _sheetBucketUrl;
 
-        private string _formUrl;
+        private string _stateRestoreUrl;
 
         public bool Empty { get; private set; } = true;
 
@@ -670,13 +670,13 @@ namespace Nekoyume.Helper
             }
         }
 
-        [Option("form-url", Required = false, HelpText = "google form url")]
-        public string FormUrl
+        [Option("state-restore-url", Required = false, HelpText = "state restore url")]
+        public string StateRestoreUrl
         {
-            get => _formUrl;
+            get => _stateRestoreUrl;
             set
             {
-                _formUrl = value;
+                _stateRestoreUrl = value;
                 Empty = false;
             }
         }
