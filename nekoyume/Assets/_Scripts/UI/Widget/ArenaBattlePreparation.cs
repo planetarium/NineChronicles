@@ -72,7 +72,7 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposables = new();
 
-        private int? _chooseAvatarCp;
+        private long? _chooseAvatarCp;
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
@@ -129,7 +129,7 @@ namespace Nekoyume.UI
             _seasonData = seasonData;
             _info = info;
 
-            _chooseAvatarCp = (int)info.Cp;
+            _chooseAvatarCp = info.Cp;
             enemyCp.text = TextHelper.FormatNumber(_chooseAvatarCp.Value);
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, _chooseAvatarCp);
