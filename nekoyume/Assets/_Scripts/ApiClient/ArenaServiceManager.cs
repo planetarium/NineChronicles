@@ -90,7 +90,7 @@ namespace Nekoyume.ApiClient
                                 AvatarAddr = new Address(opponent.AvatarAddress),
                                 NameWithHash = opponent.NameWithHash,
                                 PortraitId = opponent.PortraitId,
-                                Cp = (int)opponent.Cp,
+                                Cp = opponent.Cp,
                                 Level = opponent.Level,
                                 Score = opponent.Score,
                             })

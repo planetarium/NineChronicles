@@ -129,7 +129,7 @@ namespace Nekoyume.UI.Module
             return inventory.TryGetCellByIndex(index, out item);
         }
 
-        public void UpdateInventory(BattleType battleType, int? compareCp = null)
+        public void UpdateInventory(BattleType battleType, long? compareCp = null)
         {
             _compareCp = compareCp;
             _consumableIds.Clear();
