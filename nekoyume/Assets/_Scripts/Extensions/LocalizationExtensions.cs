@@ -843,5 +843,28 @@ namespace Nekoyume
 
             return (gradeColor, gradeText, subTypeText);
         }
+
+        public static (Color gradeColor, string gradeText, int guarantee)
+            GetGradeData(this SummonSheet.Row row, int summonCount)
+        {
+            var grade = 0;
+            var guarantee = 0;
+            if (row.UseGradeGuarantee(summonCount))
+            {
+                if (summonCount >= 110)
+                {
+                    grade = (int) row.MinimumGrade110!;
+                    guarantee = (int) row.GuaranteeCount110!;
+                }
+                else
+                {
+                    grade = (int) row.MinimumGrade11!;
+                    guarantee = (int) row.GuaranteeCount11!;
+                }
+            }
+            var gradeColor = GetItemGradeColor(grade);
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            return (gradeColor, gradeText, guarantee);
+        }
     }
 }
