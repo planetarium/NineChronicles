@@ -38,5 +38,8 @@ namespace Nekoyume.Game.ScriptableObject
 
         [field: SerializeField]
         public string EventRewardPopupDataJsonUrl { get; private set; }
+
+        [field: SerializeField]
+        public string NcuJsonUrl { get; private set; }
     }
 }

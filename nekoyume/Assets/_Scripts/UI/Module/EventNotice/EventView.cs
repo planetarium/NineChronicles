@@ -60,6 +60,13 @@ namespace Nekoyume.UI.Module
             Set(eventSprite, url, useAgentAddress, sign, EventButtonType.URL);
         }
 
+        public void Set(Sprite eventSprite)
+        {
+            eventImage.overrideSprite = eventSprite;
+            navigationButton.gameObject.SetActive(false);
+            urlButton.gameObject.SetActive(false);
+        }
+
         public void Set(
             Sprite eventSprite,
             string url,

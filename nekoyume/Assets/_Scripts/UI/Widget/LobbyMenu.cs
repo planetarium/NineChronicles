@@ -649,8 +649,9 @@ namespace Nekoyume.UI
 
             AudioController.PlayClick();
 
-            Close(true);
-            Find<DccMain>().Show();
+            // Close(true);
+            // Find<DccMain>().Show();
+            Find<NcuPopup>().Show();
         }
 
         public void PatrolRewardClick()
