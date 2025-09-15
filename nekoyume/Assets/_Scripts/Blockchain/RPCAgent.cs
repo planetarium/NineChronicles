@@ -896,16 +896,34 @@ namespace Nekoyume.Blockchain
                         var avatarAddresses = States.Instance.AgentState.avatarAddresses;
                         var timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                         var address = Address.ToString();
-                        var targetAddress = avatarAddresses[0].ToString();
+
+                        // Dictionary에서 순서대로 첫 번째부터 사용 가능한 아바타 주소 할당
+                        string targetAddress = null;
                         string targetAddress2 = null;
-                        if (avatarAddresses.Count > 1)
-                        {
-                            targetAddress2 = avatarAddresses[1].ToString();
-                        }
                         string targetAddress3 = null;
-                        if (avatarAddresses.Count > 2)
+
+                        // 사용 가능한 아바타 주소들을 순서대로 수집
+                        var availableAddresses = new List<string>();
+                        for (int i = 0; i < 3; i++)
                         {
-                            targetAddress3 = avatarAddresses[2].ToString();
+                            if (avatarAddresses.ContainsKey(i))
+                            {
+                                availableAddresses.Add(avatarAddresses[i].ToString());
+                            }
+                        }
+
+                        // 순서대로 targetAddress들에 할당
+                        if (availableAddresses.Count > 0)
+                        {
+                            targetAddress = availableAddresses[0];
+                        }
+                        if (availableAddresses.Count > 1)
+                        {
+                            targetAddress2 = availableAddresses[1];
+                        }
+                        if (availableAddresses.Count > 2)
+                        {
+                            targetAddress3 = availableAddresses[2];
                         }
                         var messageParts = new List<string> { timeStamp.ToString(), address, targetAddress, };
 
