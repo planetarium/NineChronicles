@@ -42,6 +42,10 @@ namespace Nekoyume.UI.Module
             image.texture = sprite.texture;
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => { onClick.Invoke(this); });
+            if (notificationObject)
+            {
+                notificationObject.SetActive(false);
+            }
         }
 
         public void Select()
