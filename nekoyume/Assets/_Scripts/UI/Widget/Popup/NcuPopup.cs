@@ -46,7 +46,7 @@ namespace Nekoyume.UI
 
         private System.Action _onClose;
 
-        private const string LastReadingDayKey = "LAST_READING_DAY";
+        private const string LastReadingDayKey = "NCU_LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
         public bool HasUnread
@@ -62,6 +62,7 @@ namespace Nekoyume.UI
                     notReadAtToday = DateTime.Today != result.Date;
                 }
 
+                Debug.Log($"[NcuPopup] HasUnread: {notReadAtToday}");
                 return notReadAtToday;
             }
         }
@@ -102,7 +103,7 @@ namespace Nekoyume.UI
                     }
 
                     item.Set(notice,
-                        HasUnread,
+                        liveAssetManager.IsAlreadyReadNcu(notice.Description),
                         OnClickEventNoticeItem);
                     if (_selectedEventBannerItem == null)
                     {
@@ -218,7 +219,7 @@ namespace Nekoyume.UI
             if (data is not null)
             {
                 eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
-                LiveAssetManager.instance.AddToCheckedList(data.Description);
+                LiveAssetManager.instance.AddToCheckedNcuList(data.Description);
             }
             else
             {

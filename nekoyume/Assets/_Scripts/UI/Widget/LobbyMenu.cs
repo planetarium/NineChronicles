@@ -78,6 +78,9 @@ namespace Nekoyume.UI
         private MainMenu btnEventReward;
 
         [SerializeField]
+        private MainMenu btnNcu;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
         [SerializeField] private GameObject shopExclamationMark;
@@ -161,6 +164,7 @@ namespace Nekoyume.UI
                     btnSeasonPass.GetComponent<Button>(),
                     btnCollection.GetComponent<Button>(),
                     btnEventReward.GetComponent<Button>(),
+                    btnNcu.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -392,6 +396,7 @@ namespace Nekoyume.UI
             btnStaking.Update();
             btnWorldBoss.Update();
             btnDcc.Update();
+            btnNcu.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var firstOpenCombinationKey
@@ -649,9 +654,8 @@ namespace Nekoyume.UI
 
             AudioController.PlayClick();
 
-            // Close(true);
-            // Find<DccMain>().Show();
-            Find<NcuPopup>().Show();
+            Close(true);
+            Find<DccMain>().Show();
         }
 
         public void PatrolRewardClick()
@@ -704,6 +708,18 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<Collection>().Show();
+        }
+
+        public void NcuClick()
+        {
+            if (!btnNcu.IsUnlocked)
+            {
+                return;
+            }
+
+            AudioController.PlayClick();
+
+            Find<NcuPopup>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

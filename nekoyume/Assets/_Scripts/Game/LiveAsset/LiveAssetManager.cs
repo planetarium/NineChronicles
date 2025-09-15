@@ -30,6 +30,7 @@ namespace Nekoyume.Game.LiveAsset
         }
 
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
+        private const string AlreadyReadNcuKey = "AlreadyReadNcuList";
 
         // TODO: this is temporary url and file.
         private const string StakingLevelImageUrl = "Etc/NcgStaking.png";
@@ -39,6 +40,7 @@ namespace Nekoyume.Game.LiveAsset
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly List<EventNoticeData> _ncuData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
+        private readonly ReactiveCollection<string> _alreadyReadNcus = new();
         private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
@@ -47,6 +49,8 @@ namespace Nekoyume.Game.LiveAsset
         public bool HasUnreadEvent => _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
 
         public bool HasUnreadNotice => _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
+
+        public bool HasUnreadNcu => _ncuData.Any(d => !_alreadyReadNcus.Contains(d.Description));
 
         public bool HasUnread => IsInitialized && (HasUnreadEvent || HasUnreadNotice);
 
@@ -65,6 +69,7 @@ namespace Nekoyume.Game.LiveAsset
                 .ObserveAdd()
                 .Select(_ => HasUnread);
 
+        public ReactiveProperty<bool> ObservableHasUnreadNcu => new ReactiveProperty<bool>(HasUnreadNcu);
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public IReadOnlyList<EventNoticeData> NcuData => _ncuData;
@@ -168,9 +173,26 @@ namespace Nekoyume.Game.LiveAsset
                 _alreadyReadNotices.Aggregate((a, b) => $"{a}#{b}"));
         }
 
+        public void AddToCheckedNcuList(string key)
+        {
+            if (_alreadyReadNcus.Contains(key))
+            {
+                return;
+            }
+
+            _alreadyReadNcus.Add(key);
+            PlayerPrefs.SetString(AlreadyReadNcuKey,
+                _alreadyReadNcus.Aggregate((a, b) => $"{a}#{b}"));
+        }
+
         public bool IsAlreadyReadNotice(string key)
         {
             return _alreadyReadNotices.Contains(key);
+        }
+
+        public bool IsAlreadyReadNcu(string key)
+        {
+            return _alreadyReadNcus.Contains(key);
         }
 
         private void SetNotices(string response)
@@ -476,6 +498,20 @@ namespace Nekoyume.Game.LiveAsset
             }
 
             _state = InitializingState.Initialized;
+
+            if (PlayerPrefs.HasKey(AlreadyReadNcuKey))
+            {
+                var listString = PlayerPrefs.GetString(AlreadyReadNcuKey);
+                var currentDataSet = _ncuData.Select(d => d.Description).ToHashSet();
+                foreach (var noticeKey in listString.Split("#"))
+                {
+                    if (currentDataSet.Contains(noticeKey))
+                    {
+                        AddToCheckedNcuList(noticeKey);
+                    }
+                }
+            }
+
         }
 
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
