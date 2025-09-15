@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Grpc.Core;
 using MagicOnion.Client;
-using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.Blockchain
 {
@@ -20,11 +20,17 @@ namespace Nekoyume.Blockchain
                     var sw = Stopwatch.StartNew();
                     var resp = await next(context);
                     sw.Stop();
-                    NcDebug.Log("Request Completed:" + context.MethodPath + ", Elapsed:" + sw.Elapsed.TotalMilliseconds + "ms");
+                    NcDebug.Log("Request Completed:" + context.MethodPath + ", Elapsed:" +
+                        sw.Elapsed.TotalMilliseconds + "ms");
                     return resp;
                 }
                 catch (Exception e)
                 {
+                    if (e is RpcException {StatusCode: StatusCode.FailedPrecondition,})
+                    {
+                        NcDebug.Log("Request Failed:" + context.MethodPath);
+                        throw;
+                    }
                     await Task.Delay((3 - retryCount) * 1000);
                     retryCount++;
                     exception = e;
