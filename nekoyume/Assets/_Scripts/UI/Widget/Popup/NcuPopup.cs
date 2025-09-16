@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -46,27 +47,6 @@ namespace Nekoyume.UI
 
         private System.Action _onClose;
 
-        private const string LastReadingDayKey = "NCU_LAST_READING_DAY";
-        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
-
-        public bool HasUnread
-        {
-            get
-            {
-                // var hasUnreadContents = LiveAssetManager.instance.HasUnread;
-                var notReadAtToday = true;
-                if (PlayerPrefs.HasKey(LastReadingDayKey) &&
-                    DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
-                        DateTimeFormat, null, DateTimeStyles.None, out var result))
-                {
-                    notReadAtToday = DateTime.Today != result.Date;
-                }
-
-                Debug.Log($"[NcuPopup] HasUnread: {notReadAtToday}");
-                return notReadAtToday;
-            }
-        }
-
         protected override void Awake()
         {
             base.Awake();
@@ -103,7 +83,7 @@ namespace Nekoyume.UI
                     }
 
                     item.Set(notice,
-                        liveAssetManager.IsAlreadyReadNcu(notice.Description),
+                        LiveAssetManager.instance.HasUnreadNcu,
                         OnClickEventNoticeItem);
                     if (_selectedEventBannerItem == null)
                     {
@@ -130,7 +110,6 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError(e);
             }
-            objectsForEvent.ForEach(go => go.SetActive(true));
             _isInitialized = true;
         }
 
@@ -172,33 +151,14 @@ namespace Nekoyume.UI
             }
 
             base.Show(ignoreShowAnimation);
-            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
+            LiveAssetManager.instance.ReadNcu();
         }
 
         private async UniTask ShowAsync(bool ignoreShowAnimation = false)
         {
             await InitializeAsync();
             base.Show(ignoreShowAnimation);
-            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
-        }
-
-        public void Show(EventNoticeData eventNotice, bool ignoreStartAnimation = false)
-        {
-            if (!_isInitialized)
-            {
-                ShowAsync(eventNotice, ignoreStartAnimation).Forget();
-                return;
-            }
-            base.Show(ignoreStartAnimation);
-
-            OnClickEventNoticeItem(_eventBannerItems[eventNotice.Description]);
-        }
-
-        private async UniTask ShowAsync(EventNoticeData eventNotice, bool ignoreStartAnimation = false)
-        {
-            await InitializeAsync();
-            base.Show(ignoreStartAnimation);
-            OnClickEventNoticeItem(_eventBannerItems[eventNotice.Description]);
+            LiveAssetManager.instance.ReadNcu();
         }
 
         private void OnClickEventNoticeItem(EventBannerItem item)
@@ -219,7 +179,6 @@ namespace Nekoyume.UI
             if (data is not null)
             {
                 eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
-                LiveAssetManager.instance.AddToCheckedNcuList(data.Description);
             }
             else
             {
