@@ -124,26 +124,27 @@ namespace Nekoyume.UI
         public void Show(SummonType summonType, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            SummonObject summonObject;
             switch (summonType)
             {
                 case SummonType.GRIMORE:
-                    _selectedSummonObj = summonObjects[0];
+                    summonObject = summonObjects[0];
                     break;
                 case SummonType.ARUA:
-                    _selectedSummonObj = summonObjects[1];
+                    summonObject = summonObjects[1];
                     break;
                 case SummonType.RUNE:
-                    _selectedSummonObj = summonObjects[2];
+                    summonObject = summonObjects[2];
                     break;
                 case SummonType.COSTUME:
-                    _selectedSummonObj = summonObjects[3];
+                    summonObject = summonObjects[3];
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(summonType), summonType, null);
             }
-            OnClickSummonTabToggle(_selectedSummonObj);
+            OnClickSummonTabToggle(summonObject);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
-            Find<SummonProbabilityPopup>().Show(_selectedSummonObj.summonResult);
+            Find<SummonProbabilityPopup>().Show(summonObject.summonResult);
         }
 
         private void OnClickSummonTabToggle(SummonObject summonObject)
@@ -285,9 +286,8 @@ namespace Nekoyume.UI
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
-            var dummyAgentState = new AgentState(new Address());
             return AuraSummon.SimulateSummon(
-                    addressHex, dummyAgentState,
+                    addressHex,
                     tableSheets.EquipmentItemRecipeSheet,
                     tableSheets.EquipmentItemSheet,
                     tableSheets.EquipmentItemSubRecipeSheetV2,
@@ -323,7 +323,7 @@ namespace Nekoyume.UI
         {
             const int unit = RuneSummon.RuneQuantity;
             var simulateResult = RuneSummon.SimulateSummon(
-                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random);
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet);
 
             var result = new List<FungibleAssetValue>();
             foreach (var pair in simulateResult)

@@ -2251,7 +2251,10 @@ namespace Nekoyume.Blockchain
             }
 
             var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            tempPlayer.EquipItems(items);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.AllRuneState,
@@ -3295,15 +3298,26 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneStoneBalance(eval);
 
+            return eval;
+        }
+
+        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
+            }
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
                     .First()
                     .Subscribe(stage =>
                     {
-                        var task = UniTask.RunOnThreadPool(() =>
+                        var task = UniTask.RunOnThreadPool(async () =>
                         {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            await UpdateCurrentAvatarStateAsync(eval);
                             var avatarState = States.Instance.CurrentAvatarState;
                             RenderQuest(eval.Action.AvatarAddress,
                                 avatarState.questList.completedQuestIds);
@@ -3315,16 +3329,6 @@ namespace Nekoyume.Blockchain
                             // ReSharper disable once ConvertClosureToMethodGroup
                             .DoOnError(e => NcDebug.LogException(e));
                     });
-            return eval;
-        }
-
-        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
-        {
-            if (eval.Exception is not null)
-            {
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
-                return;
-            }
 
             var worldBoss = Widget.Find<WorldBoss>();
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
@@ -4279,7 +4283,9 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Subscribe(ResponseExploreAdventureBoss)
+                .Select(PrepareExploreAdventureBoss)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseExploreAdventureBossAsync)
                 .AddTo(_disposables);
 
             _actionRenderer.EveryRender<ExploreAdventureBoss>()
@@ -4291,207 +4297,223 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
-        private void ResponseExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
+        private (ActionEvaluation<ExploreAdventureBoss> eval,
+            int firstFloor,
+            int maxFloor,
+            int lastFloor,
+            int prevTotalScore) PrepareExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
         {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return (eval, 1, 5, 1, 0);
+            }
+
             var firstFloor = 1;
             var maxFloor = 5;
             var lastFloor = firstFloor;
             var prevTotalScore = 0;
-            UniTask.RunOnThreadPool(() =>
+
+            var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+            firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
+            maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
+            lastFloor = firstFloor;
+            prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
+
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
+
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneStoneBalance(eval);
+            UpdateCurrentAvatarInventory(eval);
+
+            return (eval, firstFloor, maxFloor, lastFloor, prevTotalScore);
+        }
+
+        private void ResponseExploreAdventureBossAsync((ActionEvaluation<ExploreAdventureBoss> eval,
+            int firstFloor,
+            int maxFloor,
+            int lastFloor,
+            int prevTotalScore) prepared)
+        {
+            var (eval, firstFloor, maxFloor, lastFloor, prevTotalScore) = prepared;
+
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-                {
-                    return eval;
-                }
+                NcDebug.LogError("Not last battle action id.");
+                StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                return;
+            }
 
-                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
-                firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
-                maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
-                lastFloor = firstFloor;
-                prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
-
-                UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-
-                UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
-                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
-                UpdateCurrentAvatarRuneStoneBalance(eval);
-                UpdateCurrentAvatarInventory(eval);
-
-                _disposableForBattleEnd?.Dispose();
-                _disposableForBattleEnd =
-                    Game.Game.instance.Stage.OnEnterToStageEnd
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            var task = UniTask.RunOnThreadPool(() =>
-                            {
-                                UpdateCurrentAvatarStateAsync(eval).Forget();
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                            }, false);
-                            task.ToObservable()
-                                .First()
-                                // ReSharper disable once ConvertClosureToMethodGroup
-                                .DoOnError(e => NcDebug.LogException(e));
-                        });
-                return eval;
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-                {
-                    NcDebug.LogError("Not last battle action id.");
-                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
-                    return;
-                }
-
-                var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
-                if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
-                {
-                    NcDebug.LogError("SeasonInfo is null or season is not matched.");
-                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
-                    return;
-                }
-
-                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
-                var random = new LocalRandom(eval.RandomSeed);
-                var tableSheets = TableSheets.Instance;
-                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
-                AdventureBossSimulator simulator = null;
-                var score = 0;
-                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
-                var firstRewardList = new List<AdventureBossSheet.RewardAmountData>();
-
-                var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
-                if (bossRow == null)
-                {
-                    NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
-                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
-                    return;
-                }
-
-                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
-
-                var floorIdList = new List<int>();
-                for (var fl = firstFloor; fl <= maxFloor; fl++)
-                {
-                    var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
-                    if (floorRow is null)
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.Stage.OnEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
                     {
-                        NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
+                        var task = UniTask.RunOnThreadPool(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        }, false);
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => NcDebug.LogException(e));
+                    });
+
+            var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+            if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
+            {
+                NcDebug.LogError("SeasonInfo is null or season is not matched.");
+                StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                return;
+            }
+
+            var random = new LocalRandom(eval.RandomSeed);
+            var tableSheets = TableSheets.Instance;
+            var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
+            AdventureBossSimulator simulator = null;
+            var score = 0;
+            var rewardList = new List<AdventureBossSheet.RewardAmountData>();
+            var firstRewardList = new List<AdventureBossSheet.RewardAmountData>();
+
+            var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
+            if (bossRow == null)
+            {
+                NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                return;
+            }
+
+            var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
+
+            var floorIdList = new List<int>();
+            // 장착 아이템 동기화
+            var avatar = States.Instance.CurrentAvatarState;
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            avatar.EquipItems(items);
+            for (var fl = firstFloor; fl <= maxFloor; fl++)
+            {
+                var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
+                if (floorRow is null)
+                {
+                    NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(floorRow.Id, out var waveRows))
+                {
+                    NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var rewards = AdventureBossSimulator.GetWaveRewards(random, floorRow, tableSheets.MaterialItemSheet);
+
+                simulator = new AdventureBossSimulator(
+                    seasonInfo.BossId,
+                    floorRow.Id,
+                    random,
+                    avatar,
+                    fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
+                    States.Instance.AllRuneState,
+                    States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                    floorRow,
+                    waveRows,
+                    tableSheets.GetStageSimulatorSheets(),
+                    tableSheets.EnemySkillSheet,
+                    tableSheets.CostumeStatSheet,
+                    rewards,
+                    States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                    tableSheets.BuffLimitSheet,
+                    tableSheets.BuffLinkSheet,
+                    true,
+                    States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+
+                simulator.Simulate();
+                lastFloor = fl;
+                floorIdList.Add(floorRow.Id);
+
+                // Get Reward if cleared
+                if (simulator.Log.IsClear)
+                {
+                    // Add point, reward
+                    if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
+                    {
+                        NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
                         StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                         return;
                     }
 
-                    if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(floorRow.Id, out var waveRows))
+                    var point = random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
+
+                    score += point;
+
+                    var stageId = floorRows.First(row => row.Floor == fl).Id;
+                    if (!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
                     {
-                        NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
+                        NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
                         StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                         return;
                     }
 
-                    var rewards = AdventureBossSimulator.GetWaveRewards(random, floorRow, tableSheets.MaterialItemSheet);
-
-                    simulator = new AdventureBossSimulator(
-                        seasonInfo.BossId,
-                        floorRow.Id,
-                        random,
-                        States.Instance.CurrentAvatarState,
-                        fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
-                        States.Instance.AllRuneState,
-                        States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                        floorRow,
-                        waveRows,
-                        tableSheets.GetStageSimulatorSheets(),
-                        tableSheets.EnemySkillSheet,
-                        tableSheets.CostumeStatSheet,
-                        rewards,
-                        States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                        tableSheets.BuffLimitSheet,
-                        tableSheets.BuffLinkSheet,
-                        true,
-                        States.Instance.GameConfigState.ShatterStrikeMaxDamage);
-
-                    simulator.Simulate();
-                    lastFloor = fl;
-                    floorIdList.Add(floorRow.Id);
-
-                    // Get Reward if cleared
-                    if (simulator.Log.IsClear)
+                    foreach (var reward in firstReward.Rewards)
                     {
-                        // Add point, reward
-                        if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
-                        {
-                            NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
-                            StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
-                            return;
-                        }
-
-                        var point = random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
-
-                        score += point;
-
-                        var stageId = floorRows.First(row => row.Floor == fl).Id;
-                        if (!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
-                        {
-                            NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
-                            StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
-                            return;
-                        }
-
-                        foreach (var reward in firstReward.Rewards)
-                        {
-                            firstRewardList.Add(new AdventureBossSheet.RewardAmountData(
-                                reward.ItemType, reward.ItemId, reward.Amount));
-                        }
-
-                        selector.Clear();
-
-                        var floorReward = floorRows.First(row => row.Floor == fl);
-                        foreach (var reward in floorReward.Rewards)
-                        {
-                            selector.Add(reward, reward.Ratio);
-                        }
-
-                        var selected = selector.Select(1).First();
-                        rewardList.Add(new AdventureBossSheet.RewardAmountData(
-                            selected.ItemType,
-                            selected.ItemId,
-                            random.Next(selected.Min, selected.Max + 1))
-                        );
+                        firstRewardList.Add(new AdventureBossSheet.RewardAmountData(
+                            reward.ItemType, reward.ItemId, reward.Amount));
                     }
-                    else
+
+                    selector.Clear();
+
+                    var floorReward = floorRows.First(row => row.Floor == fl);
+                    foreach (var reward in floorReward.Rewards)
                     {
-                        break;
+                        selector.Add(reward, reward.Ratio);
                     }
-                }
 
-                floorIdList.Remove(floorIdList.Last());
-                if (simulator is not null && lastFloor > firstFloor)
+                    var selected = selector.Select(1).First();
+                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
+                        selected.ItemType,
+                        selected.ItemId,
+                        random.Next(selected.Min, selected.Max + 1))
+                    );
+                }
+                else
                 {
-                    simulator.AddBreakthrough(floorIdList, tableSheets.AdventureBossFloorWaveSheet);
+                    break;
                 }
+            }
 
-                var log = simulator.Log;
-                var stage = Game.Game.instance.Stage;
-                stage.StageType = StageType.AdventureBoss;
-                log.score = score;
+            floorIdList.Remove(floorIdList.Last());
+            if (simulator is not null && lastFloor > firstFloor)
+            {
+                simulator.AddBreakthrough(floorIdList, tableSheets.AdventureBossFloorWaveSheet);
+            }
 
-                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
-                {
-                    NcDebug.LogError("BossData is null");
-                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
-                    return;
-                }
+            var log = simulator.Log;
+            var stage = Game.Game.instance.Stage;
+            stage.StageType = StageType.AdventureBoss;
+            log.score = score;
 
-                var totalApPotionUsed = (maxFloor - firstFloor + 1) * bossData.ExploreAp;
-                var apPotionUsed = (lastFloor - firstFloor + 1) * bossData.ExploreAp;
-                var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
+            if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+            {
+                NcDebug.LogError("BossData is null");
+                StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                return;
+            }
 
-                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, prevTotalScore, rewardList, firstRewardList);
-                Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, maxFloor, lastFloor);
+            var totalApPotionUsed = (maxFloor - firstFloor + 1) * bossData.ExploreAp;
+            var apPotionUsed = (lastFloor - firstFloor + 1) * bossData.ExploreAp;
+            var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
 
-                BattleRenderer.Instance.PrepareStage(log);
-            });
+            Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, prevTotalScore, rewardList, firstRewardList);
+            Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, maxFloor, lastFloor);
+
+            BattleRenderer.Instance.PrepareStage(log);
         }
 
         private void ExceptionExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
@@ -4542,6 +4564,10 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
+                var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+                var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+                var items = equipments.Concat(costumes).ToList();
+                States.Instance.CurrentAvatarState.EquipItems(items);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =

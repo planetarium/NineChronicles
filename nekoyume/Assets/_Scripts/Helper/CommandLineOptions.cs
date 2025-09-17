@@ -124,6 +124,8 @@ namespace Nekoyume.Helper
 
         private string _sheetBucketUrl;
 
+        private string _stateRestoreUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -664,6 +666,17 @@ namespace Nekoyume.Helper
             set
             {
                 _sheetBucketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("state-restore-url", Required = false, HelpText = "state restore url")]
+        public string StateRestoreUrl
+        {
+            get => _stateRestoreUrl;
+            set
+            {
+                _stateRestoreUrl = value;
                 Empty = false;
             }
         }

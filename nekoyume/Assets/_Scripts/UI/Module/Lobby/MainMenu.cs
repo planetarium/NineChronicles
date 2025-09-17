@@ -21,6 +21,7 @@ namespace Nekoyume.UI.Module.Lobby
         SeasonPass,
         Collection,
         EventReward,
+        Ncu,
     }
 
     public class MainMenu : MonoBehaviour
@@ -89,6 +90,7 @@ namespace Nekoyume.UI.Module.Lobby
                 case MenuType.PatrolReward:
                 case MenuType.Collection:
                 case MenuType.EventReward:
+                case MenuType.Ncu:
                     _requireStage = Game.LiveAsset.GameConfig.RequiredStage.TutorialEnd;
                     break;
                 default:

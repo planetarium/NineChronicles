@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Bencodex;
@@ -29,6 +30,7 @@ using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -42,7 +44,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
+using UnityEngine.Networking;
 using NCTx = Libplanet.Types.Tx.Transaction;
 using Random = System.Random;
 
@@ -881,6 +883,136 @@ namespace Nekoyume.Blockchain
 
             if (currencyTask.IsFaulted)
             {
+                var e = currencyTask.Exception?.InnerExceptions.OfType<RpcException>()
+                    .FirstOrDefault();
+                if (e is not null)
+                {
+                    if (e.Status.StatusCode == StatusCode.FailedPrecondition)
+                    {
+                        var popup = Widget.Find<IconAndButtonSystem>();
+                        popup.Show(L10nManager.Localize("UI_NOTICE"),
+                            L10n.L10nManager.Localize("UI_ADDRESS_STATE_SET_REQUIRED"), L10nManager.Localize("UI_OK"), false, type: IconAndButtonSystem.SystemType.Information);
+                        var url = Game.Game.instance.CommandLineOptions.StateRestoreUrl;
+                        var avatarAddresses = States.Instance.AgentState.avatarAddresses;
+                        var timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                        var address = Address.ToString();
+
+                        // Dictionary에서 순서대로 첫 번째부터 사용 가능한 아바타 주소 할당
+                        string targetAddress = null;
+                        string targetAddress2 = null;
+                        string targetAddress3 = null;
+
+                        // 사용 가능한 아바타 주소들을 순서대로 수집
+                        var availableAddresses = new List<string>();
+                        for (int i = 0; i < 3; i++)
+                        {
+                            if (avatarAddresses.ContainsKey(i))
+                            {
+                                availableAddresses.Add(avatarAddresses[i].ToString());
+                            }
+                        }
+
+                        // 순서대로 targetAddress들에 할당
+                        if (availableAddresses.Count > 0)
+                        {
+                            targetAddress = availableAddresses[0];
+                        }
+                        if (availableAddresses.Count > 1)
+                        {
+                            targetAddress2 = availableAddresses[1];
+                        }
+                        if (availableAddresses.Count > 2)
+                        {
+                            targetAddress3 = availableAddresses[2];
+                        }
+                        var messageParts = new List<string> { timeStamp.ToString(), address, targetAddress, };
+
+                        if (!string.IsNullOrEmpty(targetAddress2))
+                        {
+                            messageParts.Add(targetAddress2);
+                        }
+
+                        if (!string.IsNullOrEmpty(targetAddress3))
+                        {
+                            messageParts.Add(targetAddress3);
+                        }
+
+                        var message = string.Join("&", messageParts);
+                        var signData = Encoding.UTF8.GetBytes(message);
+                        var singed = PrivateKey.Sign(signData);
+                        var signature = ByteUtil.Hex(singed);
+                        var req = new SetAddressStateRequest
+                        {
+                            Address = address,
+                            AccountAddress = Addresses.Inventory.ToString(),
+                            PlanetId = Game.Game.instance.CurrentPlanetId!.ToString(),
+                            TargetAddress = targetAddress,
+                            TargetAddress2 = targetAddress2,
+                            TargetAddress3 = targetAddress3,
+                            PublicKey = PrivateKey.PublicKey.ToString(),
+                            Signature = signature,
+                            Timestamp = timeStamp,
+                        };
+                        var json = JsonSerializer.Serialize(req);
+                        var request = new UnityWebRequest(url, "POST");
+                        request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+                        request.downloadHandler = new DownloadHandlerBuffer();
+                        request.timeout = 180;
+                        request.uploadHandler.contentType = "application/json";
+                        request.SetRequestHeader("accept", "application/json");
+                        request.SetRequestHeader("Content-Type", "application/json");
+
+                        popup.ConfirmCallback = async () =>
+                        {
+                            try
+                            {
+                                await request.SendWebRequest();
+
+                                // 응답 상태 확인
+                                if (request.result == UnityWebRequest.Result.Success)
+                                {
+                                    NcDebug.Log($"[RPCAgent] SetAddressState request successful. Response: {request.downloadHandler.text}");
+
+                                    // 성공 시 사용자에게 알림
+                                    var successPopup = Widget.Find<IconAndButtonSystem>();
+                                    successPopup.Show(L10nManager.Localize("UI_SUCCESS"),
+                                        L10nManager.Localize("UI_ADDRESS_STATE_SET_SUCCESS"),
+                                        L10nManager.Localize("UI_OK"), false, type: IconAndButtonSystem.SystemType.Information);
+                                    successPopup.SetConfirmCallbackToExit();
+                                }
+                                else
+                                {
+                                    // HTTP 에러 처리
+                                    var errorMessage = $"HTTP Error: {request.responseCode} - {request.error}";
+                                    NcDebug.LogError($"[RPCAgent] SetAddressState request failed: {errorMessage}");
+
+                                    // 에러 팝업 표시
+                                    var errorPopup = Widget.Find<IconAndButtonSystem>();
+                                    errorPopup.Show(L10nManager.Localize("UI_ERROR"),
+                                        L10nManager.Localize("UI_ADDRESS_STATE_SET_FAILURE"),
+                                        L10nManager.Localize("UI_OK"), false);
+                                    errorPopup.SetConfirmCallbackToExit();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // 예외 처리
+                                NcDebug.LogError($"[RPCAgent] SetAddressState request exception: {ex.Message}");
+
+                                var exceptionPopup = Widget.Find<IconAndButtonSystem>();
+                                exceptionPopup.Show(L10nManager.Localize("UI_ERROR"),
+                                    L10nManager.Localize("UI_ADDRESS_STATE_SET_FAILURE"),
+                                    L10nManager.Localize("UI_OK"), false);
+                                exceptionPopup.SetConfirmCallbackToExit();
+                            }
+                            finally
+                            {
+                                // 리소스 정리
+                                request?.Dispose();
+                            }
+                        };
+                    }
+                }
                 callback?.Invoke(false);
                 yield break;
             }
