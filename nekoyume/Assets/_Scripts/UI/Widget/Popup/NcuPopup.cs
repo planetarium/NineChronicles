@@ -102,6 +102,11 @@ namespace Nekoyume.UI
                     }
 
                     item.Set(comingSoonBannerSprite, OnClickEventNoticeItem);
+                    if (_selectedEventBannerItem == null)
+                    {
+                        _selectedEventBannerItem = item;
+                        _selectedEventBannerItem.Select();
+                    }
                 }
 
                 RenderNotice(_selectedEventBannerItem.Data);
