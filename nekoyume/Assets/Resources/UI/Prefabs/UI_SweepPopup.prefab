@@ -3293,6 +3293,8 @@ MonoBehaviour:
   - {fileID: 4976181326248234351}
   - {fileID: 4944108261578896051}
   point: {fileID: 1754086051421598674}
+  descriptionText: {fileID: 7182072708901535040}
+  haveText: {fileID: 3298641246766644905}
 --- !u!1 &1926794771455613333
 GameObject:
   m_ObjectHideFlags: 0
@@ -5838,7 +5840,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 1
-  l10nKey: UI_BOOSTER_POPUP_DESCRIPTION
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -7988,7 +7990,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: UI_AP_YOU_HAVE
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

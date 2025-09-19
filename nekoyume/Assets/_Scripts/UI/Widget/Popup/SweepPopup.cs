@@ -105,6 +105,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject point;
 
+        [SerializeField]
+        private TextMeshProUGUI descriptionText;
+
+        [SerializeField]
+        private TextMeshProUGUI haveText;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
         private readonly ReactiveProperty<int> _eventDungeonTicketCount = new();
@@ -235,7 +241,7 @@ namespace Nekoyume.UI
             canvasGroupForRepeat.interactable = false;
             pageToggle.isOn = true; // Always use sweep mode for event dungeon
             UpdateByToggle(true);
-            contentText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET");
+            contentText.text = $"{L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")} / {L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")}";
 
             base.Show(ignoreShowAnimation);
         }
@@ -266,6 +272,8 @@ namespace Nekoyume.UI
                 // For event dungeon tickets: use actual ticket count as max value
                 eventDungeonTicketSlider.Set(0, maxTickets, clampedValue, maxTickets, 1,
                     x => _eventDungeonTicketCount.Value = x);
+                descriptionText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_DESCRIPTION");
+                haveText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_HAVE");
             }
             else
             {
@@ -305,6 +313,8 @@ namespace Nekoyume.UI
                     States.Instance.GameConfigState.ActionPointMax,
                     _costAp,
                     x => _ap.Value = x * _costAp);
+                descriptionText.text = L10nManager.Localize("UI_BOOSTER_POPUP_DESCRIPTION");
+                haveText.text = L10nManager.Localize("UI_AP_YOU_HAVE");
             }
 
             UpdateView();
