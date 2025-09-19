@@ -102,6 +102,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> objectsForEventDungeon;
 
+        [SerializeField]
+        private GameObject point;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
         private readonly ReactiveProperty<int> _eventDungeonTicketCount = new();
@@ -244,6 +247,7 @@ namespace Nekoyume.UI
                 // Event dungeon mode - show event dungeon UI elements
                 objectsForSweep.ForEach(obj => obj.SetActive(false));
                 objectsForRepeat.ForEach(obj => obj.SetActive(false));
+                point.SetActive(false);
                 objectsForEventDungeon.ForEach(obj => obj.SetActive(true));
                 _useSweep = true; // Always use sweep for event dungeon
 
@@ -254,9 +258,13 @@ namespace Nekoyume.UI
                 eventDungeonTicketSlider.gameObject.SetActive(true);
                 var ticketProgress = RxProps.EventDungeonTicketProgress.Value;
                 var maxTickets = Math.Min(ticketProgress.currentTickets, 100); // Max 100 tickets per sweep
+                // Preserve current slider value when initializing
+                var currentValue = _eventDungeonTicketCount.Value;
+                var clampedValue = Math.Min(currentValue, maxTickets);
+
                 // Set method: (sliderMinValue, sliderMaxValue, sliderCurValue, max, multiplier, callback)
                 // For event dungeon tickets: use actual ticket count as max value
-                eventDungeonTicketSlider.Set(0, maxTickets, 0, maxTickets, 1,
+                eventDungeonTicketSlider.Set(0, maxTickets, clampedValue, maxTickets, 1,
                     x => _eventDungeonTicketCount.Value = x);
             }
             else
@@ -264,6 +272,7 @@ namespace Nekoyume.UI
                 // Normal mode - show regular sweep/repeat UI elements
                 objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
                 objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
+                point.SetActive(true);
                 objectsForEventDungeon.ForEach(obj => obj.SetActive(false));
                 _useSweep = useSweep;
 
@@ -357,9 +366,14 @@ namespace Nekoyume.UI
                 if (_isEventDungeonMode)
                 {
                     var maxTickets = Math.Min(ticketProgress.currentTickets, 100);
+                    // Preserve current slider value when updating max tickets
+                    var currentValue = _eventDungeonTicketCount.Value;
+                    // Clamp current value to new max if it exceeds
+                    var clampedValue = Math.Min(currentValue, maxTickets);
+
                     // Set method: (sliderMinValue, sliderMaxValue, sliderCurValue, max, multiplier, callback)
                     // For event dungeon tickets: use actual ticket count as max value
-                    eventDungeonTicketSlider.Set(0, maxTickets, 0, maxTickets, 1,
+                    eventDungeonTicketSlider.Set(0, maxTickets, clampedValue, maxTickets, 1,
                         x => _eventDungeonTicketCount.Value = x);
                 }
             }).AddTo(_disposables);

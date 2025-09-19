@@ -3280,7 +3280,6 @@ MonoBehaviour:
   - {fileID: 6066480035993708576}
   - {fileID: 7605874265932767927}
   - {fileID: 4976181326248234351}
-  - {fileID: 1754086051421598674}
   objectsForRepeat:
   - {fileID: 5009170003009985487}
   - {fileID: 446954554203526754}
@@ -3288,12 +3287,12 @@ MonoBehaviour:
   - {fileID: 6920098122584030366}
   - {fileID: 2983681928381852126}
   - {fileID: 953771073636930218}
-  - {fileID: 1754086051421598674}
   objectsForEventDungeon:
   - {fileID: 8340559758803186182}
   - {fileID: 6066480035993708576}
   - {fileID: 4976181326248234351}
   - {fileID: 4944108261578896051}
+  point: {fileID: 1754086051421598674}
 --- !u!1 &1926794771455613333
 GameObject:
   m_ObjectHideFlags: 0
@@ -15500,6 +15499,11 @@ PrefabInstance:
     - target: {fileID: 5434321292865560736, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5434321292865560736, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5718414708290026655, guid: 5423cf792096944a3884ee1f4b0d4183,
