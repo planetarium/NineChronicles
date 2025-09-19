@@ -13,6 +13,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -33,6 +34,9 @@ namespace Nekoyume.UI
         private SweepSlider apStoneSlider;
 
         [SerializeField]
+        private SweepSlider eventDungeonTicketSlider;
+
+        [SerializeField]
         private ConditionalButton startButton;
 
         [SerializeField]
@@ -51,10 +55,16 @@ namespace Nekoyume.UI
         private TextMeshProUGUI apStoneText;
 
         [SerializeField]
+        private TextMeshProUGUI eventDungeonTicketText;
+
+        [SerializeField]
         private TextMeshProUGUI haveApText;
 
         [SerializeField]
         private TextMeshProUGUI haveApStoneText;
+
+        [SerializeField]
+        private TextMeshProUGUI haveEventDungeonTicketText;
 
         [SerializeField]
         private TextMeshProUGUI enoughCpText;
@@ -89,16 +99,27 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> objectsForRepeat;
 
+        [SerializeField]
+        private List<GameObject> objectsForEventDungeon;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
+        private readonly ReactiveProperty<int> _eventDungeonTicketCount = new();
         private readonly ReactiveProperty<long> _cp = new();
         private readonly List<IDisposable> _disposables = new();
 
         private StageSheet.Row _stageRow;
+        private EventDungeonStageSheet.Row _eventDungeonStageRow;
         private int _worldId;
         private int _costAp;
         private bool _useSweep = true;
+        private bool _isEventDungeonMode = false;
         private Action<StageType, int, int, bool> _repeatBattleAction;
+
+        // Event Dungeon specific parameters
+        private int _eventScheduleId;
+        private int _eventDungeonId;
+        private int _eventDungeonStageId;
 
         private const int UsableApStoneCountWithRepeat = 1;
 
@@ -111,6 +132,7 @@ namespace Nekoyume.UI
         {
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
             _ap.Subscribe(v => UpdateView()).AddTo(gameObject);
+            _eventDungeonTicketCount.Subscribe(v => UpdateView()).AddTo(gameObject);
             _cp.Subscribe(v => UpdateCpView()).AddTo(gameObject);
             pageToggle.onValueChanged.AddListener(UpdateByToggle);
 
@@ -119,7 +141,14 @@ namespace Nekoyume.UI
                 {
                     if (_useSweep)
                     {
-                        Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow);
+                        if (_isEventDungeonMode)
+                        {
+                            EventDungeonSweep(_eventDungeonTicketCount.Value);
+                        }
+                        else
+                        {
+                            Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow);
+                        }
                     }
                     else
                     {
@@ -158,10 +187,12 @@ namespace Nekoyume.UI
 
             SubscribeInventory();
 
+            _isEventDungeonMode = false;
             _worldId = worldId;
             _stageRow = stageRow;
             _apStoneCount.SetValueAndForceNotify(0);
             _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
+            _eventDungeonTicketCount.SetValueAndForceNotify(0);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
             _repeatBattleAction = repeatBattleAction;
             var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
@@ -175,40 +206,82 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        private void UpdateByToggle(bool useSweep)
+        public void ShowEventDungeon(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            bool ignoreShowAnimation = false)
         {
-            objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
-            objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
-            _useSweep = useSweep;
-            var materialSheet = TableSheets.Instance.MaterialItemSheet;
-            var haveApStoneCount =
-                States.Instance.CurrentAvatarState.inventory.GetUsableItemCount(
-                    materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
-                    Game.Game.instance.Agent?.BlockIndex ?? -1);
-            apStoneSlider.Set(0,
-                Math.Min(haveApStoneCount, MaxApStoneCount),
-                0,
-                MaxApStoneCount, 1,
-                x => _apStoneCount.Value = x);
+            if (!TableSheets.Instance.EventDungeonStageSheet.TryGetValue(eventDungeonStageId, out var eventDungeonStageRow))
+            {
+                throw new Exception($"Event dungeon stage not found: {eventDungeonStageId}");
+            }
 
-            UpdateView();
+            SubscribeEventDungeonInventory();
+
+            _isEventDungeonMode = true;
+            _eventScheduleId = eventScheduleId;
+            _eventDungeonId = eventDungeonId;
+            _eventDungeonStageId = eventDungeonStageId;
+            _eventDungeonStageRow = eventDungeonStageRow;
+            _eventDungeonTicketCount.SetValueAndForceNotify(0);
+            _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
+
+            // Event dungeon mode - hide repeat battle option
+            canvasGroupForRepeat.alpha = 0;
+            canvasGroupForRepeat.interactable = false;
+            pageToggle.isOn = true; // Always use sweep mode for event dungeon
+            UpdateByToggle(true);
+            contentText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET");
+
+            base.Show(ignoreShowAnimation);
         }
 
-        private void SubscribeInventory()
+        private void UpdateByToggle(bool useSweep)
         {
-            _disposables.DisposeAllAndClear();
-            ReactiveAvatarState.Inventory.Subscribe(inventory =>
+            if (_isEventDungeonMode)
             {
-                if (inventory is null)
-                {
-                    return;
-                }
+                // Event dungeon mode - show event dungeon UI elements
+                objectsForSweep.ForEach(obj => obj.SetActive(false));
+                objectsForRepeat.ForEach(obj => obj.SetActive(false));
+                objectsForEventDungeon.ForEach(obj => obj.SetActive(true));
+                _useSweep = true; // Always use sweep for event dungeon
+
+                // Disable AP stone slider for event dungeon
+                apStoneSlider.Set(0, 0, 0, 0, 1, x => _apStoneCount.Value = x);
+
+                // Enable and setup event dungeon ticket slider
+                eventDungeonTicketSlider.gameObject.SetActive(true);
+                var ticketProgress = RxProps.EventDungeonTicketProgress.Value;
+                var maxTickets = Math.Min(ticketProgress.currentTickets, 100); // Max 100 tickets per sweep
+                // Set method: (sliderMinValue, sliderMaxValue, sliderCurValue, max, multiplier, callback)
+                // For event dungeon tickets: use actual ticket count as max value
+                eventDungeonTicketSlider.Set(0, maxTickets, 0, maxTickets, 1,
+                    x => _eventDungeonTicketCount.Value = x);
+            }
+            else
+            {
+                // Normal mode - show regular sweep/repeat UI elements
+                objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
+                objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
+                objectsForEventDungeon.ForEach(obj => obj.SetActive(false));
+                _useSweep = useSweep;
+
+                // Disable event dungeon ticket slider for normal mode
+                eventDungeonTicketSlider.gameObject.SetActive(false);
 
                 var materialSheet = TableSheets.Instance.MaterialItemSheet;
-                var haveApStoneCount = inventory.GetUsableItemCount(
-                    materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
-                    Game.Game.instance.Agent?.BlockIndex ?? -1);
+                var haveApStoneCount =
+                    States.Instance.CurrentAvatarState.inventory.GetUsableItemCount(
+                        materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
+                        Game.Game.instance.Agent?.BlockIndex ?? -1);
+                apStoneSlider.Set(0,
+                    Math.Min(haveApStoneCount, MaxApStoneCount),
+                    0,
+                    MaxApStoneCount, 1,
+                    x => _apStoneCount.Value = x);
 
+                // Setup AP slider for normal mode
                 var haveApCount = ReactiveAvatarState.ActionPoint;
                 haveApText.text = haveApCount.ToString();
                 haveApStoneText.text = haveApStoneCount.ToString();
@@ -223,15 +296,84 @@ namespace Nekoyume.UI
                     States.Instance.GameConfigState.ActionPointMax,
                     _costAp,
                     x => _ap.Value = x * _costAp);
+            }
 
-                apStoneSlider.Set(0,
-                    Math.Min(haveApStoneCount, MaxApStoneCount),
-                    0,
-                    MaxApStoneCount, 1,
-                    x => _apStoneCount.Value = x);
+            UpdateView();
+        }
+
+        private void SubscribeInventory()
+        {
+            _disposables.DisposeAllAndClear();
+            ReactiveAvatarState.Inventory.Subscribe(inventory =>
+            {
+                if (inventory is null)
+                {
+                    return;
+                }
+
+                // Only setup AP sliders for normal mode, not event dungeon mode
+                if (!_isEventDungeonMode)
+                {
+                    var materialSheet = TableSheets.Instance.MaterialItemSheet;
+                    var haveApStoneCount = inventory.GetUsableItemCount(
+                        materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
+                        Game.Game.instance.Agent?.BlockIndex ?? -1);
+
+                    var haveApCount = ReactiveAvatarState.ActionPoint;
+                    haveApText.text = haveApCount.ToString();
+                    haveApStoneText.text = haveApStoneCount.ToString();
+
+                    _costAp = States.Instance.StakingLevel > 0
+                        ? TableSheets.Instance.StakeActionPointCoefficientSheet.GetActionPointByStaking(
+                            _stageRow.CostAP, 1, States.Instance.StakingLevel)
+                        : _stageRow.CostAP;
+                    apSlider.Set(0,
+                        (int)(haveApCount / _costAp),
+                        (int)haveApCount / _costAp,
+                        States.Instance.GameConfigState.ActionPointMax,
+                        _costAp,
+                        x => _ap.Value = x * _costAp);
+
+                    apStoneSlider.Set(0,
+                        Math.Min(haveApStoneCount, MaxApStoneCount),
+                        0,
+                        MaxApStoneCount, 1,
+                        x => _apStoneCount.Value = x);
+                }
 
                 _cp.Value = Util.TotalCP(BattleType.Adventure);
             }).AddTo(_disposables);
+        }
+
+        private void SubscribeEventDungeonInventory()
+        {
+            _disposables.DisposeAllAndClear();
+
+            // Subscribe to event dungeon ticket progress
+            RxProps.EventDungeonTicketProgress.Subscribe(ticketProgress =>
+            {
+                haveEventDungeonTicketText.text = ticketProgress.currentTickets.ToString();
+
+                if (_isEventDungeonMode)
+                {
+                    var maxTickets = Math.Min(ticketProgress.currentTickets, 100);
+                    // Set method: (sliderMinValue, sliderMaxValue, sliderCurValue, max, multiplier, callback)
+                    // For event dungeon tickets: use actual ticket count as max value
+                    eventDungeonTicketSlider.Set(0, maxTickets, 0, maxTickets, 1,
+                        x => _eventDungeonTicketCount.Value = x);
+                }
+            }).AddTo(_disposables);
+
+            // Subscribe to CP changes
+            ReactiveAvatarState.Inventory.Subscribe(inventory =>
+            {
+                if (inventory is null) return;
+                _cp.Value = Util.TotalCP(BattleType.Adventure);
+            }).AddTo(_disposables);
+
+            // Disable AP stone related UI for event dungeon
+            haveApStoneText.text = "0";
+            apStoneText.text = "";
         }
 
         private void UpdateCpView()
@@ -271,27 +413,57 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (apPlayCount, apStonePlayCount) =
-                GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
-            UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
+            if (_isEventDungeonMode)
+            {
+                UpdateEventDungeonView(avatarState);
+                // Event dungeon doesn't need CP check, so hide CP containers
+                enoughCpContainer.SetActive(false);
+                insufficientCpContainer.SetActive(false);
+            }
+            else
+            {
+                var (apPlayCount, apStonePlayCount) =
+                    GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
+                UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
 
-            var totalPlayCount = apPlayCount + apStonePlayCount;
-            if (_apStoneCount.Value == 0 && _ap.Value == 0)
+                var totalPlayCount = apPlayCount + apStonePlayCount;
+                if (_apStoneCount.Value == 0 && _ap.Value == 0)
+                {
+                    information.SetActive(true);
+                    totalApText.text = string.Empty;
+                    apStoneText.text = string.Empty;
+                }
+                else
+                {
+                    information.SetActive(false);
+                    totalApText.text = totalPlayCount.ToString();
+                    apStoneText.text = apStonePlayCount > 0
+                        ? $"(+{apStonePlayCount})"
+                        : string.Empty;
+                }
+
+                // Update CP view for normal mode
+                UpdateCpView();
+            }
+
+            UpdateStartButton();
+        }
+
+        private void UpdateEventDungeonView(AvatarState avatarState)
+        {
+            var playCount = _eventDungeonTicketCount.Value;
+            UpdateEventDungeonRewardView(avatarState, _eventDungeonStageRow, playCount);
+
+            if (playCount == 0)
             {
                 information.SetActive(true);
-                totalApText.text = string.Empty;
-                apStoneText.text = string.Empty;
+                eventDungeonTicketText.text = string.Empty;
             }
             else
             {
                 information.SetActive(false);
-                totalApText.text = totalPlayCount.ToString();
-                apStoneText.text = apStonePlayCount > 0
-                    ? $"(+{apStonePlayCount})"
-                    : string.Empty;
+                eventDungeonTicketText.text = playCount.ToString();
             }
-
-            UpdateStartButton();
         }
 
         private void UpdateRewardView(
@@ -306,6 +478,18 @@ namespace Nekoyume.UI
                 apStonePlayCount);
             var maxStar = Math.Min((apPlayCount + apStonePlayCount) * 2,
                 TableSheets.Instance.CrystalStageBuffGachaSheet[row.Id].MaxStar);
+            expText.text = $"+{earnedExp}";
+            starText.text = $"+{maxStar}";
+            expGlow.SetActive(earnedExp > 0);
+        }
+
+        private void UpdateEventDungeonRewardView(
+            AvatarState avatarState,
+            EventDungeonStageSheet.Row row,
+            int playCount)
+        {
+            var earnedExp = GetEventDungeonEarnedExp(avatarState, row, playCount);
+            var maxStar = Math.Min(playCount * 2, 100); // Event dungeon stars calculation
             expText.text = $"+{earnedExp}";
             starText.text = $"+{maxStar}";
             expGlow.SetActive(earnedExp > 0);
@@ -350,24 +534,58 @@ namespace Nekoyume.UI
             return Math.Max(earnedExp, 0);
         }
 
-        private void UpdateStartButton()
+        private long GetEventDungeonEarnedExp(AvatarState avatarState, EventDungeonStageSheet.Row row, int playCount)
         {
-            if (_apStoneCount.Value == 0 && _ap.Value == 0)
+            // Event dungeon experience calculation
+            // Use the event schedule to get proper experience calculation
+            var scheduleRow = RxProps.EventScheduleRowForDungeon.Value;
+            if (scheduleRow != null)
             {
-                startButton.Interactable = false;
-                return;
+                var eventExp = scheduleRow.GetStageExp(
+                    _eventDungeonStageId.ToEventDungeonStageNumber(),
+                    playCount);
+                return Math.Max(eventExp, 0);
             }
 
-            if (_useSweep && TryGetRequiredCP(_stageRow.Id, out var row))
+            // Fallback to regular calculation if schedule is not available
+            var levelSheet = TableSheets.Instance.CharacterLevelSheet;
+            var (_, totalExp) = avatarState.GetLevelAndExp(levelSheet, row.Id, playCount);
+            var earnedExp = totalExp - avatarState.exp;
+            return Math.Max(earnedExp, 0);
+        }
+
+        private void UpdateStartButton()
+        {
+            if (_isEventDungeonMode)
             {
-                if (_cp.Value < row.RequiredCP)
+                if (_eventDungeonTicketCount.Value == 0)
                 {
                     startButton.Interactable = false;
                     return;
                 }
-            }
 
-            startButton.Interactable = true;
+                // Event dungeon doesn't have CP requirements like regular stages
+                startButton.Interactable = true;
+            }
+            else
+            {
+                if (_apStoneCount.Value == 0 && _ap.Value == 0)
+                {
+                    startButton.Interactable = false;
+                    return;
+                }
+
+                if (_useSweep && TryGetRequiredCP(_stageRow.Id, out var row))
+                {
+                    if (_cp.Value < row.RequiredCP)
+                    {
+                        startButton.Interactable = false;
+                        return;
+                    }
+                }
+
+                startButton.Interactable = true;
+            }
         }
 
         private void Sweep(int apStoneCount, int ap, int worldId, StageSheet.Row stageRow)
@@ -418,6 +636,50 @@ namespace Nekoyume.UI
             var earnedExp = GetEarnedExp(avatarState, stageRow, apPlayCount, apStonePlayCount);
 
             Find<SweepResultPopup>().Show(stageRow, worldId, apPlayCount, apStonePlayCount, earnedExp);
+        }
+
+        private void EventDungeonSweep(int ticketCount)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var playCount = ticketCount;
+
+            if (playCount <= 0)
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_SWEEP_PLAY_COUNT_ZERO"),
+                    NotificationCell.NotificationType.Notification);
+                return;
+            }
+
+            if (playCount > 100)
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_EVENT_DUNGEON_MAX_PLAY_COUNT"),
+                    NotificationCell.NotificationType.Notification);
+                return;
+            }
+
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
+                .GetEquippedRuneSlotInfos();
+
+            // Event dungeon sweep uses only tickets, no AP stones
+            Game.Game.instance.ActionManager.EventDungeonBattleSweep(
+                _eventScheduleId,
+                _eventDungeonId,
+                _eventDungeonStageId,
+                equipments,
+                costumes,
+                new List<Guid>(), // Foods - empty for sweep
+                runeInfos,
+                playCount).Subscribe();
+
+            Close();
+
+            var earnedExp = GetEventDungeonEarnedExp(avatarState, _eventDungeonStageRow, playCount);
+
+            Find<SweepResultPopup>().ShowEventDungeon((Nekoyume.TableData.Event.EventDungeonStageSheet.Row)_eventDungeonStageRow, _eventDungeonId, playCount, earnedExp);
         }
     }
 }

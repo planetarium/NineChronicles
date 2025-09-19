@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Game;
@@ -8,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module;
 using Spine.Unity;
 using TMPro;
@@ -153,6 +155,34 @@ namespace Nekoyume.UI
             RefreshSeasonPassCourageAmount(apPlayCount + apStonePlayCount);
         }
 
+        public void ShowEventDungeon(Nekoyume.TableData.Event.EventDungeonStageSheet.Row eventDungeonStageRow, int eventDungeonId,
+            int playCount, long exp, bool ignoreShowAnimation = false)
+        {
+            _stageRow = null; // Clear regular stage row
+            _fixedApStonePlayCount = 1; // Event dungeon uses 1 ticket per play
+            _apPlayCount = 0; // No AP used in event dungeon
+            _apStonePlayCount = playCount; // Use apStonePlayCount to represent ticket count
+
+            loadingRewind.IsRunning = true;
+            stageText.text = $"EVENT DUNGEON {eventDungeonStageRow.Id}";
+            expText.text = $"EXP + {exp}";
+            UpdateTitleDeco(eventDungeonId);
+
+            base.Show(ignoreShowAnimation);
+
+            for (var i = 0; i < questions.Count; i++)
+            {
+                var isActive = i < eventDungeonStageRow.Rewards.Count;
+                questions[i].SetActive(isActive);
+            }
+
+            _attackCount.SetValueAndForceNotify(0);
+            _sweepRewind.SetValueAndForceNotify(true);
+            PlayDirector();
+
+            RefreshSeasonPassCourageAmount(playCount);
+        }
+
         private void UpdateTitleDeco(int worldId)
         {
             if (_titleDeco)
@@ -180,14 +210,32 @@ namespace Nekoyume.UI
 
         public void OnActionRender(IRandom rand)
         {
-            if (_stageRow is null)
-            {
-                return;
-            }
-
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-            var rewards = Action.HackAndSlashSweep.GetRewardItems(rand,
-                _apPlayCount + _apStonePlayCount, _stageRow, materialSheet);
+            List<ItemBase> rewards;
+
+            if (_stageRow is not null)
+            {
+                // Regular stage sweep
+                rewards = Action.HackAndSlashSweep.GetRewardItems(rand,
+                    _apPlayCount + _apStonePlayCount, _stageRow, materialSheet);
+            }
+            else
+            {
+                // Event dungeon sweep - need to get event dungeon stage row
+                var eventDungeonStageId = _apStonePlayCount > 0 ?
+                    Game.Game.instance.TableSheets.EventDungeonStageSheet.Values.First().Id : 0;
+
+                if (eventDungeonStageId > 0 &&
+                    Game.Game.instance.TableSheets.EventDungeonStageSheet.TryGetValue(eventDungeonStageId, out var eventDungeonStageRow))
+                {
+                    rewards = Action.EventDungeonBattleSweep.GetRewardItems(rand,
+                        _apStonePlayCount, eventDungeonStageRow, materialSheet);
+                }
+                else
+                {
+                    rewards = new List<ItemBase>();
+                }
+            }
 
             var bundle = new Dictionary<ItemBase, int>();
             foreach (var itemBase in rewards)

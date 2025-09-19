@@ -165,8 +165,25 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             sweepPopupButton.OnClickAsObservable()
-                .Where(_ => !IsFirstStage)
-                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction));
+                .Subscribe(_ =>
+                {
+                    if (_stageType == StageType.EventDungeon)
+                    {
+                        // Event dungeon sweep - first stage allowed
+                        if (_scheduleId.HasValue)
+                        {
+                            Find<SweepPopup>().ShowEventDungeon(_scheduleId.Value, _worldId, _stageId);
+                        }
+                    }
+                    else
+                    {
+                        // Regular stage sweep - first stage not allowed
+                        if (!IsFirstStage)
+                        {
+                            Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction);
+                        }
+                    }
+                });
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
@@ -749,7 +766,9 @@ namespace Nekoyume.UI
                     break;
                 case StageType.EventDungeon:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(false);
+                    // Event dungeon sweep is available if has enough tickets (first stage allowed)
+                    var canEventDungeonSweep = RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost;
+                    sweepPopupButton.gameObject.SetActive(canEventDungeonSweep);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
