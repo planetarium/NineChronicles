@@ -286,9 +286,8 @@ namespace Nekoyume.UI
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
-            var dummyAgentState = new AgentState(new Address());
             return AuraSummon.SimulateSummon(
-                    addressHex, dummyAgentState,
+                    addressHex,
                     tableSheets.EquipmentItemRecipeSheet,
                     tableSheets.EquipmentItemSheet,
                     tableSheets.EquipmentItemSubRecipeSheetV2,
@@ -324,7 +323,7 @@ namespace Nekoyume.UI
         {
             const int unit = RuneSummon.RuneQuantity;
             var simulateResult = RuneSummon.SimulateSummon(
-                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random);
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet);
 
             var result = new List<FungibleAssetValue>();
             foreach (var pair in simulateResult)

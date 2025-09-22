@@ -247,7 +247,12 @@ namespace Nekoyume.Game.Scene
                 yield break;
             }
 
-            game.CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
+            // CurrentPlanetId is already set in CoLoginMobile, just verify it's set
+            if (game.CurrentPlanetId is null)
+            {
+                game.CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
+                NcDebug.Log($"[LoginScene] CurrentPlanetId was null, set to: {game.CurrentPlanetId?.ToString()}");
+            }
 #endif
 
             Analyzer.SetPlanetId(game.CurrentPlanetId?.ToString());
@@ -484,6 +489,13 @@ namespace Nekoyume.Game.Scene
             {
                 loginCallback.Invoke(false);
                 return;
+            }
+
+            // Set CurrentPlanetId immediately after planet info is initialized
+            if (planetContext.SelectedPlanetInfo is not null)
+            {
+                game.CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
+                NcDebug.Log($"[LoginScene] CoLoginMobile()... CurrentPlanetId set early: {game.CurrentPlanetId?.ToString()}");
             }
 
             if (!await CheckLoginOrPassphrase(planetContext, loginCallback))

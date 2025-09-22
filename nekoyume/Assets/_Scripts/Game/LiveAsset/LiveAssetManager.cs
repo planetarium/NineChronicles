@@ -11,6 +11,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Collections;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Threading;
 using JetBrains.Annotations;
@@ -30,9 +31,8 @@ namespace Nekoyume.Game.LiveAsset
         }
 
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
-
-        private const string KoreanImagePostfix = "_KR";
-        private const string JapaneseImagePostfix = "_JP";
+        private const string AlreadyReadNcuKey = "AlreadyReadNcuList";
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
         // TODO: this is temporary url and file.
         private const string StakingLevelImageUrl = "Etc/NcgStaking.png";
@@ -40,7 +40,9 @@ namespace Nekoyume.Game.LiveAsset
         private const string StakingArenaBonusUrl = "https://assets.nine-chronicles.com/live-assets/Json/arena-bonus-values";
 
         private readonly List<EventNoticeData> _bannerData = new();
+        private readonly List<EventNoticeData> _ncuData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
+        private readonly ReactiveProperty<bool> _observableHasUnreadNcu = new ();
         private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
@@ -49,6 +51,22 @@ namespace Nekoyume.Game.LiveAsset
         public bool HasUnreadEvent => _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
 
         public bool HasUnreadNotice => _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
+
+        public bool HasUnreadNcu
+        {
+            get
+            {
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(AlreadyReadNcuKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(AlreadyReadNcuKey),
+                        DateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                return notReadAtToday;
+            }
+        }
 
         public bool HasUnread => IsInitialized && (HasUnreadEvent || HasUnreadNotice);
 
@@ -67,8 +85,10 @@ namespace Nekoyume.Game.LiveAsset
                 .ObserveAdd()
                 .Select(_ => HasUnread);
 
+        public ReactiveProperty<bool> ObservableHasUnreadNcu => _observableHasUnreadNcu;
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
+        public IReadOnlyList<EventNoticeData> NcuData => _ncuData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
         [CanBeNull]
@@ -91,6 +111,7 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(
                 _endpoint.EventRewardPopupDataJsonUrl,
                 value => SetEventRewardPopupData(value).Forget()));
+            _observableHasUnreadNcu.SetValueAndForceNotify(HasUnreadNcu);
         }
 
         private IEnumerator InitializeThorSchedule()
@@ -120,7 +141,8 @@ namespace Nekoyume.Game.LiveAsset
 
             await UniTask.WhenAll(
                 RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData).ToUniTask(),
-                RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask());
+                RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask(),
+                RequestManager.instance.GetJson(_endpoint.NcuJsonUrl, SetNcuData).ToUniTask());
         }
 
         public IEnumerator InitializeApplicationCLO()
@@ -173,6 +195,12 @@ namespace Nekoyume.Game.LiveAsset
             return _alreadyReadNotices.Contains(key);
         }
 
+        public void ReadNcu()
+        {
+            PlayerPrefs.SetString(AlreadyReadNcuKey, DateTime.Today.ToString(DateTimeFormat));
+            _observableHasUnreadNcu.SetValueAndForceNotify(false);
+        }
+
         private void SetNotices(string response)
         {
             _notices = JsonSerializer.Deserialize<Notices>(response);
@@ -188,6 +216,18 @@ namespace Nekoyume.Game.LiveAsset
             }
 
             MakeNoticeData(responseData.Banners.OrderBy(x => x.Priority)).Forget();
+        }
+
+        private void SetNcuData(string response)
+        {
+            var responseData = JsonSerializer.Deserialize<EventBanners>(response);
+            if (responseData?.Banners == null)
+            {
+                NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] EventBanners data is null or empty");
+                return;
+            }
+
+            MakeNcuData(responseData.Banners.OrderBy(x => x.Priority)).Forget();
         }
 
         private void SetLiveAssetData(string response)
@@ -395,17 +435,80 @@ namespace Nekoyume.Game.LiveAsset
             }
         }
 
+        private async UniTaskVoid MakeNcuData(IEnumerable<EventBannerData> bannerData)
+        {
+            var planetIdExist = Game.instance.CurrentPlanetId.HasValue;
+            var isMainNet = planetIdExist && Multiplanetary.PlanetId.IsMainNet(Game.instance.CurrentPlanetId.Value);
+            var tasks = new List<UniTask>();
+
+            foreach (var banner in bannerData)
+            {
+                // 1. 날짜 필터링 (가장 먼저 체크)
+                if (banner.UseDateTime && !DateTime.UtcNow.IsInTime(banner.BeginDateTime, banner.EndDateTime))
+                {
+                    continue;
+                }
+
+                // 2. 메인넷 필터링 (EventNoticeData 생성 전에 체크)
+                if (isMainNet && !banner.IsMainnet)
+                {
+                    continue;
+                }
+
+                var buttonType = EventButtonType.URL;
+
+                var newData = new EventNoticeData
+                {
+                    Priority = banner.Priority,
+                    BannerImage = null,
+                    PopupImage = null,
+                    UseDateTime = banner.UseDateTime,
+                    BeginDateTime = banner.BeginDateTime,
+                    EndDateTime = banner.EndDateTime,
+                    Url = banner.Url,
+                    UseAgentAddress = banner.UseAgentAddress,
+                    Description = banner.Description,
+                    EnableKeys = banner.EnableKeys,
+                    WithSign = banner.WithSign,
+                    IsMainnet = banner.IsMainnet,
+                    ButtonType = buttonType,
+                    InGameNavigationData = null,
+                };
+
+                _ncuData.Add(newData);
+
+                var bannerTask = GetNoticeTexture("Ncu", banner.BannerImageName)
+                    .ContinueWith(sprite => newData.BannerImage = sprite);
+                var popupTask = GetNoticeTexture("Ncu", banner.PopupImageName)
+                    .ContinueWith(sprite => newData.PopupImage = sprite);
+                tasks.Add(bannerTask);
+                tasks.Add(popupTask);
+            }
+
+            var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            try
+            {
+                await UniTask.WaitUntil(() =>
+                        tasks.TrueForAll(task =>
+                            task.Status == UniTaskStatus.Succeeded) && _notices is not null,
+                    cancellationToken: cancellation.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                if (e.CancellationToken == cancellation.Token)
+                {
+                    _state = InitializingState.NeedInitialize;
+                    NcDebug.Log($"[{nameof(LiveAssetManager)}] NoticeData making failed by timeout.");
+                    return;
+                }
+            }
+
+            _state = InitializingState.Initialized;
+        }
+
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
-            var postfix = L10nManager.CurrentLanguage switch
-            {
-                LanguageType.Korean => Platform.IsMobilePlatform()
-                    ? KoreanImagePostfix
-                    : string.Empty,
-                LanguageType.Japanese => JapaneseImagePostfix,
-                _ => string.Empty
-            };
-            return GetTexture($"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+            return GetTexture($"{_endpoint.ImageRootUrl}/{textureType}/{imageName}.png");
         }
 
         private static async UniTask<Sprite> GetTexture(string uri)
