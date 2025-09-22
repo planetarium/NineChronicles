@@ -323,7 +323,7 @@ namespace Nekoyume.UI
         {
             const int unit = RuneSummon.RuneQuantity;
             var simulateResult = RuneSummon.SimulateSummon(
-                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random);
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet);
 
             var result = new List<FungibleAssetValue>();
             foreach (var pair in simulateResult)

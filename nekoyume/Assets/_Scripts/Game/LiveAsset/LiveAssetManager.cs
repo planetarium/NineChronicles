@@ -11,6 +11,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Collections;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Threading;
 using JetBrains.Annotations;
@@ -31,6 +32,7 @@ namespace Nekoyume.Game.LiveAsset
 
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private const string AlreadyReadNcuKey = "AlreadyReadNcuList";
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
         // TODO: this is temporary url and file.
         private const string StakingLevelImageUrl = "Etc/NcgStaking.png";
@@ -40,7 +42,7 @@ namespace Nekoyume.Game.LiveAsset
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly List<EventNoticeData> _ncuData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
-        private readonly ReactiveCollection<string> _alreadyReadNcus = new();
+        private readonly ReactiveProperty<bool> _observableHasUnreadNcu = new ();
         private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
@@ -50,7 +52,21 @@ namespace Nekoyume.Game.LiveAsset
 
         public bool HasUnreadNotice => _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
 
-        public bool HasUnreadNcu => _ncuData.Any(d => !_alreadyReadNcus.Contains(d.Description));
+        public bool HasUnreadNcu
+        {
+            get
+            {
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(AlreadyReadNcuKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(AlreadyReadNcuKey),
+                        DateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                return notReadAtToday;
+            }
+        }
 
         public bool HasUnread => IsInitialized && (HasUnreadEvent || HasUnreadNotice);
 
@@ -69,7 +85,7 @@ namespace Nekoyume.Game.LiveAsset
                 .ObserveAdd()
                 .Select(_ => HasUnread);
 
-        public ReactiveProperty<bool> ObservableHasUnreadNcu => new ReactiveProperty<bool>(HasUnreadNcu);
+        public ReactiveProperty<bool> ObservableHasUnreadNcu => _observableHasUnreadNcu;
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public IReadOnlyList<EventNoticeData> NcuData => _ncuData;
@@ -95,6 +111,7 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(
                 _endpoint.EventRewardPopupDataJsonUrl,
                 value => SetEventRewardPopupData(value).Forget()));
+            _observableHasUnreadNcu.SetValueAndForceNotify(HasUnreadNcu);
         }
 
         private IEnumerator InitializeThorSchedule()
@@ -173,26 +190,15 @@ namespace Nekoyume.Game.LiveAsset
                 _alreadyReadNotices.Aggregate((a, b) => $"{a}#{b}"));
         }
 
-        public void AddToCheckedNcuList(string key)
-        {
-            if (_alreadyReadNcus.Contains(key))
-            {
-                return;
-            }
-
-            _alreadyReadNcus.Add(key);
-            PlayerPrefs.SetString(AlreadyReadNcuKey,
-                _alreadyReadNcus.Aggregate((a, b) => $"{a}#{b}"));
-        }
-
         public bool IsAlreadyReadNotice(string key)
         {
             return _alreadyReadNotices.Contains(key);
         }
 
-        public bool IsAlreadyReadNcu(string key)
+        public void ReadNcu()
         {
-            return _alreadyReadNcus.Contains(key);
+            PlayerPrefs.SetString(AlreadyReadNcuKey, DateTime.Today.ToString(DateTimeFormat));
+            _observableHasUnreadNcu.SetValueAndForceNotify(false);
         }
 
         private void SetNotices(string response)
@@ -498,20 +504,6 @@ namespace Nekoyume.Game.LiveAsset
             }
 
             _state = InitializingState.Initialized;
-
-            if (PlayerPrefs.HasKey(AlreadyReadNcuKey))
-            {
-                var listString = PlayerPrefs.GetString(AlreadyReadNcuKey);
-                var currentDataSet = _ncuData.Select(d => d.Description).ToHashSet();
-                foreach (var noticeKey in listString.Split("#"))
-                {
-                    if (currentDataSet.Contains(noticeKey))
-                    {
-                        AddToCheckedNcuList(noticeKey);
-                    }
-                }
-            }
-
         }
 
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
