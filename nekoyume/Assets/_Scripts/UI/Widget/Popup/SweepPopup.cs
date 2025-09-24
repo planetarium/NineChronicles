@@ -113,7 +113,7 @@ namespace Nekoyume.UI
 
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
-        private readonly ReactiveProperty<int> _eventDungeonTicketCount = new();
+        private readonly ReactiveProperty<int> _ticketCount = new();
         private readonly ReactiveProperty<long> _cp = new();
         private readonly List<IDisposable> _disposables = new();
 
@@ -141,7 +141,7 @@ namespace Nekoyume.UI
         {
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
             _ap.Subscribe(v => UpdateView()).AddTo(gameObject);
-            _eventDungeonTicketCount.Subscribe(v => UpdateView()).AddTo(gameObject);
+            _ticketCount.Subscribe(v => UpdateView()).AddTo(gameObject);
             _cp.Subscribe(v => UpdateCpView()).AddTo(gameObject);
             pageToggle.onValueChanged.AddListener(UpdateByToggle);
 
@@ -152,7 +152,7 @@ namespace Nekoyume.UI
                     {
                         if (_isEventDungeonMode)
                         {
-                            EventDungeonSweep(_eventDungeonTicketCount.Value);
+                            EventDungeonSweep(_ticketCount.Value);
                         }
                         else
                         {
@@ -201,7 +201,7 @@ namespace Nekoyume.UI
             _stageRow = stageRow;
             _apStoneCount.SetValueAndForceNotify(0);
             _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
-            _eventDungeonTicketCount.SetValueAndForceNotify(0);
+            _ticketCount.SetValueAndForceNotify(0);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
             _repeatBattleAction = repeatBattleAction;
             var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
@@ -233,7 +233,7 @@ namespace Nekoyume.UI
             _eventDungeonId = eventDungeonId;
             _eventDungeonStageId = eventDungeonStageId;
             _eventDungeonStageRow = eventDungeonStageRow;
-            _eventDungeonTicketCount.SetValueAndForceNotify(0);
+            _ticketCount.SetValueAndForceNotify(0);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
 
             // Event dungeon mode - hide repeat battle option
@@ -265,13 +265,13 @@ namespace Nekoyume.UI
                 var ticketProgress = RxProps.EventDungeonTicketProgress.Value;
                 var maxTickets = Math.Min(ticketProgress.currentTickets, 100); // Max 100 tickets per sweep
                 // Preserve current slider value when initializing
-                var currentValue = _eventDungeonTicketCount.Value;
+                var currentValue = _ticketCount.Value;
                 var clampedValue = Math.Min(currentValue, maxTickets);
 
                 // Set method: (sliderMinValue, sliderMaxValue, sliderCurValue, max, multiplier, callback)
                 // For event dungeon tickets: use actual ticket count as max value
                 eventDungeonTicketSlider.Set(0, maxTickets, clampedValue, maxTickets, 1,
-                    x => _eventDungeonTicketCount.Value = x);
+                    x => _ticketCount.Value = x);
                 descriptionText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_DESCRIPTION");
                 haveText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_HAVE");
             }
@@ -377,14 +377,14 @@ namespace Nekoyume.UI
                 {
                     var maxTickets = Math.Min(ticketProgress.currentTickets, 100);
                     // Preserve current slider value when updating max tickets
-                    var currentValue = _eventDungeonTicketCount.Value;
+                    var currentValue = _ticketCount.Value;
                     // Clamp current value to new max if it exceeds
                     var clampedValue = Math.Min(currentValue, maxTickets);
 
                     // Set method: (sliderMinValue, sliderMaxValue, sliderCurValue, max, multiplier, callback)
                     // For event dungeon tickets: use actual ticket count as max value
                     eventDungeonTicketSlider.Set(0, maxTickets, clampedValue, maxTickets, 1,
-                        x => _eventDungeonTicketCount.Value = x);
+                        x => _ticketCount.Value = x);
                 }
             }).AddTo(_disposables);
 
@@ -475,7 +475,7 @@ namespace Nekoyume.UI
 
         private void UpdateEventDungeonView(AvatarState avatarState)
         {
-            var playCount = _eventDungeonTicketCount.Value;
+            var playCount = _ticketCount.Value;
             UpdateEventDungeonRewardView(avatarState, _eventDungeonStageRow, playCount);
 
             if (playCount == 0)
@@ -582,7 +582,7 @@ namespace Nekoyume.UI
         {
             if (_isEventDungeonMode)
             {
-                if (_eventDungeonTicketCount.Value == 0)
+                if (_ticketCount.Value == 0)
                 {
                     startButton.Interactable = false;
                     return;

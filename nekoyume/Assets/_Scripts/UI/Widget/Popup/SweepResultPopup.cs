@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module;
+using Nekoyume.Extensions;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -92,9 +93,11 @@ namespace Nekoyume.UI
         private GameObject _titleDeco;
         private Coroutine _coroutine;
         private StageSheet.Row _stageRow;
+        private EventDungeonStageSheet.Row _eventDungeonStageRow;
         private float _timeElapsed;
         private int _apPlayCount = 0;
         private int _apStonePlayCount = 0;
+        private int _ticketPlayCount = 0;
         private int _fixedApStonePlayCount = 0;
 
         private readonly ReactiveProperty<int> _attackCount = new();
@@ -159,12 +162,17 @@ namespace Nekoyume.UI
             int playCount, long exp, bool ignoreShowAnimation = false)
         {
             _stageRow = null; // Clear regular stage row
+            _eventDungeonStageRow = eventDungeonStageRow; // Store event dungeon stage row
             _fixedApStonePlayCount = 1; // Event dungeon uses 1 ticket per play
             _apPlayCount = 0; // No AP used in event dungeon
-            _apStonePlayCount = playCount; // Use apStonePlayCount to represent ticket count
+            _apStonePlayCount = 0; // No AP stone used in event dungeon
+            _ticketPlayCount = playCount; // Use ticketPlayCount to represent ticket count
 
             loadingRewind.IsRunning = true;
-            stageText.text = $"EVENT DUNGEON {eventDungeonStageRow.Id}";
+            // Use localized event dungeon name and stage number like in BattlePreparation
+            var eventDungeonName = RxProps.EventDungeonRow?.GetLocalizedName() ?? "EVENT DUNGEON";
+            var stageNumber = eventDungeonStageRow.Id.ToEventDungeonStageNumber();
+            stageText.text = $"{eventDungeonName} {stageNumber}";
             expText.text = $"EXP + {exp}";
             UpdateTitleDeco(eventDungeonId);
 
@@ -221,15 +229,11 @@ namespace Nekoyume.UI
             }
             else
             {
-                // Event dungeon sweep - need to get event dungeon stage row
-                var eventDungeonStageId = _apStonePlayCount > 0 ?
-                    Game.Game.instance.TableSheets.EventDungeonStageSheet.Values.First().Id : 0;
-
-                if (eventDungeonStageId > 0 &&
-                    Game.Game.instance.TableSheets.EventDungeonStageSheet.TryGetValue(eventDungeonStageId, out var eventDungeonStageRow))
+                // Event dungeon sweep - use stored event dungeon stage row
+                if (_eventDungeonStageRow != null)
                 {
                     rewards = Action.EventDungeonBattleSweep.GetRewardItems(rand,
-                        _apStonePlayCount, eventDungeonStageRow, materialSheet);
+                        _ticketPlayCount, _eventDungeonStageRow, materialSheet);
                 }
                 else
                 {
@@ -268,17 +272,30 @@ namespace Nekoyume.UI
 
         private void UpdatePlayCount(int attackCount)
         {
-            var max = _apStonePlayCount / _fixedApStonePlayCount;
-            if (_apPlayCount > 0)
+            int max, totalPlayCount, curPlayCount;
+
+            if (_stageRow is not null)
             {
-                max += 1;
+                // Regular stage sweep
+                max = _apStonePlayCount / _fixedApStonePlayCount;
+                if (_apPlayCount > 0)
+                {
+                    max += 1;
+                }
+                totalPlayCount = _apPlayCount + _apStonePlayCount;
+                curPlayCount = Mathf.Min(attackCount * _fixedApStonePlayCount, totalPlayCount);
+            }
+            else
+            {
+                // Event dungeon sweep
+                max = _ticketPlayCount / _fixedApStonePlayCount; // 1 ticket per play
+                totalPlayCount = _ticketPlayCount;
+                curPlayCount = Mathf.Min(attackCount * _fixedApStonePlayCount, totalPlayCount);
             }
 
             var attackMaxCount = Mathf.Clamp(max, 1, maxPlayCount);
             playCountBar.fillAmount = (float)attackCount / attackMaxCount;
-
-            var curPlayCount = Mathf.Min(attackCount * _fixedApStonePlayCount, _apPlayCount + _apStonePlayCount);
-            playCountText.text = $"{curPlayCount}/{_apPlayCount + _apStonePlayCount}";
+            playCountText.text = $"{curPlayCount}/{totalPlayCount}";
 
             if (attackCount >= attackMaxCount)
             {
