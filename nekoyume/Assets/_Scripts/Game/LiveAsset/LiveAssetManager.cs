@@ -143,6 +143,7 @@ namespace Nekoyume.Game.LiveAsset
                 RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData).ToUniTask(),
                 RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask(),
                 RequestManager.instance.GetJson(_endpoint.NcuJsonUrl, SetNcuData).ToUniTask());
+            _state = InitializingState.Initialized;
         }
 
         public IEnumerator InitializeApplicationCLO()
@@ -418,8 +419,6 @@ namespace Nekoyume.Game.LiveAsset
                 }
             }
 
-            _state = InitializingState.Initialized;
-
             if (PlayerPrefs.HasKey(AlreadyReadNoticeKey))
             {
                 var listString = PlayerPrefs.GetString(AlreadyReadNoticeKey);
@@ -502,8 +501,6 @@ namespace Nekoyume.Game.LiveAsset
                     return;
                 }
             }
-
-            _state = InitializingState.Initialized;
         }
 
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
