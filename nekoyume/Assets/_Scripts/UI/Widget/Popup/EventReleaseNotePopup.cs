@@ -99,11 +99,11 @@ namespace Nekoyume.UI
 
             try
             {
-                // 배너 이미지 로딩이 완료될 때까지 대기
+                // 배너 이미지와 팝업 이미지 로딩이 완료될 때까지 대기
                 var eventData = liveAssetManager.BannerData;
-                if (eventData.Any(data => data.BannerImage == null))
+                if (eventData.Any(data => data.BannerImage == null || data.PopupImage == null))
                 {
-                    NcDebug.LogWarning($"[{nameof(EventReleaseNotePopup)}] Some banner images are still loading, waiting...");
+                    NcDebug.LogWarning($"[{nameof(EventReleaseNotePopup)}] Some images are still loading, waiting...");
                     WaitForBannerImagesAsync().Forget();
                     return;
                 }
@@ -203,7 +203,7 @@ namespace Nekoyume.UI
             try
             {
                 await UniTask.WaitUntil(() =>
-                    liveAssetManager.BannerData.All(data => data.BannerImage != null),
+                    liveAssetManager.BannerData.All(data => data.BannerImage != null && data.PopupImage != null),
                     cancellationToken: cancellationTokenSource.Token);
 
                 NcDebug.Log($"[{nameof(EventReleaseNotePopup)}] All banner images loaded successfully");
@@ -324,7 +324,14 @@ namespace Nekoyume.UI
 
         private void RenderNotice(EventNoticeData data)
         {
-            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
+            if (data.PopupImage is not null)
+            {
+                eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
+            }
+            else
+            {
+                NcDebug.LogWarning($"[{nameof(EventReleaseNotePopup)}] PopupImage is null for {data.Description}");
+            }
             LiveAssetManager.instance.AddToCheckedList(data.Description);
         }
     }
