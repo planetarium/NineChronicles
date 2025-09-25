@@ -14,7 +14,7 @@ install_license() {
         # for local debugging
         cp Unity_v2021.x.ulf "$temp_filename"
     elif [[ "$UNITY_LICENSE" = "" ]]; then
-        echo "The ULF environment variable is missing." > /dev/stderr
+        echo "The UNITY_LICENSE environment variable is missing." > /dev/stderr
         exit 1
     elif [[ "$UNITY_LICENSE" = \<* ]]; then
         # Bare XML
