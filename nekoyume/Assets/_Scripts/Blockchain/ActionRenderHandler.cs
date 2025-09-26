@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Action = Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -159,6 +160,7 @@ namespace Nekoyume.Blockchain
             // Battle
             HackAndSlash();
             HackAndSlashSweep();
+            EventDungeonBattleSweep();
             HackAndSlashRandomBuff();
             EventDungeonBattle();
 
@@ -579,6 +581,26 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsTerminated)
                 .ObserveOnMainThread()
                 .Subscribe(ExceptionHackAndSlashSweep)
+                .AddTo(_disposables);
+        }
+
+        private void EventDungeonBattleSweep()
+        {
+            _actionRenderer.EveryRender<Action.EventDungeonBattleSweep>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareEventDungeonBattleSweepAsync)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventDungeonBattleSweepAsync)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Action.EventDungeonBattleSweep>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionEventDungeonBattleSweep)
                 .AddTo(_disposables);
         }
 
@@ -2344,6 +2366,35 @@ namespace Nekoyume.Blockchain
         }
 
         private void ExceptionHackAndSlashSweep(ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            Widget.Find<SweepResultPopup>().Close();
+            Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();
+        }
+
+        private ActionEvaluation<Action.EventDungeonBattleSweep> PrepareEventDungeonBattleSweepAsync(
+            ActionEvaluation<Action.EventDungeonBattleSweep> eval)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = StateGetter.GetAvatarState(eval.OutputState, avatarAddress);
+
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+
+            // Update event dungeon info which will automatically update ticket progress
+            RxProps.EventDungeonInfo.UpdateAsync(eval.OutputState).Forget();
+
+            return eval;
+        }
+
+        private void ResponseEventDungeonBattleSweepAsync(
+            ActionEvaluation<Action.EventDungeonBattleSweep> eval)
+        {
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+            Widget.Find<BattlePreparation>().UpdateInventoryView();
+        }
+
+        private void ExceptionEventDungeonBattleSweep(ActionEvaluation<Action.EventDungeonBattleSweep> eval)
         {
             Widget.Find<SweepResultPopup>().Close();
             Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();

@@ -1222,7 +1222,7 @@ namespace Nekoyume.Blockchain
             };
             ProcessAction(action);
             States.Instance.RemoveCurrentItemSlotStates(materialGuids);
-            
+
             return _agent.ActionRenderer.EveryRender<Synthesize>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
@@ -2006,6 +2006,49 @@ namespace Nekoyume.Blockchain
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
+        }
+
+        public IObservable<ActionEvaluation<EventDungeonBattleSweep>> EventDungeonBattleSweep(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            List<Guid> equipments,
+            List<Guid> costumes,
+            List<Guid> foods,
+            List<RuneSlotInfo> runeInfos,
+            int playCount)
+        {
+            var sentryTrace = Analyzer.Instance.Track("Unity/EventDungeonBattleSweep", new Dictionary<string, Value>()
+            {
+                ["EventScheduleId"] = eventScheduleId,
+                ["EventDungeonId"] = eventDungeonId,
+                ["EventDungeonStageId"] = eventDungeonStageId,
+                ["PlayCount"] = playCount,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+            }, true);
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new EventDungeonBattleSweep
+            {
+                AvatarAddress = avatarAddress,
+                EventScheduleId = eventScheduleId,
+                EventDungeonId = eventDungeonId,
+                EventDungeonStageId = eventDungeonStageId,
+                Equipments = equipments,
+                Costumes = costumes,
+                Foods = foods,
+                RuneInfos = runeInfos,
+                PlayCount = playCount
+            };
+
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<EventDungeonBattleSweep>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 #endif
 
