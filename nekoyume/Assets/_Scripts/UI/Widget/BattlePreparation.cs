@@ -169,6 +169,16 @@ namespace Nekoyume.UI
                 {
                     if (_stageType == StageType.EventDungeon)
                     {
+                        // Check if has enough tickets for event dungeon sweep
+                        if (RxProps.EventDungeonTicketProgress.Value.currentTickets < _requiredCost)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("ERROR_NOT_ENOUGH_EVENT_DUNGEON_TICKETS_EXCEPTION", _requiredCost),
+                                NotificationCell.NotificationType.Alert);
+                            return;
+                        }
+
                         // Event dungeon sweep - first stage allowed
                         if (_scheduleId.HasValue)
                         {
@@ -232,10 +242,13 @@ namespace Nekoyume.UI
             UpdateRandomBuffButton();
 
             closeButtonText.text = closeButtonName;
-            sweepButtonText.text =
-                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
+            sweepButtonText.text = _stageType switch
+            {
+                StageType.EventDungeon => "Sweep", // Event dungeon always shows "Sweep"
+                _ => States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
                     ? "Sweep"
-                    : "Repeat";
+                    : "Repeat"
+            };
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
@@ -766,9 +779,8 @@ namespace Nekoyume.UI
                     break;
                 case StageType.EventDungeon:
                     boostPopupButton.gameObject.SetActive(false);
-                    // Event dungeon sweep is available if has enough tickets (first stage allowed)
-                    var canEventDungeonSweep = RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost;
-                    sweepPopupButton.gameObject.SetActive(canEventDungeonSweep);
+                    // Always show sweep button for event dungeon
+                    sweepPopupButton.gameObject.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

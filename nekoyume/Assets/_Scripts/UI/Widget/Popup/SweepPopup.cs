@@ -111,6 +111,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI haveText;
 
+        [SerializeField]
+        private GameObject potion;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
         private readonly ReactiveProperty<int> _ticketCount = new();
@@ -236,6 +239,10 @@ namespace Nekoyume.UI
             _ticketCount.SetValueAndForceNotify(0);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
 
+            // Clear AP related texts for event dungeon mode
+            totalApText.text = string.Empty;
+            apStoneText.text = string.Empty;
+
             // Event dungeon mode - hide repeat battle option
             canvasGroupForRepeat.alpha = 0;
             canvasGroupForRepeat.interactable = false;
@@ -255,6 +262,7 @@ namespace Nekoyume.UI
                 objectsForRepeat.ForEach(obj => obj.SetActive(false));
                 point.SetActive(false);
                 objectsForEventDungeon.ForEach(obj => obj.SetActive(true));
+                potion.SetActive(false);
                 _useSweep = true; // Always use sweep for event dungeon
 
                 // Disable AP stone slider for event dungeon
@@ -278,10 +286,11 @@ namespace Nekoyume.UI
             else
             {
                 // Normal mode - show regular sweep/repeat UI elements
+                objectsForEventDungeon.ForEach(obj => obj.SetActive(false));
                 objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
                 objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
                 point.SetActive(true);
-                objectsForEventDungeon.ForEach(obj => obj.SetActive(false));
+                potion.SetActive(true);
                 _useSweep = useSweep;
 
                 // Disable event dungeon ticket slider for normal mode
@@ -477,6 +486,10 @@ namespace Nekoyume.UI
         {
             var playCount = _ticketCount.Value;
             UpdateEventDungeonRewardView(avatarState, _eventDungeonStageRow, playCount);
+
+            // Clear AP related texts for event dungeon mode
+            totalApText.text = string.Empty;
+            apStoneText.text = string.Empty;
 
             if (playCount == 0)
             {
