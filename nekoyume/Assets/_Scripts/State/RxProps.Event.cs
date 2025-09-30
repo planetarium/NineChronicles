@@ -17,31 +17,31 @@ namespace Nekoyume.State
         public static EventDungeonSheet.Row EventDungeonRow { get; private set; }
         public static List<EventDungeonStageSheet.Row> EventDungeonStageRows { get; private set; }
         public static List<EventDungeonStageWaveSheet.Row> EventDungeonStageWaveRows { get; private set; }
-        
+
         private static readonly ReactiveProperty<EventScheduleSheet.Row> EventScheduleRowForDungeonInternal = new(null);
         private static readonly AsyncUpdatableRxProp<EventDungeonInfo> EventDungeonInfoInternal = new(UpdateEventDungeonInfoAsync);
         private static readonly ReactiveProperty<TicketProgress> EventDungeonTicketProgressInternal = new(new TicketProgress());
         private static readonly ReactiveProperty<string> EventRecipeRemainingTimeTextInternal = new(string.Empty);
         private static readonly ReactiveProperty<string> EventDungeonRemainingTimeTextInternal = new(string.Empty);
         private static readonly ReactiveProperty<EventScheduleSheet.Row> EventScheduleRowForRecipeInternal = new(null);
-        private static readonly ReactiveProperty<List<EventConsumableItemRecipeSheet.Row>> 
+        private static readonly ReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
             EventConsumableItemRecipeRowsInternal = new(null);
-        private static readonly ReactiveProperty<List<EventMaterialItemRecipeSheet.Row>> 
+        private static readonly ReactiveProperty<List<EventMaterialItemRecipeSheet.Row>>
             EventMaterialItemRecipeRowsInternal = new(null);
-        
+
         public static IReadOnlyReactiveProperty<EventScheduleSheet.Row> EventScheduleRowForDungeon => EventScheduleRowForDungeonInternal;
         public static IReadOnlyAsyncUpdatableRxProp<EventDungeonInfo> EventDungeonInfo => EventDungeonInfoInternal;
         public static IReadOnlyReactiveProperty<TicketProgress> EventDungeonTicketProgress => EventDungeonTicketProgressInternal;
         public static IReadOnlyReactiveProperty<string> EventRecipeRemainingTimeText => EventRecipeRemainingTimeTextInternal;
         public static IReadOnlyReactiveProperty<string> EventDungeonRemainingTimeText => EventDungeonRemainingTimeTextInternal;
         public static IReadOnlyReactiveProperty<EventScheduleSheet.Row> EventScheduleRowForRecipe => EventScheduleRowForRecipeInternal;
-        public static IReadOnlyReactiveProperty<List<EventConsumableItemRecipeSheet.Row>> 
+        public static IReadOnlyReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
             EventConsumableItemRecipeRows => EventConsumableItemRecipeRowsInternal;
-        public static IReadOnlyReactiveProperty<List<EventMaterialItemRecipeSheet.Row>> 
+        public static IReadOnlyReactiveProperty<List<EventMaterialItemRecipeSheet.Row>>
             EventMaterialItemRecipeRows => EventMaterialItemRecipeRowsInternal;
-        
+
         private static long _eventDungeonInfoUpdatedBlockIndex;
-        
+
         private static void StartEvent()
         {
             OnBlockIndexEvent(_agent.BlockIndex);
