@@ -206,6 +206,12 @@ namespace Nekoyume.UI
             _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
             _ticketCount.SetValueAndForceNotify(0);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
+
+            // Clear event dungeon specific data
+            _eventDungeonStageRow = null;
+            _eventScheduleId = 0;
+            _eventDungeonId = 0;
+            _eventDungeonStageId = 0;
             _repeatBattleAction = repeatBattleAction;
             var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
             canvasGroupForRepeat.alpha = disableRepeat ? 0 : 1;
@@ -455,6 +461,12 @@ namespace Nekoyume.UI
             }
             else
             {
+                // Ensure we're in normal mode - clear any event dungeon values
+                if (_ticketCount.Value > 0)
+                {
+                    _ticketCount.SetValueAndForceNotify(0);
+                }
+
                 var (apPlayCount, apStonePlayCount) =
                     GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
                 UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
@@ -509,6 +521,9 @@ namespace Nekoyume.UI
             int apPlayCount,
             int apStonePlayCount)
         {
+            // Clear ticket related texts for stage mode
+            eventDungeonTicketText.text = string.Empty;
+
             var earnedExp = GetEarnedExp(avatarState,
                 row,
                 apPlayCount,
