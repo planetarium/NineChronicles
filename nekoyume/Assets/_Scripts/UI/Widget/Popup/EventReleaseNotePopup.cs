@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.UI.Model;
@@ -98,6 +99,14 @@ namespace Nekoyume.UI
 
             try
             {
+                // 배너 이미지와 팝업 이미지 로딩이 완료될 때까지 대기
+                var eventData = liveAssetManager.BannerData;
+                if (eventData.Any(data => data.BannerImage == null || data.PopupImage == null))
+                {
+                    NcDebug.LogWarning($"[{nameof(EventReleaseNotePopup)}] Some images are still loading, waiting...");
+                    WaitForBannerImagesAsync().Forget();
+                    return;
+                }
                 _tabGroup.RegisterToggleable(eventTabButton);
                 _tabGroup.RegisterToggleable(noticeTabButton);
                 _tabGroup.OnToggledOn.Subscribe(toggle =>
@@ -125,7 +134,6 @@ namespace Nekoyume.UI
                 liveAssetManager.ObservableHasUnreadNotice
                     .SubscribeTo(noticeTabButton.HasNotification)
                     .AddTo(gameObject);
-                var eventData = liveAssetManager.BannerData;
                 foreach (var notice in eventData)
                 {
                     var item = Instantiate(originEventNoticeItem, eventScrollViewport);
@@ -184,6 +192,29 @@ namespace Nekoyume.UI
 
             await UniTask.WaitUntil(() => LiveAssetManager.instance.IsInitialized);
             Initialize();
+        }
+
+        private async UniTask WaitForBannerImagesAsync()
+        {
+            var liveAssetManager = LiveAssetManager.instance;
+            var timeout = TimeSpan.FromSeconds(10);
+            var cancellationTokenSource = new CancellationTokenSource(timeout);
+
+            try
+            {
+                await UniTask.WaitUntil(() =>
+                    liveAssetManager.BannerData.All(data => data.BannerImage != null && data.PopupImage != null),
+                    cancellationToken: cancellationTokenSource.Token);
+
+                NcDebug.Log($"[{nameof(EventReleaseNotePopup)}] All banner images loaded successfully");
+                Initialize();
+            }
+            catch (OperationCanceledException)
+            {
+                NcDebug.LogError($"[{nameof(EventReleaseNotePopup)}] Banner image loading timeout after {timeout.TotalSeconds} seconds");
+                // 타임아웃이 발생해도 초기화를 진행 (null 체크가 있으므로 안전)
+                Initialize();
+            }
         }
 
         protected override void OnEnable()
@@ -293,7 +324,14 @@ namespace Nekoyume.UI
 
         private void RenderNotice(EventNoticeData data)
         {
-            eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
+            if (data.PopupImage is not null)
+            {
+                eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
+            }
+            else
+            {
+                NcDebug.LogWarning($"[{nameof(EventReleaseNotePopup)}] PopupImage is null for {data.Description}");
+            }
             LiveAssetManager.instance.AddToCheckedList(data.Description);
         }
     }
