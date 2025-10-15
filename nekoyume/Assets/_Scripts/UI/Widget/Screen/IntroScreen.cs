@@ -602,6 +602,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // Update Game.CurrentPlanetId when planet is selected
+            Game.Game.instance.CurrentPlanetId = planetInfo.ID;
+            NcDebug.Log($"[IntroScreen] ApplySelectedPlanetInfo... CurrentPlanetId updated to: {planetInfo.ID}");
+
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
             currentPlanetIsNew.SetActive(planetInfo.ID.Equals(PlanetId.Thor) ||
