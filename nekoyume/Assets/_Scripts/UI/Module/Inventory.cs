@@ -182,6 +182,65 @@ namespace Nekoyume.UI.Module
             scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposablesOnSet);
         }
 
+        public void ApplyAdditionalDimConditions(
+            List<(ItemType type, Predicate<InventoryItem> predicate)> predicateList)
+        {
+            NcDebug.Log($"[Inventory] ApplyAdditionalDimConditions called - predicates: {predicateList?.Count ?? 0}");
+
+            if (predicateList is null || predicateList.Count == 0)
+            {
+                NcDebug.Log("[Inventory] No predicates to apply");
+                return;
+            }
+
+            foreach (var (type, predicate) in predicateList)
+            {
+                if (!_dimConditionFuncsByItemType.ContainsKey(type))
+                {
+                    NcDebug.LogWarning($"[Inventory] ItemType {type} not found in _dimConditionFuncsByItemType");
+                    continue;
+                }
+
+                _dimConditionFuncsByItemType[type].Add(predicate);
+                NcDebug.Log($"[Inventory] Added dim condition for ItemType {type}");
+            }
+
+            NcDebug.Log("[Inventory] Updating dimmed inventory items");
+            UpdateDimmedInventoryItem();
+
+            NcDebug.Log($"[Inventory] Refreshing current tab: {_activeTabType}");
+            // Refresh current tab to reflect dimming immediately
+            scroll.UpdateData(GetModels(_activeTabType), false);
+        }
+
+        public void ApplyAdditionalRuneDimConditions(List<Predicate<InventoryItem>> predicates)
+        {
+            NcDebug.Log($"[Inventory] ApplyAdditionalRuneDimConditions called - predicates: {predicates?.Count ?? 0}");
+            if (predicates is null || predicates.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var rune in _runes)
+            {
+                bool shouldDim = rune.DimObjectEnabled.Value;
+                foreach (var predicate in predicates)
+                {
+                    if (predicate.Invoke(rune))
+                    {
+                        shouldDim = true;
+                        break;
+                    }
+                }
+                rune.DimObjectEnabled.SetValueAndForceNotify(shouldDim);
+            }
+
+            if (_activeTabType == InventoryTabType.Rune)
+            {
+                scroll.UpdateData(GetModels(_activeTabType), false);
+            }
+        }
+
         private void SetToggle(IToggleable toggle, InventoryTabType tabType)
         {
             _activeTabType = tabType;

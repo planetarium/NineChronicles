@@ -274,6 +274,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void SetDim(bool isDim)
+        {
+            Color dimColor = isDim ? Color.red : Color.white;
+            itemImage.color = dimColor;
+            gradeImage.color = dimColor;
+            enhancementText.color = dimColor;
+        }
+
         private void OnClick(BaseEventData eventData)
         {
             if (!(eventData is PointerEventData data) ||

@@ -8,6 +8,7 @@ public enum CostType
     ArenaTicket,
     WorldBossTicket,
     EventDungeonTicket,
+    InfiniteTowerTicket,
 
     // Material costs (id)
     GoldDust = 600201,

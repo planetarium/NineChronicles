@@ -61,10 +61,13 @@ namespace Nekoyume.UI.Module
         private GameObject _cachedCharacterTitle;
         private BattleType _battleType = BattleType.Adventure;
         private System.Action _onUpdate;
+        private System.Action _onItemEquipped;
+        private System.Action _onStatUpdated;
         private long? _compareCp;
         private long _previousCp;
         private long _currentCp;
         private bool _isAvatarInfo;
+        private bool _isCpValidationFailed = false;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<int> _consumableIds = new();
@@ -144,6 +147,23 @@ namespace Nekoyume.UI.Module
             StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
         }
 
+        public void UpdateInventoryForInfiniteTower(BattleType battleType, long? compareCp = null, System.Action onItemEquipped = null, System.Action onStatUpdated = null)
+        {
+            _compareCp = compareCp;
+            _onItemEquipped = onItemEquipped;
+            _onStatUpdated = onStatUpdated;
+            _consumableIds.Clear();
+            var elementalTypes = GetElementalTypes();
+            inventory.SetAvatarInformation(
+                OnClickInventoryItem,
+                model => EquipOrUnequip(model),
+                OnClickTab,
+                elementalTypes,
+                _battleType);
+
+            StartCoroutine(CoUpdateViewForInfiniteTower(battleType, Inventory.InventoryTabType.Equipment));
+        }
+
         public List<Guid> GetBestEquipments()
         {
             return inventory.GetBestEquipments();
@@ -165,6 +185,14 @@ namespace Nekoyume.UI.Module
             yield return new WaitForEndOfFrame();
             OnClickTab(tabType);
             UpdateView(battleType);
+        }
+
+        private IEnumerator CoUpdateViewForInfiniteTower(BattleType battleType, Inventory.InventoryTabType tabType)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            OnClickTab(tabType);
+            UpdateViewForInfiniteTower(battleType);
         }
 
         private void OnClickTab(Inventory.InventoryTabType tabType)
@@ -189,13 +217,27 @@ namespace Nekoyume.UI.Module
             _onUpdate?.Invoke();
         }
 
+        public void UpdateViewForInfiniteTower(BattleType battleType)
+        {
+            _battleType = battleType;
+            UpdateRuneView();
+            UpdateItemViewForInfiniteTower();
+            UpdateStat();
+            _onUpdate?.Invoke();
+        }
+
         private void UpdateRuneView()
         {
-            var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
-            var equippedRuneStates = States.Instance.GetEquippedRuneStates(_battleType);
+            // 무한의 탑에서는 룬을 Adventure 타입으로 가져옴
+            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
+            var equippedRuneStates = States.Instance.GetEquippedRuneStates(runeBattleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            inventory.UpdateRunes(equippedRuneStates, _battleType, sheet);
+            inventory.UpdateRunes(equippedRuneStates, runeBattleType, sheet);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
+
+            // 무한루프 방지를 위해 UpdateRuneView에서는 콜백 호출하지 않음
+            // 대신 UpdateStat에서만 콜백 호출
         }
 
         private void UpdateItemView()
@@ -204,6 +246,29 @@ namespace Nekoyume.UI.Module
             var level = avatarState.level;
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
             Game.Game.instance.Lobby.Character.Set(avatarState, equipments, costumes);
+
+            costumeSlots.SetPlayerCostumes(level, costumes, OnClickSlot, OnDoubleClickSlot);
+            equipmentSlots.SetPlayerEquipments(level, equipments, OnClickSlot, OnDoubleClickSlot);
+            if (consumeSlots != null)
+            {
+                var consumables = GetEquippedConsumables();
+                consumeSlots.SetPlayerConsumables(level, consumables, OnClickSlot, OnDoubleClickSlot);
+            }
+
+            var itemSlotState = States.Instance.CurrentItemSlotStates[_battleType];
+            inventory.UpdateCostumes(itemSlotState.Costumes);
+            inventory.UpdateEquipments(itemSlotState.Equipments);
+            inventory.UpdateConsumables(_consumableIds);
+            UpdateTitle();
+        }
+
+        private void UpdateItemViewForInfiniteTower()
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var level = avatarState.level;
+            var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
+            // 무한의 탑에서는 캐릭터 모델을 설정하지 않음
+            // Game.Game.instance.Lobby.Character.Set(avatarState, equipments, costumes);
 
             costumeSlots.SetPlayerCostumes(level, costumes, OnClickSlot, OnDoubleClickSlot);
             equipmentSlots.SetPlayerEquipments(level, equipments, OnClickSlot, OnDoubleClickSlot);
@@ -632,7 +697,9 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
-            var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
+            // 무한의 탑에서는 룬을 Adventure 타입으로 가져옴
+            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
             {
@@ -702,6 +769,10 @@ namespace Nekoyume.UI.Module
             }
 
             UpdateRuneView();
+
+            // 룬 장착 완료 시 콜백 호출
+            NcDebug.Log("[AvatarInformation] Rune equipped - calling _onStatUpdated callback");
+            _onStatUpdated?.Invoke();
         }
 
         private void UnequipRune(InventoryItem item)
@@ -711,19 +782,35 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
+            NcDebug.Log($"[AvatarInformation] Unequipping rune: {item.RuneState.RuneId}");
+
+            // 무한의 탑에서는 룬을 Adventure 타입으로 가져옴
+            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
+            bool found = false;
             foreach (var slot in states)
             {
                 if (slot.RuneId.HasValue)
                 {
                     if (slot.RuneId.Value == item.RuneState.RuneId)
                     {
+                        NcDebug.Log($"[AvatarInformation] Found rune in slot {slot.Index}, unequipping");
                         slot.Unequip();
+                        found = true;
                     }
                 }
             }
 
+            if (!found)
+            {
+                NcDebug.LogWarning($"[AvatarInformation] Rune {item.RuneState.RuneId} not found in any slot");
+            }
+
             UpdateRuneView();
+
+            // 룬 해제 완료 시 콜백 호출
+            NcDebug.Log("[AvatarInformation] Rune unequipped - calling _onStatUpdated callback");
+            _onStatUpdated?.Invoke();
         }
 
         private void OnClickInventoryItem(InventoryItem model)
@@ -880,6 +967,15 @@ namespace Nekoyume.UI.Module
 
         private void EquipOrUnequip(InventoryItem inventoryItem, bool inSlot = false)
         {
+            // Block equipping when item is dimmed by validation rules
+            if (inventoryItem.DimObjectEnabled.Value && !inventoryItem.Equipped.Value)
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MESSAGE_CAN_NOT_EQUIPPED"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             if (inventoryItem.RuneState != null)
             {
                 if (inventoryItem.Equipped.Value)
@@ -930,6 +1026,13 @@ namespace Nekoyume.UI.Module
             UpdateStat();
             ShowCpScreen(inventoryItem);
             _onUpdate?.Invoke();
+
+            // 룬이 아닌 경우에만 콜백 호출 (룬은 EquipRune/UnequipRune에서 호출)
+            if (inventoryItem.RuneState == null)
+            {
+                NcDebug.Log("[AvatarInformation] Item equipped/unequipped - calling _onItemEquipped callback");
+                _onItemEquipped?.Invoke();
+            }
         }
 
         private void UpdateStat()
@@ -990,6 +1093,18 @@ namespace Nekoyume.UI.Module
             UpdateCp();
             stats.SetData(characterStats);
             Widget.Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification());
+
+            // 스탯 업데이트 완료 시 콜백 호출
+            NcDebug.Log("[AvatarInformation] Stat updated - calling _onStatUpdated callback");
+            _onStatUpdated?.Invoke();
+
+            // InfiniteTowerPreparation이 활성화되어 있으면 직접 UpdateStartButton 호출
+            var infiniteTowerPrep = FindObjectOfType<InfiniteTowerPreparation>();
+            if (infiniteTowerPrep != null && infiniteTowerPrep.gameObject.activeInHierarchy)
+            {
+                NcDebug.Log("[AvatarInformation] Directly calling UpdateStartButton from AvatarInformation");
+                infiniteTowerPrep.UpdateStartButton();
+            }
         }
 
         private void UpdateCp()
@@ -998,11 +1113,17 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             _currentCp = Util.TotalCP(_battleType) + consumables.Sum(CPHelper.GetCP);
             cp.text = withCp ? $"CP {TextHelper.FormatNumber(_currentCp)}" : TextHelper.FormatNumber(_currentCp);
+
             if (_compareCp.HasValue)
             {
                 cp.color = _currentCp < _compareCp.Value
                     ? Palette.GetColor(ColorType.TextDenial)
                     : Palette.GetColor(ColorType.TextPositive);
+            }
+            else if (_isCpValidationFailed)
+            {
+                // CP 밸리데이션 실패 상태가 설정되어 있으면 붉은색 유지
+                cp.color = Palette.GetColor(ColorType.TextDenial);
             }
             else
             {
@@ -1025,6 +1146,94 @@ namespace Nekoyume.UI.Module
             var cpScreen = Widget.Find<CPScreen>();
             cpScreen.Show(_previousCp, _currentCp);
         }
+
+        public void SetEquipmentSlotsDim(List<Guid> invalidEquipmentIds, List<Guid> invalidCostumeIds)
+        {
+            NcDebug.Log($"[AvatarInformation] SetEquipmentSlotsDim called - invalidEquipmentIds: {invalidEquipmentIds.Count}, invalidCostumeIds: {invalidCostumeIds.Count}");
+
+            // Equipment slots 딤 처리
+            foreach (var slot in equipmentSlots)
+            {
+                bool shouldDim = false;
+                if (slot.Item != null && slot.Item is Equipment equipment)
+                {
+                    shouldDim = invalidEquipmentIds.Contains(equipment.ItemId);
+                    if (shouldDim)
+                    {
+                        NcDebug.Log($"[AvatarInformation] Dimming equipment: {equipment.ItemId}");
+                    }
+                }
+                slot.SetConditionDim(shouldDim);
+            }
+
+            // Costume slots 딤 처리
+            foreach (var slot in costumeSlots)
+            {
+                bool shouldDim = false;
+                if (slot.Item != null && slot.Item is Costume costume)
+                {
+                    shouldDim = invalidCostumeIds.Contains(costume.ItemId);
+                    if (shouldDim)
+                    {
+                        NcDebug.Log($"[AvatarInformation] Dimming costume: {costume.ItemId}");
+                    }
+                }
+                slot.SetDim(shouldDim);
+            }
+        }
+
+        public void SetRuneSlotsDim(List<int> invalidRuneSlots)
+        {
+            runeSlots.SetDim(invalidRuneSlots);
+        }
+
+        public void SetInventoryDimConditions(
+            List<(ItemType type, Predicate<Nekoyume.UI.Model.InventoryItem> predicate)> dimConditions)
+        {
+            NcDebug.Log($"[AvatarInformation] SetInventoryDimConditions called - conditions: {dimConditions?.Count ?? 0}");
+
+            if (dimConditions is null || dimConditions.Count == 0)
+            {
+                NcDebug.Log("[AvatarInformation] No dim conditions to apply");
+                return;
+            }
+
+            // Convert predicate type to local InventoryItem type alias
+            var converted = new List<(ItemType, Predicate<Nekoyume.UI.Model.InventoryItem>)>(dimConditions);
+
+            NcDebug.Log($"[AvatarInformation] Applying {converted.Count} dim conditions to inventory");
+
+            // Inventory expects its own InventoryItem type; method is generic enough
+            inventory.ApplyAdditionalDimConditions(converted
+                .Select(tuple => (tuple.Item1, tuple.Item2))
+                .ToList());
+        }
+
+        public void SetRuneInventoryDimConditions(List<Predicate<Nekoyume.UI.Model.InventoryItem>> runePredicates)
+        {
+            if (runePredicates is null || runePredicates.Count == 0)
+            {
+                return;
+            }
+
+            inventory.ApplyAdditionalRuneDimConditions(runePredicates
+                .Select(p => (Predicate<InventoryItem>)(item => p(item)))
+                .ToList());
+        }
+
+        public void SetCpColor(Color color)
+        {
+            // _compareCp를 null로 설정하여 UpdateCp()가 색상을 덮어쓰지 않도록 함
+            _compareCp = null;
+            _isCpValidationFailed = (color == Palette.GetColor(ColorType.TextDenial));
+            cp.color = color;
+        }
+
+        public void ResetCpValidationState()
+        {
+            _isCpValidationFailed = false;
+        }
+
 
         private static List<ElementalType> GetElementalTypes()
         {

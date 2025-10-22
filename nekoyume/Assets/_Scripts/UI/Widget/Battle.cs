@@ -142,7 +142,7 @@ namespace Nekoyume.UI
             accelerationToggle.gameObject.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
             accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
-            if(stageType != StageType.AdventureBoss)
+            if(stageType != StageType.AdventureBoss && stageType != StageType.InfiniteTower)
             {
                 SetAccelToggle(accelerationToggle.isOn);
             }
@@ -209,6 +209,10 @@ namespace Nekoyume.UI
                     accelerationToggle.gameObject.SetActive(false);
                     exitToggle.gameObject.SetActive(false);
                     Find<HeaderMenuStatic>().Close(true);
+                    break;
+                case StageType.InfiniteTower:
+                    stageProgressBar.gameObject.SetActive(false);
+                    floorProgressBar.gameObject.SetActive(false);
                     break;
             }
 

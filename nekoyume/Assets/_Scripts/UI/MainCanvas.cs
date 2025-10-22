@@ -516,6 +516,11 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossResultPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossStageBuff>());
             _secondWidgets.Add(Widget.Create<PreviousSeasonReportPopup>());
+
+            // Infinite Tower
+            _secondWidgets.Add(Widget.Create<InfiniteTower>());
+            _secondWidgets.Add(Widget.Create<InfiniteTowerPreparation>());
+            _secondWidgets.Add(Widget.Create<InfiniteTowerResultPopup>());
 #endif
         }
 
