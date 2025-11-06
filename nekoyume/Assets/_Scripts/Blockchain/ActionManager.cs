@@ -2014,7 +2014,9 @@ namespace Nekoyume.Blockchain
             List<Guid> consumables,
             List<RuneSlotInfo> runeInfos,
             int infiniteTowerId,
-            int floorId)
+            int floorId,
+            bool buyTicketIfNeeded = false,
+            bool useNcgForTicket = false)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new InfiniteTowerBattle
@@ -2026,8 +2028,8 @@ namespace Nekoyume.Blockchain
                 Costumes = costumes,
                 Foods = consumables,
                 RuneInfos = runeInfos,
-                BuyTicketIfNeeded = true,
-                UseNcgForTicket = false
+                BuyTicketIfNeeded = buyTicketIfNeeded,
+                UseNcgForTicket = useNcgForTicket
             };
 
             ProcessAction(action);

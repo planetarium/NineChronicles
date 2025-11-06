@@ -26,6 +26,8 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using Nekoyume.Action;
 using Nekoyume.UI.Model;
+using Libplanet.Types.Assets;
+using Lib9c;
 
 namespace Nekoyume.UI
 {
@@ -146,6 +148,9 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
+            // 헤더 메뉴 업데이트 (무한의 탑 티켓 표시)
+            Find<HeaderMenuStatic>()?.UpdateAssets(HeaderMenuStatic.AssetVisibleState.InfiniteTower);
+
             _requiredCost = requiredCost;
             _floorData = floorData;
             _battleConditions = battleConditions ?? new List<InfiniteTowerBattleCondition>();
@@ -196,6 +201,16 @@ namespace Nekoyume.UI
 
             // 인벤토리 변경 시 버튼 업데이트
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+
+            // InfiniteTowerInfo 구독 (RxProps에서 관리)
+            RxProps.InfiniteTowerInfo
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    UpdateTicketInfo();
+                    UpdateStartButton();
+                })
+                .AddTo(_disposables);
 
             // 초기 밸리데이션 수행
             UpdateStartButton();
@@ -277,11 +292,25 @@ namespace Nekoyume.UI
                 lobbyCharacter.gameObject.SetActive(true);
             }
 
+            // 헤더 메뉴를 무한의 탑 상태로 유지 (InfiniteTower 위젯이 열려있을 수 있음)
+            // InfiniteTower 위젯이 닫힐 때만 Main으로 복원
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }
 
         #endregion
+
+        private void UpdateTicketInfo()
+        {
+            // HeaderMenuStatic에 티켓 정보 업데이트 요청
+            // TODO: InfiniteTowerTickets Currency 모듈이 추가되면 여기서 업데이트
+            // 현재는 RxProps.InfiniteTowerTicketProgress를 사용
+            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
+            if (infiniteTowerInfo != null)
+            {
+                NcDebug.Log($"[InfiniteTowerPreparation] Ticket info updated - RemainingTickets: {infiniteTowerInfo.RemainingTickets}");
+            }
+        }
 
         private void UpdateRequiredCostByFloorId()
         {
@@ -316,13 +345,22 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // 티켓 체크 - 임시로 항상 티켓이 있다고 가정
-            // TODO: 실제 InfiniteTowerInfo 로딩 구현 필요
-            var hasTicket = true; // 임시 구현
+            // 티켓 체크 (RxProps에서 관리)
+            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
+            if (infiniteTowerInfo == null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_INFINITETOWER_INFO_NOT_LOADED"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            var hasTicket = infiniteTowerInfo.RemainingTickets >= 1;
             if (hasTicket)
             {
-                // 티켓이 충분한 경우 바로 배틀 시작
-                StartCoroutine(CoBattleStart());
+                // 티켓이 충분한 경우 바로 배틀 시작 (buyTicketIfNeeded = false)
+                StartCoroutine(CoBattleStart(false, false));
             }
             else
             {
@@ -333,7 +371,7 @@ namespace Nekoyume.UI
             coverToBlockClick.SetActive(true);
         }
 
-        private IEnumerator CoBattleStart()
+        private IEnumerator CoBattleStart(bool buyTicketIfNeeded = false, bool useNcgForTicket = false)
         {
             var game = Game.Game.instance;
             game.Stage.IsShowHud = true;
@@ -354,10 +392,10 @@ namespace Nekoyume.UI
                 middleXGap);
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
-            InfiniteTowerBattleAction();
+            InfiniteTowerBattleAction(buyTicketIfNeeded, useNcgForTicket);
         }
 
-        private void InfiniteTowerBattleAction()
+        private void InfiniteTowerBattleAction(bool buyTicketIfNeeded = false, bool useNcgForTicket = false)
         {
             Find<WorldMap>().Close(true);
             Find<InfiniteTower>().Close(true);
@@ -386,7 +424,9 @@ namespace Nekoyume.UI
                 consumables,
                 runeInfos,
                 _infiniteTowerId,
-                _floorId)
+                _floorId,
+                buyTicketIfNeeded,
+                useNcgForTicket)
                 .Subscribe(
                     _ =>
                     {
@@ -791,65 +831,46 @@ namespace Nekoyume.UI
                     MailType.System,
                     L10nManager.Localize("UI_INFINITETOWER_FLOOR_DATA_NOT_FOUND"),
                     NotificationCell.NotificationType.Alert);
+                coverToBlockClick.SetActive(false);
                 return;
             }
 
-            // 티켓 구매 비용 정보 가져오기
-            var cost = 0;
-            string costText = "";
+            // InfiniteTowerInfo는 RxProps에서 관리
+            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
+            if (infiniteTowerInfo == null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_INFINITETOWER_INFO_NOT_LOADED"),
+                    NotificationCell.NotificationType.Alert);
+                coverToBlockClick.SetActive(false);
+                return;
+            }
 
-            if (_floorData.NcgCost.HasValue)
-            {
-                cost = _floorData.NcgCost.Value;
-                costText = $"{cost} NCG";
-            }
-            else if (_floorData.MaterialCostId.HasValue && _floorData.MaterialCostCount.HasValue)
-            {
-                cost = _floorData.MaterialCostCount.Value;
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                if (materialSheet.TryGetValue(_floorData.MaterialCostId.Value, out var materialRow))
-                {
-                    costText = $"{cost} Material";
-                }
-                else
-                {
-                    costText = $"{cost} Material";
-                }
-            }
-            else
+            // 두 가지 옵션이 모두 없는 경우
+            if (!_floorData.NcgCost.HasValue &&
+                (!_floorData.MaterialCostId.HasValue || !_floorData.MaterialCostCount.HasValue))
             {
                 NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_INFINITETOWER_TICKET_COST_NOT_CONFIGURED"),
                     NotificationCell.NotificationType.Alert);
+                coverToBlockClick.SetActive(false);
                 return;
             }
 
-            // 구매 확인 팝업 표시
-            var popup = Widget.Find<ConfirmPopup>();
-            popup.CloseCallback = (result) =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    PurchaseTicketAndStartBattle();
-                }
-                else
-                {
-                    coverToBlockClick.SetActive(false);
-                }
-            };
+            // InfiniteTowerTicketPurchasePopup 사용 (AdventureBoss 패턴 참고)
+            var popup = Find<InfiniteTowerTicketPurchasePopup>();
             popup.Show(
-                L10nManager.Localize("UI_INFINITETOWER_TICKET_PURCHASE_TITLE"),
-                L10nManager.Localize("UI_INFINITETOWER_TICKET_PURCHASE_MESSAGE", costText),
-                L10nManager.Localize("UI_YES"),
-                L10nManager.Localize("UI_NO"));
-        }
-
-        private void PurchaseTicketAndStartBattle()
-        {
-            // 실제 티켓 구매는 서버에서 처리되므로 여기서는 바로 배틀 시작
-            // 실제 구현에서는 ActionManager를 통해 티켓 구매 액션을 실행해야 함
-            StartCoroutine(CoBattleStart());
+                _floorId,
+                _floorData.NcgCost,
+                _floorData.MaterialCostId,
+                _floorData.MaterialCostCount,
+                infiniteTowerInfo.NumberOfTicketPurchases,
+                () => StartCoroutine(CoBattleStart(true, true)),  // NCG로 구매
+                () => StartCoroutine(CoBattleStart(true, false)), // Material로 구매
+                () => coverToBlockClick.SetActive(false)          // 닫힐 때 coverToBlockClick 해제
+            );
         }
 
         private void StartInfiniteTowerTestBattle()

@@ -59,7 +59,7 @@ namespace Nekoyume
                     var runeTypeNames = condition.ForbiddenRuneTypes.Select(GetRuneTypeName).ToList();
                     return $"{string.Join(", ", runeTypeNames)} 착용 불가";
                 case BattleConditionType.RequiredElementalType:
-                    return $"{GetElementalIcon(condition.RequiredElementalType.Value)} 장비만 착용 가능";
+                    return $"{condition.RequiredElementalTypes.Select(GetElementalIcon)} 장비만 착용 가능";
                 case BattleConditionType.ForbiddenItemSubTypes:
                     var itemTypeNames = condition.ForbiddenItemSubTypes.Select(GetLocalizedItemSubTypeText).ToList();
                     return $"{string.Join(", ", itemTypeNames)} 착용 불가";

@@ -29,8 +29,6 @@ namespace Nekoyume.UI.Module
 
     public class WorldMapInfiniteTower : MonoBehaviour
     {
-        [SerializeField] private GameObject open;
-        [SerializeField] private GameObject wantedClose;
         [SerializeField] private TextMeshProUGUI[] remainingBlockIndexs;
         [SerializeField] private GameObject loadingIndicator;
         [SerializeField] private WorldButton worldButton;
@@ -245,7 +243,6 @@ namespace Nekoyume.UI.Module
             {
                 worldButton.IsLockNameShow = false;
                 worldButton.HasNotification.Value = false;
-                open.SetActive(false);
                 SetDefaultRemainingBlockIndexs();
                 if (_towerImage != null)
                 {
@@ -266,8 +263,6 @@ namespace Nekoyume.UI.Module
             {
                 case InfiniteTowerState.Ready:
                     worldButton.Unlock();
-                    open.SetActive(true);
-                    wantedClose.SetActive(true);
                     worldButton.HasNotification.Value = true;
                     worldButton.IsLockNameShow = false;
                     if (_towerImage != null)
@@ -279,8 +274,6 @@ namespace Nekoyume.UI.Module
                     break;
                 case InfiniteTowerState.Progress:
                     worldButton.Unlock();
-                    open.SetActive(true);
-                    wantedClose.SetActive(false);
                     worldButton.HasNotification.Value = true;
                     worldButton.IsLockNameShow = false;
                     prevSeasonPopupBtn.gameObject.SetActive(false);
@@ -290,7 +283,6 @@ namespace Nekoyume.UI.Module
                 default:
                     worldButton.HasNotification.Value = false;
                     worldButton.Lock(true);
-                    open.SetActive(false);
                     SetDefaultRemainingBlockIndexs();
                     if (_towerImage != null)
                     {

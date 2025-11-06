@@ -1,22 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using Libplanet.Crypto;
 using Nekoyume.L10n;
 using Nekoyume.Model.InfiniteTower;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.Action;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UI.Extensions.EasingCore;
+using Ease = DG.Tweening.Ease;
 
 namespace Nekoyume.UI
 {
@@ -54,7 +55,8 @@ namespace Nekoyume.UI
         private InfiniteTowerFloorSheet.Row _currentFloorData;
         private List<InfiniteTowerBattleCondition> _battleConditions = new ();
         private List<InfiniteTowerCondition> _buffConditions = new ();
-        private InfiniteTowerInfo _infiniteTowerInfo;
+
+        private const float _floorHeight = 170f;
 
         protected override void Awake()
         {
@@ -78,6 +80,9 @@ namespace Nekoyume.UI
                 // 로딩 화면 표시
                 Find<LoadingScreen>().Show(LoadingScreen.LoadingType.AdventureBoss);
 
+                // 타워 위치 초기화 (AdventureBoss와 동일)
+                towerRect.anchoredPosition = new Vector2(towerRect.anchoredPosition.x, 0);
+
                 // 데이터 로드
                 await LoadDataAsync();
 
@@ -89,6 +94,12 @@ namespace Nekoyume.UI
 
                 // 위젯 표시
                 base.Show(ignoreShowAnimation);
+
+                // 헤더 메뉴 업데이트 (무한의 탑 티켓 표시)
+                Find<HeaderMenuStatic>()?.UpdateAssets(HeaderMenuStatic.AssetVisibleState.InfiniteTower);
+
+                // 위젯 표시 후 현재 층으로 포커스 이동
+                ChangeFloor(_currentFloor, false, false);
 
                 // 완료 대기 (UI 애니메이션 등)
                 await UniTask.Delay(100);
@@ -105,47 +116,9 @@ namespace Nekoyume.UI
 
         private async UniTask LoadDataAsync()
         {
-            await LoadInfiniteTowerInfo();
+            // InfiniteTowerInfo는 RxProps에서 관리되므로 여기서는 로드하지 않음
             InitializeData();
             await LoadClearCount();
-        }
-
-        private async UniTask LoadInfiniteTowerInfo()
-        {
-            var scheduleInfo = GetCurrentScheduleInfo();
-            if (scheduleInfo == null)
-            {
-                NcDebug.LogError("[InfiniteTower] No active schedule found");
-                return;
-            }
-            try
-            {
-                var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-
-                var state = await Game.Game.instance.Agent.GetStateAsync(Addresses.InfiniteTowerInfo, avatarAddress);
-                if (state is Bencodex.Types.List serialized)
-                {
-                    _infiniteTowerInfo = new InfiniteTowerInfo(serialized);
-                    NcDebug.Log($"[InfiniteTower] Loaded InfiniteTowerInfo - ClearedFloor: {_infiniteTowerInfo.ClearedFloor}, RemainingTickets: {_infiniteTowerInfo.RemainingTickets}");
-                }
-                else
-                {
-                    // InfiniteTowerInfo가 없는 경우 새로 생성
-                    _infiniteTowerInfo =
-                        new InfiniteTowerInfo(avatarAddress, scheduleInfo.InfiniteTowerId);
-                    NcDebug.Log(
-                        $"[InfiniteTower] Created new InfiniteTowerInfo for tower {scheduleInfo.InfiniteTowerId}");
-
-                }
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogError($"[InfiniteTower] Failed to load InfiniteTowerInfo: {e}");
-                // 에러 시 기본값으로 초기화
-                var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-                _infiniteTowerInfo =
-                    new InfiniteTowerInfo(avatarAddress, scheduleInfo.InfiniteTowerId);
-            }
         }
 
         private void SetupUI()
@@ -175,10 +148,10 @@ namespace Nekoyume.UI
 
 
                 // InfiniteTowerBoardState 주소 생성
-                var boardStateAddress = Addresses.InfiniteTowerBoard.Derive(scheduleInfo.InfiniteTowerId.ToString(CultureInfo.InvariantCulture));
+                var seasonAddress = new Address($"{scheduleInfo.InfiniteTowerId:X40}");
 
                 // State 조회
-                var state = await Game.Game.instance.Agent.GetStateAsync(Addresses.InfiniteTowerBoard, boardStateAddress);
+                var state = await Game.Game.instance.Agent.GetStateAsync(Addresses.InfiniteTowerBoard, seasonAddress);
                 // InfiniteTowerBoardState 역직렬화
                 if (state is Bencodex.Types.List serialized)
                 {
@@ -227,8 +200,7 @@ namespace Nekoyume.UI
             }
 
             _currentFloorData = tableSheets.InfiniteTowerFloorSheet.Values
-                .FirstOrDefault(f =>
-                    f.InfiniteTowerId == scheduleInfo.InfiniteTowerId && f.Floor == _currentFloor);
+                .FirstOrDefault(f => f.Floor == _currentFloor);
 
             if (_currentFloorData == null)
             {
@@ -368,9 +340,7 @@ namespace Nekoyume.UI
                 // 해당 층의 데이터 조회
                 var tableSheets = Game.Game.instance.TableSheets;
                 var floorData = tableSheets?.InfiniteTowerFloorSheet?.Values
-                    .FirstOrDefault(f =>
-                        f.InfiniteTowerId == scheduleInfo.InfiniteTowerId &&
-                        f.Floor == floorNumber);
+                    .FirstOrDefault(f => f.Floor == floorNumber);
 
                 NcDebug.Log($"[InfiniteTower] FloorView {i} - FloorNumber: {floorNumber}, FloorState: {floorState}, FloorData: {(floorData != null ? "Found" : "Null")}");
                 floorView.SetState(floorState, floorNumber, floorData);
@@ -380,6 +350,29 @@ namespace Nekoyume.UI
             AdjustTowerPosition(_currentFloor);
 
             NcDebug.Log($"[InfiniteTower] Updated floor views - Range: {startFloor}~{endFloor}, Current: {_currentFloor}");
+        }
+
+        public void ChangeFloor(int targetIndex, bool isStartPointRefresh = true,
+            bool isAnimation = true)
+        {
+            var targetCenter = targetIndex * _floorHeight + _floorHeight / 2;
+            var startY = -(targetCenter - MainCanvas.instance.RectTransform.rect.height / 2 -
+                towerCenterAdjuster);
+
+            if (isAnimation)
+            {
+                if (isStartPointRefresh)
+                {
+                    towerRect.anchoredPosition = new Vector2(towerRect.anchoredPosition.x, 0);
+                }
+
+                towerRect.DoAnchoredMoveY(Math.Min(startY, 0), 0.35f).SetEase(towerMoveEase);
+            }
+            else
+            {
+                towerRect.anchoredPosition =
+                    new Vector2(towerRect.anchoredPosition.x, Math.Min(startY, 0));
+            }
         }
 
         private void AdjustTowerPosition(int targetFloor)
@@ -403,14 +396,16 @@ namespace Nekoyume.UI
 
         private InfiniteTowerFloorView.FloorState GetFloorState(int floorNumber)
         {
-            if (_infiniteTowerInfo == null)
+            // InfiniteTowerInfo는 RxProps에서 관리
+            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
+            if (infiniteTowerInfo == null)
             {
                 return floorNumber == _currentFloor
                     ? InfiniteTowerFloorView.FloorState.Current
                     : InfiniteTowerFloorView.FloorState.Locked;
             }
 
-            var clearedFloor = _infiniteTowerInfo.ClearedFloor;
+            var clearedFloor = infiniteTowerInfo.ClearedFloor;
 
             if (floorNumber <= clearedFloor)
             {
@@ -546,6 +541,13 @@ namespace Nekoyume.UI
             Close();
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            // 헤더 메뉴를 기본 상태로 복원
+            Find<HeaderMenuStatic>()?.UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
+            base.Close(ignoreCloseAnimation);
+        }
+
         private InfiniteTowerScheduleSheet.Row GetCurrentScheduleInfo()
         {
             var tableSheets = Game.Game.instance.TableSheets;
@@ -560,15 +562,17 @@ namespace Nekoyume.UI
 
         private int GetCurrentChallengeFloor()
         {
-            if (_infiniteTowerInfo == null)
+            // InfiniteTowerInfo는 RxProps에서 관리
+            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
+            if (infiniteTowerInfo == null)
             {
                 NcDebug.LogWarning("[InfiniteTower] InfiniteTowerInfo is null, defaulting to floor 1");
                 return 1;
             }
 
             // 클리어한 층이 있으면 다음 층, 없으면 1층부터 시작
-            var currentFloor = _infiniteTowerInfo.ClearedFloor + 1;
-            NcDebug.Log($"[InfiniteTower] Current challenge floor: {currentFloor} (ClearedFloor: {_infiniteTowerInfo.ClearedFloor})");
+            var currentFloor = infiniteTowerInfo.ClearedFloor + 1;
+            NcDebug.Log($"[InfiniteTower] Current challenge floor: {currentFloor} (ClearedFloor: {infiniteTowerInfo.ClearedFloor})");
             return currentFloor;
         }
     }

@@ -793,18 +793,18 @@ namespace Nekoyume.Game
                 var nodeHash = hashDict.ContainsKey(derivedAddress) ? hashDict[derivedAddress] : null;
                 var nodeHashStr = nodeHash != null ? ByteUtil.Hex(nodeHash) : "None";
 
-                // if (nodeHashStr != normalizedLocalHashStr)
-                // {
-                //     NcDebug.Log($"[SheetHash] {asset.name} - Hash mismatch. Local: {normalizedLocalHashStr}, Node: {nodeHashStr}");
-                //     sheetsToDownload.Add(derivedAddress);
-                //     differentSheetNames.Add(asset.name);
-                // }
-                // else
-                // {
+                if (nodeHashStr != normalizedLocalHashStr)
+                {
+                    NcDebug.Log($"[SheetHash] {asset.name} - Hash mismatch. Local: {normalizedLocalHashStr}, Node: {nodeHashStr}");
+                    sheetsToDownload.Add(derivedAddress);
+                    differentSheetNames.Add(asset.name);
+                }
+                else
+                {
                     // Use local data if hashes match
                     csvDict[asset.name] = asset.text;
                     NcDebug.Log($"[SheetHash] {asset.name} - Using local data (hash match)");
-                // }
+                }
             }
 
             if (string.IsNullOrEmpty(_commandLineOptions.SheetBucketUrl))

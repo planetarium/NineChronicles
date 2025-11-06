@@ -2507,6 +2507,7 @@ namespace Nekoyume.Blockchain
                         var task = UniTask.RunOnThreadPool(async () =>
                         {
                             await UpdateCurrentAvatarStateAsync(eval);
+                            await RxProps.InfiniteTowerInfo.UpdateAsync(eval.OutputState);
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                         }, false);
@@ -2518,7 +2519,7 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
-        private void ResponseInfiniteTowerBattleAsync(
+        private async UniTaskVoid ResponseInfiniteTowerBattleAsync(
             ActionEvaluation<InfiniteTowerBattle> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
@@ -2535,6 +2536,7 @@ namespace Nekoyume.Blockchain
                         var task = UniTask.RunOnThreadPool(async () =>
                         {
                             await UpdateCurrentAvatarStateAsync(eval);
+                            await RxProps.InfiniteTowerInfo.UpdateAsync(eval.OutputState);
                             var avatarState = States.Instance.CurrentAvatarState;
                             RenderQuest(eval.Action.AvatarAddress,
                                 avatarState.questList.completedQuestIds);
@@ -2547,7 +2549,6 @@ namespace Nekoyume.Blockchain
                             .DoOnError(e => NcDebug.LogException(e));
                         });
 
-            var random = new LocalRandom(eval.RandomSeed);
             var tableSheets = TableSheets.Instance;
             var floorId = eval.Action.FloorId;
 
@@ -2565,64 +2566,74 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            // Get infinite tower info to check if floor is cleared and get applied conditions
-            var infiniteTowerInfoState = StateGetter.GetState(
-                eval.PreviousState,
-                Addresses.InfiniteTowerInfo,
-                eval.Action.AvatarAddress);
-            var infiniteTowerInfo = infiniteTowerInfoState is List serialized
-                ? new InfiniteTowerInfo(serialized)
-                : new InfiniteTowerInfo(
-                    eval.Action.AvatarAddress,
-                    eval.Action.InfiniteTowerId);
-            var isCleared = infiniteTowerInfo.IsCleared(floorId);
-
-            // Get conditions for this floor
-            var conditionSheet = tableSheets.InfiniteTowerConditionSheet;
-            var allConditions = new List<InfiniteTowerCondition>();
-            var guaranteedCondition = conditionSheet.Values
-                .FirstOrDefault(c => c.Id == floorRow.GuaranteedConditionId);
-            var randomConditions = floorRow.GetRandomConditionsWithWeights(
-                conditionSheet,
-                random,
-                guaranteedCondition?.Id);
-            if (guaranteedCondition != null)
+            // Run StateGetter and simulator on background thread
+            var log = await UniTask.RunOnThreadPool(() =>
             {
-                allConditions.Add(new InfiniteTowerCondition(guaranteedCondition));
-            }
-            allConditions.AddRange(randomConditions);
+                var random = new LocalRandom(eval.RandomSeed);
 
-            // Create simulator
-            var avatar = States.Instance.CurrentAvatarState;
-            var equipments = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower].Equipments;
-            var costumes = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower].Costumes;
-            avatar.EquipItems(equipments.Concat(costumes).ToList());
+                // Get infinite tower info to check if floor is cleared and get applied conditions
+                var infiniteTowerInfoState = StateGetter.GetState(
+                    eval.PreviousState,
+                    Addresses.InfiniteTowerInfo,
+                    eval.Action.AvatarAddress);
+                var infiniteTowerInfo = infiniteTowerInfoState is List serialized
+                    ? new InfiniteTowerInfo(serialized)
+                    : new InfiniteTowerInfo(
+                        eval.Action.AvatarAddress,
+                        eval.Action.InfiniteTowerId);
+                var isCleared = infiniteTowerInfo.IsCleared(floorId);
 
-            var simulator = new InfiniteTowerSimulator(
-                random,
-                avatar,
-                eval.Action.Foods,
-                States.Instance.AllRuneState,
-                States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                eval.Action.InfiniteTowerId,
-                floorId,
-                floorRow,
-                waveRows.Waves,
-                isCleared,
-                0, // No experience reward
-                tableSheets.GetSimulatorSheets(),
-                tableSheets.EnemySkillSheet,
-                tableSheets.CostumeStatSheet,
-                tableSheets.ItemSheet,
-                States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.BuffLimitSheet,
-                tableSheets.BuffLinkSheet,
-                allConditions,
-                (int)States.Instance.GameConfigState.ShatterStrikeMaxDamage,
-                logEvent: true);
+                // Get conditions for this floor
+                var conditionSheet = tableSheets.InfiniteTowerConditionSheet;
+                var allConditions = new List<InfiniteTowerCondition>();
+                var guaranteedCondition = conditionSheet.Values
+                    .FirstOrDefault(c => c.Id == floorRow.GuaranteedConditionId);
+                var randomConditions = floorRow.GetRandomConditionsWithWeights(
+                    conditionSheet,
+                    random,
+                    guaranteedCondition?.Id);
+                if (guaranteedCondition != null)
+                {
+                    allConditions.Add(new InfiniteTowerCondition(guaranteedCondition));
+                }
+                allConditions.AddRange(randomConditions);
 
-            simulator.Simulate();
-            var log = simulator.Log;
+                // Create simulator
+                var avatar = States.Instance.CurrentAvatarState;
+                var equipments = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower].Equipments;
+                var costumes = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower].Costumes;
+                avatar.EquipItems(equipments.Concat(costumes).ToList());
+
+                var simulator = new InfiniteTowerSimulator(
+                    random,
+                    avatar,
+                    eval.Action.Foods,
+                    States.Instance.AllRuneState,
+                    States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                    eval.Action.InfiniteTowerId,
+                    floorId,
+                    floorRow,
+                    waveRows.Waves,
+                    isCleared,
+                    0, // No experience reward
+                    tableSheets.GetSimulatorSheets(),
+                    tableSheets.EnemySkillSheet,
+                    tableSheets.CostumeStatSheet,
+                    tableSheets.ItemSheet,
+                    States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                    tableSheets.BuffLimitSheet,
+                    tableSheets.BuffLinkSheet,
+                    allConditions,
+                    (int)States.Instance.GameConfigState.ShatterStrikeMaxDamage,
+                    logEvent: true);
+
+                simulator.Simulate();
+                return simulator.Log;
+            });
+
+            // Switch to main thread for UI updates
+            await UniTask.SwitchToMainThread();
+
             var stage = Game.Game.instance.Stage;
             stage.StageType = StageType.InfiniteTower;
             stage.PlayCount = Action.InfiniteTowerBattle.PlayCount;
