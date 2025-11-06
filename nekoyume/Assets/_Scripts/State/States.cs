@@ -244,6 +244,7 @@ namespace Nekoyume.State
                 new RuneSlotState(BattleType.Adventure));
             CurrentRuneSlotStates.TryAdd(BattleType.Arena, new RuneSlotState(BattleType.Arena));
             CurrentRuneSlotStates.TryAdd(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+            CurrentRuneSlotStates.TryAdd(BattleType.InfiniteTower, new RuneSlotState(BattleType.InfiniteTower));
 
             RuneSlotStates.Clear();
             foreach (var (index, avatarState) in _avatarStates)
@@ -253,6 +254,7 @@ namespace Nekoyume.State
                     new RuneSlotState(BattleType.Adventure));
                 RuneSlotStates[index].TryAdd(BattleType.Arena, new RuneSlotState(BattleType.Arena));
                 RuneSlotStates[index].TryAdd(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+                RuneSlotStates[index].TryAdd(BattleType.InfiniteTower, new RuneSlotState(BattleType.InfiniteTower));
 
                 var addresses = new List<Address>
                 {
@@ -312,6 +314,7 @@ namespace Nekoyume.State
                 new ItemSlotState(BattleType.Adventure));
             CurrentItemSlotStates.TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
             CurrentItemSlotStates.TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+            CurrentItemSlotStates.TryAdd(BattleType.InfiniteTower, new ItemSlotState(BattleType.InfiniteTower));
 
             ItemSlotStates.Clear();
             var agent = Game.Game.instance.Agent;
@@ -360,6 +363,7 @@ namespace Nekoyume.State
                 new ItemSlotState(BattleType.Adventure));
             ItemSlotStates[slotIndex].TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
             ItemSlotStates[slotIndex].TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+            ItemSlotStates[slotIndex].TryAdd(BattleType.InfiniteTower, new ItemSlotState(BattleType.InfiniteTower));
 
             var addresses = new List<Address>
             {

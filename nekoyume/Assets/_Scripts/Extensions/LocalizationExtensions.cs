@@ -724,7 +724,7 @@ namespace Nekoyume
             return color;
         }
 
-        private static string GetElementalIcon(ElementalType type)
+        public static string GetElementalIcon(ElementalType type)
         {
             return type switch
             {
@@ -865,6 +865,16 @@ namespace Nekoyume
             var gradeColor = GetItemGradeColor(grade);
             var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
             return (gradeColor, gradeText, guarantee);
+        }
+
+        public static string GetRuneTypeName(RuneType runeType)
+        {
+            switch (runeType)
+            {
+                case RuneType.Stat: return "스탯";
+                case RuneType.Skill: return "스킬";
+                default: return runeType.ToString();
+            }
         }
     }
 }

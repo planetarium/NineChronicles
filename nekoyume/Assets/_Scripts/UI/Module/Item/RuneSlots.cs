@@ -40,6 +40,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void SetDim(List<int> invalidRuneSlotIndexes)
+        {
+            for (int i = 0; i < slots.Count; i++)
+            {
+                slots[i].SetDim(invalidRuneSlotIndexes.Contains(i));
+            }
+        }
+
         private static List<(RuneSlotView, RuneSlot)> GetZippedRuneSlotViewsWithRuneSlotStates(
             IEnumerable<RuneSlotView> slotViews,
             IEnumerable<RuneSlot> runeSlotStates)
