@@ -125,13 +125,46 @@ namespace Nekoyume.State
             }
 
             // Calculate remaining tickets considering reset and refill
-            var currentTickets = infiniteTowerInfo.RemainingTickets;
+            // Similar to EventDungeon's GetRemainingTicketsConsiderReset logic
+            var resetIntervalBlockRange = scheduleRow.ResetIntervalBlocks;
+            int currentTickets;
+
+            if (infiniteTowerInfo.LastTicketRefillBlockIndex == 0)
+            {
+                // If LastTicketRefillBlockIndex is 0, check if reset should have occurred
+                // based on schedule start
+                var blockRange = blockIndex - scheduleRow.StartBlockIndex;
+                if (blockRange <= 0)
+                {
+                    currentTickets = 0;
+                }
+                else
+                {
+                    var interval = (int)(blockRange / resetIntervalBlockRange);
+                    // If interval > 0, reset should have occurred
+                    currentTickets = interval > 0 ? scheduleRow.MaxTickets : infiniteTowerInfo.RemainingTickets;
+                }
+            }
+            else
+            {
+                // Calculate if reset has occurred since last refill
+                var blockRange = blockIndex - infiniteTowerInfo.LastTicketRefillBlockIndex;
+                if (blockRange <= 0)
+                {
+                    currentTickets = infiniteTowerInfo.RemainingTickets;
+                }
+                else
+                {
+                    var interval = (int)(blockRange / resetIntervalBlockRange);
+                    // If interval >= 1, reset has occurred
+                    currentTickets = interval >= 1 ? scheduleRow.MaxTickets : infiniteTowerInfo.RemainingTickets;
+                }
+            }
 
             // Calculate progressed block range since last reset
-            var resetIntervalBlockRange = scheduleRow.ResetIntervalBlocks;
             var progressedBlockRange = infiniteTowerInfo.LastTicketRefillBlockIndex > 0
                 ? (blockIndex - infiniteTowerInfo.LastTicketRefillBlockIndex) % resetIntervalBlockRange
-                : 0;
+                : (blockIndex - scheduleRow.StartBlockIndex) % resetIntervalBlockRange;
 
             InfiniteTowerTicketProgressInternal.Value.Reset(
                 currentTickets,

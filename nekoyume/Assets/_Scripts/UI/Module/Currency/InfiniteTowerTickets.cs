@@ -30,6 +30,7 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             RxProps.InfiniteTowerTicketProgress
+                .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
                 .AddTo(_disposables);
         }
