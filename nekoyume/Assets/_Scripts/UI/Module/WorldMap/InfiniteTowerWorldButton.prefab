@@ -7771,7 +7771,7 @@ MonoBehaviour:
   hoverScaleTo: 1.025
   hoverScaleSpeed: 5
   hasNotificationImage: {fileID: 746820381376184563}
-  worldName: AdventureBoss
+  worldName: InfiniteTower
   lockImage: {fileID: 2372594783889641193}
   unlockImage: {fileID: 7841187626432004689}
   unlockableImage: {fileID: 2665114963295938358}
@@ -7899,9 +7899,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf582f30705a2450b8a8d5b6ff1d9184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  open: {fileID: 0}
-  wantedClose: {fileID: 0}
-  remainingBlockIndexs: []
+  remainingBlockIndexs:
+  - {fileID: 2627834026012840578}
   loadingIndicator: {fileID: 0}
   worldButton: {fileID: 5475652107008707915}
   towerImageParent: {fileID: 0}

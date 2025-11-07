@@ -239,25 +239,6 @@ namespace Nekoyume.UI.Module
 
         private void OnInfiniteTowerStateChanged(InfiniteTowerState state)
         {
-            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                worldButton.IsLockNameShow = false;
-                worldButton.HasNotification.Value = false;
-                SetDefaultRemainingBlockIndexs();
-                if (_towerImage != null)
-                {
-                    DestroyImmediate(_towerImage);
-                }
-
-                worldButton.Lock(true);
-
-                foreach (var obj in unActivateObjs)
-                {
-                    obj.SetActive(false);
-                }
-                prevSeasonPopupBtn.gameObject.SetActive(false);
-                return;
-            }
 
             switch (state)
             {
@@ -291,12 +272,6 @@ namespace Nekoyume.UI.Module
                     prevSeasonPopupBtn.gameObject.SetActive(true);
                     _towerId = 0;
                     break;
-            }
-
-            // 비활성화 오브젝트들 상태 업데이트
-            foreach (var obj in unActivateObjs)
-            {
-                obj.SetActive(state == InfiniteTowerState.None || state == InfiniteTowerState.End);
             }
         }
 
