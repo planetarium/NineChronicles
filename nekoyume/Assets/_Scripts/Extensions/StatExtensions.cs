@@ -35,7 +35,7 @@ namespace Nekoyume
                 ? $"+{statModifier.Value:0.#\\%}"
                 : $"+{statModifier.StatType.ValueToString(statModifier.Value)}";
 
-            return $"{statModifier.StatType} {value}";
+            return $"{statModifier.StatType.GetLocalizedString()} {value}";
         }
 
         public static string OptionRowToString(

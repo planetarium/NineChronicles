@@ -14,6 +14,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.Quest;
@@ -473,6 +474,16 @@ namespace Nekoyume
         public static string GetLocalizedString(this ElementalType value)
         {
             return L10nManager.Localize($"ELEMENTAL_TYPE_{value.ToString().ToUpper()}");
+        }
+
+        public static string GetLocalizedString(this SkillTargetType value)
+        {
+            return L10nManager.Localize($"SKILL_TARGET_TYPE_{value}");
+        }
+
+        public static string GetLocalizedString(this RuneType value)
+        {
+            return L10nManager.Localize($"RUNE_TYPE_{value}");
         }
 
         public static IEnumerable<string> GetOptions(this Player player)

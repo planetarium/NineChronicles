@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
             guaranteedText.text = isGuaranteed ? "Required" : "Random";
             targetText.text = condition.TargetType == null || !condition.TargetType.Any()
                 ? string.Empty
-                : string.Join(", ", condition.TargetType);
+                : string.Join(", ", condition.TargetType.Select(t => t.GetLocalizedString()));
             var statModifier = condition.GetStatModifier();
             conditionText.text = statModifier.StatModifierToString();
         }
