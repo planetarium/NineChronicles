@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.InfiniteTower;
@@ -24,7 +25,9 @@ namespace Nekoyume.UI.Module
         private void SetBuffCondition(InfiniteTowerCondition condition, bool isGuaranteed)
         {
             guaranteedText.text = isGuaranteed ? "Required" : "Random";
-            targetText.text = condition.TargetType.ToString();
+            targetText.text = condition.TargetType == null || !condition.TargetType.Any()
+                ? string.Empty
+                : string.Join(", ", condition.TargetType);
             var statModifier = condition.GetStatModifier();
             conditionText.text = statModifier.StatModifierToString();
         }
