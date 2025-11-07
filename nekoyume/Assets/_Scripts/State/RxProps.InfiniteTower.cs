@@ -201,7 +201,7 @@ namespace Nekoyume.State
             }
 
             // If no state exists, create a new InfiniteTowerInfo
-            return new InfiniteTowerInfo(_currentAvatarAddr.Value, scheduleRow.InfiniteTowerId);
+            return new InfiniteTowerInfo(_currentAvatarAddr.Value, scheduleRow.InfiniteTowerId, scheduleRow.DailyFreeTickets);
         }
     }
 }

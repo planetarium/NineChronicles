@@ -24,7 +24,9 @@ namespace Nekoyume.UI.Module
 
         private void SetBuffCondition(InfiniteTowerCondition condition, bool isGuaranteed)
         {
-            guaranteedText.text = isGuaranteed ? "Required" : "Random";
+            guaranteedText.text = isGuaranteed
+                ? L10nManager.Localize("UI_CONDITION_REQUIRED")
+                : L10nManager.Localize("UI_CONDITION_RANDOM");
             targetText.text = condition.TargetType == null || !condition.TargetType.Any()
                 ? string.Empty
                 : string.Join(", ", condition.TargetType.Select(t => t.GetLocalizedString()));
@@ -35,16 +37,7 @@ namespace Nekoyume.UI.Module
         public void SetBattleCondition(InfiniteTowerBattleCondition condition)
         {
             targetText.text = string.Empty;
-            guaranteedText.text = condition.Type switch
-            {
-                BattleConditionType.CP => "CP",
-                BattleConditionType.ItemGrade => "ItemGrade",
-                BattleConditionType.ItemLevel => "ItemLevel",
-                BattleConditionType.ForbiddenRuneTypes => "ForbiddenRuneTypes",
-                BattleConditionType.RequiredElementalType => "RequiredElementalType",
-                BattleConditionType.ForbiddenItemSubTypes => "ForbiddenItemSubTypes",
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            guaranteedText.text = condition.Type.GetLocalizedString();
             conditionText.text = condition.GetConditionText();
         }
     }

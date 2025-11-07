@@ -1,4 +1,5 @@
 using Nekoyume.TableData;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,8 +40,8 @@ namespace Nekoyume.UI.Module
             _floorData = floorData;
 
             // 층 번호 설정
-            floorLockNumberText.text = $"{floorNumber}F";
-            floorOpenNumberText.text = $"{floorNumber}F";
+            floorLockNumberText.text = L10nManager.Localize("UI_INFINITETOWER_FLOOR_FORMAT", floorNumber);
+            floorOpenNumberText.text = L10nManager.Localize("UI_INFINITETOWER_FLOOR_FORMAT", floorNumber);
             UnityEngine.Debug.Log($"[InfiniteTowerFloorView] SetState - FloorNumber: {floorNumber}, State: {state}, FloorData: {(floorData != null ? "Found" : "Null")}");
 
             // 층 상태에 따른 UI 설정

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nekoyume.L10n;
 using Nekoyume.Model.InfiniteTower;
 using static Nekoyume.LocalizationExtensions;
 
@@ -21,12 +22,12 @@ namespace Nekoyume
                 {
                     if (condition.RequiredCp.HasValue)
                     {
-                        parts.Add($"최소 {condition.RequiredCp.Value:#,0}");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MIN_CP", condition.RequiredCp.Value.ToString("#,0")));
                     }
 
                     if (condition.MaxCp.HasValue)
                     {
-                        parts.Add($"최대 {condition.MaxCp.Value:#,0}");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MAX_CP", condition.MaxCp.Value.ToString("#,0")));
                     }
 
                     return parts.Count > 0 ? $"{string.Join("-", parts)}" : string.Empty;
@@ -34,35 +35,36 @@ namespace Nekoyume
                 case BattleConditionType.ItemGrade:
                     if (condition.MinItemGrade.HasValue)
                     {
-                        parts.Add($"{condition.MinItemGrade.Value} 이상");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MIN_ITEM_GRADE", condition.MinItemGrade.Value));
                     }
 
                     if (condition.MaxItemGrade.HasValue)
                     {
-                        parts.Add($"{condition.MaxItemGrade.Value} 이하");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MAX_ITEM_GRADE", condition.MaxItemGrade.Value));
                     }
 
                     return parts.Count > 0 ? string.Join(", ", parts) : string.Empty;
                 case BattleConditionType.ItemLevel:
                     if (condition.MinItemLevel.HasValue)
                     {
-                        parts.Add($"레벨 {condition.MinItemLevel.Value} 이상");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MIN_ITEM_LEVEL", condition.MinItemLevel.Value));
                     }
 
                     if (condition.MaxItemLevel.HasValue)
                     {
-                        parts.Add($"레벨 {condition.MaxItemLevel.Value} 이하");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MAX_ITEM_LEVEL", condition.MaxItemLevel.Value));
                     }
 
                     return parts.Count > 0 ? string.Join(", ", parts) : string.Empty;
                 case BattleConditionType.ForbiddenRuneTypes:
                     var runeTypeNames = condition.ForbiddenRuneTypes.Select(r => r.GetLocalizedString()).ToList();
-                    return $"{string.Join(", ", runeTypeNames)} 착용 불가";
+                    return L10nManager.Localize("UI_CONDITION_FORBIDDEN_RUNE_TYPES", string.Join(", ", runeTypeNames));
                 case BattleConditionType.RequiredElementalType:
-                    return $"{condition.RequiredElementalTypes.Select(GetElementalIcon)} 장비만 착용 가능";
+                    var elementalIcons = string.Join("", condition.RequiredElementalTypes.Select(GetElementalIcon));
+                    return L10nManager.Localize("UI_CONDITION_REQUIRED_ELEMENTAL_TYPE", elementalIcons);
                 case BattleConditionType.ForbiddenItemSubTypes:
                     var itemTypeNames = condition.ForbiddenItemSubTypes.Select(GetLocalizedItemSubTypeText).ToList();
-                    return $"{string.Join(", ", itemTypeNames)} 착용 불가";
+                    return L10nManager.Localize("UI_CONDITION_FORBIDDEN_ITEM_SUB_TYPES", string.Join(", ", itemTypeNames));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

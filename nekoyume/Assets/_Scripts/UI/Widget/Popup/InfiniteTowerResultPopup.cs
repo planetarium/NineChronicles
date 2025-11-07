@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                 : L10nManager.Localize("UI_INFINITETOWER_RESULT_FAIL");
 
             floorText.text = string.IsNullOrEmpty(model.FloorName)
-                ? $"Floor {model.FloorId}"
+                ? L10nManager.Localize("UI_INFINITETOWER_FLOOR_NUMBER", model.FloorId)
                 : model.FloorName;
 
             // Buttons

@@ -179,7 +179,7 @@ namespace Nekoyume.UI
             // 층 정보 표시
             if (floorInfoText != null && _floorData != null)
             {
-                floorInfoText.text = $"Floor {_floorData.Floor}";
+                floorInfoText.text = L10nManager.Localize("UI_INFINITETOWER_FLOOR_NUMBER", _floorData.Floor);
             }
 
             // 조건 정보 표시

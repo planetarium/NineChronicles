@@ -2576,11 +2576,7 @@ namespace Nekoyume.Blockchain
                     eval.PreviousState,
                     Addresses.InfiniteTowerInfo,
                     eval.Action.AvatarAddress);
-                var infiniteTowerInfo = infiniteTowerInfoState is List serialized
-                    ? new InfiniteTowerInfo(serialized)
-                    : new InfiniteTowerInfo(
-                        eval.Action.AvatarAddress,
-                        eval.Action.InfiniteTowerId);
+                var infiniteTowerInfo = new InfiniteTowerInfo((List)infiniteTowerInfoState);
                 var isCleared = infiniteTowerInfo.IsCleared(floorId);
 
                 // Get conditions for this floor

@@ -13,6 +13,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.InfiniteTower;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Mail;
@@ -483,7 +484,18 @@ namespace Nekoyume
 
         public static string GetLocalizedString(this RuneType value)
         {
+            // RuneType enum에는 Stat = 1, Skill = 2만 있으므로 유효성 검사
+            if (!Enum.IsDefined(typeof(RuneType), value) || (int)value == 0)
+            {
+                return value.ToString();
+            }
+
             return L10nManager.Localize($"RUNE_TYPE_{value}");
+        }
+
+        public static string GetLocalizedString(this BattleConditionType value)
+        {
+            return L10nManager.Localize($"BATTLE_CONDITION_TYPE_{value}");
         }
 
         public static IEnumerable<string> GetOptions(this Player player)
