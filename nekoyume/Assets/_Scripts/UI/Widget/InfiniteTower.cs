@@ -78,7 +78,7 @@ namespace Nekoyume.UI
             try
             {
                 // 로딩 화면 표시
-                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.AdventureBoss);
+                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.InfiniteTower);
 
                 // 타워 위치 초기화 (AdventureBoss와 동일)
                 towerRect.anchoredPosition = new Vector2(towerRect.anchoredPosition.x, 0);
@@ -257,7 +257,6 @@ namespace Nekoyume.UI
                     var selectedCondition = availableConditions[i];
                     var condition = new InfiniteTowerCondition(selectedCondition);
                     CategorizeCondition(condition, false);
-                    availableConditions.RemoveAt(i);
                 }
             }
         }
