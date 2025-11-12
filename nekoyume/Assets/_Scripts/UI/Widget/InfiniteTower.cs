@@ -99,7 +99,11 @@ namespace Nekoyume.UI
                 Find<HeaderMenuStatic>()?.UpdateAssets(HeaderMenuStatic.AssetVisibleState.InfiniteTower);
 
                 // 위젯 표시 후 현재 층으로 포커스 이동
-                ChangeFloor(_currentFloor, false, false);
+                // ChangeFloor는 배열 인덱스를 받으므로, 현재 층을 배열 인덱스로 변환
+                var startFloor = Math.Max(1, _currentFloor - 15);
+                var relativeIndex = _currentFloor - startFloor;
+                // 인덱스를 1 더해서 정확한 위치로 조정
+                ChangeFloor(relativeIndex + 1, false, false);
 
                 // 완료 대기 (UI 애니메이션 등)
                 await UniTask.Delay(100);
@@ -158,7 +162,6 @@ namespace Nekoyume.UI
                     var boardState = new InfiniteTowerBoardState(serialized);
                     var clearCount = boardState.GetFloorClearCount(_currentFloorData.Id);
                     clearCountText.text = clearCount.ToString("#,0");
-                    NcDebug.Log($"[InfiniteTower] Floor {_currentFloorData.Floor} clear count: {clearCount}");
                 }
                 else
                 {
@@ -316,8 +319,6 @@ namespace Nekoyume.UI
             var startFloor = Math.Max(1, _currentFloor - 15);
             var endFloor = _currentFloor + 14;
 
-            NcDebug.Log($"[InfiniteTower] UpdateFloorViews - CurrentFloor: {_currentFloor}, StartFloor: {startFloor}, EndFloor: {endFloor}, FloorViews.Length: {floorViews.Length}");
-
             for (int i = 0; i < floorViews.Length; i++)
             {
                 var floorView = floorViews[i];
@@ -329,7 +330,6 @@ namespace Nekoyume.UI
                 if (floorNumber > endFloor)
                 {
                     floorView.gameObject.SetActive(false);
-                    NcDebug.Log($"[InfiniteTower] FloorView {i} disabled - FloorNumber: {floorNumber} out of range");
                     continue;
                 }
 
@@ -341,14 +341,11 @@ namespace Nekoyume.UI
                 var floorData = tableSheets?.InfiniteTowerFloorSheet?.Values
                     .FirstOrDefault(f => f.Floor == floorNumber);
 
-                NcDebug.Log($"[InfiniteTower] FloorView {i} - FloorNumber: {floorNumber}, FloorState: {floorState}, FloorData: {(floorData != null ? "Found" : "Null")}");
                 floorView.SetState(floorState, floorNumber, floorData);
             }
 
             // 현재 층을 중심으로 화면 조정 (AdventureBoss와 동일한 방식)
-            AdjustTowerPosition(_currentFloor);
-
-            NcDebug.Log($"[InfiniteTower] Updated floor views - Range: {startFloor}~{endFloor}, Current: {_currentFloor}");
+            AdjustTowerPosition(_currentFloor, startFloor);
         }
 
         public void ChangeFloor(int targetIndex, bool isStartPointRefresh = true,
@@ -374,23 +371,53 @@ namespace Nekoyume.UI
             }
         }
 
-        private void AdjustTowerPosition(int targetFloor)
+        private void AdjustTowerPosition(int targetFloor, int startFloor)
         {
-            if (towerRect == null) return;
+            if (towerRect == null || floorViews == null || floorViews.Length == 0) return;
 
             const float floorHeight = 170f; // AdventureBoss와 동일한 층 높이
             const float towerCenterAdjuster = 52f; // AdventureBoss와 동일한 조정값
 
-            var targetCenter = targetFloor * floorHeight + floorHeight / 2;
-            var screenHeight = GetComponent<RectTransform>().rect.height;
+            // MainCanvas의 높이 사용 (AdventureBoss와 동일)
+            var screenHeight = MainCanvas.instance.RectTransform.rect.height;
+
+            // AdventureBoss와 동일한 방식: 배열 인덱스를 기반으로 위치 계산
+            // 시작 층과의 차이를 계산하여 배열 인덱스 결정
+            // 예: targetFloor=21, startFloor=6이면 relativeIndex=15, floorViews[15]가 21층
+            var relativeIndex = targetFloor - startFloor;
+
+            // 첫 번째 층의 실제 위치를 확인하여 offset 계산
+            // anchoredPosition.y는 pivot 기준 위치이므로, pivot이 중심이 아닐 수 있음
+            // rectTransform.rect.height를 사용하여 층의 중심 위치 계산
+            float firstFloorOffset = 0f;
+            if (floorViews[0] != null && floorViews[0].gameObject.activeSelf)
+            {
+                var firstFloorRect = floorViews[0].GetComponent<RectTransform>();
+                if (firstFloorRect != null)
+                {
+                    var firstFloorActualY = firstFloorRect.anchoredPosition.y;
+                    // pivot이 중심이 아닐 수 있으므로, rect.height를 사용하여 중심 위치 계산
+                    var pivotOffset = (firstFloorRect.pivot.y - 0.5f) * firstFloorRect.rect.height;
+                    var firstFloorCenterY = firstFloorActualY - pivotOffset;
+                    var firstFloorExpectedY = 0 * floorHeight + floorHeight / 2; // 85
+                    firstFloorOffset = firstFloorCenterY - firstFloorExpectedY;
+                }
+            }
+
+            // AdventureBoss와 동일한 계산 방식 사용 + 첫 번째 층의 offset 적용
+            // targetCenter = relativeIndex * floorHeight + floorHeight / 2 + firstFloorOffset
+            // 이는 타워 좌표계에서 해당 층의 중심 Y 위치를 계산합니다
+            var targetCenter = relativeIndex * floorHeight + floorHeight / 2 + firstFloorOffset;
+
+            // AdventureBoss와 정확히 동일한 계산식 사용
+            // startY = -(targetCenter - screenHeight / 2 - towerCenterAdjuster)
+            // 이는 타워를 아래로 이동시켜서 현재 층이 화면 중앙에 오도록 함
             var startY = -(targetCenter - screenHeight / 2 - towerCenterAdjuster);
 
-            // 화면 상단을 넘지 않도록 제한
+            // 화면 상단을 넘지 않도록 제한 (타워가 위로 올라가지 않도록)
             var clampedY = Math.Min(startY, 0);
 
             towerRect.anchoredPosition = new Vector2(towerRect.anchoredPosition.x, clampedY);
-
-            NcDebug.Log($"[InfiniteTower] Adjusted tower position - TargetFloor: {targetFloor}, TargetCenter: {targetCenter}, ScreenHeight: {screenHeight}, StartY: {startY}, ClampedY: {clampedY}");
         }
 
         private InfiniteTowerFloorView.FloorState GetFloorState(int floorNumber)
@@ -468,8 +495,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            NcDebug.Log(
-                $"[InfiniteTower] Rewards updated - Items: {itemRewards.Count}, FA: {fungibleAssetRewards.Count}, Total displayed: {rewardIndex}");
         }
 
         private void UpdateConditions()
@@ -571,7 +596,6 @@ namespace Nekoyume.UI
 
             // 클리어한 층이 있으면 다음 층, 없으면 1층부터 시작
             var currentFloor = infiniteTowerInfo.ClearedFloor + 1;
-            NcDebug.Log($"[InfiniteTower] Current challenge floor: {currentFloor} (ClearedFloor: {infiniteTowerInfo.ClearedFloor})");
             return currentFloor;
         }
     }
