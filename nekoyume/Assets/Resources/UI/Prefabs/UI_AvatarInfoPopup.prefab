@@ -758,9 +758,9 @@ RectTransform:
   - {fileID: 2736356758200922442}
   - {fileID: 7574874705274942277}
   - {fileID: 886508252957506919}
-  - {fileID: 7755549708761736351}
   - {fileID: 7539030877604168355}
   - {fileID: 8845611012803128809}
+  - {fileID: 7755549708761736351}
   - {fileID: 1606822892453998080}
   m_Father: {fileID: 2153415479715188534}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -824,9 +824,9 @@ MonoBehaviour:
   - {fileID: 2054254259063487180}
   - {fileID: 5792769095858452675}
   - {fileID: 3834483215842293473}
-  - {fileID: 5970207377950076697}
   - {fileID: 5898400529650649381}
   - {fileID: 4880420943268685423}
+  - {fileID: 5970207377950076697}
   - {fileID: 3402403875593807238}
 --- !u!1 &965484190104967646
 GameObject:
@@ -15522,7 +15522,7 @@ PrefabInstance:
     - target: {fileID: 8915451949132462615, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: runeType
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8960141740377468684, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}

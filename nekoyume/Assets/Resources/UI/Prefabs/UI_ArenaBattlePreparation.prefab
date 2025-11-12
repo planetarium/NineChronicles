@@ -15133,10 +15133,10 @@ RectTransform:
   - {fileID: 1864592110350659915}
   - {fileID: 6423032946909476704}
   - {fileID: 9079561219154252090}
-  - {fileID: 7265726655872325744}
   - {fileID: 6403809546953605532}
   - {fileID: 651302176652422001}
   - {fileID: 8628228667234329666}
+  - {fileID: 7265726655872325744}
   - {fileID: 1375768923269846013}
   m_Father: {fileID: 2661851478349592278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -16358,7 +16358,7 @@ PrefabInstance:
     - target: {fileID: 8915451949132462615, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: runeType
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8960141740377468684, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
@@ -17146,7 +17146,7 @@ PrefabInstance:
     - target: {fileID: 8915451949132462615, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: runeType
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8960141740377468684, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}

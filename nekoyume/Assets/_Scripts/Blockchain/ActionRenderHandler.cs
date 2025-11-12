@@ -56,7 +56,6 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
     using Nekoyume.TableData.AdventureBoss;
-    using Nekoyume.Module;
     using UI.Scroller;
     using UniRx;
 
@@ -2572,11 +2571,17 @@ namespace Nekoyume.Blockchain
                 var random = new LocalRandom(eval.RandomSeed);
 
                 // Get infinite tower info to check if floor is cleared and get applied conditions
+                var scheduleSheet =
+                    tableSheets.InfiniteTowerScheduleSheet.Values.First(r =>
+                        r.InfiniteTowerId == eval.Action.InfiniteTowerId);
                 var infiniteTowerInfoState = StateGetter.GetState(
                     eval.PreviousState,
                     Addresses.InfiniteTowerInfo,
                     eval.Action.AvatarAddress);
-                var infiniteTowerInfo = new InfiniteTowerInfo((List)infiniteTowerInfoState);
+                var infiniteTowerInfo = infiniteTowerInfoState is List list
+                    ? new InfiniteTowerInfo(list)
+                    : new InfiniteTowerInfo(eval.Action.AvatarAddress, eval.Action.InfiniteTowerId,
+                        scheduleSheet.DailyFreeTickets);
                 var isCleared = infiniteTowerInfo.IsCleared(floorId);
 
                 // Get conditions for this floor

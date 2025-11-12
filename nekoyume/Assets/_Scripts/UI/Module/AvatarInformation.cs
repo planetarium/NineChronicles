@@ -288,6 +288,10 @@ namespace Nekoyume.UI.Module
         private void UpdateTitle()
         {
             Destroy(_cachedCharacterTitle);
+            if (_battleType == BattleType.InfiniteTower)
+            {
+                return;
+            }
 
             var (_, costumes) = States.Instance.GetEquippedItems(_battleType);
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
