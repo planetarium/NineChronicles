@@ -85,7 +85,7 @@ namespace Nekoyume.Blockchain
 
         public PrivateKey PrivateKey { get; private set; }
 
-        public Address Address => new Address("0xD9fCe9E571ed4bdB34D3CF46A918Eb6938571a5B");
+        public Address Address => PrivateKey.PublicKey.Address;
 
         public bool Connected { get; private set; }
 

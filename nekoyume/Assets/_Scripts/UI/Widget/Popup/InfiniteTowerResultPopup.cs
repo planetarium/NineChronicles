@@ -6,6 +6,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -192,19 +193,15 @@ namespace Nekoyume.UI
         {
             CloseWithBattle();
 
-            var loading = Widget.Find<LoadingScreen>();
-            loading.Show(LoadingScreen.LoadingType.InfiniteTower);
-
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
+                var loading = Find<LoadingScreen>();
+                loading.Show(LoadingScreen.LoadingType.InfiniteTower);
                 try
                 {
                     CloseWithOtherWidgets();
-                    var infiniteTower = Widget.Find<InfiniteTower>();
-                    if (infiniteTower != null)
-                    {
-                        infiniteTower.Show(true);
-                    }
+                    Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation, true);
+                    Find<InfiniteTower>().Show(true);
                 }
                 finally
                 {
