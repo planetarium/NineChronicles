@@ -13,6 +13,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Rune;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -965,16 +966,16 @@ namespace Nekoyume.UI.Module
             scroll.UpdateData(_fungibleAssets, resetScrollOnEnable);
         }
 
-        public void UpdateCostumes(List<Guid> costumes)
+        public void UpdateCostumes(List<Guid> costumes, InfiniteTowerFloorSheet.Row floorData = null)
         {
-            UpdateCostumeEquipped(costumes);
+            UpdateCostumeEquipped(costumes, floorData);
             var bestItem = GetUsableBestCostumes();
             UpdateCostumeNotification(costumes, bestItem);
         }
 
-        public void UpdateEquipments(List<Guid> equipments)
+        public void UpdateEquipments(List<Guid> equipments, InfiniteTowerFloorSheet.Row floorData = null)
         {
-            UpdateEquipmentEquipped(equipments);
+            UpdateEquipmentEquipped(equipments, floorData);
 
             var bestItems = GetUsableBestEquipments();
             UpdateEquipmentNotification(bestItems);
@@ -1020,16 +1021,34 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void UpdateCostumeEquipped(List<Guid> costumes)
+        private void UpdateCostumeEquipped(List<Guid> costumes, InfiniteTowerFloorSheet.Row floorData = null)
         {
             foreach (var costume in _costumes)
             {
                 var equipped = costumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
                 costume.Equipped.SetValueAndForceNotify(equipped);
+
+                if (floorData != null && costume.ItemBase is Costume costumeItem)
+                {
+                    try
+                    {
+                        var testList = new List<Costume> { costumeItem };
+                        floorData.ValidateItemTypeRestrictions(testList);
+                        floorData.ValidateItemGradeRestrictions(testList);
+                        floorData.ValidateItemLevelRestrictions(testList);
+                        // 검증 성공 - 기존 딤 상태는 유지하되, 검증 실패로 인한 딤은 해제
+                        // 다른 조건에 의해 딤 처리된 경우를 고려하여 강제로 false로 설정하지 않음
+                    }
+                    catch
+                    {
+                        // 검증 실패 - 딤 처리
+                        costume.DimObjectEnabled.SetValueAndForceNotify(true);
+                    }
+                }
             }
         }
 
-        private void UpdateEquipmentEquipped(List<Guid> equipments)
+        private void UpdateEquipmentEquipped(List<Guid> equipments, InfiniteTowerFloorSheet.Row floorData = null)
         {
             foreach (var eps in _equipments.Values)
             {
@@ -1037,6 +1056,24 @@ namespace Nekoyume.UI.Module
                 {
                     var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
                     equipment.Equipped.Value = equipped;
+
+                    if (floorData != null && equipment.ItemBase is Equipment equipmentItem)
+                    {
+                        try
+                        {
+                            var testList = new List<Equipment> { equipmentItem };
+                            floorData.ValidateItemTypeRestrictions(testList);
+                            floorData.ValidateItemGradeRestrictions(testList);
+                            floorData.ValidateItemLevelRestrictions(testList);
+                            // 검증 성공 - 기존 딤 상태는 유지하되, 검증 실패로 인한 딤은 해제
+                            // 다른 조건에 의해 딤 처리된 경우를 고려하여 강제로 false로 설정하지 않음
+                        }
+                        catch
+                        {
+                            // 검증 실패 - 딤 처리
+                            equipment.DimObjectEnabled.SetValueAndForceNotify(true);
+                        }
+                    }
                 }
             }
         }

@@ -293,10 +293,15 @@ namespace Nekoyume.UI.Module
             }
 
             var itemSlotState = States.Instance.CurrentItemSlotStates[_battleType];
-            inventory.UpdateCostumes(itemSlotState.Costumes);
-            inventory.UpdateEquipments(itemSlotState.Equipments);
+            inventory.UpdateCostumes(itemSlotState.Costumes, _floorData);
+            inventory.UpdateEquipments(itemSlotState.Equipments, _floorData);
             inventory.UpdateConsumables(_consumableIds);
             UpdateTitle();
+        }
+
+        public void UpdateItemViewForInfiniteTowerPublic()
+        {
+            UpdateItemViewForInfiniteTower();
         }
 
         private void UpdateTitle()

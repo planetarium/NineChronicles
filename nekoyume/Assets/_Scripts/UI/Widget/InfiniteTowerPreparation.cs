@@ -186,6 +186,9 @@ namespace Nekoyume.UI
             // 조건 정보 표시
             UpdateConditions();
 
+            // 금지된 장비/코스튬 자동 해제
+            UnequipItemsFromForbiddenSlots();
+
             // 룬 슬롯 잠금 처리 (ForbiddenRuneTypes 확인)
             UpdateRuneSlotsLock();
 
@@ -747,6 +750,61 @@ namespace Nekoyume.UI
             }
         }
 
+        private void UnequipItemsFromForbiddenSlots()
+        {
+            if (_floorData == null)
+            {
+                return;
+            }
+
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower];
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.InfiniteTower);
+
+            bool anyUnequipped = false;
+
+            // 장비 검증 및 해제
+            foreach (var equipment in equipments)
+            {
+                try
+                {
+                    var testList = new List<Equipment> { equipment };
+                    _floorData.ValidateItemTypeRestrictions(testList);
+                    _floorData.ValidateItemGradeRestrictions(testList);
+                    _floorData.ValidateItemLevelRestrictions(testList);
+                }
+                catch (Exception ex)
+                {
+                    NcDebug.Log($"[InfiniteTowerPreparation] Unequipping forbidden equipment - ItemId: {equipment.ItemId}, Error: {ex.Message}");
+                    itemSlotState.Equipments.Remove(equipment.ItemId);
+                    anyUnequipped = true;
+                }
+            }
+
+            // 코스튬 검증 및 해제
+            foreach (var costume in costumes)
+            {
+                try
+                {
+                    var testList = new List<Costume> { costume };
+                    _floorData.ValidateItemTypeRestrictions(testList);
+                    _floorData.ValidateItemGradeRestrictions(testList);
+                    _floorData.ValidateItemLevelRestrictions(testList);
+                }
+                catch (Exception ex)
+                {
+                    NcDebug.Log($"[InfiniteTowerPreparation] Unequipping forbidden costume - ItemId: {costume.ItemId}, Error: {ex.Message}");
+                    itemSlotState.Costumes.Remove(costume.ItemId);
+                    anyUnequipped = true;
+                }
+            }
+
+            // 아이템이 해제되었으면 뷰 업데이트
+            if (anyUnequipped)
+            {
+                information.UpdateItemViewForInfiniteTowerPublic();
+            }
+        }
+
         private void UnequipRunesFromForbiddenSlots(List<RuneType> forbiddenRuneTypes)
         {
             // 무한의 탑에서는 룬을 Adventure 타입으로 사용
@@ -778,55 +836,10 @@ namespace Nekoyume.UI
 
             var dimConditions = new List<(ItemType type, Predicate<Nekoyume.UI.Model.InventoryItem> predicate)>();
 
-            // 1) Generic restriction-based dimming for ALL inventory items
-            // Equipment: dim if this single item violates any floor restriction
-            if (_floorData != null)
-            {
-                dimConditions.Add((ItemType.Equipment, item =>
-                {
-                    if (item.ItemBase is not Equipment eq)
-                    {
-                        return false;
-                    }
+            // 장비/코스튬 딤 처리는 UpdateEquipmentEquipped와 UpdateCostumeEquipped에서 처리하므로 여기서는 제거
+            // 단, 특정 invalidEquipmentIds/invalidCostumeIds에 대한 딤 처리는 유지
 
-                    try
-                    {
-                        var list = new List<Equipment> { eq };
-                        _floorData.ValidateItemTypeRestrictions(list);
-                        _floorData.ValidateItemGradeRestrictions(list);
-                        _floorData.ValidateItemLevelRestrictions(list);
-                        return false; // passes all checks
-                    }
-                    catch
-                    {
-                        return true; // any violation -> dim
-                    }
-                }));
-
-                // Costume: dim if violates any restriction
-                dimConditions.Add((ItemType.Costume, item =>
-                {
-                    if (item.ItemBase is not Costume cs)
-                    {
-                        return false;
-                    }
-
-                    try
-                    {
-                        var list = new List<Costume> { cs };
-                        _floorData.ValidateItemTypeRestrictions(list);
-                        _floorData.ValidateItemGradeRestrictions(list);
-                        _floorData.ValidateItemLevelRestrictions(list);
-                        return false;
-                    }
-                    catch
-                    {
-                        return true;
-                    }
-                }));
-            }
-
-            // 2) Additionally, dim any specifically identified invalid equipped items
+            // Additionally, dim any specifically identified invalid equipped items
             if (invalidEquipmentIds != null && invalidEquipmentIds.Count > 0)
             {
                 NcDebug.Log($"[InfiniteTowerPreparation] Adding equipment dim conditions for {invalidEquipmentIds.Count} items");
