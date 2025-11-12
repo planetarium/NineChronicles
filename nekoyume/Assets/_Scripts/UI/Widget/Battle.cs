@@ -142,7 +142,7 @@ namespace Nekoyume.UI
             accelerationToggle.gameObject.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
             accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
-            if(stageType != StageType.AdventureBoss && stageType != StageType.InfiniteTower)
+            if(stageType != StageType.AdventureBoss)
             {
                 SetAccelToggle(accelerationToggle.isOn);
             }
