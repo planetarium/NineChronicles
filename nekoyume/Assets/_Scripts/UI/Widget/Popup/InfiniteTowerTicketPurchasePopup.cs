@@ -106,7 +106,7 @@ namespace Nekoyume.UI
             if (hasNcgOption)
             {
                 ncgPurchaseButton.SetCost(CostType.NCG, ncgCost.Value);
-                ncgPurchaseButton.SetText(L10nManager.Localize("UI_INFINITETOWER_TICKET_PURCHASE_NCG_BTN"));
+                ncgPurchaseButton.SetText(L10nManager.Localize("UI_BUY"));
                 ncgPurchaseButton.UpdateObjects();
             }
             else
@@ -128,7 +128,7 @@ namespace Nekoyume.UI
 
                 if (materialSheet.TryGetValue(materialCostId.Value, out var materialRow))
                 {
-                    materialName = materialRow.GetLocalizedName();
+                    materialName = materialRow.GetLocalizedName(useElementalIcon: false);
 
                     // Material ID를 CostType enum 값과 직접 비교
                     // CostType enum: GoldDust=600201, RubyDust=600202, EmeraldDust=600203, SapphireDust=600206, SilverDust=800201
@@ -139,7 +139,7 @@ namespace Nekoyume.UI
                         (int)CostType.RubyDust => CostType.RubyDust,
                         (int)CostType.EmeraldDust => CostType.EmeraldDust,
                         (int)CostType.SapphireDust => CostType.SapphireDust,
-                        _ => CostType.None
+                        _ => CostType.None,
                     };
                 }
                 else
@@ -153,7 +153,7 @@ namespace Nekoyume.UI
                     materialPurchaseButton.SetCost(materialCostType, materialCostCount.Value);
                     NcDebug.Log($"[InfiniteTowerTicketPurchasePopup] Material {materialCostId.Value} mapped to CostType {materialCostType}");
                     // 버튼 텍스트는 로컬라이즈된 텍스트만 사용 (cost는 SetCost로 별도 표시)
-                    materialPurchaseButton.SetText(L10nManager.Localize("UI_INFINITETOWER_TICKET_PURCHASE_MATERIAL_BTN", materialName));
+                    materialPurchaseButton.SetText(L10nManager.Localize("UI_BUY"));
                 }
                 else
                 {
