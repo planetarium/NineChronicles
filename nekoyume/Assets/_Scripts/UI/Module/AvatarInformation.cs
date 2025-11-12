@@ -16,6 +16,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -68,6 +69,7 @@ namespace Nekoyume.UI.Module
         private long _currentCp;
         private bool _isAvatarInfo;
         private bool _isCpValidationFailed = false;
+        private InfiniteTowerFloorSheet.Row _floorData;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<int> _consumableIds = new();
@@ -233,11 +235,23 @@ namespace Nekoyume.UI.Module
             var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
             var equippedRuneStates = States.Instance.GetEquippedRuneStates(runeBattleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            inventory.UpdateRunes(equippedRuneStates, runeBattleType, sheet);
+
+            List<RuneType> forbiddenRuneTypes = null;
+            if (_battleType == BattleType.InfiniteTower && _floorData != null)
+            {
+                forbiddenRuneTypes = _floorData.ForbiddenRuneTypes;
+            }
+
+            inventory.UpdateRunes(equippedRuneStates, runeBattleType, sheet, forbiddenRuneTypes);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
 
             // 무한루프 방지를 위해 UpdateRuneView에서는 콜백 호출하지 않음
             // 대신 UpdateStat에서만 콜백 호출
+        }
+
+        public void UpdateRuneViewPublic()
+        {
+            UpdateRuneView();
         }
 
         private void UpdateItemView()
@@ -863,9 +877,15 @@ namespace Nekoyume.UI.Module
 
                     if (!BattleRenderer.Instance.IsOnBattle)
                     {
-                        if (model.DimObjectEnabled.Value)
+                        if (model.Equipped.Value)
                         {
-                            interactable = model.Equipped.Value;
+                            // 장착된 아이템은 항상 unequip 가능 (밸리데이션 실패 여부와 관계없이)
+                            interactable = true;
+                        }
+                        else if (model.DimObjectEnabled.Value)
+                        {
+                            // 장착되지 않은 딤 처리된 아이템은 equip 불가
+                            interactable = false;
                         }
                         else
                         {
@@ -1191,6 +1211,11 @@ namespace Nekoyume.UI.Module
             runeSlots.SetDim(invalidRuneSlots);
         }
 
+        public void SetRuneSlotsTemporaryLock(List<RuneType> forbiddenRuneTypes)
+        {
+            runeSlots.SetTemporaryLockByRuneTypes(forbiddenRuneTypes);
+        }
+
         public void SetInventoryDimConditions(
             List<(ItemType type, Predicate<Nekoyume.UI.Model.InventoryItem> predicate)> dimConditions)
         {
@@ -1223,6 +1248,11 @@ namespace Nekoyume.UI.Module
             inventory.ApplyAdditionalRuneDimConditions(runePredicates
                 .Select(p => (Predicate<InventoryItem>)(item => p(item)))
                 .ToList());
+        }
+
+        public void SetFloorData(InfiniteTowerFloorSheet.Row floorData)
+        {
+            _floorData = floorData;
         }
 
         public void SetCpColor(Color color)

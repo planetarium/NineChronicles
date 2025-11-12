@@ -167,6 +167,7 @@ namespace Nekoyume.UI
             });
 
             // 인벤토리 업데이트 (장비는 InfiniteTower, 룬은 Adventure, 캐릭터 모델 비활성화)
+            information.SetFloorData(_floorData);
             information.UpdateInventoryForInfiniteTower(BattleType.InfiniteTower);
             UpdateRequiredCostByFloorId();
 
@@ -184,6 +185,9 @@ namespace Nekoyume.UI
 
             // 조건 정보 표시
             UpdateConditions();
+
+            // 룬 슬롯 잠금 처리 (ForbiddenRuneTypes 확인)
+            UpdateRuneSlotsLock();
 
             // 캐릭터 모델 비활성화
             if (characterModelObject != null)
@@ -720,8 +724,52 @@ namespace Nekoyume.UI
             information.SetEquipmentSlotsDim(new List<Guid>(), new List<Guid>());
             information.SetRuneSlotsDim(new List<int>());
 
+            // 룬 슬롯 임시 잠금 해제
+            information.SetRuneSlotsTemporaryLock(null);
+
             // 인벤토리 딤 처리 해제
             UpdateInventoryDim(new List<Guid>(), new List<Guid>());
+        }
+
+        private void UpdateRuneSlotsLock()
+        {
+            // ForbiddenRuneTypes가 있으면 해당 타입의 모든 룬 슬롯 잠금 처리
+            if (_floorData != null && _floorData.ForbiddenRuneTypes != null && _floorData.ForbiddenRuneTypes.Count > 0)
+            {
+                // 잠금 처리할 슬롯에 장착된 룬 자동 해제
+                UnequipRunesFromForbiddenSlots(_floorData.ForbiddenRuneTypes);
+
+                information.SetRuneSlotsTemporaryLock(_floorData.ForbiddenRuneTypes);
+            }
+            else
+            {
+                information.SetRuneSlotsTemporaryLock(null);
+            }
+        }
+
+        private void UnequipRunesFromForbiddenSlots(List<RuneType> forbiddenRuneTypes)
+        {
+            // 무한의 탑에서는 룬을 Adventure 타입으로 사용
+            var runeBattleType = BattleType.Adventure;
+            var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
+
+            bool anyUnequipped = false;
+            foreach (var slot in states)
+            {
+                // ForbiddenRuneTypes에 포함된 타입이고, 룬이 장착되어 있으면 해제
+                if (forbiddenRuneTypes.Contains(slot.RuneType) && slot.RuneId.HasValue)
+                {
+                    NcDebug.Log($"[InfiniteTowerPreparation] Unequipping rune from forbidden slot - SlotIndex: {slot.Index}, RuneType: {slot.RuneType}, RuneId: {slot.RuneId.Value}");
+                    slot.Unequip();
+                    anyUnequipped = true;
+                }
+            }
+
+            // 룬이 해제되었으면 뷰 업데이트
+            if (anyUnequipped)
+            {
+                information.UpdateRuneViewPublic();
+            }
         }
 
         private void UpdateInventoryDim(List<Guid> invalidEquipmentIds, List<Guid> invalidCostumeIds)
@@ -729,7 +777,6 @@ namespace Nekoyume.UI
             NcDebug.Log($"[InfiniteTowerPreparation] UpdateInventoryDim called - invalidEquipmentIds: {invalidEquipmentIds?.Count ?? 0}, invalidCostumeIds: {invalidCostumeIds?.Count ?? 0}");
 
             var dimConditions = new List<(ItemType type, Predicate<Nekoyume.UI.Model.InventoryItem> predicate)>();
-            var runePredicates = new List<Predicate<Nekoyume.UI.Model.InventoryItem>>();
 
             // 1) Generic restriction-based dimming for ALL inventory items
             // Equipment: dim if this single item violates any floor restriction
@@ -798,27 +845,6 @@ namespace Nekoyume.UI
 
             // 적용. 빈 리스트면 아무 변화 없음
             information.SetInventoryDimConditions(dimConditions);
-
-            // Rune inventory dimming by floor ForbiddenRuneTypes
-            if (_floorData != null && _floorData.ForbiddenRuneTypes != null && _floorData.ForbiddenRuneTypes.Count > 0)
-            {
-                var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-                runePredicates.Add(item =>
-                {
-                    if (item.RuneState == null)
-                    {
-                        return false;
-                    }
-                    if (!runeListSheet.TryGetValue(item.RuneState.RuneId, out var row))
-                    {
-                        return false;
-                    }
-                    var rType = (RuneType)row.RuneType;
-                    return _floorData.ForbiddenRuneTypes.Contains(rType);
-                });
-
-                information.SetRuneInventoryDimConditions(runePredicates);
-            }
         }
 
 

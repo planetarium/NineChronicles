@@ -286,6 +286,15 @@ namespace Nekoyume.UI.Module
             enhancementText.color = dimColor;
         }
 
+        public void SetTemporaryLock(bool isLocked)
+        {
+            // 임시 잠금 처리 (ForbiddenRuneTypes 등으로 인한 잠금)
+            if (lockObject != null)
+            {
+                lockObject.SetActive(isLocked || (RuneSlot != null && RuneSlot.IsLock));
+            }
+        }
+
         private void OnClick(BaseEventData eventData)
         {
             if (!(eventData is PointerEventData data) ||

@@ -946,9 +946,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(List<RuneState> equippedRuneState, BattleType battleType, RuneListSheet sheet)
+        public void UpdateRunes(List<RuneState> equippedRuneState, BattleType battleType, RuneListSheet sheet, List<RuneType> forbiddenRuneTypes = null)
         {
-            UpdateRuneEquipped(equippedRuneState, battleType, sheet);
+            UpdateRuneEquipped(equippedRuneState, battleType, sheet, forbiddenRuneTypes);
             UpdateRuneNotification(GetBestRunes(battleType));
             var models = GetModels(_activeTabType);
             scroll.UpdateData(models, resetScrollOnEnable);
@@ -992,7 +992,8 @@ namespace Nekoyume.UI.Module
         private void UpdateRuneEquipped(
             List<RuneState> runeStates,
             BattleType battleType,
-            RuneListSheet sheet)
+            RuneListSheet sheet,
+            List<RuneType> forbiddenRuneTypes = null)
         {
             foreach (var rune in _runes)
             {
@@ -1005,6 +1006,16 @@ namespace Nekoyume.UI.Module
                 }
 
                 var equippable = battleType.IsEquippableRune((RuneUsePlace)row.UsePlace);
+
+                if (forbiddenRuneTypes != null && forbiddenRuneTypes.Count > 0)
+                {
+                    var runeType = (RuneType)row.RuneType;
+                    if (forbiddenRuneTypes.Contains(runeType))
+                    {
+                        equippable = false;
+                    }
+                }
+
                 rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
         }
