@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 1844570274827999736}
   - component: {fileID: 5899465662348397584}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredRubyDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -629,7 +629,7 @@ GameObject:
   - component: {fileID: 5424071089779371663}
   - component: {fileID: 2025596628537201525}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredApCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -978,7 +978,7 @@ GameObject:
   - component: {fileID: 1488444566433737029}
   - component: {fileID: 7565447603882047893}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredWbTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1272,7 +1272,7 @@ MonoBehaviour:
   - type: 7
     costTexts:
     - parent: {fileID: 7738048267322326950}
-      text: {fileID: 3116881382035383595}
+      text: {fileID: 678589410617157793}
     - parent: {fileID: 4852540581090951110}
       text: {fileID: 4404095244543618924}
     - parent: {fileID: 4213871915146529201}
@@ -1499,7 +1499,7 @@ GameObject:
   - component: {fileID: 6331241762115805108}
   - component: {fileID: 5156085590801174091}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredApPotionCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1681,7 +1681,7 @@ GameObject:
   - component: {fileID: 3935848499839624318}
   - component: {fileID: 3510632044089961105}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredArenaTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2026,7 +2026,7 @@ GameObject:
   - component: {fileID: 7807152838537497964}
   - component: {fileID: 6857576019195855402}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredEventTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2804,7 +2804,7 @@ GameObject:
   - component: {fileID: 3973218242188393088}
   - component: {fileID: 5110281427567923042}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredWbTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3080,7 +3080,7 @@ GameObject:
   - component: {fileID: 1848726580530699761}
   - component: {fileID: 365859689225233522}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredHourglassCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3262,7 +3262,7 @@ GameObject:
   - component: {fileID: 8108981071509141441}
   - component: {fileID: 6959858529637489906}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredApPotionCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3531,7 +3531,7 @@ GameObject:
   - component: {fileID: 8388834064931935900}
   - component: {fileID: 4913403508293337652}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredSapphireDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3806,7 +3806,7 @@ GameObject:
   - component: {fileID: 2235880657841951381}
   - component: {fileID: 2579873935422699389}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredSapphireDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4063,7 +4063,7 @@ GameObject:
   - component: {fileID: 7676013588515909349}
   - component: {fileID: 1475226269309713363}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredRubyDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4570,7 +4570,7 @@ GameObject:
   - component: {fileID: 4200826141622720971}
   - component: {fileID: 3536662442062459728}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredNcgCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4752,7 +4752,7 @@ GameObject:
   - component: {fileID: 5016080481839739901}
   - component: {fileID: 3055346120877307121}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredInfiniteTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4935,7 +4935,7 @@ GameObject:
   - component: {fileID: 333005905191750412}
   - component: {fileID: 7134320097192633716}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredInfiniteTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5373,7 +5373,7 @@ GameObject:
   - component: {fileID: 1557668928237176489}
   - component: {fileID: 667774263900914457}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredSapphireDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5705,7 +5705,7 @@ GameObject:
   - component: {fileID: 3609013955024135787}
   - component: {fileID: 4814337366732909173}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredArenaTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6050,7 +6050,7 @@ GameObject:
   - component: {fileID: 7191665574553118267}
   - component: {fileID: 2673292688600728640}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredGoldenDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6319,7 +6319,7 @@ GameObject:
   - component: {fileID: 5875257583832067535}
   - component: {fileID: 4023563897195433969}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredApPotionCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6870,7 +6870,7 @@ GameObject:
   - component: {fileID: 8545872937782451226}
   - component: {fileID: 7485274985425976163}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredCrystalCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8298,7 +8298,7 @@ GameObject:
   - component: {fileID: 773781424194897510}
   - component: {fileID: 2333642989335422348}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredEventTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8555,7 +8555,7 @@ GameObject:
   - component: {fileID: 3626319419805194}
   - component: {fileID: 496657948493532821}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredNcgCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8812,7 +8812,7 @@ GameObject:
   - component: {fileID: 6665127071598570052}
   - component: {fileID: 2358075754484637360}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredRubyDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9904,7 +9904,7 @@ GameObject:
   - component: {fileID: 587053783233721447}
   - component: {fileID: 5662962056705241340}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredGoldenDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10335,7 +10335,7 @@ GameObject:
   - component: {fileID: 6297026085485752286}
   - component: {fileID: 6378755611750799645}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredEventTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10518,7 +10518,7 @@ GameObject:
   - component: {fileID: 3777607830403293879}
   - component: {fileID: 6385240193401944667}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredWbTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10701,7 +10701,7 @@ GameObject:
   - component: {fileID: 6742139290056991382}
   - component: {fileID: 5331551282463355207}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredApCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11219,7 +11219,7 @@ GameObject:
   - component: {fileID: 5252450926532543646}
   - component: {fileID: 5565024884234421498}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredInfiniteTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11567,7 +11567,7 @@ GameObject:
   - component: {fileID: 5711553621786341228}
   - component: {fileID: 1246847020082702299}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredGoldenDustCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11749,7 +11749,7 @@ GameObject:
   - component: {fileID: 584423680015921028}
   - component: {fileID: 7369158851027193365}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredCrystalCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17762,7 +17762,7 @@ GameObject:
   - component: {fileID: 1083683631976242682}
   - component: {fileID: 6298235775468358620}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredApCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18032,7 +18032,7 @@ GameObject:
   - component: {fileID: 2237162252954419544}
   - component: {fileID: 6332604702572178711}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredHourglassCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18278,7 +18278,7 @@ GameObject:
   - component: {fileID: 4735251992362305120}
   - component: {fileID: 4706300418315937937}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredCrystalCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18622,7 +18622,7 @@ GameObject:
   - component: {fileID: 473655203974498945}
   - component: {fileID: 6647906973196366224}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredNcgCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18804,7 +18804,7 @@ GameObject:
   - component: {fileID: 6605345613189712924}
   - component: {fileID: 522841293642761346}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredArenaTicketCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19074,7 +19074,7 @@ GameObject:
   - component: {fileID: 2738909385949836300}
   - component: {fileID: 6313218390336523120}
   m_Layer: 5
-  m_Name: RequiredCost
+  m_Name: RequiredHourglassCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
