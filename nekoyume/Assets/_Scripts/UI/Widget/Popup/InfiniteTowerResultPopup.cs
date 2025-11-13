@@ -216,15 +216,14 @@ namespace Nekoyume.UI
 
             var loading = Widget.Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.InfiniteTower);
+            Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation, true);
+            Find<InfiniteTower>().Show(true);
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 try
                 {
                     CloseWithOtherWidgets();
-
-                    var worldMap = Widget.Find<WorldMap>();
-                    worldMap?.Close(true);
 
                     var prepare = Widget.Find<InfiniteTowerPreparation>();
                     if (prepare != null)
