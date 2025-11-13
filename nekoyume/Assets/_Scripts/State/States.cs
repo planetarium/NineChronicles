@@ -326,12 +326,14 @@ namespace Nekoyume.State
                     new ItemSlotState(BattleType.Adventure));
                 ItemSlotStates[index].TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
                 ItemSlotStates[index].TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+                ItemSlotStates[index].TryAdd(BattleType.InfiniteTower, new ItemSlotState(BattleType.InfiniteTower));
 
                 var addresses = new List<Address>
                 {
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
-                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid),
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.InfiniteTower),
                 };
                 var stateBulk = await agent.GetStateBulkAsync(agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)
