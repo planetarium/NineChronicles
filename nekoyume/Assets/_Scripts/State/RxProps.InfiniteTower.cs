@@ -75,7 +75,7 @@ namespace Nekoyume.State
             }
 
             var activeSchedule = scheduleSheet.Values
-                .FirstOrDefault(s => s.IsActive(blockIndex) || s.HasStarted(blockIndex));
+                .FirstOrDefault(s => s.IsActive(blockIndex));
 
             if (activeSchedule == null)
             {
@@ -192,7 +192,9 @@ namespace Nekoyume.State
             var scheduleRow = InfiniteTowerScheduleRowInternal.Value;
             // InfiniteTowerInfo는 Addresses.InfiniteTowerInfo 계정에 avatarAddress를 key로 저장됨
             // GetStateAsync(accountAddress, keyAddress) 형식으로 호출
-            var state = await _agent.GetStateAsync(stateRootHash, Addresses.InfiniteTowerInfo, _currentAvatarAddr.Value);
+            var accountAddress =
+                Addresses.InfiniteTowerInfo.Derive($"{scheduleRow.InfiniteTowerId}");
+            var state = await _agent.GetStateAsync(stateRootHash, accountAddress, _currentAvatarAddr.Value);
             if (state is Bencodex.Types.List serialized)
             {
                 var infiniteTowerInfo = new InfiniteTowerInfo(serialized);

@@ -2574,9 +2574,11 @@ namespace Nekoyume.Blockchain
                 var scheduleSheet =
                     tableSheets.InfiniteTowerScheduleSheet.Values.First(r =>
                         r.InfiniteTowerId == eval.Action.InfiniteTowerId);
+                var accountAddress =
+                    Addresses.InfiniteTowerInfo.Derive($"{eval.Action.InfiniteTowerId}");
                 var infiniteTowerInfoState = StateGetter.GetState(
                     eval.PreviousState,
-                    Addresses.InfiniteTowerInfo,
+                    accountAddress,
                     eval.Action.AvatarAddress);
                 var infiniteTowerInfo = infiniteTowerInfoState is List list
                     ? new InfiniteTowerInfo(list)
