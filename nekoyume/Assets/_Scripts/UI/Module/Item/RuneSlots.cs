@@ -48,6 +48,21 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void SetTemporaryLockByRuneTypes(List<RuneType> forbiddenRuneTypes)
+        {
+            foreach (var slot in slots)
+            {
+                if (slot.RuneSlot != null && forbiddenRuneTypes != null && forbiddenRuneTypes.Contains(slot.RuneType))
+                {
+                    slot.SetTemporaryLock(true);
+                }
+                else
+                {
+                    slot.SetTemporaryLock(false);
+                }
+            }
+        }
+
         private static List<(RuneSlotView, RuneSlot)> GetZippedRuneSlotViewsWithRuneSlotStates(
             IEnumerable<RuneSlotView> slotViews,
             IEnumerable<RuneSlot> runeSlotStates)

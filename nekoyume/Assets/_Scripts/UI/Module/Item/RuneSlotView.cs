@@ -61,6 +61,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image priceIconImage;
 
+        [SerializeField]
+        private GameObject skillRuneMarker;
+
         private Action<RuneSlotView> _onClick;
         private Action<RuneSlotView> _onDoubleClick;
         private EventTrigger _eventTrigger;
@@ -81,6 +84,7 @@ namespace Nekoyume.UI.Module
             entry.eventID = EventTriggerType.PointerClick;
             entry.callback.AddListener(OnClick);
             _eventTrigger.triggers.Add(entry);
+            skillRuneMarker.gameObject.SetActive(RuneType == RuneType.Skill);
 
             RectTransform = GetComponent<RectTransform>();
         }
@@ -280,6 +284,15 @@ namespace Nekoyume.UI.Module
             itemImage.color = dimColor;
             gradeImage.color = dimColor;
             enhancementText.color = dimColor;
+        }
+
+        public void SetTemporaryLock(bool isLocked)
+        {
+            // 임시 잠금 처리 (ForbiddenRuneTypes 등으로 인한 잠금)
+            if (lockObject != null)
+            {
+                lockObject.SetActive(isLocked || (RuneSlot != null && RuneSlot.IsLock));
+            }
         }
 
         private void OnClick(BaseEventData eventData)
