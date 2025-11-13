@@ -35,12 +35,14 @@ namespace Nekoyume
                 case BattleConditionType.ItemGrade:
                     if (condition.MinItemGrade.HasValue)
                     {
-                        parts.Add(L10nManager.Localize("UI_CONDITION_MIN_ITEM_GRADE", condition.MinItemGrade.Value));
+                        var minGradeName = L10nManager.Localize($"UI_ITEM_GRADE_{condition.MinItemGrade.Value}");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MIN_ITEM_GRADE", minGradeName));
                     }
 
                     if (condition.MaxItemGrade.HasValue)
                     {
-                        parts.Add(L10nManager.Localize("UI_CONDITION_MAX_ITEM_GRADE", condition.MaxItemGrade.Value));
+                        var maxGradeName = L10nManager.Localize($"UI_ITEM_GRADE_{condition.MaxItemGrade.Value}");
+                        parts.Add(L10nManager.Localize("UI_CONDITION_MAX_ITEM_GRADE", maxGradeName));
                     }
 
                     return parts.Count > 0 ? string.Join(", ", parts) : string.Empty;
