@@ -75,7 +75,7 @@ namespace Nekoyume.State
             }
 
             var activeSchedule = scheduleSheet.Values
-                .FirstOrDefault(s => s.IsActive(blockIndex) || s.HasStarted(blockIndex));
+                .FirstOrDefault(s => s.IsActive(blockIndex));
 
             if (activeSchedule == null)
             {

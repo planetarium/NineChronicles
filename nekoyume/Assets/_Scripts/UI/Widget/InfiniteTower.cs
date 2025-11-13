@@ -574,14 +574,7 @@ namespace Nekoyume.UI
 
         private InfiniteTowerScheduleSheet.Row GetCurrentScheduleInfo()
         {
-            var tableSheets = Game.Game.instance.TableSheets;
-            if (tableSheets?.InfiniteTowerScheduleSheet == null)
-                return null;
-
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            return tableSheets.InfiniteTowerScheduleSheet.Values
-                .FirstOrDefault(schedule =>
-                    schedule.IsActive(currentBlockIndex) || schedule.HasStarted(currentBlockIndex));
+            return RxProps.InfiniteTowerScheduleRow.Value;
         }
 
         private int GetCurrentChallengeFloor()
