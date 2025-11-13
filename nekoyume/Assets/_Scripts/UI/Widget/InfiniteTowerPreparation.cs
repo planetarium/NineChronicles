@@ -386,8 +386,11 @@ namespace Nekoyume.UI
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
 
-            //todo change AP Potion
-            var currencyImage = headerMenuStatic.ApPotion.IconImage;
+            var currencyImage = headerMenuStatic.InfiniteTowerTickets.IconImage;
+            if (buyTicketIfNeeded)
+            {
+                currencyImage = headerMenuStatic.Gold.IconImage;
+            }
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
                 currencyImage.transform.position,
