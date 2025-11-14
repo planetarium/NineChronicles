@@ -374,7 +374,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var hasTicket = infiniteTowerInfo.RemainingTickets >= 1;
+            // TicketProgress.currentTickets를 사용 (서버 로직과 동일하게 계산된 값)
+            var hasTicket = ticketProgress.currentTickets >= 1;
             if (hasTicket)
             {
                 // 티켓이 충분한 경우 바로 배틀 시작 (buyTicketIfNeeded = false)
