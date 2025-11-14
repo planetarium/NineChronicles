@@ -1,7 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -60,12 +60,12 @@ namespace Nekoyume.UI
             }
         }
 
+        private static readonly int ClearedWave = Animator.StringToHash("ClearedWave");
+        private readonly WaitForSeconds _battleWinVFXYield = new(0.2f);
+
         [Header("UI")]
         [SerializeField]
         private CanvasGroup canvasGroup;
-
-        [SerializeField]
-        private TextMeshProUGUI titleText;
 
         [SerializeField]
         private TextMeshProUGUI floorText;
@@ -75,9 +75,6 @@ namespace Nekoyume.UI
 
         [FormerlySerializedAs("rewardViews")]
         [SerializeField]
-        private List<RuneStoneItem> runeRewardViews;
-
-        [SerializeField]
         private List<SimpleCountableItemView> itemRewardViews;
 
         [Header("Buttons")]
@@ -86,6 +83,15 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button preparationButton;
+
+        [SerializeField]
+        private GameObject victoryImageContainer;
+
+        [SerializeField]
+        private GameObject defeatImageContainer;
+
+        [SerializeField]
+        private Animator _victoryImageAnimator;
 
         private Model _model;
 
@@ -109,6 +115,8 @@ namespace Nekoyume.UI
 
         public void Show(Model model)
         {
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
             _model = model;
 
             if (canvasGroup != null)
@@ -117,9 +125,9 @@ namespace Nekoyume.UI
                 canvasGroup.blocksRaycasts = true;
             }
 
-            titleText.text = model.IsClear
-                ? L10nManager.Localize("UI_INFINITETOWER_RESULT_CLEAR")
-                : L10nManager.Localize("UI_INFINITETOWER_RESULT_FAIL");
+            base.Show();
+
+            var isClear = _model.IsClear;
 
             floorText.text = string.IsNullOrEmpty(model.FloorName)
                 ? L10nManager.Localize("UI_INFINITETOWER_FLOOR_NUMBER", model.FloorId)
@@ -127,17 +135,46 @@ namespace Nekoyume.UI
 
             // Buttons
             backButton.gameObject.SetActive(true);
-            preparationButton.gameObject.SetActive(!model.IsClear);
+            preparationButton.gameObject.SetActive(!isClear);
 
             // Rewards
-            var showRewards = model.IsClear && model.Rewards != null && model.Rewards.Count > 0;
+            var showRewards = isClear && model.Rewards != null && model.Rewards.Count > 0;
             rewardArea.SetActive(showRewards);
             if (showRewards)
             {
                 SetRewards(model.Rewards);
             }
 
-            base.Show();
+            StartCoroutine(isClear ? CoUpdateViewWin() : CoUpdateViewLose());
+        }
+
+        private IEnumerator CoUpdateViewWin()
+        {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
+            StartCoroutine(EmitBattleWinVFX());
+            victoryImageContainer.SetActive(true);
+            defeatImageContainer.SetActive(false);
+            _victoryImageAnimator.SetInteger(ClearedWave, 3);
+            rewardArea.SetActive(true);
+
+            yield return null;
+        }
+
+        private IEnumerator CoUpdateViewLose()
+        {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
+
+            victoryImageContainer.SetActive(false);
+            defeatImageContainer.SetActive(true);
+            rewardArea.SetActive(false);
+
+            yield return null;
+        }
+
+        private IEnumerator EmitBattleWinVFX()
+        {
+            yield return _battleWinVFXYield;
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
         }
 
         private void SetRewards(IReadOnlyList<CountableItem> rewards)
