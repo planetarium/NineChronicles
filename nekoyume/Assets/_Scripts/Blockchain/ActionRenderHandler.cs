@@ -2404,9 +2404,18 @@ namespace Nekoyume.Blockchain
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
             var tableSheets = TableSheets.Instance;
+
+            // 전투에서 사용한 장비와 코스튬은 Action 인자로 들어가기 때문에,
+            // UpdateCurrentAvatarItemSlotState로 갱신된 장비 정보를 반영하기 위해 재착용합니다.
+            var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            tempPlayer.EquipItems(items);
+
             var simulator = new StageSimulator(
                 random,
-                States.Instance.CurrentAvatarState,
+                tempPlayer,
                 eval.Action.Foods,
                 States.Instance.AllRuneState,
                 States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
