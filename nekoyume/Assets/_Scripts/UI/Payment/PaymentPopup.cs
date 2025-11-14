@@ -771,6 +771,19 @@ namespace Nekoyume.UI
             }
         }
 
+        private void AttractWebShop()
+        {
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+            Helper.Util.OpenURL(Game.Game.instance.CommandLineOptions.WebMarketUrl);
+        }
+
         private void AttractToSummon()
         {
             if (BattleRenderer.Instance.IsOnBattle)
@@ -843,6 +856,8 @@ namespace Nekoyume.UI
                     return L10nManager.Localize(CanAttractDust(costType) ?
                         "UI_LACK_EMERALD_DUST" :
                         "UI_LACK_EMERALD_DUST_KR");
+                case CostType.SapphireDust:
+                    return L10nManager.Localize("UI_LACK_SAPPHIRE_DUST");
             }
 
             return string.Empty;
@@ -859,6 +874,8 @@ namespace Nekoyume.UI
                     return L10nManager.Localize("UI_MENU_MONSTER_COLLECTION");
                 case CostType.EmeraldDust:
                     return L10nManager.Localize("WORLD_NAME_ADVENTURE_BOSS");
+                case CostType.SapphireDust:
+                    return L10nManager.Localize("UI_SHOP");
             }
 
             return string.Empty;
@@ -871,6 +888,7 @@ namespace Nekoyume.UI
                 case CostType.SilverDust:
                 case CostType.GoldDust:
                 case CostType.RubyDust:
+                case CostType.SapphireDust:
                     return true;
                 case CostType.EmeraldDust:
                     return !Game.LiveAsset.GameConfig.IsKoreanBuild;
@@ -891,6 +909,9 @@ namespace Nekoyume.UI
                 case CostType.EmeraldDust:
                     AttractToAdventureBoss();
                     return;
+                case CostType.SapphireDust:
+                    AttractWebShop();
+                    return;
             }
 
             NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
@@ -907,6 +928,9 @@ namespace Nekoyume.UI
                     break;
                 case CostType.EmeraldDust:
                     buttonYes.SetCondition(CheckClearRequiredStageAdventureBoss);
+                    break;
+                case CostType.SapphireDust:
+                    buttonYes.SetCondition(CheckClearRequiredStageShop);
                     break;
                 default:
                     buttonYes.SetCondition(null);

@@ -312,10 +312,10 @@ namespace Nekoyume.UI
             // HeaderMenuStatic에 티켓 정보 업데이트 요청
             // TODO: InfiniteTowerTickets Currency 모듈이 추가되면 여기서 업데이트
             // 현재는 RxProps.InfiniteTowerTicketProgress를 사용
-            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
-            if (infiniteTowerInfo != null)
+            var ticketProgress = RxProps.InfiniteTowerTicketProgress.Value;
+            if (ticketProgress != null)
             {
-                NcDebug.Log($"[InfiniteTowerPreparation] Ticket info updated - RemainingTickets: {infiniteTowerInfo.RemainingTickets}");
+                NcDebug.Log($"[InfiniteTowerPreparation] Ticket info updated - CurrentTickets: {ticketProgress.currentTickets}");
             }
         }
 
@@ -352,7 +352,18 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // 티켓 체크 (RxProps에서 관리)
+            // 티켓 체크 (RxProps에서 관리 - 자동 리필 계산 반영된 값 사용)
+            var ticketProgress = RxProps.InfiniteTowerTicketProgress.Value;
+            if (ticketProgress == null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_INFINITETOWER_INFO_NOT_LOADED"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            // InfiniteTowerInfo는 ShowTicketPurchasePopup()에서 NumberOfTicketPurchases를 위해 필요
             var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
             if (infiniteTowerInfo == null)
             {
@@ -663,6 +674,34 @@ namespace Nekoyume.UI
                     }
                 }
 
+                // 1-1. 속성 검증 (ElementalType)
+                try
+                {
+                    _floorData.ValidateEquipmentElementalType(equipments);
+                }
+                catch (Exception ex)
+                {
+                    NcDebug.Log($"[InfiniteTowerPreparation] Elemental type validation failed: {ex.Message}");
+
+                    // 위반된 장비들을 식별
+                    foreach (var equipment in equipments)
+                    {
+                        try
+                        {
+                            var testList = new List<Equipment> { equipment };
+                            _floorData.ValidateEquipmentElementalType(testList);
+                        }
+                        catch (Exception itemEx)
+                        {
+                            NcDebug.Log($"[InfiniteTowerPreparation] Equipment {equipment.ItemId} failed elemental type validation: {itemEx.Message}");
+                            if (!invalidEquipmentIds.Contains(equipment.ItemId))
+                            {
+                                invalidEquipmentIds.Add(equipment.ItemId);
+                            }
+                        }
+                    }
+                }
+
                 // 2. 룬 타입 제한 검증
                 try
                 {
@@ -774,6 +813,8 @@ namespace Nekoyume.UI
                     _floorData.ValidateItemTypeRestrictions(testList);
                     _floorData.ValidateItemGradeRestrictions(testList);
                     _floorData.ValidateItemLevelRestrictions(testList);
+                    // 속성 검증 추가
+                    _floorData.ValidateEquipmentElementalType(testList);
                 }
                 catch (Exception ex)
                 {
@@ -792,6 +833,8 @@ namespace Nekoyume.UI
                     _floorData.ValidateItemTypeRestrictions(testList);
                     _floorData.ValidateItemGradeRestrictions(testList);
                     _floorData.ValidateItemLevelRestrictions(testList);
+                    // 속성 검증 추가
+                    _floorData.ValidateEquipmentElementalType(testList);
                 }
                 catch (Exception ex)
                 {
@@ -855,6 +898,19 @@ namespace Nekoyume.UI
                 NcDebug.Log($"[InfiniteTowerPreparation] Adding costume dim conditions for {invalidCostumeIds.Count} items");
                 dimConditions.Add((ItemType.Costume, item =>
                     item.ItemBase is Costume cs && invalidCostumeIds.Contains(cs.ItemId)));
+            }
+
+            // 속성(ElementalType) 조건 추가
+            if (_floorData != null && _floorData.RequiredElementalTypes != null && _floorData.RequiredElementalTypes.Count > 0)
+            {
+                var elementalDimFunc = InventoryHelper.GetDimmedFuncByElementalTypes(_floorData.RequiredElementalTypes);
+                if (elementalDimFunc != null)
+                {
+                    NcDebug.Log($"[InfiniteTowerPreparation] Adding elemental type dim conditions for {_floorData.RequiredElementalTypes.Count} allowed types");
+                    dimConditions.Add((ItemType.Equipment, elementalDimFunc));
+                    // 코스튬도 속성을 가질 수 있으므로 동일하게 적용
+                    dimConditions.Add((ItemType.Costume, elementalDimFunc));
+                }
             }
 
             NcDebug.Log($"[InfiniteTowerPreparation] Total dim conditions: {dimConditions.Count}");

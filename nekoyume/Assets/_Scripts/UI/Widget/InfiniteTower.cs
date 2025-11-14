@@ -253,9 +253,7 @@ namespace Nekoyume.UI
                         c.Id != _currentFloorData.GuaranteedConditionId)
                     .ToList();
 
-                var randomCount = Math.Min(_currentFloorData.MinRandomConditions,
-                    availableConditions.Count);
-                for (int i = 0; i < randomCount && availableConditions.Count > 0; i++)
+                for (int i = 0; i < availableConditions.Count; i++)
                 {
                     var selectedCondition = availableConditions[i];
                     var condition = new InfiniteTowerCondition(selectedCondition);
