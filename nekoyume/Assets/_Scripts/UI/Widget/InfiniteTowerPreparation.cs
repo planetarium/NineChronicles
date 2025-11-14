@@ -312,10 +312,10 @@ namespace Nekoyume.UI
             // HeaderMenuStatic에 티켓 정보 업데이트 요청
             // TODO: InfiniteTowerTickets Currency 모듈이 추가되면 여기서 업데이트
             // 현재는 RxProps.InfiniteTowerTicketProgress를 사용
-            var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
-            if (infiniteTowerInfo != null)
+            var ticketProgress = RxProps.InfiniteTowerTicketProgress.Value;
+            if (ticketProgress != null)
             {
-                NcDebug.Log($"[InfiniteTowerPreparation] Ticket info updated - RemainingTickets: {infiniteTowerInfo.RemainingTickets}");
+                NcDebug.Log($"[InfiniteTowerPreparation] Ticket info updated - CurrentTickets: {ticketProgress.currentTickets}");
             }
         }
 
@@ -352,7 +352,18 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // 티켓 체크 (RxProps에서 관리)
+            // 티켓 체크 (RxProps에서 관리 - 자동 리필 계산 반영된 값 사용)
+            var ticketProgress = RxProps.InfiniteTowerTicketProgress.Value;
+            if (ticketProgress == null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_INFINITETOWER_INFO_NOT_LOADED"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            // InfiniteTowerInfo는 ShowTicketPurchasePopup()에서 NumberOfTicketPurchases를 위해 필요
             var infiniteTowerInfo = RxProps.InfiniteTowerInfo.Value;
             if (infiniteTowerInfo == null)
             {
