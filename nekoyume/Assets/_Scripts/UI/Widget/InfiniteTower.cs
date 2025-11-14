@@ -558,6 +558,62 @@ namespace Nekoyume.UI
             }
         }
 
+        /// <summary>
+        /// 특정 FloorId로 preparation 화면을 엽니다.
+        /// InfiniteTowerResultPopup에서 재진입 시 사용됩니다.
+        /// </summary>
+        /// <param name="floorId">열고자 하는 층의 ID</param>
+        public void ShowPreparationForFloor(int floorId)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            if (tableSheets?.InfiniteTowerFloorSheet == null)
+            {
+                NcDebug.LogError("[InfiniteTower] InfiniteTowerFloorSheet is null");
+                return;
+            }
+
+            // FloorId로 floorData 조회
+            if (!tableSheets.InfiniteTowerFloorSheet.TryGetValue(floorId, out var floorData))
+            {
+                NcDebug.LogError($"[InfiniteTower] Floor data not found for floorId {floorId}");
+                return;
+            }
+
+            // 현재 floor 정보 업데이트
+            _currentFloor = floorData.Floor;
+            _currentFloorData = floorData;
+
+            // 층별 조건 로드
+            LoadFloorConditions();
+            LoadBattleConditions();
+
+            // OnClickEnter와 동일한 로직으로 preparation 열기
+            var scheduleInfo = GetCurrentScheduleInfo();
+            if (scheduleInfo == null)
+            {
+                NcDebug.LogError("[InfiniteTower] No active schedule found");
+                return;
+            }
+
+            var preparation = Find<InfiniteTowerPreparation>();
+            if (preparation != null)
+            {
+                preparation.Show(
+                    L10nManager.Localize("UI_BACK"),
+                    _currentFloorData.NcgCost ?? 0,
+                    _currentFloorData,
+                    _battleConditions,
+                    _buffConditions,
+                    scheduleInfo.InfiniteTowerId,
+                    _currentFloorData.Id
+                );
+            }
+            else
+            {
+                NcDebug.LogError("[InfiniteTower] InfiniteTowerPreparation not found");
+            }
+        }
+
         private void OnClickClose()
         {
             Close();

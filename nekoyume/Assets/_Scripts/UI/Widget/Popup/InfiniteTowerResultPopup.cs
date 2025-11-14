@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -228,7 +229,38 @@ namespace Nekoyume.UI
 
         private void GoToInfiniteTower()
         {
+            GoToInfiniteTowerWithCallback((infiniteTower, loading) =>
+            {
+                // InfiniteTower를 동기적으로 표시
+                infiniteTower.Show(true);
+            });
+        }
+
+        private void GoToPreparation()
+        {
+            GoToInfiniteTowerWithCallback((infiniteTower, loading) =>
+            {
+                // InfiniteTower를 표시
+                infiniteTower.Show(true);
+
+                // InfiniteTower 위젯의 ShowPreparationForFloor 메서드를 사용하여
+                // floorData, battleConditions, buffConditions를 자동으로 로드하고 preparation을 엽니다
+                if (_model != null && _model.FloorId > 0)
+                {
+                    infiniteTower.ShowPreparationForFloor(_model.FloorId);
+                }
+                else
+                {
+                    NcDebug.LogError("[InfiniteTowerResultPopup] Invalid FloorId in model");
+                }
+            });
+        }
+
+        private void GoToInfiniteTowerWithCallback(Action<InfiniteTower, LoadingScreen> onLobbyEnterEnd)
+        {
             CloseWithBattle();
+
+            var infiniteTower = Find<InfiniteTower>();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
@@ -237,8 +269,12 @@ namespace Nekoyume.UI
                 try
                 {
                     CloseWithOtherWidgets();
+
+                    // 로비 진입이 완료된 후 월드맵 표시
                     Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation, true);
-                    Find<InfiniteTower>().Show(true);
+
+                    // 콜백 실행
+                    onLobbyEnterEnd(infiniteTower, loading);
                 }
                 finally
                 {
@@ -247,42 +283,5 @@ namespace Nekoyume.UI
             });
         }
 
-        private void GoToPreparation()
-        {
-            CloseWithBattle();
-
-            var loading = Widget.Find<LoadingScreen>();
-            loading.Show(LoadingScreen.LoadingType.InfiniteTower);
-            Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation, true);
-            Find<InfiniteTower>().Show(true);
-
-            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
-            {
-                try
-                {
-                    CloseWithOtherWidgets();
-
-                    var prepare = Widget.Find<InfiniteTowerPreparation>();
-                    if (prepare != null)
-                    {
-                        // 재진입 시 View만 갱신해도 충분. 외부에서 필요한 모델은 별도로 셋업될 수 있음.
-                        prepare.UpdateInventoryView();
-                        prepare.Show(
-                            L10nManager.Localize("UI_BACK"),
-                            0,
-                            null,
-                            null,
-                            null,
-                            _model?.InfiniteTowerId ?? 0,
-                            _model?.FloorId ?? 0,
-                            true);
-                    }
-                }
-                finally
-                {
-                    loading.Close(true);
-                }
-            });
-        }
     }
 }
