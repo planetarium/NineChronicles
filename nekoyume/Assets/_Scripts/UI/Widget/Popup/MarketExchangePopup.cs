@@ -28,6 +28,12 @@ namespace Nekoyume.UI
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             });
 
+            closeButton.onClick.AddListener(() =>
+            {
+                AudioController.PlayClick();
+                Close();
+            });
+
             CloseWidget = () => Close(true);
             base.Awake();
         }
