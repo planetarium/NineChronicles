@@ -549,7 +549,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(true, isApPotionActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.InfiniteTower:
-                    SetActiveAssets(true, true, isInfiniteTowerTicketsActive: true);
+                    SetActiveAssets(true, isInfiniteTowerTicketsActive: true, enabledMaterials: new[] { CostType.SapphireDust });
                     break;
             }
         }
