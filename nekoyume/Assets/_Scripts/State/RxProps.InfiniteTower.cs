@@ -124,47 +124,51 @@ namespace Nekoyume.State
                 return;
             }
 
-            // Calculate remaining tickets considering reset and refill
-            // Similar to EventDungeon's GetRemainingTicketsConsiderReset logic
+            // Calculate remaining tickets using the same logic as TryRefillDailyTickets
+            // This ensures client UI matches server's actual ticket count
             var resetIntervalBlockRange = scheduleRow.ResetIntervalBlocks;
             int currentTickets;
+            long lastRefillBlockIndex = infiniteTowerInfo.LastTicketRefillBlockIndex;
 
-            if (infiniteTowerInfo.LastTicketRefillBlockIndex == 0)
+            // If LastTicketRefillBlockIndex is 0, initialize the reference point and do not refill immediately
+            // (Same logic as TryRefillDailyTickets)
+            if (lastRefillBlockIndex == 0)
             {
-                // If LastTicketRefillBlockIndex is 0, check if reset should have occurred
-                // based on schedule start
-                var blockRange = blockIndex - scheduleRow.StartBlockIndex;
-                if (blockRange <= 0)
-                {
-                    currentTickets = 0;
-                }
-                else
-                {
-                    var interval = (int)(blockRange / resetIntervalBlockRange);
-                    // If interval > 0, reset should have occurred
-                    currentTickets = interval > 0 ? scheduleRow.MaxTickets : infiniteTowerInfo.RemainingTickets;
-                }
+                // No refill has occurred yet, use current RemainingTickets (same as server)
+                currentTickets = infiniteTowerInfo.RemainingTickets;
+                // Use schedule start as reference for progressed block range calculation
+                lastRefillBlockIndex = scheduleRow.StartBlockIndex;
             }
             else
             {
-                // Calculate if reset has occurred since last refill
-                var blockRange = blockIndex - infiniteTowerInfo.LastTicketRefillBlockIndex;
-                if (blockRange <= 0)
+                // Calculate elapsed blocks since last refill
+                var elapsed = blockIndex - lastRefillBlockIndex;
+
+                if (elapsed < resetIntervalBlockRange)
                 {
+                    // Not enough time has passed for refill
                     currentTickets = infiniteTowerInfo.RemainingTickets;
                 }
                 else
                 {
-                    var interval = (int)(blockRange / resetIntervalBlockRange);
-                    // If interval >= 1, reset has occurred
-                    currentTickets = interval >= 1 ? scheduleRow.MaxTickets : infiniteTowerInfo.RemainingTickets;
+                    // Calculate how many full periods have passed
+                    var periods = (int)(elapsed / resetIntervalBlockRange);
+                    var desiredAdd = scheduleRow.DailyFreeTickets * periods;
+                    var capacityLeft = System.Math.Max(0, scheduleRow.MaxTickets - infiniteTowerInfo.RemainingTickets);
+                    var ticketsToAdd = System.Math.Min(capacityLeft, desiredAdd);
+
+                    // Calculate current tickets (same as server logic)
+                    currentTickets = infiniteTowerInfo.RemainingTickets + ticketsToAdd;
+
+                    // Update reference point for progressed block range calculation
+                    // (simulating what would happen on server)
+                    lastRefillBlockIndex += periods * (long)resetIntervalBlockRange;
                 }
             }
 
-            // Calculate progressed block range since last reset
-            var progressedBlockRange = infiniteTowerInfo.LastTicketRefillBlockIndex > 0
-                ? (blockIndex - infiniteTowerInfo.LastTicketRefillBlockIndex) % resetIntervalBlockRange
-                : (blockIndex - scheduleRow.StartBlockIndex) % resetIntervalBlockRange;
+            // Calculate progressed block range since last refill
+            // Use the updated lastRefillBlockIndex if refill occurred
+            var progressedBlockRange = (blockIndex - lastRefillBlockIndex) % resetIntervalBlockRange;
 
             InfiniteTowerTicketProgressInternal.Value.Reset(
                 currentTickets,

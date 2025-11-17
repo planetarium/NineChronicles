@@ -1028,6 +1028,12 @@ namespace Nekoyume.UI.Module
 
                     EquipRune(inventoryItem);
                 }
+
+                // 룬 장착/해제 후 CP 업데이트 및 변경창 표시
+                UpdateStat();
+                ShowCpScreen(inventoryItem);
+                _onUpdate?.Invoke();
+                return;
             }
             else if (inventoryItem.ItemBase.ItemType == ItemType.Consumable)
             {
@@ -1080,7 +1086,9 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
 
-            var equippedRuneStates = States.Instance.GetEquippedRuneStates(_battleType);
+            // 무한의 탑에서는 룬을 Adventure 타입에서 가져옴 (EquipRune/UnequipRune과 동일한 로직)
+            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            var equippedRuneStates = States.Instance.GetEquippedRuneStates(runeBattleType);
 
             var allRuneState = States.Instance.AllRuneState;
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;

@@ -248,7 +248,9 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
-            var runeStates = States.Instance.GetEquippedRuneStates(battleType);
+            // 무한의 탑에서는 룬을 Adventure 타입에서 가져옴 (EquipRune/UnequipRune과 동일한 로직)
+            var runeBattleType = battleType == BattleType.InfiniteTower ? BattleType.Adventure : battleType;
+            var runeStates = States.Instance.GetEquippedRuneStates(runeBattleType);
             var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
 
             var allRuneState = States.Instance.AllRuneState;
