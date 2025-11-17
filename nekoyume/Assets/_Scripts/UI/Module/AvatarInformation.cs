@@ -230,8 +230,8 @@ namespace Nekoyume.UI.Module
 
         private void UpdateRuneView()
         {
-            // 무한의 탑에서는 룬을 Adventure 타입으로 가져옴
-            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            // 무한의 탑에서는 룬을 InfiniteTower 타입으로 가져옴
+            var runeBattleType = _battleType;
             var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
             var equippedRuneStates = States.Instance.GetEquippedRuneStates(runeBattleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -720,8 +720,8 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
-            // 무한의 탑에서는 룬을 Adventure 타입으로 가져옴
-            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            // 무한의 탑에서는 룬을 InfiniteTower 타입으로 가져옴
+            var runeBattleType = _battleType;
             var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
@@ -807,8 +807,8 @@ namespace Nekoyume.UI.Module
 
             NcDebug.Log($"[AvatarInformation] Unequipping rune: {item.RuneState.RuneId}");
 
-            // 무한의 탑에서는 룬을 Adventure 타입으로 가져옴
-            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            // 무한의 탑에서는 룬을 InfiniteTower 타입으로 가져옴
+            var runeBattleType = _battleType;
             var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
             bool found = false;
             foreach (var slot in states)
@@ -1086,8 +1086,8 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
 
-            // 무한의 탑에서는 룬을 Adventure 타입에서 가져옴 (EquipRune/UnequipRune과 동일한 로직)
-            var runeBattleType = _battleType == BattleType.InfiniteTower ? BattleType.Adventure : _battleType;
+            // 무한의 탑에서는 룬을 InfiniteTower 타입에서 가져옴 (EquipRune/UnequipRune과 동일한 로직)
+            var runeBattleType = _battleType;
             var equippedRuneStates = States.Instance.GetEquippedRuneStates(runeBattleType);
 
             var allRuneState = States.Instance.AllRuneState;

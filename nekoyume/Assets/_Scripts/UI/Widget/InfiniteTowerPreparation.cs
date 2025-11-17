@@ -429,8 +429,8 @@ namespace Nekoyume.UI
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
 
-            // Adventure BattleType으로 룬 가져오기 (사용자 요구사항)
-            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
+            // InfiniteTower BattleType으로 룬 가져오기
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.InfiniteTower]
                 .GetEquippedRuneSlotInfos();
 
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
@@ -626,7 +626,7 @@ namespace Nekoyume.UI
                 var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.InfiniteTower);
 
                 // 현재 장착된 룬 정보 가져오기
-                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
+                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.InfiniteTower]
                     .GetEquippedRuneSlotInfos();
 
                 // CP 계산
@@ -854,8 +854,8 @@ namespace Nekoyume.UI
 
         private void UnequipRunesFromForbiddenSlots(List<RuneType> forbiddenRuneTypes)
         {
-            // 무한의 탑에서는 룬을 Adventure 타입으로 사용
-            var runeBattleType = BattleType.Adventure;
+            // 무한의 탑에서는 룬을 InfiniteTower 타입으로 사용
+            var runeBattleType = BattleType.InfiniteTower;
             var states = States.Instance.CurrentRuneSlotStates[runeBattleType].GetRuneSlot();
 
             bool anyUnequipped = false;
@@ -1065,7 +1065,7 @@ namespace Nekoyume.UI
                     avatar,
                     new List<Guid>(), // foods
                     States.Instance.AllRuneState,
-                    States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                    States.Instance.CurrentRuneSlotStates[BattleType.InfiniteTower],
                     infiniteTowerId,
                     floorRow.Id,
                     floorRow,
