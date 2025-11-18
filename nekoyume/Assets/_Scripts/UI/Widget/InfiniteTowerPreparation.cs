@@ -402,6 +402,10 @@ namespace Nekoyume.UI
             if (buyTicketIfNeeded)
             {
                 currencyImage = headerMenuStatic.Gold.IconImage;
+                if (!useNcgForTicket)
+                {
+                    currencyImage = headerMenuStatic.SapphireDust.IconImage;
+                }
             }
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
