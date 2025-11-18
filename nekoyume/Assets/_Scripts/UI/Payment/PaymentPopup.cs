@@ -781,7 +781,7 @@ namespace Nekoyume.UI
                     NotificationCell.NotificationType.Alert);
                 return;
             }
-            Helper.Util.OpenURL(Game.Game.instance.CommandLineOptions.WebMarketUrl);
+            Helper.Util.OpenWebMarketUrl();
         }
 
         private void AttractToSummon()

@@ -260,7 +260,8 @@ namespace Nekoyume.State
                 {
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
-                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid),
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.InfiniteTower)
                 };
                 var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)

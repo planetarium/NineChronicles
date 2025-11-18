@@ -107,6 +107,9 @@ namespace Nekoyume.UI.Module
         private ApPotion apPotion;
 
         [SerializeField]
+        private MaterialAsset sapphireDust;
+
+        [SerializeField]
         private MaterialAsset[] materialAssets;
 
         [SerializeField]
@@ -172,6 +175,7 @@ namespace Nekoyume.UI.Module
         public WorldBossTickets WorldBossTickets => worldBossTickets;
         public InfiniteTowerTickets InfiniteTowerTickets => infiniteTowerTickets;
         public ApPotion ApPotion => apPotion;
+        public MaterialAsset SapphireDust => sapphireDust;
         public MaterialAsset[] MaterialAssets => materialAssets;
 
         public override bool CanHandleInputEvent => false;

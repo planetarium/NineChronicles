@@ -2504,7 +2504,7 @@ namespace Nekoyume.Blockchain
             UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
 
             UpdateCurrentAvatarItemSlotState(eval, BattleType.InfiniteTower);
-            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.InfiniteTower);
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -2621,7 +2621,7 @@ namespace Nekoyume.Blockchain
                     avatar,
                     eval.Action.Foods,
                     States.Instance.AllRuneState,
-                    States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                    States.Instance.CurrentRuneSlotStates[BattleType.InfiniteTower],
                     eval.Action.InfiniteTowerId,
                     floorId,
                     floorRow,

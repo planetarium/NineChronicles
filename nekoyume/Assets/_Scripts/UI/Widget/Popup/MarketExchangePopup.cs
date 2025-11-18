@@ -17,7 +17,7 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 Close();
-                Helper.Util.OpenURL(Game.Game.instance.CommandLineOptions.WebMarketUrl);
+                Helper.Util.OpenWebMarketUrl();
             });
 
             exchangeButton.onClick.AddListener(() =>
@@ -26,6 +26,12 @@ namespace Nekoyume.UI
                 Close();
                 Find<ShopBuy>().Show();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            });
+
+            closeButton.onClick.AddListener(() =>
+            {
+                AudioController.PlayClick();
+                Close();
             });
 
             CloseWidget = () => Close(true);

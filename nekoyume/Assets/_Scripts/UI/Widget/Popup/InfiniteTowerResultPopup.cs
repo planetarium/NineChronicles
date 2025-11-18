@@ -37,6 +37,8 @@ namespace Nekoyume.UI
                 if (reward.ItemBase.HasValue)
                 {
                     var sameReward = _rewards.FirstOrDefault(e =>
+                        e.ItemBase.HasValue &&
+                        e.ItemBase.Value != null &&
                         e.ItemBase.Value.Equals(reward.ItemBase.Value));
                     if (sameReward is null)
                     {
@@ -49,6 +51,8 @@ namespace Nekoyume.UI
                 else
                 {
                     var sameReward = _rewards.FirstOrDefault(e =>
+                        !e.ItemBase.HasValue &&
+                        e.FungibleAssetValue.HasValue &&
                         e.FungibleAssetValue.Value.Equals(reward.FungibleAssetValue.Value));
                     if (sameReward is null)
                     {
