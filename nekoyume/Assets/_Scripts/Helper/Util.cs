@@ -717,5 +717,10 @@ namespace Nekoyume.Helper
             Application.OpenURL(url);
 #endif
         }
+
+        public static void OpenWebMarketUrl()
+        {
+            OpenURL(Game.Game.instance.CommandLineOptions.WebMarketUrl);
+        }
     }
 }

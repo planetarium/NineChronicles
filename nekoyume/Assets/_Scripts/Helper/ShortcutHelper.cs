@@ -340,7 +340,7 @@ namespace Nekoyume.Helper
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Widget.Find<MobileShop>().ShowAsTab(categoryName).Forget();
 #else
-                        Helper.Util.OpenURL(Game.Game.instance.CommandLineOptions.WebMarketUrl);
+                        Helper.Util.OpenWebMarketUrl();
 #endif
                     };
                     guideText = L10nManager.Localize("UI_SHOP_MOBILE");

@@ -17,7 +17,7 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 Close();
-                Helper.Util.OpenURL(Game.Game.instance.CommandLineOptions.WebMarketUrl);
+                Helper.Util.OpenWebMarketUrl();
             });
 
             exchangeButton.onClick.AddListener(() =>
