@@ -231,27 +231,7 @@ namespace Nekoyume.UI
 
         public void ShowSeasonPassPremiumPopup()
         {
-#if UNITY_ANDROID || UNITY_IOS
             Widget.Find<SeasonPassPremiumPopup>().Show(currentSeasonPassType);
-#else
-            var confirm = Find<ConfirmPopup>();
-            confirm.CloseCallback = result =>
-            {
-                var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-                switch (result)
-                {
-                    case ConfirmResult.Yes:
-                        Helper.Util.OpenURL(seasonPassManager.GoogleMarketURL);
-                        break;
-                    case ConfirmResult.No:
-                        Helper.Util.OpenURL(seasonPassManager.AppleMarketURL);
-                        break;
-                    default:
-                        break;
-                }
-            };
-            confirm.Show("UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_TITLE", "UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_CONTENT", "UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_ANDROID", "UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_IOS");
-#endif
         }
 
         public void Show(SeasonPassServiceClient.PassType seasonPassType = SeasonPassServiceClient.PassType.CouragePass, bool ignoreShowAnimation = false)
