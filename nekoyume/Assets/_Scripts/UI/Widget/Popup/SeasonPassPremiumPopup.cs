@@ -235,6 +235,7 @@ namespace Nekoyume.UI
                 AddToolTip(rewards[index], product.FungibleItemList[i].SheetItemId);
             }
 
+#if UNITY_ANDROID || UNITY_IOS
             var purchasingData = iapStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == product.Sku());
             if (purchasingData != null)
             {
@@ -243,6 +244,13 @@ namespace Nekoyume.UI
                     item.text = MobileShop.GetPrice(purchasingData.metadata.isoCurrencyCode, purchasingData.metadata.localizedPrice);
                 }
             }
+#else
+            // FIXME get item price info from iap service
+            foreach (var item in prices)
+            {
+                item.text = L10nManager.Localize("GO_TO_MARKET");
+            }
+#endif
         }
 
         private void AddToolTip(BaseItemView itemView, int itemId)

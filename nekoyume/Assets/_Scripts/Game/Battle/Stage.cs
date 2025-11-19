@@ -1023,7 +1023,7 @@ namespace Nekoyume.Game.Battle
                 {
                     // 무한의탑은 AP 비용 없음
                     apCost = 0;
-                    turnLimit = 200; // InfiniteTowerSimulator의 기본 턴 제한
+                    turnLimit = 150; // InfiniteTowerSimulator의 기본 턴 제한
 
                     break;
                 }
