@@ -61,6 +61,7 @@ namespace Nekoyume.UI.Module
             AdventureBoss,
             Synthesis,
             InfiniteTower,
+            Stage,
         }
 
         [Serializable]
@@ -554,6 +555,9 @@ namespace Nekoyume.UI.Module
                     break;
                 case AssetVisibleState.InfiniteTower:
                     SetActiveAssets(true, isInfiniteTowerTicketsActive: true, enabledMaterials: new[] { CostType.SapphireDust });
+                    break;
+                case AssetVisibleState.Stage:
+                    SetActiveAssets();
                     break;
             }
         }
