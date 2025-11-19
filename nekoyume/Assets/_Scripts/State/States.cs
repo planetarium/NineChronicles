@@ -264,17 +264,51 @@ namespace Nekoyume.State
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.InfiniteTower)
                 };
                 var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
+
+                // Track which BattleType states were loaded from blockchain
+                var loadedBattleTypes = new HashSet<BattleType>();
+
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
                     {
                         var slotState = new RuneSlotState(list);
+                        loadedBattleTypes.Add(slotState.BattleType);
                         RuneSlotStates[index][slotState.BattleType] = slotState;
 
                         if (avatarState.address == CurrentAvatarState.address)
                         {
                             CurrentRuneSlotStates[slotState.BattleType] = slotState;
                         }
+                    }
+                }
+
+                // Migrate unlock status from Adventure to InfiniteTower if InfiniteTower is newly created
+                if (!loadedBattleTypes.Contains(BattleType.InfiniteTower))
+                {
+                    var adventureSlotState = RuneSlotStates[index][BattleType.Adventure];
+                    var infiniteTowerSlotState = RuneSlotStates[index][BattleType.InfiniteTower];
+
+                    var adventureSlots = adventureSlotState.GetRuneSlot();
+                    var infiniteTowerSlots = infiniteTowerSlotState.GetRuneSlot();
+
+                    // Unlock slots in InfiniteTower that are unlocked in Adventure
+                    foreach (var adventureSlot in adventureSlots)
+                    {
+                        if (!adventureSlot.IsLock)
+                        {
+                            var infiniteTowerSlot = infiniteTowerSlots.FirstOrDefault(s => s.Index == adventureSlot.Index);
+                            if (infiniteTowerSlot != null && infiniteTowerSlot.IsLock)
+                            {
+                                infiniteTowerSlotState.Unlock(adventureSlot.Index);
+                            }
+                        }
+                    }
+
+                    // Update CurrentRuneSlotStates if this is current avatar
+                    if (avatarState.address == CurrentAvatarState.address)
+                    {
+                        CurrentRuneSlotStates[BattleType.InfiniteTower] = infiniteTowerSlotState;
                     }
                 }
             }
