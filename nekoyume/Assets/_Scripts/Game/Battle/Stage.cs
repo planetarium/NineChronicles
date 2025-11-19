@@ -980,22 +980,24 @@ namespace Nekoyume.Game.Battle
 
             var battle = Widget.Find<UI.Battle>();
             var isTutorial = false;
+            var header = Widget.Find<HeaderMenuStatic>();
             if (avatarState.worldInformation
                 .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
             {
                 if (worldInfo.StageClearedId < UI.Battle.RequiredStageForHeaderMenu)
                 {
-                    Widget.Find<HeaderMenuStatic>().Close(true);
+                    header.Close(true);
                     isTutorial = true;
                 }
                 else
                 {
-                    Widget.Find<HeaderMenuStatic>().Show();
+                    header.Show();
+                    header.UpdateAssets(HeaderMenuStatic.AssetVisibleState.Stage);
                 }
             }
             else
             {
-                Widget.Find<HeaderMenuStatic>().Close(true);
+                header.Close(true);
                 isTutorial = true;
             }
 
