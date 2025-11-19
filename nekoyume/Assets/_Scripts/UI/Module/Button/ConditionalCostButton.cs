@@ -164,6 +164,7 @@ namespace Nekoyume.UI.Module
                     case CostType.GoldDust:
                     case CostType.RubyDust:
                     case CostType.EmeraldDust:
+                    case CostType.SapphireDust:
                         break;
                     default:
                         return CostType.None;
@@ -192,10 +193,13 @@ namespace Nekoyume.UI.Module
                     return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
                 case CostType.EventDungeonTicket:
                     return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
+                case CostType.InfiniteTowerTicket:
+                    return RxProps.InfiniteTowerTicketProgress.Value.currentTickets >= cost;
                 case CostType.SilverDust:
                 case CostType.GoldDust:
                 case CostType.RubyDust:
                 case CostType.EmeraldDust:
+                case CostType.SapphireDust:
                     var inventory = States.Instance.CurrentAvatarState?.inventory;
                     if (inventory == null)
                     {
@@ -254,6 +258,7 @@ namespace Nekoyume.UI.Module
                     case CostType.GoldDust:
                     case CostType.RubyDust:
                     case CostType.EmeraldDust:
+                    case CostType.SapphireDust:
                         paymentPopup.ShowLackPaymentDust(costType, cost);
                         break;
                 }

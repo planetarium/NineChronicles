@@ -24,18 +24,30 @@ namespace Nekoyume
         /// <param name="statModifier"> StatModifier contains StatType, Operation, Value
         /// <br/> ex1. SPD, Add, 314
         /// <br/> ex2. SPD, Percentage, 314
+        /// <br/> ex3. SPD, Percentage, -50
         /// </param>
         /// <returns> Formatted string of StatModifier
         /// <br/> ex1. "SPD +3.14"
         /// <br/> ex2. "SPD +314%"
+        /// <br/> ex3. "SPD -50%"
         /// </returns>
         public static string StatModifierToString(this StatModifier statModifier)
         {
-            var value = statModifier.Operation == StatModifier.OperationType.Percentage
-                ? $"+{statModifier.Value:0.#\\%}"
-                : $"+{statModifier.StatType.ValueToString(statModifier.Value)}";
+            string value;
+            if (statModifier.Operation == StatModifier.OperationType.Percentage)
+            {
+                // Percentage인 경우: 값이 음수면 - 기호가 자동으로 붙고, 양수면 + 기호를 붙임
+                value = statModifier.Value >= 0
+                    ? $"+{statModifier.Value:0.#\\%}"
+                    : $"{statModifier.Value:0.#\\%}";
+            }
+            else
+            {
+                // Add인 경우: ValueToString에 isSigned: true를 전달하여 자동으로 + 또는 - 기호가 붙도록 함
+                value = statModifier.StatType.ValueToString(statModifier.Value, isSigned: true);
+            }
 
-            return $"{statModifier.StatType} {value}";
+            return $"{statModifier.StatType.GetLocalizedString()} {value}";
         }
 
         public static string OptionRowToString(

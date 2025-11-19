@@ -8,11 +8,13 @@ public enum CostType
     ArenaTicket,
     WorldBossTicket,
     EventDungeonTicket,
+    InfiniteTowerTicket,
 
     // Material costs (id)
     GoldDust = 600201,
     RubyDust = 600202,
     EmeraldDust = 600203,
+    SapphireDust = 600206,
     SilverDust = 800201,
-    ApPotion = 500000
+    ApPotion = 500000,
 }

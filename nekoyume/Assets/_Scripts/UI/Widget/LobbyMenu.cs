@@ -486,9 +486,13 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
+# if UNITY_ANDROID || UNITY_IOS
             Close();
             Find<ShopBuy>().Show();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+# else
+            Find<MarketExchangePopup>().Show();
+#endif
             AudioController.PlayClick();
         }
 

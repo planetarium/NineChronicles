@@ -14,6 +14,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using JetBrains.Annotations;
+using Lib9c;
 using mixpanel;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
@@ -88,6 +89,7 @@ namespace Nekoyume.Game.Battle
         private BattleLog _battleLog;
         private List<ItemBase> _rewards;
         private BattleResultPopup.Model _battleResultModel;
+        private InfiniteTowerResultPopup.Model _infiniteTowerResultModel;
         private Coroutine _battleCoroutine;
         private Player _stageRunningPlayer;
         private Vector3 _playerPosition;
@@ -95,8 +97,10 @@ namespace Nekoyume.Game.Battle
         private List<int> prevFood;
         private List<BattleTutorialController.BattleTutorialModel> _tutorialModels = new();
         private int _adventureBossFloorCount = 0;
+        private int _infiniteTowerFloorCount = 0;
 
-        private const string adventureBossBackgroundKey = "AdventureBoss_0";
+        private const string AdventureBossBackgroundKey = "AdventureBoss_0";
+        private const string InfiniteTowerBackgroundKey = "InfiniteTower_0";
 
         public ObjectPool ObjectPool => objectPool;
         public StageType StageType { get; set; }
@@ -434,6 +438,16 @@ namespace Nekoyume.Game.Battle
                     yield return StartCoroutine(e.CoExecute(this));
                 }
             }
+            else if (StageType == StageType.InfiniteTower)
+            {
+                // 무한의탑은 일반 전투와 동일하게 처리
+                for (var i = 0; i < eventCount; i++)
+                {
+                    var e = log.events[i];
+                    e.LogEvent(i + 1, eventCount);
+                    yield return StartCoroutine(e.CoExecute(this));
+                }
+            }
             else
             {
                 for (var i = 0; i < eventCount; i++)
@@ -585,13 +599,32 @@ namespace Nekoyume.Game.Battle
 
                     break;
                 }
+                case StageType.InfiniteTower:
+                {
+                    // 무한의탑은 기본 스테이지 배경 사용
+                    if (!TableSheets.Instance.StageSheet.TryGetValue(1, out var stageRow))
+                    {
+                        yield break;
+                    }
+
+                    _infiniteTowerFloorCount = log.stageId;
+                    zone = GetCurrentInfiniteTowerBackgroundKey();
+                    bgmName = stageRow.BGM;
+
+                    break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             _battleResultModel = new BattleResultPopup.Model
             {
-                StageType = StageType
+                StageType = StageType,
+            };
+            _infiniteTowerResultModel = new InfiniteTowerResultPopup.Model
+            {
+                IsClear = log.IsClear,
+                FloorId = log.stageId,
             };
 
             AnimationTimeScaleWeight = DefaultAnimationTimeScaleWeight;
@@ -616,6 +649,10 @@ namespace Nekoyume.Game.Battle
             if (StageType == StageType.AdventureBoss)
             {
                 title.Show($"{Widget.Find<UI.Battle>().FloorProgressBar.FloorText.text}F");
+            }
+            else if (StageType == StageType.InfiniteTower)
+            {
+                title.Show(StageType, stageId);
             }
             else
             {
@@ -651,7 +688,12 @@ namespace Nekoyume.Game.Battle
 
         private string GetCurrentAdventureBossBackgroundKey()
         {
-            return $"{adventureBossBackgroundKey}{_adventureBossFloorCount % 3 + 1}";
+            return $"{AdventureBossBackgroundKey}{_adventureBossFloorCount % 3 + 1}";
+        }
+
+        private string GetCurrentInfiniteTowerBackgroundKey()
+        {
+            return $"{InfiniteTowerBackgroundKey}{_adventureBossFloorCount % 3 + 1}";
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -679,7 +721,7 @@ namespace Nekoyume.Game.Battle
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             var avatarState = States.Instance.CurrentAvatarState;
 
-            if (StageType != StageType.AdventureBoss)
+            if (StageType != StageType.AdventureBoss && StageType != StageType.InfiniteTower)
             {
                 _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             }
@@ -715,7 +757,7 @@ namespace Nekoyume.Game.Battle
 
             List<TableData.EquipmentItemRecipeSheet.Row> newRecipes = null;
 
-            if (newlyClearedStage && StageType != StageType.AdventureBoss)
+            if (newlyClearedStage && StageType != StageType.AdventureBoss && StageType != StageType.InfiniteTower)
             {
                 yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);
@@ -760,7 +802,7 @@ namespace Nekoyume.Game.Battle
             objectPool.ReleaseExcept(ReleaseWhiteList);
             _stageRunningPlayer.ClearVfx();
 
-            if (StageType != StageType.AdventureBoss)
+            if (StageType != StageType.AdventureBoss && StageType != StageType.InfiniteTower)
             {
                 _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
                 _battleResultModel.State = log.result;
@@ -821,6 +863,10 @@ namespace Nekoyume.Game.Battle
                 }
                 case StageType.AdventureBoss:
                     Widget.Find<AdventureBossResultPopup>().Show(log.score);
+                    yield break;
+                case StageType.InfiniteTower:
+                    // 무한의탑은 일반 전투 결과 팝업 사용
+                    Widget.Find<InfiniteTowerResultPopup>().Show(_infiniteTowerResultModel);
                     yield break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -934,22 +980,24 @@ namespace Nekoyume.Game.Battle
 
             var battle = Widget.Find<UI.Battle>();
             var isTutorial = false;
+            var header = Widget.Find<HeaderMenuStatic>();
             if (avatarState.worldInformation
                 .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
             {
                 if (worldInfo.StageClearedId < UI.Battle.RequiredStageForHeaderMenu)
                 {
-                    Widget.Find<HeaderMenuStatic>().Close(true);
+                    header.Close(true);
                     isTutorial = true;
                 }
                 else
                 {
-                    Widget.Find<HeaderMenuStatic>().Show();
+                    header.Show();
+                    header.UpdateAssets(HeaderMenuStatic.AssetVisibleState.Stage);
                 }
             }
             else
             {
-                Widget.Find<HeaderMenuStatic>().Close(true);
+                header.Close(true);
                 isTutorial = true;
             }
 
@@ -968,6 +1016,14 @@ namespace Nekoyume.Game.Battle
                     turnLimit = sheet.TryGetValue(stageId, out var stageRow)
                         ? stageRow.TurnLimit
                         : 0;
+
+                    break;
+                }
+                case StageType.InfiniteTower:
+                {
+                    // 무한의탑은 AP 비용 없음
+                    apCost = 0;
+                    turnLimit = 200; // InfiniteTowerSimulator의 기본 턴 제한
 
                     break;
                 }
@@ -1330,7 +1386,7 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        public IEnumerator CoGetReward(List<ItemBase> rewards)
+        public IEnumerator CoGetReward(List<ItemBase> rewards, Dictionary<string, int> favRewards)
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoGetReward)}() enter.");
@@ -1340,7 +1396,25 @@ namespace Nekoyume.Game.Battle
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
-                _battleResultModel.AddReward(countableItem);
+                if (StageType == StageType.InfiniteTower)
+                {
+                    _infiniteTowerResultModel.AddReward(countableItem);
+                }
+                else
+                {
+                    _battleResultModel.AddReward(countableItem);
+                }
+            }
+
+            foreach (var (ticker, amount) in favRewards)
+            {
+                if (amount > 0)
+                {
+                    var currency = Currencies.GetMinterlessCurrency(ticker);
+                    var fungibleAsset = currency * amount;
+                    var countableItem = new CountableItem(fungibleAsset, amount, true);
+                    _infiniteTowerResultModel.AddReward(countableItem);
+                }
             }
 
             yield return null;

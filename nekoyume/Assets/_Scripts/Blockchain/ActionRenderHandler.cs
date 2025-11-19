@@ -39,6 +39,7 @@ using Nekoyume.Game.Battle;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.InfiniteTower;
 using Nekoyume.Model.Market;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
@@ -161,6 +162,7 @@ namespace Nekoyume.Blockchain
             HackAndSlashSweep();
             HackAndSlashRandomBuff();
             EventDungeonBattle();
+            InfiniteTowerBattle();
 
             // Craft
             CombinationConsumable();
@@ -2402,9 +2404,18 @@ namespace Nekoyume.Blockchain
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
             var tableSheets = TableSheets.Instance;
+
+            // 전투에서 사용한 장비와 코스튬은 Action 인자로 들어가기 때문에,
+            // UpdateCurrentAvatarItemSlotState로 갱신된 장비 정보를 반영하기 위해 재착용합니다.
+            var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments;
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
+            var items = equipments.Concat(costumes).ToList();
+            tempPlayer.EquipItems(items);
+
             var simulator = new StageSimulator(
                 random,
-                States.Instance.CurrentAvatarState,
+                tempPlayer,
                 eval.Action.Foods,
                 States.Instance.AllRuneState,
                 States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
@@ -2440,6 +2451,209 @@ namespace Nekoyume.Blockchain
         }
 
         private void ExceptionEventDungeonBattle(ActionEvaluation<EventDungeonBattle> eval)
+        {
+            var showLoadingScreen = false;
+            if (Widget.Find<StageLoadingEffect>().IsActive())
+            {
+                Widget.Find<StageLoadingEffect>().Close();
+            }
+
+            if (Widget.Find<BattleResultPopup>().IsActive())
+            {
+                showLoadingScreen = true;
+                Widget.Find<BattleResultPopup>().Close();
+            }
+
+            Game.Game.BackToMainAsync(eval.Exception?.InnerException, showLoadingScreen)
+                .Forget();
+        }
+
+        private void InfiniteTowerBattle()
+        {
+            _actionRenderer.EveryRender<Action.InfiniteTowerBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareInfiniteTowerBattle)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseInfiniteTowerBattleAsync)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Action.InfiniteTowerBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionInfiniteTowerBattle)
+                .AddTo(_disposables);
+        }
+
+        private ActionEvaluation<Action.InfiniteTowerBattle> PrepareInfiniteTowerBattle(
+            ActionEvaluation<Action.InfiniteTowerBattle> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return eval;
+            }
+
+            if (eval.Action.BuyTicketIfNeeded)
+            {
+                UpdateAgentStateAsync(eval).Forget();
+            }
+
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
+
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.InfiniteTower);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.InfiniteTower);
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.Stage.OnEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var task = UniTask.RunOnThreadPool(async () =>
+                        {
+                            await UpdateCurrentAvatarStateAsync(eval);
+                            await RxProps.InfiniteTowerInfo.UpdateAsync(eval.OutputState);
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        }, false);
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => NcDebug.LogException(e));
+                    });
+            return eval;
+        }
+
+        private async UniTaskVoid ResponseInfiniteTowerBattleAsync(
+            ActionEvaluation<InfiniteTowerBattle> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return;
+            }
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.Stage.OnEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var task = UniTask.RunOnThreadPool(async () =>
+                        {
+                            await UpdateCurrentAvatarStateAsync(eval);
+                            await RxProps.InfiniteTowerInfo.UpdateAsync(eval.OutputState);
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        }, false);
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => NcDebug.LogException(e));
+                        });
+
+            var tableSheets = TableSheets.Instance;
+            var floorId = eval.Action.FloorId;
+
+            if (!tableSheets.InfiniteTowerFloorSheet.TryGetValue(floorId, out var floorRow))
+            {
+                NcDebug.LogError($"[InfiniteTowerBattle] FloorSheet not found. FloorId: {floorId}");
+                Game.Game.BackToMainAsync(new Exception($"FloorSheet not found. FloorId: {floorId}")).Forget();
+                return;
+            }
+
+            if (!tableSheets.InfiniteTowerFloorWaveSheet.TryGetValue(floorId, out var waveRows))
+            {
+                NcDebug.LogError($"[InfiniteTowerBattle] FloorWaveSheet not found. FloorId: {floorId}");
+                Game.Game.BackToMainAsync(new Exception($"FloorWaveSheet not found. FloorId: {floorId}")).Forget();
+                return;
+            }
+
+            // Run StateGetter and simulator on background thread
+            var log = await UniTask.RunOnThreadPool(() =>
+            {
+                var random = new LocalRandom(eval.RandomSeed);
+
+                // Get infinite tower info to check if floor is cleared and get applied conditions
+                var scheduleSheet =
+                    tableSheets.InfiniteTowerScheduleSheet.Values.First(r =>
+                        r.InfiniteTowerId == eval.Action.InfiniteTowerId);
+                var accountAddress =
+                    Addresses.InfiniteTowerInfo.Derive($"{eval.Action.InfiniteTowerId}");
+                var infiniteTowerInfoState = StateGetter.GetState(
+                    eval.PreviousState,
+                    accountAddress,
+                    eval.Action.AvatarAddress);
+                var infiniteTowerInfo = infiniteTowerInfoState is List list
+                    ? new InfiniteTowerInfo(list)
+                    : new InfiniteTowerInfo(eval.Action.AvatarAddress, eval.Action.InfiniteTowerId,
+                        scheduleSheet.DailyFreeTickets);
+                var isCleared = infiniteTowerInfo.IsCleared(floorId);
+
+                // Get conditions for this floor
+                var conditionSheet = tableSheets.InfiniteTowerConditionSheet;
+                var allConditions = new List<InfiniteTowerCondition>();
+                var guaranteedCondition = conditionSheet.Values
+                    .FirstOrDefault(c => c.Id == floorRow.GuaranteedConditionId);
+                var randomConditions = floorRow.GetRandomConditionsWithWeights(
+                    conditionSheet,
+                    random,
+                    guaranteedCondition?.Id);
+                if (guaranteedCondition != null)
+                {
+                    allConditions.Add(new InfiniteTowerCondition(guaranteedCondition));
+                }
+                allConditions.AddRange(randomConditions);
+
+                // Create simulator
+                var avatar = States.Instance.CurrentAvatarState;
+                var equipments = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower].Equipments;
+                var costumes = States.Instance.CurrentItemSlotStates[BattleType.InfiniteTower].Costumes;
+                avatar.EquipItems(equipments.Concat(costumes).ToList());
+
+                var simulator = new InfiniteTowerSimulator(
+                    random,
+                    avatar,
+                    eval.Action.Foods,
+                    States.Instance.AllRuneState,
+                    States.Instance.CurrentRuneSlotStates[BattleType.InfiniteTower],
+                    eval.Action.InfiniteTowerId,
+                    floorId,
+                    floorRow,
+                    waveRows.Waves,
+                    isCleared,
+                    0, // No experience reward
+                    tableSheets.GetSimulatorSheets(),
+                    tableSheets.EnemySkillSheet,
+                    tableSheets.CostumeStatSheet,
+                    tableSheets.ItemSheet,
+                    States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                    tableSheets.BuffLimitSheet,
+                    tableSheets.BuffLinkSheet,
+                    allConditions,
+                    (int)States.Instance.GameConfigState.ShatterStrikeMaxDamage,
+                    logEvent: true);
+
+                simulator.Simulate();
+                return simulator.Log;
+            });
+
+            // Switch to main thread for UI updates
+            await UniTask.SwitchToMainThread();
+
+            var stage = Game.Game.instance.Stage;
+            stage.StageType = StageType.InfiniteTower;
+            stage.PlayCount = Action.InfiniteTowerBattle.PlayCount;
+
+            BattleRenderer.Instance.PrepareStage(log);
+        }
+
+        private void ExceptionInfiniteTowerBattle(ActionEvaluation<Action.InfiniteTowerBattle> eval)
         {
             var showLoadingScreen = false;
             if (Widget.Find<StageLoadingEffect>().IsActive())

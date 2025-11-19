@@ -429,7 +429,7 @@ namespace Nekoyume.Game.Battle
             yield break;
         }
 
-        public IEnumerator CoGetReward(List<ItemBase> rewards)
+        public IEnumerator CoGetReward(List<ItemBase> rewards, Dictionary<string, int> favRewards)
         {
             yield break;
         }

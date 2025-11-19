@@ -39,6 +39,7 @@ namespace Nekoyume.Helper
             AdventureBoss = 13,
             WorldBoss = 14,
             Grinding = 15,
+            EventDungeon = 16,
 
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade, // Upgrade icon is same as Craft.
@@ -332,11 +333,15 @@ namespace Nekoyume.Helper
                 case PlaceType.MobileShop:
                     shortcutAction = () =>
                     {
+#if UNITY_ANDROID || UNITY_IOS
                         caller.CloseWithOtherWidgets();
                         Widget
                             .Find<HeaderMenuStatic>()
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Widget.Find<MobileShop>().ShowAsTab(categoryName).Forget();
+#else
+                        Helper.Util.OpenWebMarketUrl();
+#endif
                     };
                     guideText = L10nManager.Localize("UI_SHOP_MOBILE");
                     break;
@@ -424,6 +429,10 @@ namespace Nekoyume.Helper
                         Widget.Find<Grind>().Show();
                     };
                     guideText = L10nManager.Localize("GRIND_UI_BUTTON");
+                    break;
+                case PlaceType.EventDungeon:
+                    shortcutAction = () => ShortcutActionForEventDungeon(caller);
+                    guideText = L10nManager.Localize("UI_EVENT_DUNGEON");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -749,6 +758,26 @@ namespace Nekoyume.Helper
             }
         }
 
+        public static void ShortcutActionForEventDungeon(Widget caller)
+        {
+            // 현재 진행중인 이벤트 던전이 없으면 리턴
+            if (RxProps.EventDungeonRow is null)
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_NO_EVENT_DUNGEON"),
+                    NotificationCell.NotificationType.Alert
+                );
+                return;
+            }
+
+            caller.CloseWithOtherWidgets();
+
+            var worldMap = Widget.Find<WorldMap>();
+            worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
+            worldMap.ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+        }
+
         /// <summary>
         /// Check the shortcut of model is available.
         /// </summary>
@@ -795,11 +824,7 @@ namespace Nekoyume.Helper
                     );
 #endif
                 case PlaceType.MobileShop:
-#if UNITY_ANDROID || UNITY_IOS
                     return true;
-#else
-                    return false;
-#endif
                 case PlaceType.Arena:
                     return States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
                         Game.LiveAsset.GameConfig.RequiredStage.Arena
@@ -817,6 +842,9 @@ namespace Nekoyume.Helper
                     return States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
                         Game.LiveAsset.GameConfig.RequiredStage.WorldBoss
                     );
+                case PlaceType.EventDungeon:
+                    return RxProps.EventDungeonRow != null &&
+                           RxProps.EventScheduleRowForDungeon.HasValue;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -843,6 +871,7 @@ namespace Nekoyume.Helper
                 PlaceType.AdventureBoss => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.WorldBoss => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.Grinding => true,
+                PlaceType.EventDungeon => !BattleRenderer.Instance.IsOnBattle,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
         }

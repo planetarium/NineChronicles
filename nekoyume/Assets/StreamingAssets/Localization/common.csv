@@ -2137,3 +2137,32 @@ UI_OUTFIT_INFO_TEXT,"The appearance of the equipment is determined randomly.
  무작위로만 얻을 수 있는 외형이 있습니다.",,,,,,,,,,,
 UI_MAIN_MENU_NCU,NCU,,,,,,,,,,,,
 UI_SUMMON_GUARANTEED,Guaranteed!,,,,,,,,,,,,
+UI_INFINITETOWER_FLOOR_INFO,Infinite Tower Floor Info,무한 타워 층 정보,,,,,,,,,,
+UI_INFINITETOWER_FLOOR_REWARD,Floor Reward,층 보상,,,,,,,,,,
+UI_INFINITETOWER_CLEAR_INFO,Clear Info,클리어 정보,,,,,,,,,,
+UI_INFINITETOWER_CLEAR_TITLE,Clear Count,클리어 수,,,,,,,,,,
+UI_CONDITION_REQUIRED,Required,필수,Obrigatório,必須,Obligatorio,จำเป็น,Wajib,Обязательно,必需,必需,Kailangan,Bắt buộc
+UI_CONDITION_RANDOM,Random,랜덤,Aleatório,ランダム,Aleatorio,สุ่ม,Acak,Случайный,随机,隨機,Random,Ngẫu nhiên
+UI_CONDITION_MIN_CP,Min {0},최소 {0},Mín {0},最小{0},Mín {0},ขั้นต่ำ {0},Min {0},Мин {0},最小{0},最小{0},Min {0},Tối thiểu {0}
+UI_CONDITION_MAX_CP,Max {0},최대 {0},Máx {0},最大{0},Máx {0},สูงสุด {0},Maks {0},Макс {0},最大{0},最大{0},Max {0},Tối đa {0}
+UI_CONDITION_MIN_ITEM_GRADE,Grade {0} or higher,등급 {0} 이상,Grau {0} ou superior,グレード{0}以上,Grado {0} o superior,ระดับ {0} ขึ้นไป,Tingkat {0} atau lebih,Уровень {0} или выше,等级{0}或以上,等級{0}或以上,Antas {0} o mas mataas,Cấp độ {0} trở lên
+UI_CONDITION_MAX_ITEM_GRADE,Grade {0} or lower,등급 {0} 이하,Grau {0} ou inferior,グレード{0}以下,Grado {0} o inferior,ระดับ {0} ลงมา,Tingkat {0} atau kurang,Уровень {0} или ниже,等级{0}或以下,等級{0}或以下,Antas {0} o mas mababa,Cấp độ {0} trở xuống
+UI_CONDITION_MIN_ITEM_LEVEL,Level {0} or higher,레벨 {0} 이상,Nível {0} ou superior,レベル{0}以上,Nivel {0} o superior,ระดับ {0} ขึ้นไป,Tingkat {0} atau lebih,Уровень {0} или выше,等级{0}或以上,等級{0}或以上,Antas {0} o mas mataas,Cấp độ {0} trở lên
+UI_CONDITION_MAX_ITEM_LEVEL,Level {0} or lower,레벨 {0} 이하,Nível {0} ou inferior,レベル{0}以下,Nivel {0} o inferior,ระดับ {0} ลงมา,Tingkat {0} atau kurang,Уровень {0} или ниже,等级{0}或以下,等級{0}或以下,Antas {0} o mas mababa,Cấp độ {0} trở xuống
+UI_CONDITION_FORBIDDEN_RUNE_TYPES,{0} cannot be equipped,{0} 착용 불가,{0} não pode ser equipado,{0}は装備できません,{0} no se puede equipar,{0} ไม่สามารถสวมใส่ได้,{0} tidak dapat dilengkapi,{0} нельзя экипировать,{0}无法装备,{0}無法裝備,{0} ay hindi maaaring i-equip,{0} không thể trang bị
+UI_CONDITION_REQUIRED_ELEMENTAL_TYPE,Only {0} equipment can be equipped,{0} 장비만 착용 가능,Apenas equipamento {0} pode ser equipado,{0}の装備のみ装備可能,Solo se puede equipar equipo {0},สวมใส่ได้เฉพาะอุปกรณ์ {0},Hanya peralatan {0} yang dapat dilengkapi,Только снаряжение {0} можно экипировать,只能装备{0}装备,只能裝備{0}裝備,Maaari lamang i-equip ang kagamitan na {0},Chỉ có thể trang bị thiết bị {0}
+UI_CONDITION_FORBIDDEN_ITEM_SUB_TYPES,{0} cannot be equipped,{0} 착용 불가,{0} não pode ser equipado,{0}は装備できません,{0} no se puede equipar,{0} ไม่สามารถสวมใส่ได้,{0} não pode ser equipado,{0} нельзя экипировать,{0}无法装备,{0}無法裝備,{0} ay hindi maaaring i-equip,{0} không thể trang bị
+UI_INFINITETOWER_FLOOR_NUMBER,Floor {0},층 {0},Andar {0},階層{0},Piso {0},ชั้น {0},Lantai {0},Этаж {0},楼层{0},樓層{0},Palapag {0},Tầng {0}
+UI_INFINITETOWER_FLOOR_FORMAT,{0}F,{0}층,{0}F,{0}階,{0}F,{0} ชั้น,{0}F,{0} этаж,{0}层,{0}層,{0}F,{0} tầng
+UI_INFINITETOWER_TITLE,Infinite Tower,무한의탑,Torre Infinita,無限の塔,Torre Infinita,หอคอยอนันต์,Menara Tak Terbatas,Бесконечная башня,无限塔,無限塔,Walang Hanggang Tore,Tháp Vô Hạn
+UI_INFINITETOWER_SEASON,Season {0},시즌 {0},Temporada {0},シーズン{0},Temporada {0},ฤดูกาล {0},Musim {0},Сезон {0},赛季{0},賽季{0},Panahon {0},Mùa {0}
+UI_INFINITETOWER_CHALLENGE_INFO,Challenge Info,도전 중 정보,Informações do Desafio,チャレンジ情報,Información del Desafío,ข้อมูลการท้าทาย,Info Tantangan,Информация о вызове,挑战信息,挑戰資訊,Impormasyon ng Hamon,Thông tin thử thách
+UI_INFINITETOWER_CLEAR_INFO,Clear Info,클리어 정보,Informações de Limpeza,クリア情報,Información de Limpieza,ข้อมูลการล้าง,Info Bersih,Информация об очистке,清除信息,清除資訊,Impormasyon ng Linis,Thông tin xóa
+UI_INFINITETOWER_CLEAR_COUNT,Clear Count,클리어 수,Contagem de Limpeza,クリア数,Conteo de Limpieza,จำนวนการล้าง,Jumlah Bersih,Количество очисток,清除次数,清除次數,Bilang ng Linis,Số lần xóa
+UI_INFINITETOWER_ENTER_BUTTON,Challenge,도전,Desafio,チャレンジ,Desafío,ท้าทาย,Tantangan,Вызов,挑战,挑戰,Hamon,Thử thách
+UI_INFINITETOWER_BATTLE_CONDITION,Battle Condition,전투 조건,Condição de Batalha,バトル条件,Condición de Batalla,เงื่อนไขการต่อสู้,Syarat Pertempuran,Условие боя,战斗条件,戰鬥條件,Kundisyon ng Laban,Điều kiện chiến đấu
+UI_INFINITETOWER_BUFF_CONDITION,Buff Condition,버프 조건,Condição de Buff,バフ条件,Condición de Buff,เงื่อนไขบัฟ,Syarat Buff,Условие баффа,增益条件,增益條件,Kundisyon ng Buff,Điều kiện tăng cường
+UI_INFINITETOWER_REQUIRED_BADGE,Required,필수,Obrigatório,必須,Obligatorio,จำเป็น,Wajib,Обязательно,必需,必需,Kailangan,Bắt buộc
+UI_INFINITETOWER_ENEMY_BADGE,Enemy,적,Inimigo,敵,Enemigo,ศัตรู,Musuh,Враг,敌人,敵人,Kaaway,Kẻ thù
+UI_INFINITETOWER_PLAYER_BADGE,Player,플레이어,Jogador,プレイヤー,Jugador,ผู้เล่น,Pemain,Игрок,玩家,玩家,Manlalaro,Người chơi
+UI_INFINITETOWER_BACK_BUTTON,Infinite Tower,무한 타워,Infinite Tower,無限の塔,Infinite Tower,Infinite Tower,Infinite Tower,Infinite Tower,Infinite Tower,Infinite Tower,Infinite Tower,Infinite Tower

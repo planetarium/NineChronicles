@@ -60,6 +60,7 @@ namespace Nekoyume.State
                 .AddTo(_disposables);
 
             StartEvent();
+            StartInfiniteTower();
         }
 
         public static void Stop()
@@ -117,6 +118,7 @@ namespace Nekoyume.State
         private static void OnBlockIndex(long blockIndex)
         {
             OnBlockIndexEvent(blockIndex);
+            OnBlockIndexInfiniteTower(blockIndex);
         }
 
         private static void OnAvatarChanged(Address avatarAddr)
@@ -129,6 +131,7 @@ namespace Nekoyume.State
 
             _currentAvatarAddr = avatarAddr;
             OnAvatarChangedEvent();
+            OnAvatarChangedInfiniteTower();
         }
     }
 }

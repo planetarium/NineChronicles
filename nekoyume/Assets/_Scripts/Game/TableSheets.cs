@@ -318,6 +318,14 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
         public ClaimableGiftsSheet ClaimableGiftsSheet { get; private set; }
 
+        public InfiniteTowerScheduleSheet InfiniteTowerScheduleSheet { get; private set; }
+
+        public InfiniteTowerFloorSheet InfiniteTowerFloorSheet { get; private set; }
+
+        public InfiniteTowerFloorWaveSheet InfiniteTowerFloorWaveSheet { get; private set; }
+
+        public InfiniteTowerConditionSheet InfiniteTowerConditionSheet { get; private set; }
+
         [UsedImplicitly]
         public PatrolRewardSheet PatrolRewardSheet { get; private set; }
 

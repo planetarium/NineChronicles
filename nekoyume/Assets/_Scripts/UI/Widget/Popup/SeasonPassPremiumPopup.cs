@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using TMPro;
 using System.Linq;
 using Nekoyume.ApiClient;
+using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
@@ -315,6 +316,7 @@ namespace Nekoyume.UI
 
         private void OnPurchase(string productKey)
         {
+#if UNITY_ANDROID || UNITY_IOS
             ApiClients.Instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
                 //success
                 () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(productKey); },
@@ -326,6 +328,10 @@ namespace Nekoyume.UI
                         L10nManager.Localize("ERROR_CODE_SHOPITEM_EXPIRED"),
                         NotificationCell.NotificationType.Alert);
                 }).AsUniTask().Forget();
+#else
+            Util.OpenWebMarketUrl();
+            Close();
+#endif
         }
 
         public void PurchaseSeasonPassPremiumButton()

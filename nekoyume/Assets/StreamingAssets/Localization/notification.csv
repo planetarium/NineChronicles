@@ -18,6 +18,7 @@ NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL,Upgrading of {0} failed.,{0} 강화�
 NOTIFICATION_NOT_ENOUGH_SLOTS,Workshop slots are full.,워크샵 슬롯이 부족합니다.,Slots de oficina não suficiente,使用できる工房スロットがありません。,No hay suficientes espacios en el taller.,ช่องเวิร์กช็อปไม่เพียงพอ,Slot Workshop penuh.,Не хватает слотов мастерских,没有足够的车间插槽,沒有足夠的工作坊插槽,Wala nang lagayan sa workshop,Ô rèn đã đầy.
 NOTIFICATION_COMBINATION_FAIL,Combination failed.,조합이 실패했습니다.,"Oh, eu falhei em fabricar. Minha mão escorregou",製作が失敗しました。,"Oh, Fallé en la fabricación. Mi mano se resbaló.","โอ้, ฉันทำมันล้มเหลว มือของฉันลื่น ...",Kombinasi gagal.,,哦，我制作失败了。我的手滑了……,哦，我制造失敗了。我的手滑了…,"Naku, nabigo ako sa paggawa. Nadulas ang kamay ko...",Dung hợp thất bại.
 NOTIFICATION_ITEM_ENHANCEMENT_START,Item upgrade started.,아이템 강화를 시작했습니다.,Leva tempo para melhorar um item....,アイテムのアップグレードを始めました。,Toma algún tiempo mejorar un objeto.,ต้องใช้เวลาพอสมควรในการอัพเกรดไอเทม ..,Upgrade item dimulai.,,升级物品需要一些时间。.,升級物品需要一些時間。,Kailangan ng kaunting oras upang ma-upgrade ang item...,Bắt đầu cường hóa trang bị.
+NOTIFICATION_INFINITE_TOWER_ERROR,An error occurred in the Infinite Tower.,무한의탑에서 오류가 발생했습니다.,Ocorreu um erro na Torre Infinita.,無限の塔でエラーが発生しました。,Ocurrió un error en la Torre Infinita.,เกิดข้อผิดพลาดในหอคอยอนันต์,Terjadi kesalahan di Menara Tak Terbatas.,Произошла ошибка в Бесконечной башне.,无限塔中发生错误。,無限塔中發生錯誤。,May error sa Walang Hanggang Tore.,Đã xảy ra lỗi trong Tháp Vô Hạn.
 NOTIFICATION_QUEST_REQUEST_REWARD,Received rewards for {0} quest.,{0} 퀘스트의 보상을 수령했습니다.,Recebeu {0} recompensas de quest.,[{0}]クエストの報酬を受け取りました。,Recibiste {0} premios de la misión.,รับรางวัลภารกิจ {0},{0} Terima hadiah misi.,,接收{0}任务奖励。,接收{0}任務獎勵。,Tanggapin ang {0} gantimpala sa misyon.,Nhận phần thưởng cho {0} nhiệm vụ .
 NOTIFICATION_REQUEST_REDEEM_CODE,You can receive rewards after code verification. Please wait a moment.,코드 검사 후 리워드를 받을 수 있습니다. 잠시만 기다려주세요.,Você pode receber uma recompensa depois de verificar o código. Um momento por favor.,コード確認後に報酬を受け取ることができます。しばらくお待ちください。,"Puedes recibir un premio después de revisar el código. Sólo un momento, por favor.",คุณสามารถได้รับรางวัลหลังจากการตรวจสอบรหัส กรุณารอสักครู่.,Anda dapat menerima hadiah setelah verifikasi kode. Silakan tunggu sebentar.,"Вы можете получить вознаграждение после проверки коды. Минуту, пожалуйста.",您可以检查代码后可以得到奖励。请稍等一下。,檢查代碼後，您可以收到獎勵。請稍等片刻。,Maaari kang makatanggap ng reward pagkatapos suriin ang code. Sandali lang po muna.,Bạn có thể nhận được phần thưởng sau khi xác minh mã. Xin vui lòng chờ trong giây lát.
 NOTIFICATION_BUY_FAIL,Purchase failed for {0}. Not paying {2}. ({1}),{0} 구매를 실패하여 {2}를 지불하지 않습니다. ({1}),{0} compra falhou e não será pago {2}. ({1}),{0}の購入に失敗して{2}を支払いません。({1}),{0} Compra fallida y no se pagará {2}. ({1}),{0} ซื้อล้มเหลวและจะไม่เสียเงิน {2} ({1}),{0} Pembelian gagal dan tidak akan dibayar {2}. ({1}),"{0} покупка не удалась, и не будет выплачена {2}. ({1})",{0}购买失败，将不支付{2}。 （{1}）,{0}購買失敗，不會支付{2}。 （{1}）,Nabigo ang pagbili ng {0} at hindi babayaran ang {2}. ({1}),Mua {0} không thành công. Hủy trả {2}. ({1})
@@ -68,11 +69,11 @@ Check rewards on the portal!","추천인 코드가 성공적으로 입력되었�
 포털에서 리워드를 확인하세요!","Código de referência inserido com sucesso.
 Verifique as recompensas no portal!","リファラルコードが正常に入力されました。
 ポータルでリワードを確認しましょう！","Código de referencia ingresado correctamente.
-¡Revise las recompensas en el portal!","รหัสแนะนำได้รับการป้อนเรียบร้อยแล้ว 
+¡Revise las recompensas en el portal!","รหัสแนะนำได้รับการป้อนเรียบร้อยแล้ว
 โปรดตรวจสอบรางวัลที่พอร์ทัล!","Kode referral berhasil dimasukkan.
 Periksa hadiah di portal!",,"推荐代码已成功输入。
 请在门户上查看奖励！","推薦代碼成功輸入。
-檢查門戶網站上的獎勵！","Matagumpay nga gigukod ang Code sa Pag-awit. 
+檢查門戶網站上的獎勵！","Matagumpay nga gigukod ang Code sa Pag-awit.
 Susi-a ang reward sa portal!","Đã nhập thành công mã giới thiệu.
 Kiểm tra phần thưởng trên cổng thông tin!"
 NOTIFICATION_SEASONPASS_CONNECT_FAIL,Failed to connect.,연결에 실패했습니다.,Falhou ao conectar.,接続に失敗した。,No se conectó.,การเชื่อมต่อล้มเหลว.,Koneksi gagal.,Не удалось подключиться.,连接失败。,連接失敗。,Nabigong kumonekta.,Kết nối thất bại.
