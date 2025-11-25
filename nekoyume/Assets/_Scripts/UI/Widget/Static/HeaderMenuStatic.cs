@@ -60,6 +60,8 @@ namespace Nekoyume.UI.Module
             Summon,
             AdventureBoss,
             Synthesis,
+            InfiniteTower,
+            Stage,
         }
 
         [Serializable]
@@ -100,7 +102,13 @@ namespace Nekoyume.UI.Module
         private WorldBossTickets worldBossTickets;
 
         [SerializeField]
+        private InfiniteTowerTickets infiniteTowerTickets;
+
+        [SerializeField]
         private ApPotion apPotion;
+
+        [SerializeField]
+        private MaterialAsset sapphireDust;
 
         [SerializeField]
         private MaterialAsset[] materialAssets;
@@ -166,7 +174,9 @@ namespace Nekoyume.UI.Module
         public ArenaTickets ArenaTickets => arenaTickets;
         public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
         public WorldBossTickets WorldBossTickets => worldBossTickets;
+        public InfiniteTowerTickets InfiniteTowerTickets => infiniteTowerTickets;
         public ApPotion ApPotion => apPotion;
+        public MaterialAsset SapphireDust => sapphireDust;
         public MaterialAsset[] MaterialAssets => materialAssets;
 
         public override bool CanHandleInputEvent => false;
@@ -543,6 +553,12 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.Synthesis:
                     SetActiveAssets(true, isApPotionActive: true, isActionPointActive: true);
                     break;
+                case AssetVisibleState.InfiniteTower:
+                    SetActiveAssets(true, isInfiniteTowerTicketsActive: true, enabledMaterials: new[] { CostType.SapphireDust });
+                    break;
+                case AssetVisibleState.Stage:
+                    SetActiveAssets();
+                    break;
             }
         }
 
@@ -554,6 +570,7 @@ namespace Nekoyume.UI.Module
             bool isArenaTicketsActive = false,
             bool isEventDungeonTicketsActive = false,
             bool isEventWorldBossTicketsActive = false,
+            bool isInfiniteTowerTicketsActive = false,
             bool isRuneStoneActive = false,
             bool isMileageActive = false,
             bool isApPotionActive = false,
@@ -567,6 +584,7 @@ namespace Nekoyume.UI.Module
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
             worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
+            infiniteTowerTickets.gameObject.SetActive(isInfiniteTowerTicketsActive);
             runeStone.gameObject.SetActive(isRuneStoneActive);
             mileage.gameObject.SetActive(isMileageActive);
             apPotion.gameObject.SetActive(isApPotionActive);

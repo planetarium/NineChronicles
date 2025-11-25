@@ -132,7 +132,7 @@ namespace Nekoyume
 
         private static readonly int[] DustIds = new[]
         {
-            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
+            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust, CostType.SapphireDust
         }.Select(cost => (int)cost).ToArray();
 
         // Get the priority by Id or ItemSubType of the material group about Inventory sorting.

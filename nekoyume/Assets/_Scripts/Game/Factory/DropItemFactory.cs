@@ -19,16 +19,6 @@ namespace Nekoyume.Game.Factory
 
         public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
         {
-            for (var i = 0; i < items.Count; i++)
-            {
-                var item = items[i];
-                var exist = ItemFactory.CreateMaterial(Game.instance.TableSheets.MaterialItemSheet, item.Id);
-                if (exist == null)
-                {
-                    items.Remove(item);
-                }
-            }
-
             var objectPool = GetComponent<ObjectPool>();
             var dropItem = objectPool.Get<DropItem>(position);
             if (dropItem == null)

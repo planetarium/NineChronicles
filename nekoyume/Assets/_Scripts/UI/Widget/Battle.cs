@@ -210,6 +210,10 @@ namespace Nekoyume.UI
                     exitToggle.gameObject.SetActive(false);
                     Find<HeaderMenuStatic>().Close(true);
                     break;
+                case StageType.InfiniteTower:
+                    stageProgressBar.gameObject.SetActive(false);
+                    floorProgressBar.gameObject.SetActive(false);
+                    break;
             }
 
             bossStatus.Close();

@@ -227,6 +227,7 @@ SpriteAtlas:
     - 77914e46007b1f845ac8ebe9557d241f: 21300000
     - e07e115688eab4935aef5f1adee4f598: 21300000
     - 530f3c569788d4208aeb9a6ddf8bfcee: 21300000
+    - dedf3a66453fe419c871f8389e1fe64c: 21300000
     - 54636d66abae6fe4d8ac4e716ff9bc3a: 21300000
     - 3feff2767a22d3d439a1f3a0d1f76769: 21300000
     - 48c8b376d92ad504ca2c743aed700882: 21300000
@@ -678,6 +679,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 77914e46007b1f845ac8ebe9557d241f, type: 3}
   - {fileID: 21300000, guid: e07e115688eab4935aef5f1adee4f598, type: 3}
   - {fileID: 21300000, guid: 530f3c569788d4208aeb9a6ddf8bfcee, type: 3}
+  - {fileID: 21300000, guid: dedf3a66453fe419c871f8389e1fe64c, type: 3}
   - {fileID: 21300000, guid: 54636d66abae6fe4d8ac4e716ff9bc3a, type: 3}
   - {fileID: 21300000, guid: 3feff2767a22d3d439a1f3a0d1f76769, type: 3}
   - {fileID: 21300000, guid: 48c8b376d92ad504ca2c743aed700882, type: 3}
@@ -1128,6 +1130,7 @@ SpriteAtlas:
   - icon_ticket_summer
   - UI_scroll_bar1_02
   - ui_line_05
+  - UI_main_icon_sapphiredust
   - UI_icon_lock_01
   - UI_check_01
   - RewardClaimed_Pattern

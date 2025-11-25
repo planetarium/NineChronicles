@@ -341,6 +341,14 @@ namespace Nekoyume.UI.Module
             itemImage.color = isDim ? DimmedColor : OriginColor;
         }
 
+        public void SetConditionDim(bool isDim)
+        {
+            var dimColor = isDim ? Color.red : OriginColor;
+            gradeImage.color = dimColor;
+            enhancementText.color = dimColor;
+            itemImage.color = dimColor;
+        }
+
         public void Clear()
         {
             if (defaultImage)

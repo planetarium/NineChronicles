@@ -244,6 +244,7 @@ namespace Nekoyume.State
                 new RuneSlotState(BattleType.Adventure));
             CurrentRuneSlotStates.TryAdd(BattleType.Arena, new RuneSlotState(BattleType.Arena));
             CurrentRuneSlotStates.TryAdd(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+            CurrentRuneSlotStates.TryAdd(BattleType.InfiniteTower, new RuneSlotState(BattleType.InfiniteTower));
 
             RuneSlotStates.Clear();
             foreach (var (index, avatarState) in _avatarStates)
@@ -253,25 +254,61 @@ namespace Nekoyume.State
                     new RuneSlotState(BattleType.Adventure));
                 RuneSlotStates[index].TryAdd(BattleType.Arena, new RuneSlotState(BattleType.Arena));
                 RuneSlotStates[index].TryAdd(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+                RuneSlotStates[index].TryAdd(BattleType.InfiniteTower, new RuneSlotState(BattleType.InfiniteTower));
 
                 var addresses = new List<Address>
                 {
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
-                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid),
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.InfiniteTower)
                 };
                 var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
+
+                // Track which BattleType states were loaded from blockchain
+                var loadedBattleTypes = new HashSet<BattleType>();
+
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
                     {
                         var slotState = new RuneSlotState(list);
+                        loadedBattleTypes.Add(slotState.BattleType);
                         RuneSlotStates[index][slotState.BattleType] = slotState;
 
                         if (avatarState.address == CurrentAvatarState.address)
                         {
                             CurrentRuneSlotStates[slotState.BattleType] = slotState;
                         }
+                    }
+                }
+
+                // Migrate unlock status from Adventure to InfiniteTower if InfiniteTower is newly created
+                if (!loadedBattleTypes.Contains(BattleType.InfiniteTower))
+                {
+                    var adventureSlotState = RuneSlotStates[index][BattleType.Adventure];
+                    var infiniteTowerSlotState = RuneSlotStates[index][BattleType.InfiniteTower];
+
+                    var adventureSlots = adventureSlotState.GetRuneSlot();
+                    var infiniteTowerSlots = infiniteTowerSlotState.GetRuneSlot();
+
+                    // Unlock slots in InfiniteTower that are unlocked in Adventure
+                    foreach (var adventureSlot in adventureSlots)
+                    {
+                        if (!adventureSlot.IsLock)
+                        {
+                            var infiniteTowerSlot = infiniteTowerSlots.FirstOrDefault(s => s.Index == adventureSlot.Index);
+                            if (infiniteTowerSlot != null && infiniteTowerSlot.IsLock)
+                            {
+                                infiniteTowerSlotState.Unlock(adventureSlot.Index);
+                            }
+                        }
+                    }
+
+                    // Update CurrentRuneSlotStates if this is current avatar
+                    if (avatarState.address == CurrentAvatarState.address)
+                    {
+                        CurrentRuneSlotStates[BattleType.InfiniteTower] = infiniteTowerSlotState;
                     }
                 }
             }
@@ -312,6 +349,7 @@ namespace Nekoyume.State
                 new ItemSlotState(BattleType.Adventure));
             CurrentItemSlotStates.TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
             CurrentItemSlotStates.TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+            CurrentItemSlotStates.TryAdd(BattleType.InfiniteTower, new ItemSlotState(BattleType.InfiniteTower));
 
             ItemSlotStates.Clear();
             var agent = Game.Game.instance.Agent;
@@ -323,12 +361,14 @@ namespace Nekoyume.State
                     new ItemSlotState(BattleType.Adventure));
                 ItemSlotStates[index].TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
                 ItemSlotStates[index].TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+                ItemSlotStates[index].TryAdd(BattleType.InfiniteTower, new ItemSlotState(BattleType.InfiniteTower));
 
                 var addresses = new List<Address>
                 {
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
-                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid),
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.InfiniteTower),
                 };
                 var stateBulk = await agent.GetStateBulkAsync(agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)
@@ -360,12 +400,14 @@ namespace Nekoyume.State
                 new ItemSlotState(BattleType.Adventure));
             ItemSlotStates[slotIndex].TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
             ItemSlotStates[slotIndex].TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+            ItemSlotStates[slotIndex].TryAdd(BattleType.InfiniteTower, new ItemSlotState(BattleType.InfiniteTower));
 
             var addresses = new List<Address>
             {
                 ItemSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
                 ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
-                ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
+                ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid),
+                ItemSlotState.DeriveAddress(avatarState.address, BattleType.InfiniteTower),
             };
 
             var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(Game.Game.instance.Agent.BlockTipStateRootHash, ReservedAddresses.LegacyAccount, addresses);

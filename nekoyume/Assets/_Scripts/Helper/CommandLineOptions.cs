@@ -126,6 +126,8 @@ namespace Nekoyume.Helper
 
         private string _stateRestoreUrl;
 
+        private string _webMarketUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -677,6 +679,17 @@ namespace Nekoyume.Helper
             set
             {
                 _stateRestoreUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("web-market-url", Required = false, HelpText = "web market url")]
+        public string WebMarketUrl
+        {
+            get => _webMarketUrl;
+            set
+            {
+                _webMarketUrl = value;
                 Empty = false;
             }
         }
