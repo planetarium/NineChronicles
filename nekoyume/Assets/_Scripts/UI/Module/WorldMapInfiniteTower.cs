@@ -52,12 +52,6 @@ namespace Nekoyume.UI.Module
 
             worldButton.OnClickSubject.Subscribe(button =>
             {
-                if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-                {
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_INFINITETOWER_ENTER_KOREAN_BUILD"), NotificationCell.NotificationType.Alert);
-                    return;
-                }
-
                 var curState = GetInfiniteTowerState();
 
                 // 비활성화 상태에서는 진입 불가
