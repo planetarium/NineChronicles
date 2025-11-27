@@ -483,6 +483,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<MarketExchangePopup>());
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
@@ -507,6 +508,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossRewardPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossStartNotificationPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBoss_UnlockLockedFloorPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<AdventureBossFullBountyStatusPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossOpenInfoPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossParticipantBonusPopup>());
@@ -516,6 +518,12 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossResultPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossStageBuff>());
             _secondWidgets.Add(Widget.Create<PreviousSeasonReportPopup>());
+
+            // Infinite Tower
+            _secondWidgets.Add(Widget.Create<InfiniteTower>());
+            _secondWidgets.Add(Widget.Create<InfiniteTowerPreparation>());
+            _secondWidgets.Add(Widget.Create<InfiniteTowerTicketPurchasePopup>());
+            _secondWidgets.Add(Widget.Create<InfiniteTowerResultPopup>());
 #endif
         }
 

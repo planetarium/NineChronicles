@@ -149,6 +149,7 @@ namespace Nekoyume.UI
                 CostType.ArenaTicket => L10nManager.Localize("UI_ARENA_JOIN_BACK_BUTTON"),
                 CostType.WorldBossTicket => L10nManager.Localize("UI_WORLD_BOSS"),
                 CostType.EventDungeonTicket => L10nManager.Localize("UI_EVENT_DUNGEON"),
+                CostType.InfiniteTowerTicket => L10nManager.Localize("UI_INFINITETOWER"),
                 _ => string.Empty
             };
         }

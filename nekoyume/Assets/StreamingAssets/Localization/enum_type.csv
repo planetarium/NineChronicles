@@ -41,3 +41,15 @@ ITEM_SUB_TYPE_Hourglass,Hourglass,모래시계,Ampulheta,砂時計,Reloj de aren
 ITEM_SUB_TYPE_ApStone,AP Potion,AP 포션,Poção AP,APポーション,Poción AP,ยา AP,Ramuan AP,,AP药水,AP藥水,AP Potion,Bình AP
 ITEM_SUB_TYPE_Scroll,Scroll,스크롤,,,,,,,,,,
 ITEM_SUB_TYPE_Circle,Circle,써클,,,,,,,,,,
+SKILL_TARGET_TYPE_Enemy,Enemy,적,Inimigo,敵,Enemigo,ศัตรู,Musuh,Враг,敌人,敵人,Kaaway,Kẻ thù
+SKILL_TARGET_TYPE_Enemies,Enemies,적들,Inimigos,敵,Enemigos,ศัตรูหลายตัว,Musuh,Враги,敌人,敵人,Kaaway,Kẻ thù
+SKILL_TARGET_TYPE_Self,Self,자신,Próprio,自分,Mismo,ตัวเอง,Diri sendiri,Себя,自己,自己,Sarili,Bản thân
+SKILL_TARGET_TYPE_Ally,Ally,아군,Aliado,味方,Aliado,พันธมิตร,Sekutu,Союзник,盟友,盟友,Kakampi,Đồng minh
+RUNE_TYPE_Stat,Stat,스탯,Estatística,ステータス,Estadística,สถิติ,Statistik,Стат,属性,屬性,Stat,Chỉ số
+RUNE_TYPE_Skill,Skill,스킬,Habilidade,スキル,Habilidad,ทักษะ,Kemampuan,Навык,技能,技能,Kasanayan,Kỹ năng
+BATTLE_CONDITION_TYPE_CP,CP,전투력,CP,CP,CP,พลังต่อสู้,CP,БП,战斗力,戰鬥力,CP,Sức chiến đấu
+BATTLE_CONDITION_TYPE_ItemGrade,Item Grade,아이템 등급,Grau do Item,アイテムグレード,Grado del Item,ระดับไอเท็ม,Tingkat Item,Уровень предмета,物品等级,物品等級,Antas ng Gamit,Cấp độ vật phẩm
+BATTLE_CONDITION_TYPE_ItemLevel,Item Level,아이템 레벨,Nível do Item,アイテムレベル,Nivel del Item,ระดับไอเท็ม,Tingkat Item,Уровень предмета,物品等级,物品等級,Antas ng Gamit,Cấp độ vật phẩm
+BATTLE_CONDITION_TYPE_ForbiddenRuneTypes,Forbidden Rune Types,금지 룬 타입,Tipos de Runa Proibidos,禁止ルーンタイプ,Tipos de Runa Prohibidos,ประเภทรูนที่ห้าม,Jenis Rune Terlarang,Запрещенные типы рун,禁止符文类型,禁止符文類型,Mga Uri ng Rune na Bawal,Loại rune bị cấm
+BATTLE_CONDITION_TYPE_RequiredElementalType,Required Elemental Type,필수 속성 타입,Tipo Elemental Obrigatório,必須属性タイプ,Tipo Elemental Requerido,ประเภทธาตุที่ต้องการ,Jenis Elemen yang Diperlukan,Требуемый элемент,必需元素类型,必需元素類型,Kinakailangang Uri ng Elemento,Loại nguyên tố bắt buộc
+BATTLE_CONDITION_TYPE_ForbiddenItemSubTypes,Forbidden Item Types,금지 아이템 타입,Tipos de Item Proibidos,禁止アイテムタイプ,Tipos de Item Prohibidos,ประเภทไอเท็มที่ห้าม,Jenis Item Terlarang,Запрещенные типы предметов,禁止物品类型,禁止物品類型,Mga Uri ng Gamit na Bawal,Loại vật phẩm bị cấm

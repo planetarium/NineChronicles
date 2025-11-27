@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using TMPro;
 using System.Linq;
 using Nekoyume.ApiClient;
+using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
@@ -234,6 +235,7 @@ namespace Nekoyume.UI
                 AddToolTip(rewards[index], product.FungibleItemList[i].SheetItemId);
             }
 
+#if UNITY_ANDROID || UNITY_IOS
             var purchasingData = iapStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == product.Sku());
             if (purchasingData != null)
             {
@@ -242,6 +244,13 @@ namespace Nekoyume.UI
                     item.text = MobileShop.GetPrice(purchasingData.metadata.isoCurrencyCode, purchasingData.metadata.localizedPrice);
                 }
             }
+#else
+            // FIXME get item price info from iap service
+            foreach (var item in prices)
+            {
+                item.text = L10nManager.Localize("GO_TO_MARKET");
+            }
+#endif
         }
 
         private void AddToolTip(BaseItemView itemView, int itemId)
@@ -315,6 +324,7 @@ namespace Nekoyume.UI
 
         private void OnPurchase(string productKey)
         {
+#if UNITY_ANDROID || UNITY_IOS
             ApiClients.Instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
                 //success
                 () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(productKey); },
@@ -326,6 +336,10 @@ namespace Nekoyume.UI
                         L10nManager.Localize("ERROR_CODE_SHOPITEM_EXPIRED"),
                         NotificationCell.NotificationType.Alert);
                 }).AsUniTask().Forget();
+#else
+            Util.OpenWebMarketUrl();
+            Close();
+#endif
         }
 
         public void PurchaseSeasonPassPremiumButton()

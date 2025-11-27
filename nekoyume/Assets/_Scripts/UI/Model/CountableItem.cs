@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Model
             });
         }
 
-        public CountableItem(FungibleAssetValue fav, int count) : base(fav)
+        public CountableItem(FungibleAssetValue fav, int count, bool enableCount = false) : base(fav)
         {
             Count.Value = count;
             CountEnabledFunc.Value = CountEnabledFuncDefault;
@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Model
                     CountEnabledFunc.Value = CountEnabledFuncDefault;
                 }
 
-                CountEnabled.Value = CountEnabledFunc.Value(this);
+                CountEnabled.Value = enableCount;
             });
         }
 

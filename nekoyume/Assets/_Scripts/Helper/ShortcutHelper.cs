@@ -333,11 +333,15 @@ namespace Nekoyume.Helper
                 case PlaceType.MobileShop:
                     shortcutAction = () =>
                     {
+#if UNITY_ANDROID || UNITY_IOS
                         caller.CloseWithOtherWidgets();
                         Widget
                             .Find<HeaderMenuStatic>()
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Widget.Find<MobileShop>().ShowAsTab(categoryName).Forget();
+#else
+                        Helper.Util.OpenWebMarketUrl();
+#endif
                     };
                     guideText = L10nManager.Localize("UI_SHOP_MOBILE");
                     break;
@@ -820,11 +824,7 @@ namespace Nekoyume.Helper
                     );
 #endif
                 case PlaceType.MobileShop:
-#if UNITY_ANDROID || UNITY_IOS
                     return true;
-#else
-                    return false;
-#endif
                 case PlaceType.Arena:
                     return States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
                         Game.LiveAsset.GameConfig.RequiredStage.Arena

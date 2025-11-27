@@ -13,7 +13,9 @@ using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.InfiniteTower;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.Quest;
@@ -475,6 +477,27 @@ namespace Nekoyume
             return L10nManager.Localize($"ELEMENTAL_TYPE_{value.ToString().ToUpper()}");
         }
 
+        public static string GetLocalizedString(this SkillTargetType value)
+        {
+            return L10nManager.Localize($"SKILL_TARGET_TYPE_{value}");
+        }
+
+        public static string GetLocalizedString(this RuneType value)
+        {
+            // RuneType enum에는 Stat = 1, Skill = 2만 있으므로 유효성 검사
+            if (!Enum.IsDefined(typeof(RuneType), value) || (int)value == 0)
+            {
+                return value.ToString();
+            }
+
+            return L10nManager.Localize($"RUNE_TYPE_{value}");
+        }
+
+        public static string GetLocalizedString(this BattleConditionType value)
+        {
+            return L10nManager.Localize($"BATTLE_CONDITION_TYPE_{value}");
+        }
+
         public static IEnumerable<string> GetOptions(this Player player)
         {
             var atkOptions = player.atkElementType.GetOptions(StatType.ATK);
@@ -724,7 +747,7 @@ namespace Nekoyume
             return color;
         }
 
-        private static string GetElementalIcon(ElementalType type)
+        public static string GetElementalIcon(ElementalType type)
         {
             return type switch
             {
@@ -865,6 +888,16 @@ namespace Nekoyume
             var gradeColor = GetItemGradeColor(grade);
             var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
             return (gradeColor, gradeText, guarantee);
+        }
+
+        public static string GetRuneTypeName(RuneType runeType)
+        {
+            switch (runeType)
+            {
+                case RuneType.Stat: return "스탯";
+                case RuneType.Skill: return "스킬";
+                default: return runeType.ToString();
+            }
         }
     }
 }
