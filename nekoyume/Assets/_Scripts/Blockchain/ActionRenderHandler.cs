@@ -2575,7 +2575,7 @@ namespace Nekoyume.Blockchain
             }
 
             // Run StateGetter and simulator on background thread
-            var (log, conditions) = await UniTask.RunOnThreadPool(() =>
+            var (log, conditions, fungibleAssetRewards) = await UniTask.RunOnThreadPool(() =>
             {
                 var random = new LocalRandom(eval.RandomSeed);
 
@@ -2640,7 +2640,7 @@ namespace Nekoyume.Blockchain
                     logEvent: true);
 
                 simulator.Simulate();
-                return (simulator.Log, allConditions);
+                return (simulator.Log, allConditions, simulator.FungibleAssetRewards);
             });
             // Switch to main thread for UI updates
             await UniTask.SwitchToMainThread();
@@ -2649,6 +2649,56 @@ namespace Nekoyume.Blockchain
             var stage = Game.Game.instance.Stage;
             stage.StageType = StageType.InfiniteTower;
             stage.PlayCount = Action.InfiniteTowerBattle.PlayCount;
+
+            // 전투가 성공했고 층을 클리어했을 때 FungibleAssetRewards 잔고 업데이트
+            if (fungibleAssetRewards.Count > 0)
+            {
+                // 스레드 풀에서 잔고 조회
+                var balances = await UniTask.RunOnThreadPool(() =>
+                {
+                    var gameStates = Game.Game.instance.States;
+                    var agentAddr = gameStates.AgentState.address;
+                    var avatarAddr = eval.Action.AvatarAddress;
+                    var states = eval.OutputState;
+                    var balanceList = new List<(Currency currency, FungibleAssetValue balance, bool isCrystal)>();
+
+                    foreach (var (ticker, amount) in fungibleAssetRewards)
+                    {
+                        if (amount > 0)
+                        {
+                            try
+                            {
+                                var currency = Currencies.GetCurrencyByTicker(ticker);
+                                var recipientAddress = Currencies.PickAddress(currency, agentAddr, avatarAddr);
+                                var balance = StateGetter.GetBalance(states, recipientAddress, currency);
+                                var isCrystal = currency.Equals(Currencies.Crystal);
+                                balanceList.Add((currency, balance, isCrystal));
+                            }
+                            catch (Exception ex)
+                            {
+                                NcDebug.LogWarning($"[InfiniteTowerBattle] Failed to get balance for {ticker}: {ex.Message}");
+                            }
+                        }
+                    }
+
+                    return balanceList;
+                });
+
+                // 메인 스레드에서 잔고 업데이트 (SetCrystalBalance는 AgentStateSubject를 호출하므로 메인 스레드 필요)
+                await UniTask.SwitchToMainThread();
+                var gameStates = Game.Game.instance.States;
+                foreach (var (currency, balance, isCrystal) in balances)
+                {
+                    if (isCrystal)
+                    {
+                        gameStates.SetCrystalBalance(balance);
+                    }
+                    else
+                    {
+                        gameStates.SetCurrentAvatarBalance(balance);
+                    }
+                }
+            }
 
             BattleRenderer.Instance.PrepareStage(log);
         }
