@@ -2575,7 +2575,7 @@ namespace Nekoyume.Blockchain
             }
 
             // Run StateGetter and simulator on background thread
-            var log = await UniTask.RunOnThreadPool(() =>
+            var (log, conditions) = await UniTask.RunOnThreadPool(() =>
             {
                 var random = new LocalRandom(eval.RandomSeed);
 
@@ -2640,11 +2640,11 @@ namespace Nekoyume.Blockchain
                     logEvent: true);
 
                 simulator.Simulate();
-                return simulator.Log;
+                return (simulator.Log, allConditions);
             });
-
             // Switch to main thread for UI updates
             await UniTask.SwitchToMainThread();
+            Widget.Find<InfiniteTowerStageCondition>().SetConditions(conditions);
 
             var stage = Game.Game.instance.Stage;
             stage.StageType = StageType.InfiniteTower;

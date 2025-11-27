@@ -51,5 +51,15 @@ namespace Nekoyume.UI.Module
             guaranteedText.text = condition.Type.GetLocalizedString();
             conditionText.text = condition.GetConditionText();
         }
+
+        public void SetSelectedCondition(InfiniteTowerCondition condition)
+        {
+            guaranteedText.text = string.Empty;
+            targetText.text = condition.TargetType == null || !condition.TargetType.Any()
+                ? string.Empty
+                : string.Join(", ", condition.TargetType.Select(t => t.GetLocalizedString()));
+            var statModifier = condition.GetStatModifier();
+            conditionText.text = statModifier.StatModifierToString();
+        }
     }
 }

@@ -866,6 +866,7 @@ namespace Nekoyume.Game.Battle
                     yield break;
                 case StageType.InfiniteTower:
                     // 무한의탑은 일반 전투 결과 팝업 사용
+                    Widget.Find<InfiniteTowerStageCondition>().Close();
                     Widget.Find<InfiniteTowerResultPopup>().Show(_infiniteTowerResultModel);
                     yield break;
                 default:
@@ -993,6 +994,10 @@ namespace Nekoyume.Game.Battle
                 {
                     header.Show();
                     header.UpdateAssets(HeaderMenuStatic.AssetVisibleState.Stage);
+                    if (StageType == StageType.InfiniteTower)
+                    {
+                        Widget.Find<InfiniteTowerStageCondition>().Show();
+                    }
                 }
             }
             else
