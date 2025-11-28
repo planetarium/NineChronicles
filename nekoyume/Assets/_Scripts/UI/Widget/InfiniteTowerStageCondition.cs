@@ -4,6 +4,7 @@ using Nekoyume.Model.InfiniteTower;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
