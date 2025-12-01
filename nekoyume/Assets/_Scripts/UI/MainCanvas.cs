@@ -523,6 +523,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<InfiniteTower>());
             _secondWidgets.Add(Widget.Create<InfiniteTowerPreparation>());
             _secondWidgets.Add(Widget.Create<InfiniteTowerTicketPurchasePopup>());
+            _secondWidgets.Add(Widget.Create<InfiniteTowerStageCondition>());
             _secondWidgets.Add(Widget.Create<InfiniteTowerResultPopup>());
 #endif
         }
