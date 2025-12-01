@@ -44,7 +44,19 @@ namespace Nekoyume.UI.Module
         {
             _slider.normalizedValue = ticketProgress.NormalizedTicketCount;
             _fillText.text = ticketProgress.CurrentAndMaxTicketCountText;
-            _timespanText.text = ticketProgress.remainTimespanToReset;
+
+            // 빈 문자열인 경우 timespan 텍스트 비활성화
+            // (아직 리필이 한 번도 발생하지 않은 경우)
+            if (string.IsNullOrEmpty(ticketProgress.remainTimespanToReset))
+            {
+                _timespanText.text = string.Empty;
+                _timespanText.gameObject.SetActive(false);
+            }
+            else
+            {
+                _timespanText.text = ticketProgress.remainTimespanToReset;
+                _timespanText.gameObject.SetActive(true);
+            }
         }
     }
 }

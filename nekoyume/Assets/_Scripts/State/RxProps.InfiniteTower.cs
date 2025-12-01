@@ -129,6 +129,7 @@ namespace Nekoyume.State
             var resetIntervalBlockRange = scheduleRow.ResetIntervalBlocks;
             int currentTickets;
             long lastRefillBlockIndex = infiniteTowerInfo.LastTicketRefillBlockIndex;
+            bool shouldShowTimespan = true; // 리필이 실제로 발생했는지 여부
 
             // If LastTicketRefillBlockIndex is 0, initialize the reference point and do not refill immediately
             // (Same logic as TryRefillDailyTickets)
@@ -138,6 +139,9 @@ namespace Nekoyume.State
                 currentTickets = infiniteTowerInfo.RemainingTickets;
                 // Use schedule start as reference for progressed block range calculation
                 lastRefillBlockIndex = scheduleRow.StartBlockIndex;
+                // 아직 리필이 한 번도 발생하지 않았으므로 timespan 표시 안함
+                // (서버에서는 InfiniteTowerBattle 액션이 실행될 때만 리필이 발생)
+                shouldShowTimespan = false;
             }
             else
             {
@@ -175,6 +179,14 @@ namespace Nekoyume.State
                 scheduleRow.MaxTickets,
                 (int)progressedBlockRange,
                 resetIntervalBlockRange);
+
+            // shouldShowTimespan이 false인 경우 timespan을 빈 문자열로 설정
+            // (아직 리필이 한 번도 발생하지 않은 경우)
+            if (!shouldShowTimespan)
+            {
+                InfiniteTowerTicketProgressInternal.Value.remainTimespanToReset = string.Empty;
+            }
+
             InfiniteTowerTicketProgressInternal.SetValueAndForceNotify(
                 InfiniteTowerTicketProgressInternal.Value);
         }
