@@ -58,6 +58,19 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            // Weight 정보 추출 및 비율 계산
+            var weightMap = new Dictionary<int, int>();
+            var totalWeight = 0;
+            if (floorData != null)
+            {
+                var weightedConditions = floorData.GetRandomConditionsWithWeights();
+                foreach (var (conditionId, weight) in weightedConditions)
+                {
+                    weightMap[conditionId] = weight;
+                    totalWeight += weight;
+                }
+            }
+
             // 전달받은 조건들을 직접 표시
             for (int i = 0; i < conditionItems.Length && i < allConditions.Count; i++)
             {
@@ -75,7 +88,15 @@ namespace Nekoyume.UI.Module
                     else if (condition is InfiniteTowerCondition buffCondition)
                     {
                         bool isGuaranteed = (i == 0 && floorData?.GuaranteedConditionId > 0);
-                        conditionItem.SetCondition(buffCondition, isGuaranteed);
+
+                        // Weight 비율 계산 (랜덤 조건에만 적용)
+                        float? weightPercentage = null;
+                        if (!isGuaranteed && weightMap.TryGetValue(buffCondition.Id, out var weight) && totalWeight > 0)
+                        {
+                            weightPercentage = (float)weight / totalWeight * 100f;
+                        }
+
+                        conditionItem.SetCondition(buffCondition, isGuaranteed, weightPercentage);
                     }
                 }
             }

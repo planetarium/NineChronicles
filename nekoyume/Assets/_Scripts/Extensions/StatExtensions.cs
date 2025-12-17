@@ -47,7 +47,7 @@ namespace Nekoyume
                 value = statModifier.StatType.ValueToString(statModifier.Value, isSigned: true);
             }
 
-            return $"{statModifier.StatType.GetLocalizedString()} {value}";
+            return $"{statModifier.StatType} {value}";
         }
 
         public static string OptionRowToString(
