@@ -25,9 +25,6 @@ using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using Nekoyume.Action;
-using Nekoyume.UI.Model;
-using Libplanet.Types.Assets;
-using Lib9c;
 
 namespace Nekoyume.UI
 {
@@ -903,6 +900,17 @@ namespace Nekoyume.UI
                 NcDebug.Log($"[InfiniteTowerPreparation] Adding costume dim conditions for {invalidCostumeIds.Count} items");
                 dimConditions.Add((ItemType.Costume, item =>
                     item.ItemBase is Costume cs && invalidCostumeIds.Contains(cs.ItemId)));
+            }
+
+            // ForbiddenItemSubTypes 조건 추가 (아우라 등 금지된 아이템 타입)
+            if (_floorData != null && _floorData.ForbiddenItemSubTypes != null && _floorData.ForbiddenItemSubTypes.Count > 0)
+            {
+                var forbiddenSubTypes = _floorData.ForbiddenItemSubTypes;
+                dimConditions.Add((ItemType.Equipment, item =>
+                    forbiddenSubTypes.Contains(item.ItemBase.ItemSubType)));
+                dimConditions.Add((ItemType.Costume, item =>
+                    forbiddenSubTypes.Contains(item.ItemBase.ItemSubType)));
+                NcDebug.Log($"[InfiniteTowerPreparation] Adding ForbiddenItemSubTypes dim conditions for {forbiddenSubTypes.Count} forbidden types: {string.Join(", ", forbiddenSubTypes)}");
             }
 
             // 속성(ElementalType) 조건 추가
