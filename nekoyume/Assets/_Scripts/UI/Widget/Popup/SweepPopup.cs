@@ -100,7 +100,7 @@ namespace Nekoyume.UI
         private bool _useSweep = true;
         private Action<StageType, int, int, bool> _repeatBattleAction;
 
-        private const int UsableApStoneCountWithRepeat = 1;
+        private const int UsableApStoneCountWithRepeat = 5;
 
         private int MaxApStoneCount =>
             _useSweep
