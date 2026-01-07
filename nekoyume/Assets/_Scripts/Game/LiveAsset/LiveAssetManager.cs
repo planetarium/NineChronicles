@@ -143,6 +143,7 @@ namespace Nekoyume.Game.LiveAsset
                 RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData).ToUniTask(),
                 RequestManager.instance.GetJson(noticeUrl, SetNotices).ToUniTask(),
                 RequestManager.instance.GetJson(_endpoint.NcuJsonUrl, SetNcuData).ToUniTask());
+            _state = InitializingState.Initialized;
         }
 
         public IEnumerator InitializeApplicationCLO()
@@ -357,17 +358,47 @@ namespace Nekoyume.Game.LiveAsset
                 }
 
                 InGameNavigationData inGameNavigationData = null;
-                if (buttonType == EventButtonType.IN_GAME && !string.IsNullOrEmpty(banner.SummonType))
+                if (buttonType == EventButtonType.IN_GAME)
                 {
                     inGameNavigationData = new InGameNavigationData();
 
-                    if (Enum.TryParse<Summon.SummonType>(banner.SummonType, true, out var summonType))
+                    if (Enum.TryParse<ShortcutHelper.PlaceType>(banner.NavigationData.PlaceType, true, out var placeType))
+                    {
+                        inGameNavigationData.PlaceType = placeType;
+                    }
+                    else
+                    {
+                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid PlaceType: {banner.NavigationData.PlaceType}, using default Summon");
+                        inGameNavigationData.PlaceType = ShortcutHelper.PlaceType.Summon;
+                    }
+
+                    if (banner.NavigationData.WorldId is not null)
+                    {
+                        inGameNavigationData.WorldId = banner.NavigationData.WorldId.Value;
+                    }
+                    else
+                    {
+                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid WorldId: {banner.NavigationData.WorldId}, using default 1");
+                        inGameNavigationData.WorldId = 1;
+                    }
+
+                    if (banner.NavigationData.StageId is not null)
+                    {
+                        inGameNavigationData.StageId = banner.NavigationData.StageId.Value;
+                    }
+                    else
+                    {
+                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid StageId: {banner.NavigationData.StageId}, using default 1");
+                        inGameNavigationData.StageId = 1;
+                    }
+
+                    if (Enum.TryParse<Summon.SummonType>(banner.NavigationData.SummonType, true, out var summonType))
                     {
                         inGameNavigationData.SummonType = summonType;
                     }
                     else
                     {
-                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid SummonType: {banner.SummonType}, using default GRIMORE");
+                        NcDebug.LogWarning($"[{nameof(LiveAssetManager)}] Invalid SummonType: {banner.NavigationData.SummonType}, using default GRIMORE");
                         inGameNavigationData.SummonType = Summon.SummonType.GRIMORE;
                     }
                 }
@@ -417,8 +448,6 @@ namespace Nekoyume.Game.LiveAsset
                     return;
                 }
             }
-
-            _state = InitializingState.Initialized;
 
             if (PlayerPrefs.HasKey(AlreadyReadNoticeKey))
             {
@@ -502,8 +531,6 @@ namespace Nekoyume.Game.LiveAsset
                     return;
                 }
             }
-
-            _state = InitializingState.Initialized;
         }
 
         private UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)

@@ -64,6 +64,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private WorldMapAdventureBoss worldMapAdventureBossButton;
 
+        [SerializeField]
+        private WorldMapInfiniteTower worldMapInfiniteTowerButton;
+
         private readonly List<IDisposable> _disposablesAtShow = new();
 
         public ViewModel SharedViewModel { get; private set; }

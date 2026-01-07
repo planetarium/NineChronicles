@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.UI.Model;
@@ -65,7 +66,14 @@ namespace Nekoyume.UI
 
             try
             {
+                // NCU 이미지 로딩이 완료될 때까지 대기
                 var eventData = liveAssetManager.NcuData;
+                if (eventData.Any(data => data.BannerImage == null || data.PopupImage == null))
+                {
+                    NcDebug.LogWarning($"[{nameof(NcuPopup)}] Some NCU images are still loading, waiting...");
+                    WaitForNcuBannerImagesAsync().Forget();
+                    return;
+                }
 
                 var requiredCount = 4 - eventData.Count;
                 foreach (var notice in eventData)
@@ -85,10 +93,10 @@ namespace Nekoyume.UI
                     item.Set(notice,
                         LiveAssetManager.instance.HasUnreadNcu,
                         OnClickEventNoticeItem);
+                    _eventBannerItems.Add(notice.Description, item);
                     if (_selectedEventBannerItem == null)
                     {
                         _selectedEventBannerItem = item;
-                        _selectedEventBannerItem.Select();
                     }
                 }
 
@@ -105,11 +113,15 @@ namespace Nekoyume.UI
                     if (_selectedEventBannerItem == null)
                     {
                         _selectedEventBannerItem = item;
-                        _selectedEventBannerItem.Select();
                     }
                 }
 
-                RenderNotice(_selectedEventBannerItem.Data);
+                // 이미지 로딩이 완료된 후에 select 처리
+                if (_selectedEventBannerItem != null)
+                {
+                    _selectedEventBannerItem.Select();
+                    RenderNotice(_selectedEventBannerItem.Data);
+                }
             }
             catch (Exception e)
             {
@@ -127,6 +139,76 @@ namespace Nekoyume.UI
 
             await UniTask.WaitUntil(() => LiveAssetManager.instance.IsInitialized);
             Initialize();
+        }
+
+        private async UniTask WaitForNcuBannerImagesAsync()
+        {
+            var liveAssetManager = LiveAssetManager.instance;
+            var timeout = TimeSpan.FromSeconds(10);
+            var cancellationTokenSource = new CancellationTokenSource(timeout);
+
+            try
+            {
+                await UniTask.WaitUntil(() =>
+                    liveAssetManager.NcuData.All(data => data.BannerImage != null && data.PopupImage != null),
+                    cancellationToken: cancellationTokenSource.Token);
+
+                NcDebug.Log($"[{nameof(NcuPopup)}] All NCU banner images loaded successfully");
+                InitializeWithImageLoaded();
+            }
+            catch (OperationCanceledException)
+            {
+                NcDebug.LogError($"[{nameof(NcuPopup)}] NCU banner image loading timeout after {timeout.TotalSeconds} seconds");
+                // 타임아웃이 발생해도 초기화를 진행 (null 체크가 있으므로 안전)
+                InitializeWithImageLoaded();
+            }
+        }
+
+        private void InitializeWithImageLoaded()
+        {
+            var liveAssetManager = LiveAssetManager.instance;
+
+            try
+            {
+                var eventData = liveAssetManager.NcuData;
+                var requiredCount = 4 - eventData.Count;
+
+                foreach (var notice in eventData)
+                {
+                    var item = Instantiate(originEventNoticeItem, eventScrollViewport);
+                    item.Set(notice,
+                        LiveAssetManager.instance.HasUnreadNcu,
+                        OnClickEventNoticeItem);
+                    _eventBannerItems.Add(notice.Description, item);
+                    if (_selectedEventBannerItem == null)
+                    {
+                        _selectedEventBannerItem = item;
+                    }
+                }
+
+                for (int i = 0; i < requiredCount; i++)
+                {
+                    var item = Instantiate(originEventNoticeItem, eventScrollViewport);
+                    item.Set(comingSoonBannerSprite, OnClickEventNoticeItem);
+                    if (_selectedEventBannerItem == null)
+                    {
+                        _selectedEventBannerItem = item;
+                    }
+                }
+
+                // 이미지 로딩이 완료된 후에 select 처리
+                if (_selectedEventBannerItem != null)
+                {
+                    _selectedEventBannerItem.Select();
+                    RenderNotice(_selectedEventBannerItem.Data);
+                }
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(e);
+            }
+
+            _isInitialized = true;
         }
 
         protected override void OnEnable()
@@ -181,12 +263,13 @@ namespace Nekoyume.UI
 
         private void RenderNotice(EventNoticeData data)
         {
-            if (data is not null)
+            if (data is not null && data.PopupImage is not null)
             {
                 eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress, data.WithSign, data.ButtonType, data.InGameNavigationData);
             }
             else
             {
+                NcDebug.LogWarning($"[{nameof(NcuPopup)}] PopupImage is null for {data?.Description ?? "null data"}, using coming soon sprite");
                 eventView.Set(comingSoonNoticeSprite);
             }
         }

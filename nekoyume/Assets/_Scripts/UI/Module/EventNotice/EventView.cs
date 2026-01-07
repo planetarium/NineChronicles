@@ -18,7 +18,10 @@ namespace Nekoyume.UI.Module
     [Serializable]
     public class InGameNavigationData
     {
-        public Summon.SummonType SummonType { get; set; }
+        public ShortcutHelper.PlaceType PlaceType { get; set; }
+        public Summon.SummonType? SummonType { get; set; }
+        public int? WorldId { get; set; }
+        public int? StageId { get; set; }
     }
 
     public class EventView : MonoBehaviour
@@ -114,9 +117,12 @@ namespace Nekoyume.UI.Module
                 if (_inGameNavigationData == null)
                     return;
 
-                var action = ShortcutHelper.GetSummonShortcutAction(
+                var action = ShortcutHelper.GetShortcutAction(
                     parent,
-                    _inGameNavigationData.SummonType
+                    _inGameNavigationData.PlaceType,
+                    _inGameNavigationData.SummonType,
+                    _inGameNavigationData.WorldId,
+                    _inGameNavigationData.StageId
                 );
                 navigationButton.Set(action);
             }

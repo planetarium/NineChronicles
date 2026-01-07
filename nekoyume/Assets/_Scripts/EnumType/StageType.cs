@@ -9,6 +9,7 @@ namespace Nekoyume.EnumType
         [Obsolete]
         Mimisbrunnr,
         EventDungeon,
-        AdventureBoss
+        AdventureBoss,
+        InfiniteTower
     }
 }

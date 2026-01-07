@@ -1935,6 +1935,43 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => HandleException(null, e));
         }
 
+        public IObservable<ActionEvaluation<InfiniteTowerBattle>> InfiniteTowerBattle(
+            List<Guid> equipments,
+            List<Guid> costumes,
+            List<Guid> consumables,
+            List<RuneSlotInfo> runeInfos,
+            int infiniteTowerId,
+            int floorId,
+            bool buyTicketIfNeeded = false,
+            bool useNcgForTicket = false)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new InfiniteTowerBattle
+            {
+                AvatarAddress = avatarAddress,
+                InfiniteTowerId = infiniteTowerId,
+                FloorId = floorId,
+                Equipments = equipments,
+                Costumes = costumes,
+                Foods = consumables,
+                RuneInfos = runeInfos,
+                BuyTicketIfNeeded = buyTicketIfNeeded,
+                UseNcgForTicket = useNcgForTicket
+            };
+
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<InfiniteTowerBattle>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {

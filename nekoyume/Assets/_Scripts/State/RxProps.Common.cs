@@ -63,6 +63,11 @@ namespace Nekoyume.State
                 remainTimespanToReset =
                     $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
             }
+
+            public void SetRemainTimespan(string timespan)
+            {
+                remainTimespanToReset = timespan;
+            }
         }
 
         public class ArenaTicketProgress : TicketProgress

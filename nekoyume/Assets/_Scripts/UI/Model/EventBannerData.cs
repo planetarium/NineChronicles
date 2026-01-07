@@ -18,7 +18,15 @@ namespace Nekoyume.UI.Model
         public bool WithSign { get; set; }
         public bool IsMainnet { get; set; }
         public string ButtonType { get; set; }
+        public NavigationData NavigationData { get; set; }
+    }
+
+    [Serializable]
+    public class NavigationData
+    {
+        public string PlaceType { get; set; }
         public string? SummonType { get; set; }
-        public string? OpenWithProbabilityPopup { get; set; }
+        public int? WorldId { get; set; }
+        public int? StageId { get; set; }
     }
 }

@@ -19,6 +19,8 @@ namespace Nekoyume.UI.Module
 
         private CostType _costType;
 
+        public Image IconImage => iconImage;
+
         private void Awake()
         {
             button.onClick.AddListener(ShowMaterialNavigationPopup);

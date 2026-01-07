@@ -441,6 +441,8 @@ namespace Nekoyume.UI
                 case StageType.EventDungeon:
                     return stageId.ToEventDungeonStageNumber()
                         .ToString(CultureInfo.InvariantCulture);
+                case StageType.InfiniteTower:
+                    return stageId.ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -22,7 +22,8 @@ namespace Nekoyume.UI
             WorldBoss,
             JustModule,
             WorldUnlock,
-            AdventureBoss
+            AdventureBoss,
+            InfiniteTower,
         }
 
         [Serializable]

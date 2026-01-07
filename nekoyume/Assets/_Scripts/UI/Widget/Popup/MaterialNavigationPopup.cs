@@ -288,6 +288,7 @@ namespace Nekoyume.UI
                 case CostType.GoldDust:
                 case CostType.RubyDust:
                 case CostType.EmeraldDust:
+                case CostType.SapphireDust:
                 case CostType.ApPotion:
                     itemId = (int)costType;
                     var materialCount =

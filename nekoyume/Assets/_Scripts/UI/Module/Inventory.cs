@@ -13,6 +13,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Rune;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -180,6 +181,65 @@ namespace Nekoyume.UI.Module
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);
             scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposablesOnSet);
+        }
+
+        public void ApplyAdditionalDimConditions(
+            List<(ItemType type, Predicate<InventoryItem> predicate)> predicateList)
+        {
+            NcDebug.Log($"[Inventory] ApplyAdditionalDimConditions called - predicates: {predicateList?.Count ?? 0}");
+
+            if (predicateList is null || predicateList.Count == 0)
+            {
+                NcDebug.Log("[Inventory] No predicates to apply");
+                return;
+            }
+
+            foreach (var (type, predicate) in predicateList)
+            {
+                if (!_dimConditionFuncsByItemType.ContainsKey(type))
+                {
+                    NcDebug.LogWarning($"[Inventory] ItemType {type} not found in _dimConditionFuncsByItemType");
+                    continue;
+                }
+
+                _dimConditionFuncsByItemType[type].Add(predicate);
+                NcDebug.Log($"[Inventory] Added dim condition for ItemType {type}");
+            }
+
+            NcDebug.Log("[Inventory] Updating dimmed inventory items");
+            UpdateDimmedInventoryItem();
+
+            NcDebug.Log($"[Inventory] Refreshing current tab: {_activeTabType}");
+            // Refresh current tab to reflect dimming immediately
+            scroll.UpdateData(GetModels(_activeTabType), false);
+        }
+
+        public void ApplyAdditionalRuneDimConditions(List<Predicate<InventoryItem>> predicates)
+        {
+            NcDebug.Log($"[Inventory] ApplyAdditionalRuneDimConditions called - predicates: {predicates?.Count ?? 0}");
+            if (predicates is null || predicates.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var rune in _runes)
+            {
+                bool shouldDim = rune.DimObjectEnabled.Value;
+                foreach (var predicate in predicates)
+                {
+                    if (predicate.Invoke(rune))
+                    {
+                        shouldDim = true;
+                        break;
+                    }
+                }
+                rune.DimObjectEnabled.SetValueAndForceNotify(shouldDim);
+            }
+
+            if (_activeTabType == InventoryTabType.Rune)
+            {
+                scroll.UpdateData(GetModels(_activeTabType), false);
+            }
         }
 
         private void SetToggle(IToggleable toggle, InventoryTabType tabType)
@@ -887,9 +947,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(List<RuneState> equippedRuneState, BattleType battleType, RuneListSheet sheet)
+        public void UpdateRunes(List<RuneState> equippedRuneState, BattleType battleType, RuneListSheet sheet, List<RuneType> forbiddenRuneTypes = null)
         {
-            UpdateRuneEquipped(equippedRuneState, battleType, sheet);
+            UpdateRuneEquipped(equippedRuneState, battleType, sheet, forbiddenRuneTypes);
             UpdateRuneNotification(GetBestRunes(battleType));
             var models = GetModels(_activeTabType);
             scroll.UpdateData(models, resetScrollOnEnable);
@@ -906,16 +966,16 @@ namespace Nekoyume.UI.Module
             scroll.UpdateData(_fungibleAssets, resetScrollOnEnable);
         }
 
-        public void UpdateCostumes(List<Guid> costumes)
+        public void UpdateCostumes(List<Guid> costumes, InfiniteTowerFloorSheet.Row floorData = null)
         {
-            UpdateCostumeEquipped(costumes);
+            UpdateCostumeEquipped(costumes, floorData);
             var bestItem = GetUsableBestCostumes();
             UpdateCostumeNotification(costumes, bestItem);
         }
 
-        public void UpdateEquipments(List<Guid> equipments)
+        public void UpdateEquipments(List<Guid> equipments, InfiniteTowerFloorSheet.Row floorData = null)
         {
-            UpdateEquipmentEquipped(equipments);
+            UpdateEquipmentEquipped(equipments, floorData);
 
             var bestItems = GetUsableBestEquipments();
             UpdateEquipmentNotification(bestItems);
@@ -933,7 +993,8 @@ namespace Nekoyume.UI.Module
         private void UpdateRuneEquipped(
             List<RuneState> runeStates,
             BattleType battleType,
-            RuneListSheet sheet)
+            RuneListSheet sheet,
+            List<RuneType> forbiddenRuneTypes = null)
         {
             foreach (var rune in _runes)
             {
@@ -946,20 +1007,48 @@ namespace Nekoyume.UI.Module
                 }
 
                 var equippable = battleType.IsEquippableRune((RuneUsePlace)row.UsePlace);
+
+                if (forbiddenRuneTypes != null && forbiddenRuneTypes.Count > 0)
+                {
+                    var runeType = (RuneType)row.RuneType;
+                    if (forbiddenRuneTypes.Contains(runeType))
+                    {
+                        equippable = false;
+                    }
+                }
+
                 rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
         }
 
-        private void UpdateCostumeEquipped(List<Guid> costumes)
+        private void UpdateCostumeEquipped(List<Guid> costumes, InfiniteTowerFloorSheet.Row floorData = null)
         {
             foreach (var costume in _costumes)
             {
                 var equipped = costumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
                 costume.Equipped.SetValueAndForceNotify(equipped);
+
+                if (floorData != null && costume.ItemBase is Costume costumeItem)
+                {
+                    try
+                    {
+                        var testList = new List<Costume> { costumeItem };
+                        floorData.ValidateItemTypeRestrictions(testList);
+                        floorData.ValidateItemGradeRestrictions(testList);
+                        floorData.ValidateItemLevelRestrictions(testList);
+                        // 검증 성공 - 기존 딤 상태는 유지하되, 검증 실패로 인한 딤은 해제
+                        // 다른 조건에 의해 딤 처리된 경우를 고려하여 강제로 false로 설정하지 않음
+                    }
+                    catch
+                    {
+                        // 검증 실패 - 딤 처리
+                        costume.DimObjectEnabled.SetValueAndForceNotify(true);
+                    }
+                }
             }
         }
 
-        private void UpdateEquipmentEquipped(List<Guid> equipments)
+        private void UpdateEquipmentEquipped(List<Guid> equipments, InfiniteTowerFloorSheet.Row floorData = null)
         {
             foreach (var eps in _equipments.Values)
             {
@@ -967,6 +1056,24 @@ namespace Nekoyume.UI.Module
                 {
                     var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
                     equipment.Equipped.Value = equipped;
+
+                    if (floorData != null && equipment.ItemBase is Equipment equipmentItem)
+                    {
+                        try
+                        {
+                            var testList = new List<Equipment> { equipmentItem };
+                            floorData.ValidateItemTypeRestrictions(testList);
+                            floorData.ValidateItemGradeRestrictions(testList);
+                            floorData.ValidateItemLevelRestrictions(testList);
+                            // 검증 성공 - 기존 딤 상태는 유지하되, 검증 실패로 인한 딤은 해제
+                            // 다른 조건에 의해 딤 처리된 경우를 고려하여 강제로 false로 설정하지 않음
+                        }
+                        catch
+                        {
+                            // 검증 실패 - 딤 처리
+                            equipment.DimObjectEnabled.SetValueAndForceNotify(true);
+                        }
+                    }
                 }
             }
         }
