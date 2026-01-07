@@ -114,6 +114,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject potion;
 
+        [SerializeField]
+        private TextMeshProUGUI informationText;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
         private readonly ReactiveProperty<int> _ticketCount = new();
@@ -254,6 +257,7 @@ namespace Nekoyume.UI
             canvasGroupForRepeat.interactable = false;
             pageToggle.isOn = true; // Always use sweep mode for event dungeon
             UpdateByToggle(true);
+            informationText.text = L10nManager.Localize("UI_EVENT_SWEEP_INFORMATION");
             contentText.text = $"{L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")} / {L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")}";
 
             base.Show(ignoreShowAnimation);
@@ -477,6 +481,7 @@ namespace Nekoyume.UI
                     information.SetActive(true);
                     totalApText.text = string.Empty;
                     apStoneText.text = string.Empty;
+                    informationText.text = L10nManager.Localize("UI_INFORMATION");
                 }
                 else
                 {
@@ -506,6 +511,7 @@ namespace Nekoyume.UI
             if (playCount == 0)
             {
                 information.SetActive(true);
+                informationText.text = L10nManager.Localize("UI_EVENT_SWEEP_INFORMATION");
                 eventDungeonTicketText.text = string.Empty;
             }
             else
