@@ -232,7 +232,7 @@ namespace Nekoyume.UI
             SetRuneLevelBonus();
             SetInventory();
             Set(_selectedRuneItem);
-            animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
+            animator.Play(HashToLevelUp); // Always use LevelUp animation
             LoadingHelper.RuneEnhancement.Value = false;
         }
 
@@ -302,7 +302,7 @@ namespace Nekoyume.UI
             LoadingHelper.RuneEnhancement.Value = true;
             if (RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
             {
-                var quote = L10nManager.Localize("UI_RUNE_COMBINE_START");
+                var quote = L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING");
                 Find<RuneCombineResultScreen>().Show(runeIcon, quote);
             }
         }
@@ -332,10 +332,8 @@ namespace Nekoyume.UI
             UpdateCost(item, runeStoneIcon);
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
             UpdateSlider(item);
-            animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
-            loadingText.text = item.Level > 0
-                ? L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING") // Level Up Processing
-                : L10nManager.Localize("UI_RUNE_COMBINE_PROCESSING"); // Combine Processing
+            animator.Play(HashToLevelUp); // Always use LevelUp animation
+            loadingText.text = L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING"); // Always use Level Up Processing
 
             TryCount.SetValueAndForceNotify(TryCount.Value);
         }
@@ -361,9 +359,7 @@ namespace Nekoyume.UI
             maxLevel.SetActive(item.IsMaxLevel);
 
             levelUpButton.gameObject.SetActive(!item.IsMaxLevel);
-            levelUpButton.Text = item.Level > 0
-                ? L10nManager.Localize("UI_UPGRADE_EQUIPMENT") // Level Up
-                : L10nManager.Localize("UI_COMBINATION_ITEM"); // Combine
+            levelUpButton.Text = L10nManager.Localize("UI_UPGRADE_EQUIPMENT"); // Always use UPGRADE
             levelUpButton.Interactable = item.HasNotification;
         }
 
@@ -426,33 +422,25 @@ namespace Nekoyume.UI
 
         private void UpdateSlider(RuneItem item)
         {
-            if (item.Level == 0)
+            if (item.CostRow is null)
             {
                 tryCountSlider.container.SetActive(false);
-                TryCount.Value = 1;
+                return;
             }
-            else
-            {
-                if (item.CostRow is null)
-                {
-                    tryCountSlider.container.SetActive(false);
-                    return;
-                }
 
-                tryCountSlider.container.SetActive(true);
+            tryCountSlider.container.SetActive(true);
 
-                _maxTryCount = item.CostRow.GetMaxTryCount(item.Level, (
-                    States.Instance.GoldBalanceState.Gold,
-                    States.Instance.CrystalBalance,
-                    item.RuneStone), 30);
+            _maxTryCount = item.CostRow.GetMaxTryCount(item.Level, (
+                States.Instance.GoldBalanceState.Gold,
+                States.Instance.CrystalBalance,
+                item.RuneStone), 30);
 
-                var sliderMaxValue = _maxTryCount > 0 ? _maxTryCount : 1;
-                tryCountSlider.slider.Set(
-                    1, sliderMaxValue,
-                    1, sliderMaxValue,
-                    1, x => TryCount.Value = Math.Clamp(x, 1, sliderMaxValue),
-                    _maxTryCount > 0, true);
-            }
+            var sliderMaxValue = _maxTryCount > 0 ? _maxTryCount : 1;
+            tryCountSlider.slider.Set(
+                1, sliderMaxValue,
+                1, sliderMaxValue,
+                1, x => TryCount.Value = Math.Clamp(x, 1, sliderMaxValue),
+                _maxTryCount > 0, true);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

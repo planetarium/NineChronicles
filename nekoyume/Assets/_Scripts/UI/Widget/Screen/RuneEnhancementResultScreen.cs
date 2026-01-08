@@ -132,12 +132,12 @@ namespace Nekoyume.UI
             runeLevelBonusDiff.beforeText.text = $"+{beforeReward / 1000m:0.###}%";
             runeLevelBonusDiff.afterText.text = $"+{currentReward / 1000m:0.###}%";
 
-            var isCombine = runeItem.Level == 0;
-            speechBubble.arrow.SetActive(!isCombine);
-            speechBubble.beforeText.gameObject.SetActive(!isCombine);
+            // Always show arrow and beforeText for unified UPGRADE UI
+            speechBubble.arrow.SetActive(true);
+            speechBubble.beforeText.gameObject.SetActive(true);
             speechBubble.beforeText.text = $"+{runeItem.Level}";
             speechBubble.afterText.text = $"+{resultLevel}";
-            speechBubble.dialogText.text = isCombine ? L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") : L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
+            speechBubble.dialogText.text = L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE"); // Always use UPGRADE
             speechBubble.container.SetActive(true);
 
             animator.Play(HashToSuccess);
@@ -193,6 +193,7 @@ namespace Nekoyume.UI
                 statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.StatType.ValueToString(info.stat.TotalValue)}";
             }
 
+            // Always show stat difference for unified UPGRADE UI
             if (item.Level > 0)
             {
                 if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level, out var curOption))
@@ -210,9 +211,12 @@ namespace Nekoyume.UI
             }
             else
             {
+                // Level 0: Show as "0 → resultLevel" for consistency
+                // Use Level 0 as base (all stats are 0 at level 0)
                 for (var i = 0; i < nextOption.Stats.Count; i++)
                 {
                     var info = nextOption.Stats[i];
+                    // Show the full value as increase from 0
                     addStatTextList[i].text = $"(+{info.stat.StatType.ValueToString(info.stat.TotalValue)})";
                 }
             }

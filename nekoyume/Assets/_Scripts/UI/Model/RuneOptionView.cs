@@ -92,14 +92,26 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            // Unified UPGRADE UI: Level 0 also shows comparison (Level 1 → nextLevel)
+            // Since Level 0 has no option data, we show Level 1 as "current" and nextLevel as "next"
             if (_startLevel == 0)
             {
-                if (!_optionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
+                // For Level 0, show Level 1 → nextLevel comparison
+                var nextLevel = _startLevel + tryCount;
+                if (!_optionRow.LevelOptionMap.TryGetValue(1, out var level1Info))
                 {
                     return;
                 }
 
-                Set(1, statInfo, _runeUsePlace);
+                if (!_optionRow.LevelOptionMap.TryGetValue(nextLevel, out var nextStatInfo))
+                {
+                    // If nextLevel doesn't exist, just show level 1
+                    Set(1, level1Info, _runeUsePlace);
+                    return;
+                }
+
+                // Show comparison from Level 1 (as current) to nextLevel (as next)
+                Set(0, nextLevel, level1Info, nextStatInfo, _runeUsePlace);
             }
             else
             {
