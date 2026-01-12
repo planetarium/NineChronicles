@@ -165,8 +165,35 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             sweepPopupButton.OnClickAsObservable()
-                .Where(_ => !IsFirstStage)
-                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction));
+                .Subscribe(_ =>
+                {
+                    if (_stageType == StageType.EventDungeon)
+                    {
+                        // Check if has enough tickets for event dungeon sweep
+                        if (RxProps.EventDungeonTicketProgress.Value.currentTickets < _requiredCost)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("ERROR_NOT_ENOUGH_EVENT_DUNGEON_TICKETS_EXCEPTION", _requiredCost),
+                                NotificationCell.NotificationType.Alert);
+                            return;
+                        }
+
+                        // Event dungeon sweep - first stage allowed
+                        if (_scheduleId.HasValue)
+                        {
+                            Find<SweepPopup>().ShowEventDungeon(_scheduleId.Value, _worldId, _stageId);
+                        }
+                    }
+                    else
+                    {
+                        // Regular stage sweep - first stage not allowed
+                        if (!IsFirstStage)
+                        {
+                            Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction);
+                        }
+                    }
+                });
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
@@ -215,10 +242,13 @@ namespace Nekoyume.UI
             UpdateRandomBuffButton();
 
             closeButtonText.text = closeButtonName;
-            sweepButtonText.text =
-                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
+            sweepButtonText.text = _stageType switch
+            {
+                StageType.EventDungeon => "Sweep", // Event dungeon always shows "Sweep"
+                _ => States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
                     ? "Sweep"
-                    : "Repeat";
+                    : "Repeat"
+            };
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
@@ -749,7 +779,8 @@ namespace Nekoyume.UI
                     break;
                 case StageType.EventDungeon:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(false);
+                    // Always show sweep button for event dungeon
+                    sweepPopupButton.gameObject.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
