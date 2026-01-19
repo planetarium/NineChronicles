@@ -44,6 +44,7 @@ using Nekoyume.Model.InfiniteTower;
 using Nekoyume.Model.Market;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
+using Debug = UnityEngine.Debug;
 using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -2222,7 +2223,7 @@ namespace Nekoyume.Blockchain
                 GetActionPoint(eval, eval.Action.AvatarAddress));
         }
 
-        private void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState, CrystalRandomSkillState, long) prepared)
+        private async void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState, CrystalRandomSkillState, long) prepared)
         {
             var (eval, newAvatarState, prevSkillState, newRandomSkillState, actionPoint) = prepared;
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
@@ -2279,15 +2280,28 @@ namespace Nekoyume.Blockchain
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Adventure].Costumes;
             var items = equipments.Concat(costumes).ToList();
             tempPlayer.EquipItems(items);
-            var resultModel = eval.GetHackAndSlashReward(
-                tempPlayer,
-                States.Instance.AllRuneState,
-                States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                States.Instance.CollectionState,
-                skillsOnWaveStart,
-                tableSheets,
-                out var simulator,
-                out var temporaryAvatar);
+
+            var (resultModel, simulator, temporaryAvatar) = await UniTask.RunOnThreadPool(() =>
+            {
+                var model = eval.GetHackAndSlashReward(
+                    tempPlayer,
+                    States.Instance.AllRuneState,
+                    States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                    States.Instance.CollectionState,
+                    skillsOnWaveStart,
+                    tableSheets,
+                    States.Instance.GameConfigState.ShatterStrikeMaxDamage,
+                    out var sim,
+                    out var tempAvatar);
+                return (model, sim, tempAvatar);
+            }, false);
+
+            await UniTask.SwitchToMainThread();
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return;
+            }
+
             var log = simulator.Log;
             Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
             Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
@@ -2464,41 +2478,54 @@ namespace Nekoyume.Blockchain
             var items = equipments.Concat(costumes).ToList();
             tempPlayer.EquipItems(items);
 
-            var simulator = new StageSimulator(
-                random,
-                tempPlayer,
-                eval.Action.Foods,
-                States.Instance.AllRuneState,
-                States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                new List<Skill>(),
-                eval.Action.EventDungeonId,
-                stageId,
-                stageRow,
-                TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
-                RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false,
-                RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
-                    stageId.ToEventDungeonStageNumber(),
-                    Action.EventDungeonBattle.PlayCount),
-                TableSheets.Instance.GetStageSimulatorSheets(),
-                TableSheets.Instance.EnemySkillSheet,
-                TableSheets.Instance.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
-                    random,
-                    stageRow,
-                    TableSheets.Instance.MaterialItemSheet,
-                    Action.EventDungeonBattle.PlayCount),
-                States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.BuffLimitSheet,
-                tableSheets.BuffLinkSheet,
-                true,
-                States.Instance.GameConfigState.ShatterStrikeMaxDamage);
-            simulator.Simulate();
-            var log = simulator.Log;
-            var stage = Game.Game.instance.Stage;
-            stage.StageType = StageType.EventDungeon;
-            stage.PlayCount = playCount;
+            UniTask.Void(async () =>
+            {
+                var (simulator, log) = await UniTask.RunOnThreadPool(() =>
+                {
+                    var simulator = new StageSimulator(
+                        random,
+                        tempPlayer,
+                        eval.Action.Foods,
+                        States.Instance.AllRuneState,
+                        States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                        new List<Skill>(),
+                        eval.Action.EventDungeonId,
+                        stageId,
+                        stageRow,
+                        TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
+                        RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false,
+                        RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
+                            stageId.ToEventDungeonStageNumber(),
+                            Action.EventDungeonBattle.PlayCount),
+                        TableSheets.Instance.GetStageSimulatorSheets(),
+                        TableSheets.Instance.EnemySkillSheet,
+                        TableSheets.Instance.CostumeStatSheet,
+                        StageSimulator.GetWaveRewards(
+                            random,
+                            stageRow,
+                            TableSheets.Instance.MaterialItemSheet,
+                            Action.EventDungeonBattle.PlayCount),
+                        States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                        tableSheets.BuffLimitSheet,
+                        tableSheets.BuffLinkSheet,
+                        true,
+                        States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+                    simulator.Simulate();
+                    return (simulator, simulator.Log);
+                }, false);
 
-            BattleRenderer.Instance.PrepareStage(log);
+                await UniTask.SwitchToMainThread();
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
+
+                var stage = Game.Game.instance.Stage;
+                stage.StageType = StageType.EventDungeon;
+                stage.PlayCount = playCount;
+
+                BattleRenderer.Instance.PrepareStage(log);
+            });
         }
 
         private void ExceptionEventDungeonBattle(ActionEvaluation<EventDungeonBattle> eval)
