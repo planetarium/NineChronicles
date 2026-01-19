@@ -43,6 +43,7 @@ namespace Nekoyume.Helper
 
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade, // Upgrade icon is same as Craft.
+            Collection = 19,
         }
 
         #region AcquisitionPlace
@@ -369,6 +370,14 @@ namespace Nekoyume.Helper
                     };
                     guideText = L10nManager.Localize("UI_QUEST");
                     break;
+                case PlaceType.Collection:
+                    shortcutAction = () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<Collection>().Show();
+                    };
+                    guideText = L10nManager.Localize("UI_COLLECTION");
+                    break;
                 case PlaceType.Staking:
                     shortcutAction = () =>
                     {
@@ -456,6 +465,12 @@ namespace Nekoyume.Helper
         {
             switch (placeType)
             {
+                case PlaceType.Collection:
+                    return () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<Collection>().Show();
+                    };
                 case PlaceType.Summon:
                     if (summonType is null)
                     {
@@ -836,6 +851,16 @@ namespace Nekoyume.Helper
                 case PlaceType.Summon:
                 case PlaceType.Grinding:
                     return true;
+                case PlaceType.Collection:
+                    var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
+                    if (worldInformation is null)
+                    {
+                        return false;
+                    }
+
+                    return worldInformation.IsStageCleared(
+                        Game.LiveAsset.GameConfig.RequiredStage.TutorialEnd
+                    );
                 case PlaceType.AdventureBoss:
                     return !Game.LiveAsset.GameConfig.IsKoreanBuild;
                 case PlaceType.WorldBoss:
@@ -872,6 +897,7 @@ namespace Nekoyume.Helper
                 PlaceType.WorldBoss => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.Grinding => true,
                 PlaceType.EventDungeon => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.Collection => !BattleRenderer.Instance.IsOnBattle,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
         }

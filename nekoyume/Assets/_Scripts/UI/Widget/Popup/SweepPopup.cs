@@ -257,9 +257,6 @@ namespace Nekoyume.UI
             canvasGroupForRepeat.interactable = false;
             pageToggle.isOn = true; // Always use sweep mode for event dungeon
             UpdateByToggle(true);
-            informationText.text = L10nManager.Localize("UI_EVENT_SWEEP_INFORMATION");
-            contentText.text = $"{L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")} / {L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")}";
-
             base.Show(ignoreShowAnimation);
         }
 
@@ -273,6 +270,7 @@ namespace Nekoyume.UI
                 point.SetActive(false);
                 objectsForEventDungeon.ForEach(obj => obj.SetActive(true));
                 potion.SetActive(false);
+                information.SetActive(true);
                 _useSweep = true; // Always use sweep for event dungeon
 
                 // Disable AP stone slider for event dungeon
@@ -292,6 +290,8 @@ namespace Nekoyume.UI
                     x => _ticketCount.Value = x);
                 descriptionText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_DESCRIPTION");
                 haveText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_HAVE");
+                informationText.text = L10nManager.Localize("UI_EVENT_SWEEP_INFORMATION");
+                contentText.text = $"{L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")}";
             }
             else
             {
