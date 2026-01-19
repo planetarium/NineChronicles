@@ -291,7 +291,7 @@ namespace Nekoyume.UI
                 descriptionText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_DESCRIPTION");
                 haveText.text = L10nManager.Localize("UI_EVENT_DUNGEON_TICKET_HAVE");
                 informationText.text = L10nManager.Localize("UI_EVENT_SWEEP_INFORMATION");
-                contentText.text = $"{L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")} / {L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")}";
+                contentText.text = $"{L10nManager.Localize("UI_EVENT_DUNGEON_TICKET")}";
             }
             else
             {
