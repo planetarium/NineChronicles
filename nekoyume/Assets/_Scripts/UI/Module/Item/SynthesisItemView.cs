@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -41,7 +42,10 @@ namespace Nekoyume.UI.Module
 
             baseItemView.TouchHandler.gameObject.SetActive(true);
             baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
-            baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
+            var id = model.Row.ItemId;
+            baseItemView.ItemImage.overrideSprite = TableSheets.Instance.ItemSheet.TryGetValue(id, out var row)
+                ? SpriteHelper.GetItemIcon(id, row.ItemSubType, row.Grade)
+                : SpriteHelper.GetItemIcon(id);
 
             var required = model.HasItem && !model.IsEnoughAmount;
             baseItemView.EnhancementText.gameObject.SetActive(model.ItemType == ItemType.Equipment);

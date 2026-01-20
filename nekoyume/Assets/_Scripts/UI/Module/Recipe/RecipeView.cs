@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
+            var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id, itemRow.ItemSubType, itemRow.Grade);
             if (itemSprite is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(itemRow.Id.ToString());

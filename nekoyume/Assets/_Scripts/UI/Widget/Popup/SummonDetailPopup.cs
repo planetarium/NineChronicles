@@ -109,7 +109,7 @@ namespace Nekoyume.UI
                 titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
                 foreach (var iconImage in iconImages)
                 {
-                    iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id);
+                    iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id, model.EquipmentRow.ItemSubType, model.EquipmentRow.Grade);
                 }
             }
 
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
                 titleText.SetText(model.CostumeRow.GetLocalizedName());
                 foreach (var iconImage in iconImages)
                 {
-                    iconImage.sprite = SpriteHelper.GetItemIcon(model.CostumeRow.Id);
+                    iconImage.sprite = SpriteHelper.GetItemIcon(model.CostumeRow.Id, model.CostumeRow.ItemSubType, model.CostumeRow.Grade);
                 }
                 recipeOptionView.SetOptions(model.CostumeStatRows);
 

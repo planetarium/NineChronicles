@@ -2,6 +2,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -99,7 +100,11 @@ namespace Nekoyume.UI
             {
                 foreach (var poolItem in resultPool)
                 {
-                    speechBubble.SetRune(SpriteHelper.GetItemIcon(poolItem.Item1));
+                    var id = poolItem.Item1;
+                    var sprite = TableSheets.Instance.ItemSheet.TryGetValue(id, out var row)
+                        ? SpriteHelper.GetItemIcon(id, row.ItemSubType, row.Grade)
+                        : SpriteHelper.GetItemIcon(id);
+                    speechBubble.SetRune(sprite);
                     yield return new WaitForSeconds(.1f);
                 }
             }

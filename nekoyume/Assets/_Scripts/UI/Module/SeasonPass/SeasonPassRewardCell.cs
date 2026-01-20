@@ -71,7 +71,15 @@ namespace Nekoyume.UI.Module
                 if (itemInfo != null)
                 {
                     Root.SetActive(true);
-                    ItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemInfo.Id);
+                    try
+                    {
+                        var row = Game.Game.instance.TableSheets.ItemSheet[itemInfo.Id];
+                        ItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemInfo.Id, row.ItemSubType, row.Grade);
+                    }
+                    catch
+                    {
+                        ItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemInfo.Id);
+                    }
                     ItemView.CountText.text = $"x{itemInfo.Amount}";
                     try
                     {

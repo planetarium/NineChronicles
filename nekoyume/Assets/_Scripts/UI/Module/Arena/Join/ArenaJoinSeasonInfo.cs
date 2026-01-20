@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using GeneratedApiNamespace.ArenaServiceClient;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI.Module.Arena.Join
 {
@@ -205,7 +206,10 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             if (medalItemId.HasValue)
             {
-                var medalSprite = SpriteHelper.GetItemIcon(medalItemId.Value);
+                var id = medalItemId.Value;
+                var medalSprite = TableSheets.Instance.ItemSheet.TryGetValue(id, out var row)
+                    ? SpriteHelper.GetItemIcon(id, row.ItemSubType, row.Grade)
+                    : SpriteHelper.GetItemIcon(id);
                 foreach (var medalImage in _currentRoundMedalImages)
                 {
                     medalImage.overrideSprite = medalSprite;

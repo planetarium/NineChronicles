@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -176,7 +177,15 @@ namespace Nekoyume.UI.Module
             {
                 foreach (var poolItem in pool)
                 {
-                    pendantItemIcon.sprite = SpriteHelper.GetItemIcon(poolItem.Item1);
+                    var id = poolItem.Item1;
+                    if (TableSheets.Instance.ItemSheet.TryGetValue(id, out var row))
+                    {
+                        pendantItemIcon.sprite = SpriteHelper.GetItemIcon(id, row.ItemSubType, row.Grade);
+                    }
+                    else
+                    {
+                        pendantItemIcon.sprite = SpriteHelper.GetItemIcon(id);
+                    }
                     itemBackground.sprite = SpriteHelper.GetItemBackground((int)poolItem.Item2);
                     var isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(itemIconAnimInterval), cancellationToken: cts.Token).SuppressCancellationThrow();
                     if (isCancelled)
