@@ -1,5 +1,7 @@
 using System;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
@@ -12,7 +14,11 @@ namespace Nekoyume.Helper
 
         private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
-        
+
+        // Title fallback icons (when original resource is missing)
+        private const int TitleDivinityFallbackIconId = 49900040;
+        private const int TitleMythicFallbackIconId = 49900049;
+
         private const string ProfileIconDefaultPath = "UI/Icons/Profile/10200000";
         private const string ProfileIconPathFormat = "UI/Icons/Profile/{0}";
 
@@ -76,7 +82,36 @@ namespace Nekoyume.Helper
             return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
                 Resources.Load<Sprite>(ItemIconDefaultPath);
         }
-        
+
+        /// <summary>
+        /// Item icon resolver with contextual fallback.
+        /// - Tries to load original icon (UI/Icons/Item/{itemId}) first.
+        /// - If missing and the item is Title, falls back by grade:
+        ///   Divinity(6) -> 49900040, Mythic(7) -> 49900049.
+        /// - Otherwise falls back to default icon (100000).
+        /// </summary>
+        public static Sprite GetItemIcon(int itemId, ItemSubType itemSubType, int grade)
+        {
+            var original = Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId));
+            if (original)
+            {
+                return original;
+            }
+
+            if (itemSubType == ItemSubType.Title)
+            {
+                switch ((Grade)grade)
+                {
+                    case Grade.Mythic:
+                        return GetItemIcon(TitleMythicFallbackIconId);
+                    case Grade.Divinity:
+                        return GetItemIcon(TitleDivinityFallbackIconId);
+                }
+            }
+
+            return Resources.Load<Sprite>(ItemIconDefaultPath);
+        }
+
         public static Sprite GetProfileIcon(int profileId)
         {
             return Resources.Load<Sprite>(string.Format(ProfileIconPathFormat, profileId)) ??
@@ -181,13 +216,13 @@ namespace Nekoyume.Helper
             {
                 return sprite;
             }
-            
+
             // 리소스가 없고 페이지 인덱스가 3을 초과하는 경우
             if (pageIndex > 3)
             {
                 // 페이지 인덱스를 1-3 범위로 순환
                 int cyclicPageIndex = ((pageIndex - 1) % 3) + 1;
-                
+
                 // 순환된 인덱스로 다시 시도
                 path = string.Format(WorldmapBackgroundPathFormat, imageKey, cyclicPageIndex);
                 sprite = Resources.Load<Sprite>(path);
@@ -195,7 +230,7 @@ namespace Nekoyume.Helper
                 {
                     return sprite;
                 }
-                
+
                 // 기본 경로도 순환된 인덱스로 시도
                 var defaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, cyclicPageIndex);
                 var defaultSprite = Resources.Load<Sprite>(defaultPath);
@@ -208,13 +243,13 @@ namespace Nekoyume.Helper
             // 원래 페이지 인덱스로 기본 경로 시도
             var originalDefaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, pageIndex);
             var originalDefaultSprite = Resources.Load<Sprite>(originalDefaultPath);
-            
+
             // 그래도 없으면 첫 번째 페이지 기본 이미지로 폴백
             if (originalDefaultSprite == null && pageIndex != 1)
             {
                 return Resources.Load<Sprite>(string.Format(WorldmapBackgroundDefaultPathFormat, 1));
             }
-            
+
             return originalDefaultSprite;
         }
 

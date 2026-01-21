@@ -1,3 +1,4 @@
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
@@ -48,10 +49,13 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetByFullCostumeOrArmorId(int armorOrFullCostumeId)
         {
-            var image = SpineCharacterViewer.IsFullCostume(armorOrFullCostumeId.ToString()) ? 
-                SpriteHelper.GetItemIcon(armorOrFullCostumeId) : 
-                SpriteHelper.GetProfileIcon(armorOrFullCostumeId);
-            
+            var isFullCostume = SpineCharacterViewer.IsFullCostume(armorOrFullCostumeId.ToString());
+            var image = isFullCostume
+                ? (TableSheets.Instance.ItemSheet.TryGetValue(armorOrFullCostumeId, out var row)
+                    ? SpriteHelper.GetItemIcon(armorOrFullCostumeId, row.ItemSubType, row.Grade)
+                    : SpriteHelper.GetItemIcon(armorOrFullCostumeId))
+                : SpriteHelper.GetProfileIcon(armorOrFullCostumeId);
+
             if (image is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(armorOrFullCostumeId.ToString());
