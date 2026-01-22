@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Scroller
 
             if (itemData.EquipmentRow is not null)
             {
-                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.EquipmentRow.Id);
+                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.EquipmentRow.Id, itemData.EquipmentRow.ItemSubType, itemData.EquipmentRow.Grade);
                 nameText.text = itemData.EquipmentRow.GetLocalizedName(true, false);
                 infoText.text = itemData.EquipmentRow.GetLocalizedInformation();
                 var statIndex = 0;
@@ -121,7 +121,7 @@ namespace Nekoyume.UI.Scroller
 
             if (itemData.CostumeRow is not null)
             {
-                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.CostumeRow.Id);
+                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.CostumeRow.Id, itemData.CostumeRow.ItemSubType, itemData.CostumeRow.Grade);
                 nameText.text = itemData.CostumeRow.GetLocalizedName();
                 var statIndex = 0;
                 foreach (var statRow in itemData.CostumeStatRows)

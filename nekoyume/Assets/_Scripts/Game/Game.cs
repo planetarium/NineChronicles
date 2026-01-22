@@ -118,6 +118,7 @@ namespace Nekoyume.Game
                 NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
                 _currentPlanetId = value;
                 LiveAssetManager.instance.SetThorSchedule(value);
+                LiveAssetManager.instance.SetEventRewardPopupData(value);
             }
         }
 

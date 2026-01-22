@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -102,7 +103,10 @@ namespace Nekoyume.UI.Module
         {
             if (reward.ItemId != null && reward.ItemId != 0)
             {
-                return SpriteHelper.GetItemIcon(reward.ItemId.Value);
+                var id = reward.ItemId.Value;
+                return TableSheets.Instance.ItemSheet.TryGetValue(id, out var row)
+                    ? SpriteHelper.GetItemIcon(id, row.ItemSubType, row.Grade)
+                    : SpriteHelper.GetItemIcon(id);
             }
 
             return !string.IsNullOrEmpty(reward.Currency) ? SpriteHelper.GetFavIcon(reward.Currency) : null;

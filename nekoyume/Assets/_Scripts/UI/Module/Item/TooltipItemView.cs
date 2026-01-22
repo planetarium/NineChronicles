@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Module
             baseItemView.CountText.gameObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(row.Id);
+            baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(row.Id, row.ItemSubType, row.Grade);
 
             var data = baseItemView.GetItemViewData(row.Grade);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;

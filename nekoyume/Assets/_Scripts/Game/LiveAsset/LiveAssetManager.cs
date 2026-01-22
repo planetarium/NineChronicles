@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using JetBrains.Annotations;
 using Nekoyume.L10n;
+using Nekoyume.Multiplanetary;
 
 namespace Nekoyume.Game.LiveAsset
 {
@@ -94,6 +95,7 @@ namespace Nekoyume.Game.LiveAsset
         [CanBeNull]
         public ApiClient.ThorSchedule ThorSchedule { get; private set; }
         public EventRewardPopupData EventRewardPopupData { get; private set; }
+        public Action<EventRewardPopupData> OnChangedEventRewardPopupData;
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
@@ -108,10 +110,51 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(InitializeThorSchedule());
             InitializeStakingResource().Forget();
 
+            // Select EventRewardPopupData URL based on network
+            var eventRewardPopupDataUrl = GetEventRewardPopupDataUrl();
             StartCoroutine(RequestManager.instance.GetJson(
-                _endpoint.EventRewardPopupDataJsonUrl,
+                eventRewardPopupDataUrl,
                 value => SetEventRewardPopupData(value).Forget()));
             _observableHasUnreadNcu.SetValueAndForceNotify(HasUnreadNcu);
+        }
+
+        private string GetEventRewardPopupDataUrl()
+        {
+            Multiplanetary.PlanetId? planetId = null;
+            if (Game.instance != null)
+            {
+                planetId = Game.instance.CurrentPlanetId;
+            }
+
+            // If PlanetId is not set yet, use default based on build type
+            if (!planetId.HasValue)
+            {
+#if UNITY_EDITOR
+                // Editor: use internal URL for testing
+                return !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlInternal)
+                    ? _endpoint.EventRewardPopupDataJsonUrlInternal
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#else
+                // Build: use mainnet URL as default
+                return !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlMainNet)
+                    ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#endif
+            }
+
+            // Determine network type and select appropriate URL
+            var isMainNet = PlanetId.IsMainNet(planetId.Value);
+            var url = isMainNet
+                ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                : _endpoint.EventRewardPopupDataJsonUrlInternal;
+
+            // Fallback to deprecated field if new fields are not set
+            if (string.IsNullOrEmpty(url))
+            {
+                url = _endpoint.EventRewardPopupDataJsonUrl;
+            }
+
+            return url;
         }
 
         private IEnumerator InitializeThorSchedule()
@@ -316,12 +359,51 @@ namespace Nekoyume.Game.LiveAsset
 
             await UniTask.WhenAll(tasks);
 
+            OnChangedEventRewardPopupData?.Invoke(EventRewardPopupData);
+
             return;
             UniTask<Sprite> GetSpriteTask(EventRewardPopupData.Content content)
             {
                 var uri = $"{_endpoint.ImageRootUrl}/EventRewardPopup/{content.ImageName}.png";
                 return GetTexture(uri).ContinueWith(sprite => content.Image = sprite);
             }
+        }
+
+        public void SetEventRewardPopupData(Multiplanetary.PlanetId? planetId)
+        {
+            if (planetId == null)
+            {
+#if UNITY_EDITOR
+                // Editor: use internal URL for testing
+                var url = !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlInternal)
+                    ? _endpoint.EventRewardPopupDataJsonUrlInternal
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#else
+                // Build: use mainnet URL as default
+                var url = !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlMainNet)
+                    ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#endif
+                StartCoroutine(RequestManager.instance.GetJson(
+                    url,
+                    value => SetEventRewardPopupData(value).Forget()));
+                return;
+            }
+
+            var isMainNet = Multiplanetary.PlanetId.IsMainNet(planetId.Value);
+            var url2 = isMainNet
+                ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                : _endpoint.EventRewardPopupDataJsonUrlInternal;
+
+            // Fallback to deprecated field if new fields are not set
+            if (string.IsNullOrEmpty(url2))
+            {
+                url2 = _endpoint.EventRewardPopupDataJsonUrl;
+            }
+
+            StartCoroutine(RequestManager.instance.GetJson(
+                url2,
+                value => SetEventRewardPopupData(value).Forget()));
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)

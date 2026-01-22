@@ -194,7 +194,14 @@ namespace Nekoyume.UI
 
             const int subItemId = 500000; // APStone
             subItem.container.SetActive(true);
-            subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId);
+            if (TableSheets.Instance.ItemSheet.TryGetValue(subItemId, out var subItemRow))
+            {
+                subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId, subItemRow.ItemSubType, subItemRow.Grade);
+            }
+            else
+            {
+                subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId);
+            }
             subItem.countText.text =
                 $"{L10nManager.LocalizeItemName(subItemId)} : {subItemCount}";
 
