@@ -147,11 +147,13 @@ namespace Nekoyume.Helper
             return refillable ? WorldBossHelper.MaxChallengeCount : state.RemainChallengeCount;
         }
 
-        public static int GetScoreInRank(int rank, WorldBossCharacterSheet.Row bossRow)
+        public static long GetScoreInRank(int rank, WorldBossCharacterSheet.Row bossRow)
         {
-            return (int)bossRow.WaveStats
+            var sum = bossRow.WaveStats
                 .Where(x => x.Wave <= rank)
                 .Sum(x => x.HP);
+
+            return NumberConversionHelper.SafeDecimalToInt64(sum);
         }
 
         public static GameObject GetRankPrefab(int rank)

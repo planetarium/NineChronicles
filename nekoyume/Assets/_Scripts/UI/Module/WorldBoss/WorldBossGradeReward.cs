@@ -146,7 +146,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             {
                 case (int)WorldBossGrade.None:
                     var d = WorldBossFrontHelper.GetScoreInRank((int)WorldBossGrade.D, bossRow);
-                    startGaugeImage.fillAmount = d > 0 ? highScore / (float)d : 0;
+                    startGaugeImage.fillAmount = d > 0 ? Mathf.Clamp01(highScore / (float)d) : 0;
                     middleGaugeImage.fillAmount = 0;
                     break;
                 case (int)WorldBossGrade.S:
@@ -160,8 +160,9 @@ namespace Nekoyume.UI.Module.WorldBoss
                     var max = nextRankScore - curRankScore;
                     var cur = highScore - curRankScore;
                     startGaugeImage.fillAmount = 1;
-                    middleGaugeImage.fillAmount =
-                        0.25f * (currentRank - 1) + 0.25f * (cur / (float)max);
+                    var progress = max > 0 ? Mathf.Clamp01(cur / (float)max) : 0f;
+                    middleGaugeImage.fillAmount = Mathf.Clamp01(
+                        0.25f * (currentRank - 1) + 0.25f * progress);
                     break;
             }
         }
