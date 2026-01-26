@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private GameObject active;
 
-        public void Set(int score, int runeCount, int crystalCount, int circleCount)
+        public void Set(long score, int runeCount, int crystalCount, int circleCount)
         {
             scoreText.text = $"{score:#,0}";
             runeCountText.text = runeCount.ToCurrencyNotation();

@@ -6,6 +6,7 @@ using Libplanet.Common;
 using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -22,7 +23,7 @@ namespace Nekoyume
                 return SpriteHelper.GetItemIcon(equipment.IconId);
             }
 
-            return SpriteHelper.GetItemIcon(item.Id);
+            return SpriteHelper.GetItemIcon(item.Id, item.ItemSubType, item.Grade);
         }
 
         public static Sprite GetBackgroundSprite(this ItemBase item)

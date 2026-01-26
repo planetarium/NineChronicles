@@ -61,7 +61,15 @@ namespace Nekoyume.UI.Module
         public void SetItemBase(InAppPurchaseServiceClient.FungibleItemSchema itemBase)
         {
             gameObject.SetActive(true);
-            RewardImage.sprite = SpriteHelper.GetItemIcon(itemBase.SheetItemId);
+            try
+            {
+                var row = Game.Game.instance.TableSheets.ItemSheet[itemBase.SheetItemId];
+                RewardImage.sprite = SpriteHelper.GetItemIcon(itemBase.SheetItemId, row.ItemSubType, row.Grade);
+            }
+            catch
+            {
+                RewardImage.sprite = SpriteHelper.GetItemIcon(itemBase.SheetItemId);
+            }
             RewardCount.text = $"x{itemBase.Amount}";
             try
             {
