@@ -1111,28 +1111,36 @@ namespace Nekoyume.Blockchain
 
         public void OnRender(byte[] evaluation)
         {
-            using (var cp = new MemoryStream(evaluation))
+            // #region agent instrumentation
+            try
             {
+                NcDebug.Log($"[RPCAgent][OnRender] called. evalLen={(evaluation == null ? -1 : evaluation.Length)} platform={Application.platform} backend={(Environment.Is64BitProcess ? "64" : "32")}");
+                using (var cp = new MemoryStream(evaluation))
                 using (var decompressed = new MemoryStream())
+                using (var df = new DeflateStream(cp, CompressionMode.Decompress))
                 {
-                    using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+                    df.CopyTo(decompressed);
+                    decompressed.Seek(0, SeekOrigin.Begin);
+                    var dec = decompressed.ToArray();
+                    NcDebug.Log($"[RPCAgent][OnRender] decompressed. len={dec.Length}");
+                    try
                     {
-                        df.CopyTo(decompressed);
-                        decompressed.Seek(0, SeekOrigin.Begin);
-                        var dec = decompressed.ToArray();
-                        try
-                        {
-                            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                                .ToActionEvaluation();
-                            ActionRenderer.ActionRenderSubject.OnNext(ev);
-                        }
-                        catch (Exception e)
-                        {
-                            NcDebug.LogError($"[RPCAgent] OnRender()... Failed to deserialize ActionEvaluation. {e}");
-                        }
+                        var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                            .ToActionEvaluation();
+                        ActionRenderer.ActionRenderSubject.OnNext(ev);
+                        NcDebug.Log($"[RPCAgent][OnRender] published ActionEvaluation.");
+                    }
+                    catch (Exception e)
+                    {
+                        NcDebug.LogError($"[RPCAgent][OnRender] Failed to deserialize ActionEvaluation. {e}");
                     }
                 }
             }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[RPCAgent][OnRender] Failed before deserialize (likely decompress). {e}");
+            }
+            // #endregion
         }
 
         public void OnUnrender(byte[] evaluation)
@@ -1382,7 +1390,22 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(pair => pair.Item2.ToByteArray()));
+            // #region agent instrumentation
+            var addressBytes = addresses.Select(pair => pair.Item2.ToByteArray()).ToArray();
+            NcDebug.Log($"[RPCAgent][Subscribe] calling SetAddressesToSubscribe. count={addressBytes.Length}");
+            UniTask.Void(async () =>
+            {
+                try
+                {
+                    var ok = await _service.SetAddressesToSubscribe(Address.ToByteArray(), addressBytes).ResponseAsync;
+                    NcDebug.Log($"[RPCAgent][Subscribe] SetAddressesToSubscribe completed. ok={ok}");
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"[RPCAgent][Subscribe] SetAddressesToSubscribe failed. {e}");
+                }
+            });
+            // #endregion
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId)
