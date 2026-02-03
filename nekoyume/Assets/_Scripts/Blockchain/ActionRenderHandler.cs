@@ -99,6 +99,17 @@ namespace Nekoyume.Blockchain
             _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ => { NcDebug.Log($"[{nameof(BlockRenderHandler)}] Render actions end"); }).AddTo(_disposables);
             _actionRenderer.ActionRenderSubject.ObserveOnMainThread().Subscribe(eval =>
             {
+                // #region agent instrumentation
+                try
+                {
+                    var aType = eval.Action?.GetType().FullName ?? "null";
+                    var isGa = eval.Action is GameAction;
+                    var aId = eval.Action is GameAction ga ? ga.Id.ToString() : "n/a";
+                    NcDebug.Log($"[ActionRenderHandler] ActionRenderSubject received. actionType={aType} isGameAction={isGa} actionId={aId} txId={(eval.TxId.HasValue ? eval.TxId.Value.ToString() : "null")} hasException={(eval.Exception != null)}");
+                    ActionManager.RecordRenderEvent(eval);
+                }
+                catch { }
+                // #endregion
                 if (eval.Exception is {} exc)
                 {
                     NcDebug.LogException(exc);
@@ -145,6 +156,16 @@ namespace Nekoyume.Blockchain
                     }
 
                     Widget.Find<HeaderMenuStatic>().UpdatePortalRewardDaily();
+                }
+                else
+                {
+                    // #region agent instrumentation
+                    try
+                    {
+                        NcDebug.LogWarning($"[ActionRenderHandler] Render received for non-enqueued actionId={gameAction.Id} type={gameAction.GetType().FullName}");
+                    }
+                    catch { }
+                    // #endregion
                 }
             }).AddTo(_disposables);
 

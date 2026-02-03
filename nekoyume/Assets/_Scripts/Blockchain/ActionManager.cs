@@ -40,6 +40,7 @@ using Lib9c.DevExtensions.Action;
 namespace Nekoyume.Blockchain
 {
     using System.Threading.Tasks;
+    using System.Collections.Concurrent;
     using Nekoyume.ApiClient;
     using UniRx;
 
@@ -49,6 +50,38 @@ namespace Nekoyume.Blockchain
     public class ActionManager : IDisposable
     {
         private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(60f);
+
+        // #region agent instrumentation
+        private static readonly ConcurrentQueue<string> _recentRenders = new();
+        private const int RecentRenderLimit = 30;
+
+        internal static void RecordRenderEvent(ActionEvaluation<ActionBase> eval)
+        {
+            try
+            {
+                var aType = eval.Action?.GetType().FullName ?? "null";
+                var isGa = eval.Action is GameAction;
+                var aId = eval.Action is GameAction ga ? ga.Id.ToString() : "n/a";
+                var txId = eval.TxId.HasValue ? eval.TxId.Value.ToString() : "null";
+                var hasExc = eval.Exception != null;
+                _recentRenders.Enqueue($"{DateTimeOffset.UtcNow:O} type={aType} isGA={isGa} id={aId} txId={txId} exc={hasExc}");
+                while (_recentRenders.Count > RecentRenderLimit && _recentRenders.TryDequeue(out _)) { }
+            }
+            catch { }
+        }
+
+        private static string DumpRecentRenders()
+        {
+            try
+            {
+                return string.Join(" || ", _recentRenders.ToArray());
+            }
+            catch
+            {
+                return "(dump_failed)";
+            }
+        }
+        // #endregion
 
         private readonly IAgent _agent;
 
@@ -78,6 +111,9 @@ namespace Nekoyume.Blockchain
                         ? (TxId?)value.txId
                         : null
                     : null;
+                // #region agent instrumentation
+                NcDebug.LogError($"[{nameof(ActionManager)}] TimeoutException. actionId={(actionId.HasValue ? actionId.Value.ToString() : "null")} txId={(txId.HasValue ? txId.Value.ToString() : "null")} recentRenders={DumpRecentRenders()}");
+                // #endregion
                 e = new ActionTimeoutException(e.Message, txId, actionId);
             }
 
@@ -108,6 +144,9 @@ namespace Nekoyume.Blockchain
                 foreach (var gameAction in gameActions)
                 {
                     _actionIdToTxIdBridge[gameAction.Id] = (tx.Id, _agent.BlockIndex);
+                    // #region agent instrumentation
+                    NcDebug.Log($"[{nameof(ActionManager)}] OnMakeTransaction bridged. actionId={gameAction.Id} txId={tx.Id} blockIndex={_agent.BlockIndex}");
+                    // #endregion
                     var existingAction = _cachedPostProcessedActions.FirstOrDefault(a => ReferenceEquals(a.Item1, gameAction));
                     if (existingAction != null)
                     {
@@ -132,7 +171,10 @@ namespace Nekoyume.Blockchain
         private void ProcessAction<T>(T actionBase, Func<TxId, Task<bool>> onTxIdReceived = null) where T : ActionBase
         {
             var actionType = actionBase.GetActionTypeAttribute();
-            NcDebug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
+            // #region agent instrumentation
+            var maybeId = actionBase is GameAction ga ? ga.Id.ToString() : "n/a";
+            NcDebug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\" actionId={maybeId}");
+            // #endregion
 
             _agent.EnqueueAction(actionBase, onTxIdReceived);
 
