@@ -1,0 +1,12 @@
+<linker>
+  <!--
+    Preserve Nine Chronicles action types for IL2CPP.
+
+    On iOS builds (IL2CPP + stripping), reflection-based action loading can fail if
+    Nekoyume.Action.* types are stripped. This breaks NCActionEvaluation.Action
+    deserialization (Action becomes null) and causes ActionManager timeouts.
+  -->
+  <assembly fullname="Lib9c">
+    <type fullname="Nekoyume.Action.*" preserve="all" />
+  </assembly>
+</linker>
