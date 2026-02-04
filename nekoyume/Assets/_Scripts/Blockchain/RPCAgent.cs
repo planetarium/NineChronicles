@@ -1111,10 +1111,8 @@ namespace Nekoyume.Blockchain
 
         public void OnRender(byte[] evaluation)
         {
-            // #region agent instrumentation
             try
             {
-                NcDebug.Log($"[RPCAgent][OnRender] called. evalLen={(evaluation == null ? -1 : evaluation.Length)} platform={Application.platform} backend={(Environment.Is64BitProcess ? "64" : "32")}");
                 using (var cp = new MemoryStream(evaluation))
                 using (var decompressed = new MemoryStream())
                 using (var df = new DeflateStream(cp, CompressionMode.Decompress))
@@ -1122,22 +1120,11 @@ namespace Nekoyume.Blockchain
                     df.CopyTo(decompressed);
                     decompressed.Seek(0, SeekOrigin.Begin);
                     var dec = decompressed.ToArray();
-                    NcDebug.Log($"[RPCAgent][OnRender] decompressed. len={dec.Length}");
                     try
                     {
                         var ncEv = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec);
-                        var ncActionType = ncEv.Action?.GetType().FullName ?? "null";
-                        var ncIsGameAction = ncEv.Action is GameAction;
-                        var ncActionId = ncEv.Action is GameAction ga ? ga.Id.ToString() : "n/a";
-                        NcDebug.Log($"[RPCAgent][OnRender] ncEval decoded. actionType={ncActionType} isGameAction={ncIsGameAction} actionId={ncActionId} blockIndex={ncEv.BlockIndex} txId={(ncEv.TxId.HasValue ? ncEv.TxId.Value.ToString() : "null")} hasException={(ncEv.Exception != null)}");
-
                         var ev = ncEv.ToActionEvaluation();
-                        var evActionType = ev.Action?.GetType().FullName ?? "null";
-                        var evIsGameAction = ev.Action is GameAction;
-                        var evActionId = ev.Action is GameAction evGa ? evGa.Id.ToString() : "n/a";
-                        NcDebug.Log($"[RPCAgent][OnRender] to ActionEvaluation. actionType={evActionType} isGameAction={evIsGameAction} actionId={evActionId} txId={(ev.TxId.HasValue ? ev.TxId.Value.ToString() : "null")} hasException={(ev.Exception != null)}");
                         ActionRenderer.ActionRenderSubject.OnNext(ev);
-                        NcDebug.Log($"[RPCAgent][OnRender] published ActionEvaluation.");
                     }
                     catch (Exception e)
                     {
@@ -1149,7 +1136,6 @@ namespace Nekoyume.Blockchain
             {
                 NcDebug.LogError($"[RPCAgent][OnRender] Failed before deserialize (likely decompress). {e}");
             }
-            // #endregion
         }
 
         public void OnUnrender(byte[] evaluation)
@@ -1325,13 +1311,6 @@ namespace Nekoyume.Blockchain
 
         public void OnException(int code, string message)
         {
-            // #region agent instrumentation
-            try
-            {
-                NcDebug.LogError($"[RPCAgent][OnException] code={code} message={message}");
-            }
-            catch { }
-            // #endregion
             var key = "ERROR_UNHANDLED";
             var errorCode = "100";
             switch (code)
@@ -1393,8 +1372,6 @@ namespace Nekoyume.Blockchain
                     (ReservedAddresses.LegacyAccount, addr)));
             }
 
-            NcDebug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
-
             foreach (var address in addresses)
             {
                 var game = Game.Game.instance;
@@ -1406,22 +1383,18 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            // #region agent instrumentation
             var addressBytes = addresses.Select(pair => pair.Item2.ToByteArray()).ToArray();
-            NcDebug.Log($"[RPCAgent][Subscribe] calling SetAddressesToSubscribe. count={addressBytes.Length}");
             UniTask.Void(async () =>
             {
                 try
                 {
-                    var ok = await _service.SetAddressesToSubscribe(Address.ToByteArray(), addressBytes).ResponseAsync;
-                    NcDebug.Log($"[RPCAgent][Subscribe] SetAddressesToSubscribe completed. ok={ok}");
+                    await _service.SetAddressesToSubscribe(Address.ToByteArray(), addressBytes).ResponseAsync;
                 }
                 catch (Exception e)
                 {
                     NcDebug.LogError($"[RPCAgent][Subscribe] SetAddressesToSubscribe failed. {e}");
                 }
             });
-            // #endregion
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId)
