@@ -6,7 +6,7 @@
     Nekoyume.Action.* types are stripped. This breaks NCActionEvaluation.Action
     deserialization (Action becomes null) and causes ActionManager timeouts.
   -->
-  <assembly fullname="Lib9c">
-    <type fullname="Nekoyume.Action.*" preserve="all" />
-  </assembly>
+  <!-- Wide preserve for diagnosis: keep whole assemblies -->
+  <assembly fullname="Lib9c" preserve="all" />
+  <assembly fullname="Nekoyume" preserve="all" />
 </linker>
