@@ -45,6 +45,7 @@ namespace Nekoyume.UI
             Legendary = 1 << 4,
             Divinity = 1 << 5,
             Mythic = 1 << 6,
+            Transcendent = 1 << 7,
         }
 
         [Flags]
@@ -218,6 +219,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            ValidateGradeTogglesOrThrow();
             InitializeToggleGroup();
 
             CloseWidget = () =>
@@ -235,6 +237,47 @@ namespace Nekoyume.UI
         }
 
 #endregion Popup
+
+        /// <summary>
+        /// grade 토글 목록이 enum 정의와 일치하는지 검증합니다.
+        /// 누락되면 자동 보정하지 않고 즉시 예외를 던져(빠르게 발견) 프리팹 수정으로 해결하도록 합니다.
+        /// </summary>
+        private void ValidateGradeTogglesOrThrow()
+        {
+            if (gradeToggles is null || gradeToggles.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    $"{GetType().Name}: gradeToggles is null or empty. " +
+                    "Please update the prefab to include grade toggles for all grades.");
+            }
+
+            foreach (var t in gradeToggles)
+            {
+                if (t is null || t.toggle == null)
+                {
+                    throw new InvalidOperationException(
+                        $"{GetType().Name}: gradeToggles contains a null Toggle reference. " +
+                        "Please fix the prefab toggle bindings.");
+                }
+            }
+
+            // Flags enum이지만, 현재는 power-of-two 값들만 정의되어 있으므로 정의된 값들을 모두 요구한다.
+            var definedGrades = (Grade[])Enum.GetValues(typeof(Grade));
+            foreach (var g in definedGrades)
+            {
+                if (g == Grade.All)
+                {
+                    continue;
+                }
+
+                if (!gradeToggles.Exists(x => x.grade == g))
+                {
+                    throw new InvalidOperationException(
+                        $"{GetType().Name}: missing grade toggle for '{g}'. " +
+                        "Please update the prefab to include this grade toggle.");
+                }
+            }
+        }
 
         private void InitializeToggleGroup()
         {
