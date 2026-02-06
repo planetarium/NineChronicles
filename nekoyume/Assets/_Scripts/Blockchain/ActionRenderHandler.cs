@@ -3699,6 +3699,11 @@ namespace Nekoyume.Blockchain
             var allRuneState = States.Instance.AllRuneState;
             var runeSlotStates = States.Instance.CurrentRuneSlotStates[BattleType.Raid];
             var itemSlotStates = States.Instance.CurrentItemSlotStates[BattleType.Raid];
+            // 전투에서 사용한 장비/코스튬은 Action 인자로 들어가며,
+            // PrepareRaid()에서 OutputState 기준으로 ItemSlotState를 갱신해두었으므로
+            // 시뮬레이터 실행 전에 AvatarState에도 동일하게 재장착해 체인 실행과 동일한 조건을 맞춥니다.
+            var equippedItems = itemSlotStates.Equipments.Concat(itemSlotStates.Costumes).ToList();
+            clonedAvatarState.EquipItems(equippedItems);
 
             var simulator = new RaidSimulator(
                 row.BossId,
@@ -3711,7 +3716,8 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
                 TableSheets.Instance.BuffLimitSheet,
-                TableSheets.Instance.BuffLinkSheet
+                TableSheets.Instance.BuffLinkSheet,
+                shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage
             );
             simulator.Simulate();
             Widget.Find<LobbyMenu>().Close();
