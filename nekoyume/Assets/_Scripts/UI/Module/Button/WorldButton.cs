@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Numerics;
 using DG.Tweening;
 using Nekoyume.EnumType;
@@ -247,6 +248,35 @@ namespace Nekoyume.UI.Module
                     .MajorUnit;
                 openCostText.text = _openCost.ToString();
             }
+        }
+
+        // Used when we want to show a world button even if the WorldSheet row is missing.
+        public void Set(int worldId, int stageBegin = 0, int stageEnd = 0)
+        {
+            Id = worldId;
+            StageBegin = stageBegin;
+            StageEnd = stageEnd;
+
+            if (openCostText == null)
+            {
+                return;
+            }
+
+            var unlockRow = TableSheets.Instance.WorldUnlockSheet
+                .OrderedList
+                .FirstOrDefault(r => r.WorldIdToUnlock == worldId);
+
+            if (unlockRow == null)
+            {
+                _openCost = 0;
+                openCostText.text = string.Empty;
+                return;
+            }
+
+            _openCost = CrystalCalculator
+                .CalculateWorldUnlockCost(new[] { Id }, TableSheets.Instance.WorldUnlockSheet)
+                .MajorUnit;
+            openCostText.text = _openCost.ToString();
         }
 
         public void SetOpenCostTextColor(BigInteger balance)

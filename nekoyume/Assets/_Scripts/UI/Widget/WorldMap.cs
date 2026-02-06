@@ -13,11 +13,13 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.UI;
+using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -27,6 +29,12 @@ namespace Nekoyume.UI
 
     public class WorldMap : Widget
     {
+        private enum WorldMapMode
+        {
+            Normal,
+            Hard,
+        }
+
         public class ViewModel
         {
             public readonly ReactiveProperty<bool> IsWorldShown = new(false);
@@ -55,6 +63,28 @@ namespace Nekoyume.UI
         [SerializeField]
         private WorldButton[] _worldButtons;
 
+        [Header("Mode Toggle")]
+        [SerializeField]
+        private Nekoyume.UI.Module.Toggle modeToggle;
+
+        [SerializeField]
+        [Tooltip("Toggle ON => Hard mode, OFF => Normal mode.")]
+        private bool hardModeWhenToggleOn = true;
+
+        private TextMeshProUGUI _modeToggleLabel;
+
+        [SerializeField]
+        [Tooltip("If a WorldSheet row matches either condition below, it is treated as a hard-mode world.")]
+        private string hardWorldNamePrefix = "Hard_";
+
+        [SerializeField]
+        [Tooltip("Fallback hard-mode classification by id range (used when name prefix is not set or does not match).")]
+        private int hardWorldIdStart = 100;
+
+        [SerializeField]
+        [Tooltip("Hard-mode world id base for buttons when WorldSheet rows are missing. e.g., 101 => 101..109")]
+        private int hardWorldIdBase = 101;
+
         [SerializeField]
         private EventDungeonObject[] eventDungeonObjects;
 
@@ -74,6 +104,11 @@ namespace Nekoyume.UI
         public bool HasNotification { get; private set; }
 
         public int StageIdToNotify { get; private set; }
+
+        private WorldMapMode _currentMode = WorldMapMode.Normal;
+        private int _lastSelectedWorldIdNormal = 1;
+        private int _lastSelectedWorldIdHard = -1;
+        private bool _ignoreModeToggleEvent;
 
 #region Mono
 
@@ -105,17 +140,9 @@ namespace Nekoyume.UI
                     Value = firstStageId
                 }
             };
-            var worldSheet = TableSheets.Instance.WorldSheet;
+
             foreach (var worldButton in _worldButtons)
             {
-                if (!worldSheet.TryGetByName(worldButton.WorldName, out var row))
-                {
-                    worldButton.Hide();
-                    continue;
-                }
-
-                worldButton.Set(row);
-                worldButton.Show();
                 worldButton.OnClickSubject
                     .Subscribe(button =>
                     {
@@ -132,6 +159,9 @@ namespace Nekoyume.UI
                         }
                     }).AddTo(gameObject);
             }
+
+            InitializeModeToggles();
+            ApplyMode(_currentMode, force: true);
 
             foreach (var eventDungeonButton in eventDungeonObjects.Select(i => i.button))
             {
@@ -161,6 +191,236 @@ namespace Nekoyume.UI
         }
 
 #endregion
+
+        private void InitializeModeToggles()
+        {
+            // Auto-wire toggles from prefab hierarchy if not serialized.
+            if (worldMapRoot != null)
+            {
+                if (modeToggle == null)
+                {
+                    modeToggle = worldMapRoot.transform
+                        .Find("ModeToggle")
+                        ?.GetComponent<Nekoyume.UI.Module.Toggle>();
+                }
+
+                // Backward/compat path: previously it was a 2-toggle tab group.
+                // Convert it into a single toggle at runtime by hiding the normal toggle
+                // and allowing the remaining toggle to switch off.
+                if (modeToggle == null)
+                {
+                    var group = worldMapRoot.transform.Find("ModeToggleGroup");
+                    if (group != null)
+                    {
+                        // Hide the second toggle to make it a single-toggle UI.
+                        var normalToggleGo = group.Find("NormalToggle")?.gameObject;
+                        if (normalToggleGo != null)
+                        {
+                            normalToggleGo.SetActive(false);
+                        }
+
+                        // Allow switching off when only one toggle remains.
+                        var unityToggleGroup = group.GetComponent<UnityEngine.UI.ToggleGroup>();
+                        if (unityToggleGroup != null)
+                        {
+                            unityToggleGroup.allowSwitchOff = true;
+                        }
+
+                        modeToggle = group.Find("HardToggle")
+                            ?.GetComponent<Nekoyume.UI.Module.Toggle>();
+                    }
+                }
+            }
+
+            if (modeToggle == null)
+            {
+                _currentMode = WorldMapMode.Normal;
+                return;
+            }
+
+            modeToggle.allowSwitchOffWhenIsOn = true;
+            _modeToggleLabel = modeToggle.GetComponentInChildren<TextMeshProUGUI>(true);
+
+            modeToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (_ignoreModeToggleEvent)
+                {
+                    return;
+                }
+
+                if (_modeToggleLabel != null)
+                {
+                    _modeToggleLabel.text = isOn ? "Hard" : "Normal";
+                }
+
+                var mode = hardModeWhenToggleOn
+                    ? (isOn ? WorldMapMode.Hard : WorldMapMode.Normal)
+                    : (isOn ? WorldMapMode.Normal : WorldMapMode.Hard);
+                ApplyMode(mode);
+            });
+
+            // Initialize current mode based on toggle state.
+            if (_modeToggleLabel != null)
+            {
+                _modeToggleLabel.text = modeToggle.isOn ? "Hard" : "Normal";
+            }
+
+            _currentMode = hardModeWhenToggleOn
+                ? (modeToggle.isOn ? WorldMapMode.Hard : WorldMapMode.Normal)
+                : (modeToggle.isOn ? WorldMapMode.Normal : WorldMapMode.Hard);
+        }
+
+        private void ApplyMode(WorldMapMode mode, bool force = false)
+        {
+            if (!force && _currentMode == mode)
+            {
+                return;
+            }
+
+            SaveLastSelectedWorldIdForMode(_currentMode);
+            _currentMode = mode;
+
+            if (modeToggle != null)
+            {
+                _ignoreModeToggleEvent = true;
+                modeToggle.isOn = hardModeWhenToggleOn
+                    ? mode == WorldMapMode.Hard
+                    : mode == WorldMapMode.Normal;
+                _ignoreModeToggleEvent = false;
+            }
+
+            BindWorldButtonsForMode(mode);
+            SetWorldInformation(SharedViewModel.WorldInformation);
+
+            RestoreLastSelectedWorldForMode(mode);
+        }
+
+        private void SaveLastSelectedWorldIdForMode(WorldMapMode mode)
+        {
+            var worldId = SharedViewModel?.SelectedWorldId.Value ?? 1;
+            switch (mode)
+            {
+                case WorldMapMode.Normal:
+                    _lastSelectedWorldIdNormal = worldId;
+                    break;
+                case WorldMapMode.Hard:
+                    _lastSelectedWorldIdHard = worldId;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
+        }
+
+        private void RestoreLastSelectedWorldForMode(WorldMapMode mode)
+        {
+            var worldIds = GetWorldIdsForMode(mode);
+            if (worldIds.Count <= 0)
+            {
+                return;
+            }
+
+            var desiredWorldId = mode == WorldMapMode.Hard && _lastSelectedWorldIdHard > 0
+                ? _lastSelectedWorldIdHard
+                : _lastSelectedWorldIdNormal;
+
+            if (!worldIds.Contains(desiredWorldId))
+            {
+                desiredWorldId = worldIds[0];
+            }
+
+            if (SharedViewModel != null)
+            {
+                SharedViewModel.SelectedWorldId.Value = desiredWorldId;
+            }
+        }
+
+        private void BindWorldButtonsForMode(WorldMapMode mode)
+        {
+            for (var i = 0; i < _worldButtons.Length; i++)
+            {
+                var worldButton = _worldButtons[i];
+                var worldId = GetWorldIdForSlot(mode, i);
+                if (worldId <= 0)
+                {
+                    worldButton.Hide();
+                    continue;
+                }
+
+                var worldSheet = TableSheets.Instance.WorldSheet;
+                if (worldSheet.TryGetValue(worldId, out var rowData, false))
+                {
+                    worldButton.Set(rowData);
+                }
+                else
+                {
+                    // Show as locked placeholder even if the sheet row is missing.
+                    worldButton.Set(worldId);
+                }
+
+                worldButton.Show();
+            }
+        }
+
+        private List<int> GetWorldIdsForMode(WorldMapMode mode)
+        {
+            if (mode == WorldMapMode.Hard)
+            {
+                return Enumerable.Range(hardWorldIdBase, _worldButtons.Length).ToList();
+            }
+
+            // Normal mode: use existing WorldSheet rows.
+            return GetWorldRowsForMode(WorldMapMode.Normal).Select(r => r.Id).ToList();
+        }
+
+        private int GetWorldIdForSlot(WorldMapMode mode, int index)
+        {
+            if (index < 0 || index >= _worldButtons.Length)
+            {
+                return -1;
+            }
+
+            if (mode == WorldMapMode.Hard)
+            {
+                return hardWorldIdBase + index;
+            }
+
+            var normalRows = GetWorldRowsForMode(WorldMapMode.Normal);
+            return normalRows.Count > index ? normalRows[index].Id : -1;
+        }
+
+        private List<WorldSheet.Row> GetWorldRowsForMode(WorldMapMode mode)
+        {
+            var worldSheet = TableSheets.Instance.WorldSheet;
+            return worldSheet.OrderedList
+                .Where(row => row.Id != GameConfig.MimisbrunnrWorldId)
+                .Where(row => mode == WorldMapMode.Hard ? IsHardWorld(row) : !IsHardWorld(row))
+                .OrderBy(row => row.Id)
+                .ToList();
+        }
+
+        private bool IsHardWorld(WorldSheet.Row row)
+        {
+            if (row is null)
+            {
+                return false;
+            }
+
+            // Exclude Mímisbrunnr from hard-mode classification. It has its own flow.
+            if (row.Id == GameConfig.MimisbrunnrWorldId)
+            {
+                return false;
+            }
+
+            var prefix = hardWorldNamePrefix?.Trim();
+            if (!string.IsNullOrEmpty(prefix) &&
+                row.Name != null &&
+                row.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return hardWorldIdStart > 0 && row.Id >= hardWorldIdStart;
+        }
 
         public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
@@ -270,7 +530,8 @@ namespace Nekoyume.UI
                 if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
-                    worldButton.Unlock(!SharedViewModel.UnlockedWorldIds.Contains(worldButton.Id));
+                    worldButton.Unlock(SharedViewModel.UnlockedWorldIds != null &&
+                        !SharedViewModel.UnlockedWorldIds.Contains(worldButton.Id));
                 }
                 else
                 {
@@ -427,27 +688,64 @@ namespace Nekoyume.UI
 
         private bool ShowManyWorldUnlockPopup(WorldInformation worldInformation)
         {
-            if (!worldInformation.TryGetLastClearedStageId(out var stageId))
+            if (!worldInformation.TryGetLastClearedStageId(out _))
             {
                 return false;
             }
 
-            var stageGap = 50;
-            var worldSheet = TableSheets.Instance.WorldSheet;
-            var currentWorld = worldSheet?
-                .OrderedList?
-                .FirstOrDefault(row => row.StageBegin <= stageId && row.StageEnd >= stageId);
+            var tableSheets = TableSheets.Instance;
+            var worldUnlockSheet = tableSheets.WorldUnlockSheet;
+            var worldSheet = tableSheets.WorldSheet;
 
-            if (currentWorld is not null)
+            bool IsWorldIdInCurrentMode(int worldId)
             {
-                stageGap = currentWorld.StageEnd - currentWorld.StageBegin + 1;
+                if (!worldSheet.TryGetValue(worldId, out var rowData, false))
+                {
+                    return false;
+                }
+
+                // Exclude Mímisbrunnr here as well (id-based hard classification could otherwise include it).
+                if (rowData.Id == GameConfig.MimisbrunnrWorldId)
+                {
+                    return false;
+                }
+
+                var isHardWorld = IsHardWorld(rowData);
+                return _currentMode == WorldMapMode.Hard ? isHardWorld : !isHardWorld;
             }
 
-            var tableSheets = TableSheets.Instance;
-            var countOfCanUnlockWorld = Math.Min(stageId / stageGap,
-                tableSheets.WorldUnlockSheet.Count - 1);
-            var worldIdListForUnlock = Enumerable.Range(2, countOfCanUnlockWorld)
-                .Where(i => !SharedViewModel.UnlockedWorldIds.Contains(i))
+            bool IsUnlockConditionMet(WorldUnlockSheet.Row row)
+            {
+                if (row is null)
+                {
+                    return false;
+                }
+
+                if (!worldInformation.IsStageCleared(row.StageId))
+                {
+                    return false;
+                }
+
+                // If the sheet is consistent, the world that contains stageId should match row.WorldId.
+                // When it doesn't, avoid suggesting unlocks based on ambiguous data.
+                if (worldSheet.TryGetByStageId(row.StageId, out var containingWorldRow) &&
+                    containingWorldRow.Id != row.WorldId)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            var worldIdListForUnlock = worldUnlockSheet.OrderedList
+                .Where(IsUnlockConditionMet)
+                .Select(r => r.WorldIdToUnlock)
+                .Distinct()
+                .Where(IsWorldIdInCurrentMode)
+                .Where(worldId => !worldInformation.IsWorldUnlocked(worldId))
+                .Where(worldId => SharedViewModel.UnlockedWorldIds == null ||
+                    !SharedViewModel.UnlockedWorldIds.Contains(worldId))
+                .OrderBy(i => i)
                 .ToList();
 
             if (worldIdListForUnlock.Count <= 1)
