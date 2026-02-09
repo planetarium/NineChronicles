@@ -85,6 +85,23 @@ namespace Nekoyume.UI
         [Tooltip("Hard-mode world id base for buttons when WorldSheet rows are missing. e.g., 101 => 101..109")]
         private int hardWorldIdBase = 101;
 
+        [Header("Debug (local test)")]
+        [SerializeField]
+        [Tooltip("If enabled (Editor/Development only), stages up to the given id are treated as cleared in this WorldMap UI.")]
+        private bool debugAssumeClearedStages;
+
+        [SerializeField]
+        [Tooltip("Max stage id to assume as cleared when debugAssumeClearedStages is enabled. e.g., 450 means cleared up to World 9 end.")]
+        private int debugAssumeClearedToStageId = 450;
+
+        [SerializeField]
+        [Tooltip("If enabled (Editor/Development only), worlds up to the given id are treated as unlocked/opened in this WorldMap UI.")]
+        private bool debugAssumeWorldsUnlocked;
+
+        [SerializeField]
+        [Tooltip("Max world id to assume as unlocked when debugAssumeWorldsUnlocked is enabled. e.g., 9 means World 1~9 opened.")]
+        private int debugAssumeUnlockedToWorldId = 9;
+
         [SerializeField]
         private EventDungeonObject[] eventDungeonObjects;
 
@@ -191,6 +208,65 @@ namespace Nekoyume.UI
         }
 
 #endregion
+
+        private bool IsStageClearedForUi(WorldInformation worldInformation, int stageId)
+        {
+            if (worldInformation is null)
+            {
+                return false;
+            }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (debugAssumeClearedStages && stageId > 0 && stageId <= debugAssumeClearedToStageId)
+            {
+                return true;
+            }
+#endif
+
+            return worldInformation.IsStageCleared(stageId);
+        }
+
+        private bool IsWorldOpenedInLegacyForUi(int worldId)
+        {
+            // Legacy opened-world list (separate from WorldInformation) is used to determine whether to show
+            // "crystal lock" (Unlockable) animation/state.
+            var opened = SharedViewModel?.UnlockedWorldIds != null &&
+                SharedViewModel.UnlockedWorldIds.Contains(worldId);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (!opened &&
+                debugAssumeWorldsUnlocked &&
+                _currentMode == WorldMapMode.Normal &&
+                worldId > 0 &&
+                worldId <= debugAssumeUnlockedToWorldId)
+            {
+                opened = true;
+            }
+#endif
+
+            return opened;
+        }
+
+        private bool IsWorldUnlockedForUi(WorldInformation worldInformation, int worldId, bool canTryThisWorld)
+        {
+            if (worldInformation is null)
+            {
+                return false;
+            }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (debugAssumeWorldsUnlocked &&
+                _currentMode == WorldMapMode.Normal &&
+                worldId > 0 &&
+                worldId <= debugAssumeUnlockedToWorldId)
+            {
+                return true;
+            }
+#endif
+
+            return (worldInformation.TryGetWorld(worldId, out var worldModel) && worldModel.IsUnlocked) ||
+                canTryThisWorld;
+        }
 
         private void InitializeModeToggles()
         {
@@ -516,11 +592,8 @@ namespace Nekoyume.UI
                     .OrderedList
                     .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
                 var canTryThisWorld =
-                    worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
-                var worldIsUnlocked =
-                    (worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
-                        worldModel.IsUnlocked) ||
-                    canTryThisWorld;
+                    IsStageClearedForUi(worldInformation, unlockRow?.StageId ?? int.MaxValue);
+                var worldIsUnlocked = IsWorldUnlockedForUi(worldInformation, buttonWorldId, canTryThisWorld);
 
                 UpdateNotificationInfo();
 
@@ -531,7 +604,7 @@ namespace Nekoyume.UI
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
                     worldButton.Unlock(SharedViewModel.UnlockedWorldIds != null &&
-                        !SharedViewModel.UnlockedWorldIds.Contains(worldButton.Id));
+                        !IsWorldOpenedInLegacyForUi(worldButton.Id));
                 }
                 else
                 {
@@ -556,8 +629,7 @@ namespace Nekoyume.UI
                         .FirstOrDefault(row =>
                             row.WorldIdToUnlock == worldId);
                 if (unlockConditionRow is null ||
-                    !SharedViewModel.WorldInformation
-                        .IsStageCleared(unlockConditionRow.StageId))
+                    !IsStageClearedForUi(SharedViewModel.WorldInformation, unlockConditionRow.StageId))
                 {
                     throw new ArgumentException(nameof(worldId));
                 }
@@ -690,7 +762,14 @@ namespace Nekoyume.UI
         {
             if (!worldInformation.TryGetLastClearedStageId(out _))
             {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (!debugAssumeClearedStages)
+                {
+                    return false;
+                }
+#else
                 return false;
+#endif
             }
 
             var tableSheets = TableSheets.Instance;
@@ -721,7 +800,7 @@ namespace Nekoyume.UI
                     return false;
                 }
 
-                if (!worldInformation.IsStageCleared(row.StageId))
+                if (!IsStageClearedForUi(worldInformation, row.StageId))
                 {
                     return false;
                 }
@@ -743,8 +822,7 @@ namespace Nekoyume.UI
                 .Distinct()
                 .Where(IsWorldIdInCurrentMode)
                 .Where(worldId => !worldInformation.IsWorldUnlocked(worldId))
-                .Where(worldId => SharedViewModel.UnlockedWorldIds == null ||
-                    !SharedViewModel.UnlockedWorldIds.Contains(worldId))
+                .Where(worldId => !IsWorldOpenedInLegacyForUi(worldId))
                 .OrderBy(i => i)
                 .ToList();
 

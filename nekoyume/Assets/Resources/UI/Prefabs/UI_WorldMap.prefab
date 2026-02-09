@@ -30410,6 +30410,11 @@ MonoBehaviour:
   hardModeWhenToggleOn: 1
   hardWorldNamePrefix: Hard_
   hardWorldIdStart: 100
+  hardWorldIdBase: 101
+  debugAssumeClearedStages: 1
+  debugAssumeClearedToStageId: 450
+  debugAssumeWorldsUnlocked: 1
+  debugAssumeUnlockedToWorldId: 9
   eventDungeonObjects:
   - eventId: 1012
     button: {fileID: 1963585435549839704}
