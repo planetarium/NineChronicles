@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Nekoyume.UI
 {
     public struct ItemFilterOptions
     {
-        public ItemFilterPopupBase.Grade Grade;
+        public ItemFilterPopupBase.GradeFilterOption Grade;
         public ItemFilterPopupBase.Elemental Elemental;
         public ItemFilterPopupBase.ItemType ItemType;
         public ItemFilterPopupBase.UpgradeLevel UpgradeLevel;
@@ -19,7 +20,7 @@ namespace Nekoyume.UI
         public string SearchText;
 
         public bool IsNeedFilter =>
-            Grade != ItemFilterPopupBase.Grade.All ||
+            Grade != ItemFilterPopupBase.GradeFilterOption.All ||
             Elemental != ItemFilterPopupBase.Elemental.All ||
             ItemType != ItemFilterPopupBase.ItemType.All ||
             UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
@@ -32,21 +33,22 @@ namespace Nekoyume.UI
 #region Internal Type
 
         /// <summary>
-        /// 아무것도 선택하지 않은 상태가 필터링을 하지 않아 전체 아이템을 보여주는 것으로 간주한다.
+        /// 등급 필터 옵션(UI 토글/프리팹과 분리된, 실제 필터링에 사용되는 타입)
         /// </summary>
         [Flags]
-        public enum Grade
+        public enum GradeFilterOption
         {
             All = 0,
-            Normal = 1 << 0,
-            Rare = 1 << 1,
-            Epic = 1 << 2,
-            Unique = 1 << 3,
-            Legendary = 1 << 4,
-            Divinity = 1 << 5,
-            Mythic = 1 << 6,
-            Transcendent = 1 << 7,
+            BelowEpic = 1 << 0, // Normal + Rare
+            Epic = 1 << 1,
+            Unique = 1 << 2,
+            Legendary = 1 << 3,
+            Divinity = 1 << 4,
+            Mythic = 1 << 5,
+            Transcendent = 1 << 6,
         }
+
+        private const string BelowEpicGradeKey = "UI_GRADE_BELOW_EPIC";
 
         [Flags]
         public enum Elemental
@@ -131,10 +133,13 @@ namespace Nekoyume.UI
         [Serializable]
         private class GradeToggle : ItemToggleType
         {
-            public Grade grade;
+            public GradeFilterOption option;
 
-            public override bool IsAll => grade == Grade.All;
-            public override string GetOptionName => grade.ToString();
+            public override bool IsAll => option == GradeFilterOption.All;
+            public override string GetOptionName =>
+                option == GradeFilterOption.BelowEpic
+                    ? L10nManager.Localize(BelowEpicGradeKey)
+                    : option.ToString();
         }
 
         [Serializable]
@@ -265,18 +270,18 @@ namespace Nekoyume.UI
             }
 
             // Flags enum이지만, 현재는 power-of-two 값들만 정의되어 있으므로 정의된 값들을 모두 요구한다.
-            var definedGrades = (Grade[])Enum.GetValues(typeof(Grade));
-            foreach (var g in definedGrades)
+            var definedOptions = (GradeFilterOption[])Enum.GetValues(typeof(GradeFilterOption));
+            foreach (var opt in definedOptions)
             {
-                if (g == Grade.All)
+                if (opt == GradeFilterOption.All)
                 {
                     continue;
                 }
 
-                if (!gradeToggles.Exists(x => x.grade == g))
+                if (!gradeToggles.Exists(x => x.option == opt))
                 {
                     throw new InvalidOperationException(
-                        $"{GetType().Name}: missing grade toggle for '{g}'. " +
+                        $"{GetType().Name}: missing grade toggle for '{opt}'. " +
                         "Please update the prefab to include this grade toggle.");
                 }
             }
@@ -294,8 +299,8 @@ namespace Nekoyume.UI
             foreach (var t in gradeToggles)
             {
                 if (t is null || t.toggle == null) continue;
-                if (t.grade == Grade.All) continue;
-                if (template == null || (int)t.grade > (int)template.grade) template = t;
+                if (t.option == GradeFilterOption.All) continue;
+                if (template == null || (int)t.option > (int)template.option) template = t;
             }
 
             if (template == null || template.toggle == null)
@@ -303,16 +308,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var definedGrades = (Grade[])Enum.GetValues(typeof(Grade));
+            var definedOptions = (GradeFilterOption[])Enum.GetValues(typeof(GradeFilterOption));
             var createdCount = 0;
-            foreach (var g in definedGrades)
+            foreach (var opt in definedOptions)
             {
-                if (g == Grade.All) continue;
-                if (gradeToggles.Exists(x => x != null && x.grade == g)) continue;
+                if (opt == GradeFilterOption.All) continue;
+                if (gradeToggles.Exists(x => x != null && x.option == opt)) continue;
 
                 // Clone template toggle GameObject under same parent so layout works.
                 var clonedGo = Instantiate(template.toggle.gameObject, template.toggle.transform.parent);
-                clonedGo.name = $"{template.toggle.gameObject.name}_{g}";
+                clonedGo.name = $"{template.toggle.gameObject.name}_{opt}";
                 var clonedToggle = clonedGo.GetComponent<Toggle>();
                 if (clonedToggle == null)
                 {
@@ -326,7 +331,7 @@ namespace Nekoyume.UI
                 gradeToggles.Add(new GradeToggle
                 {
                     toggle = clonedToggle,
-                    grade = g,
+                    option = opt,
                 });
                 createdCount++;
             }
@@ -482,7 +487,10 @@ namespace Nekoyume.UI
 
             foreach (var gradeToggle in gradeToggles)
             {
-                itemFilterOptionType.Grade |= gradeToggle.toggle.isOn ? gradeToggle.grade : Grade.All;
+                if (gradeToggle.toggle.isOn && gradeToggle.option != GradeFilterOption.All)
+                {
+                    itemFilterOptionType.Grade |= gradeToggle.option;
+                }
             }
 
             foreach (var elementalToggle in elementalToggles)
@@ -528,11 +536,13 @@ namespace Nekoyume.UI
 
         private void SetTogglesFromFilterOption()
         {
-            if (_itemFilterOptions.Grade != Grade.All)
+            if (_itemFilterOptions.Grade != GradeFilterOption.All)
             {
                 foreach (var gradeToggle in gradeToggles)
                 {
-                    gradeToggle.toggle.isOn = _itemFilterOptions.Grade.HasFlag(gradeToggle.grade);
+                    gradeToggle.toggle.isOn =
+                        gradeToggle.option != GradeFilterOption.All &&
+                        _itemFilterOptions.Grade.HasFlag(gradeToggle.option);
                 }
             }
             else
@@ -628,7 +638,7 @@ namespace Nekoyume.UI
                     return ItemType.All;
             }
         }
-        
+
         public static WithSkill ItemSubTypeToWithSkill(bool skillContains)
         {
             return skillContains ? WithSkill.With : WithSkill.None;
