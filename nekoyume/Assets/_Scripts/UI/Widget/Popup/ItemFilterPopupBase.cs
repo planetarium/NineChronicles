@@ -219,6 +219,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            // 신규 등급이 enum에 추가되었는데 프리팹 토글이 누락된 경우(예: Transcendent),
+            // 런타임에서 최소한의 보정(토글 복제)으로 크래시를 방지합니다.
+            EnsureGradeToggles();
             ValidateGradeTogglesOrThrow();
             InitializeToggleGroup();
 
@@ -279,6 +282,56 @@ namespace Nekoyume.UI
             }
         }
 
+        private void EnsureGradeToggles()
+        {
+            if (gradeToggles is null || gradeToggles.Count == 0)
+            {
+                return;
+            }
+
+            // Template: 가장 높은 등급 토글(=보통 마지막)을 복제해 새 토글을 만든다.
+            GradeToggle template = null;
+            foreach (var t in gradeToggles)
+            {
+                if (t is null || t.toggle == null) continue;
+                if (t.grade == Grade.All) continue;
+                if (template == null || (int)t.grade > (int)template.grade) template = t;
+            }
+
+            if (template == null || template.toggle == null)
+            {
+                return;
+            }
+
+            var definedGrades = (Grade[])Enum.GetValues(typeof(Grade));
+            var createdCount = 0;
+            foreach (var g in definedGrades)
+            {
+                if (g == Grade.All) continue;
+                if (gradeToggles.Exists(x => x != null && x.grade == g)) continue;
+
+                // Clone template toggle GameObject under same parent so layout works.
+                var clonedGo = Instantiate(template.toggle.gameObject, template.toggle.transform.parent);
+                clonedGo.name = $"{template.toggle.gameObject.name}_{g}";
+                var clonedToggle = clonedGo.GetComponent<Toggle>();
+                if (clonedToggle == null)
+                {
+                    Destroy(clonedGo);
+                    continue;
+                }
+
+                // Ensure it's off by default (BindToggleEvent에서 All 토글 로직이 다시 정리함).
+                clonedToggle.isOn = false;
+
+                gradeToggles.Add(new GradeToggle
+                {
+                    toggle = clonedToggle,
+                    grade = g,
+                });
+                createdCount++;
+            }
+        }
+
         private void InitializeToggleGroup()
         {
             BindToggleEvent(gradeToggles);
@@ -293,11 +346,22 @@ namespace Nekoyume.UI
         {
             foreach (var item in toggles)
             {
-                item.toggle.name = item.GetOptionName;
-                var textComponent = item.toggle.GetComponentInChildren<Text>();
-                if (textComponent != null)
+                var optionName = item.GetOptionName;
+                item.toggle.name = optionName;
+
+                // 일부 프리팹은 UGUI Text 대신 TMP를 사용합니다.
+                // 템플릿 토글을 복제해서 누락 등급을 자동 생성할 때(예: Transcendent),
+                // TMP 라벨을 갱신하지 않으면 텍스트가 그대로 복제되어 "Mythic이 2개"처럼 보일 수 있습니다.
+                var uguiText = item.toggle.GetComponentInChildren<Text>(true);
+                if (uguiText != null)
                 {
-                    textComponent.text = item.GetOptionName;
+                    uguiText.text = optionName;
+                }
+
+                var tmpText = item.toggle.GetComponentInChildren<TMP_Text>(true);
+                if (tmpText != null)
+                {
+                    tmpText.text = optionName;
                 }
 
                 if (item.IsAll)
