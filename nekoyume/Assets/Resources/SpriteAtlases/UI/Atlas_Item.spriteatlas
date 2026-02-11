@@ -705,6 +705,7 @@ SpriteAtlas:
     - ce6890e8a1b8b434c966cfa1b6afe743: 21300000
     - 456873e8aee4b084fa72044c6d2715df: 21300000
     - 6776b3e8609b2e240b67fcb668322231: 21300000
+    - d6dcd4e8c9b004c4eaf181222dcf6364: 21300000
     - 6f312ae88b56942c1ba21f0975e224ae: 21300000
     - e5d9cae82cca540d0978dbecc7027b7b: 21300000
     - ba46fee8fd5a85d42a08e021612cd8f7: 21300000
@@ -1109,6 +1110,7 @@ SpriteAtlas:
     - fabd846e4b173644d87af873c4059114: 21300000
     - 9daab56e37f3aca44af3deb254b60d29: 21300000
     - 5809096ebbef04aea8564d60ba43bb46: 21300000
+    - 7880b57e65b2040e5bfca6c53ffa667c: 21300000
     - 553cf87e319403c4a9443b8ecfc33e28: 21300000
     - 229cac7e82c114512a9fa359a05c7461: 21300000
     - 9eaf1d7ebdcc34607aa6bc77775accad: 21300000
@@ -1865,6 +1867,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ce6890e8a1b8b434c966cfa1b6afe743, type: 3}
   - {fileID: 21300000, guid: 456873e8aee4b084fa72044c6d2715df, type: 3}
   - {fileID: 21300000, guid: 6776b3e8609b2e240b67fcb668322231, type: 3}
+  - {fileID: 21300000, guid: d6dcd4e8c9b004c4eaf181222dcf6364, type: 3}
   - {fileID: 21300000, guid: 6f312ae88b56942c1ba21f0975e224ae, type: 3}
   - {fileID: 21300000, guid: e5d9cae82cca540d0978dbecc7027b7b, type: 3}
   - {fileID: 21300000, guid: ba46fee8fd5a85d42a08e021612cd8f7, type: 3}
@@ -2269,6 +2272,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fabd846e4b173644d87af873c4059114, type: 3}
   - {fileID: 21300000, guid: 9daab56e37f3aca44af3deb254b60d29, type: 3}
   - {fileID: 21300000, guid: 5809096ebbef04aea8564d60ba43bb46, type: 3}
+  - {fileID: 21300000, guid: 7880b57e65b2040e5bfca6c53ffa667c, type: 3}
   - {fileID: 21300000, guid: 553cf87e319403c4a9443b8ecfc33e28, type: 3}
   - {fileID: 21300000, guid: 229cac7e82c114512a9fa359a05c7461, type: 3}
   - {fileID: 21300000, guid: 9eaf1d7ebdcc34607aa6bc77775accad, type: 3}
@@ -3024,6 +3028,7 @@ SpriteAtlas:
   - 11520000
   - RUNESTONE_FENRIR4
   - 10354002
+  - RUNESTONE_MJOLNIR
   - 204000
   - 306048
   - 10730001
@@ -3428,6 +3433,7 @@ SpriteAtlas:
   - 306061
   - 10253001
   - 900104
+  - RUNESTONE_RAGNAROK
   - 10220000
   - RUNESTONE_ODIN_CREATOR
   - 40100005
