@@ -146,6 +146,9 @@ namespace Nekoyume.Blockchain
 
                     Widget.Find<HeaderMenuStatic>().UpdatePortalRewardDaily();
                 }
+                else
+                {
+                }
             }).AddTo(_disposables);
 
             RewardGold();

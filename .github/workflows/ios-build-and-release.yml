@@ -128,7 +128,7 @@ jobs:
 
   build-and-upload:
     name: Build Archive for iOS and Upload to TestFlight
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
     needs: build
     if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')|| github.event.inputs.manual_build_option
@@ -162,10 +162,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Select Xcode 16.x
+      - name: Select Xcode 26.x
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16'
+          xcode-version: '26'
 
       - name: Download iOS Artifact
         uses: actions/download-artifact@v4
