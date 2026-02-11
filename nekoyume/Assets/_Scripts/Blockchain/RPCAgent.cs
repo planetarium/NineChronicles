@@ -1111,27 +1111,30 @@ namespace Nekoyume.Blockchain
 
         public void OnRender(byte[] evaluation)
         {
-            using (var cp = new MemoryStream(evaluation))
+            try
             {
+                using (var cp = new MemoryStream(evaluation))
                 using (var decompressed = new MemoryStream())
+                using (var df = new DeflateStream(cp, CompressionMode.Decompress))
                 {
-                    using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+                    df.CopyTo(decompressed);
+                    decompressed.Seek(0, SeekOrigin.Begin);
+                    var dec = decompressed.ToArray();
+                    try
                     {
-                        df.CopyTo(decompressed);
-                        decompressed.Seek(0, SeekOrigin.Begin);
-                        var dec = decompressed.ToArray();
-                        try
-                        {
-                            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                                .ToActionEvaluation();
-                            ActionRenderer.ActionRenderSubject.OnNext(ev);
-                        }
-                        catch (Exception e)
-                        {
-                            NcDebug.LogError($"[RPCAgent] OnRender()... Failed to deserialize ActionEvaluation. {e}");
-                        }
+                        var ncEv = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec);
+                        var ev = ncEv.ToActionEvaluation();
+                        ActionRenderer.ActionRenderSubject.OnNext(ev);
+                    }
+                    catch (Exception e)
+                    {
+                        NcDebug.LogError($"[RPCAgent][OnRender] Failed to deserialize ActionEvaluation. {e}");
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[RPCAgent][OnRender] Failed before deserialize (likely decompress). {e}");
             }
         }
 
@@ -1369,8 +1372,6 @@ namespace Nekoyume.Blockchain
                     (ReservedAddresses.LegacyAccount, addr)));
             }
 
-            NcDebug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
-
             foreach (var address in addresses)
             {
                 var game = Game.Game.instance;
@@ -1382,7 +1383,18 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(pair => pair.Item2.ToByteArray()));
+            var addressBytes = addresses.Select(pair => pair.Item2.ToByteArray()).ToArray();
+            UniTask.Void(async () =>
+            {
+                try
+                {
+                    await _service.SetAddressesToSubscribe(Address.ToByteArray(), addressBytes).ResponseAsync;
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"[RPCAgent][Subscribe] SetAddressesToSubscribe failed. {e}");
+                }
+            });
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId)
