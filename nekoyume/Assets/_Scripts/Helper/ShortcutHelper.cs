@@ -59,7 +59,7 @@ namespace Nekoyume.Helper
             var acquisitionPlaceList = new List<AcquisitionPlaceButton.Model>();
             if (Action.ItemEnhancement.HammerIds.Contains(itemId))
             {
-                if (itemid == 600307 || itemid == 600308)
+                if (itemId == 600307 || itemId == 600308)
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                 }
