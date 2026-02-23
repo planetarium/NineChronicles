@@ -816,24 +816,40 @@ namespace Nekoyume.UI
 
         private bool ApplyGradeFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+            if (itemFilterOptions.Grade == ItemFilterPopupBase.GradeFilterOption.All)
             {
                 return true;
             }
 
-            var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
-                hasFlag |= itemFilterOptions.Grade.HasFlag(gradeFlag);
-
-                if (hasFlag)
+                // 실제 등급 값(1..8)을 기준으로 필터 옵션을 판정한다.
+                var grade = (Nekoyume.Model.EnumType.Grade)material.Grade;
+                var option = GradeToFilterOption(grade);
+                if (option != ItemFilterPopupBase.GradeFilterOption.All &&
+                    itemFilterOptions.Grade.HasFlag(option))
                 {
-                    break;
+                    return true;
                 }
             }
 
-            return hasFlag;
+            return false;
+        }
+
+        private static ItemFilterPopupBase.GradeFilterOption GradeToFilterOption(Nekoyume.Model.EnumType.Grade grade)
+        {
+            return grade switch
+            {
+                Nekoyume.Model.EnumType.Grade.Normal => ItemFilterPopupBase.GradeFilterOption.BelowEpic,
+                Nekoyume.Model.EnumType.Grade.Rare => ItemFilterPopupBase.GradeFilterOption.BelowEpic,
+                Nekoyume.Model.EnumType.Grade.Epic => ItemFilterPopupBase.GradeFilterOption.Epic,
+                Nekoyume.Model.EnumType.Grade.Unique => ItemFilterPopupBase.GradeFilterOption.Unique,
+                Nekoyume.Model.EnumType.Grade.Legendary => ItemFilterPopupBase.GradeFilterOption.Legendary,
+                Nekoyume.Model.EnumType.Grade.Divinity => ItemFilterPopupBase.GradeFilterOption.Divinity,
+                Nekoyume.Model.EnumType.Grade.Mythic => ItemFilterPopupBase.GradeFilterOption.Mythic,
+                Nekoyume.Model.EnumType.Grade.Transcendent => ItemFilterPopupBase.GradeFilterOption.Transcendent,
+                _ => ItemFilterPopupBase.GradeFilterOption.All,
+            };
         }
 
         private bool ApplyElementalFilterOption(CollectionModel model)

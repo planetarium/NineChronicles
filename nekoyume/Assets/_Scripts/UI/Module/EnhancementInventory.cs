@@ -32,6 +32,7 @@ namespace Nekoyume.UI.Module
             Legend,
             Divinity,
             Mythic,
+            Transcendent,
         }
 
         private enum Elemental

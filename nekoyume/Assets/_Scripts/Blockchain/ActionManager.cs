@@ -132,7 +132,6 @@ namespace Nekoyume.Blockchain
         private void ProcessAction<T>(T actionBase, Func<TxId, Task<bool>> onTxIdReceived = null) where T : ActionBase
         {
             var actionType = actionBase.GetActionTypeAttribute();
-            NcDebug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
 
             _agent.EnqueueAction(actionBase, onTxIdReceived);
 

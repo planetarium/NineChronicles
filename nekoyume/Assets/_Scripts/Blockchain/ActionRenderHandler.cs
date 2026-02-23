@@ -146,6 +146,9 @@ namespace Nekoyume.Blockchain
 
                     Widget.Find<HeaderMenuStatic>().UpdatePortalRewardDaily();
                 }
+                else
+                {
+                }
             }).AddTo(_disposables);
 
             RewardGold();
@@ -224,6 +227,7 @@ namespace Nekoyume.Blockchain
 
             // Claim Items
             ClaimItems();
+            GrantItems();
             ClaimPatrolReward();
 
             // Mint Assets
@@ -901,6 +905,24 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareClaimItems)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimItems)
+                .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// Process the action rendering of <see cref="GrantItems"/>.
+        /// At now, rendering is only for updating the inventory of the current avatar.
+        /// </summary>
+        private void GrantItems()
+        {
+            _actionRenderer.EveryRender<GrantItems>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval =>
+                    eval.Action.ClaimData.Any(e =>
+                        e.address.Equals(States.Instance?.CurrentAvatarState?.address)))
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareGrantItems)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseGrantItems)
                 .AddTo(_disposables);
         }
 
@@ -3699,6 +3721,11 @@ namespace Nekoyume.Blockchain
             var allRuneState = States.Instance.AllRuneState;
             var runeSlotStates = States.Instance.CurrentRuneSlotStates[BattleType.Raid];
             var itemSlotStates = States.Instance.CurrentItemSlotStates[BattleType.Raid];
+            // 전투에서 사용한 장비/코스튬은 Action 인자로 들어가며,
+            // PrepareRaid()에서 OutputState 기준으로 ItemSlotState를 갱신해두었으므로
+            // 시뮬레이터 실행 전에 AvatarState에도 동일하게 재장착해 체인 실행과 동일한 조건을 맞춥니다.
+            var equippedItems = itemSlotStates.Equipments.Concat(itemSlotStates.Costumes).ToList();
+            clonedAvatarState.EquipItems(equippedItems);
 
             var simulator = new RaidSimulator(
                 row.BossId,
@@ -3711,7 +3738,8 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
                 TableSheets.Instance.BuffLimitSheet,
-                TableSheets.Instance.BuffLinkSheet
+                TableSheets.Instance.BuffLinkSheet,
+                shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage
             );
             simulator.Simulate();
             Widget.Find<LobbyMenu>().Close();
@@ -4306,6 +4334,51 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
+        private ActionEvaluation<GrantItems> PrepareGrantItems(
+            ActionEvaluation<GrantItems> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.ClaimData is not null)
+            {
+                foreach (var (addr, favList) in action.ClaimData)
+                {
+                    if (addr.Equals(avatarAddr))
+                    {
+                        foreach (var fav in favList)
+                        {
+                            var tokenCurrency = fav.Currency;
+                            if (Currencies.IsWrappedCurrency(tokenCurrency))
+                            {
+                                var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
+                                var recipientAddress = Currencies.PickAddress(currency, agentAddr,
+                                    avatarAddr);
+                                var isCrystal = currency.Equals(Currencies.Crystal);
+                                var balance = StateGetter.GetBalance(
+                                    states,
+                                    recipientAddress,
+                                    currency);
+                                if (isCrystal)
+                                {
+                                    gameStates.SetCrystalBalance(balance);
+                                }
+                                else
+                                {
+                                    gameStates.SetCurrentAvatarBalance(balance);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(states, avatarAddr)).Forget();
+            return eval;
+        }
+
         private void ResponseClaimItems(ActionEvaluation<ClaimItems> eval)
         {
             if (eval.Exception is not null)
@@ -4375,6 +4448,81 @@ namespace Nekoyume.Blockchain
 
                 NcDebug.LogWarning($"Not found ClaimItemsRecipientMail from " +
                     $"the render context of ClaimItems action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+            });
+        }
+
+        private void ResponseGrantItems(ActionEvaluation<GrantItems> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                NcDebug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            MailBox mailBox = null;
+            UniTask.RunOnThreadPool(() =>
+            {
+                mailBox = StateGetter.GetMailBox(states, avatarAddr);
+
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
+                {
+                    Widget.Find<HeaderMenuStatic>()
+                        .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                }
+
+                ClaimItemsMail mail = null;
+                var sameBlockIndexMailList = mailBox
+                    .OfType<ClaimItemsMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex)
+                    .ToList();
+                if (sameBlockIndexMailList.Any())
+                {
+                    var memoCheckedMail =
+                        sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+                }
+
+                if (mail is not null)
+                {
+                    UniTask.RunOnThreadPool(() =>
+                    {
+                        var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+                        LocalLayerModifier.AddNewMail(avatarState, mail.id);
+                    }).Forget();
+                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
+                            NotificationCell.NotificationType.Notification);
+                        return;
+                    }
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
+                    {
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if (product != null)
+                        {
+                            var productName = product.GetNameText();
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
+                    }
+                }
+
+                NcDebug.LogWarning($"Not found ClaimItemsRecipientMail from " +
+                    $"the render context of GrantItems action.\n" +
                     $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
         }
