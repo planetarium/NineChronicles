@@ -217,6 +217,8 @@ namespace Nekoyume.UI
             }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Debug-only override: treat stages up to the configured id as cleared.
+            // (Used for reproducing/validating world unlock UI flows.)
             if (debugAssumeClearedStages && stageId > 0 && stageId <= debugAssumeClearedToStageId)
             {
                 return true;
@@ -353,6 +355,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var prevMode = _currentMode;
             SaveLastSelectedWorldIdForMode(_currentMode);
             _currentMode = mode;
 
@@ -441,6 +444,14 @@ namespace Nekoyume.UI
         {
             if (mode == WorldMapMode.Hard)
             {
+                // Prefer data-driven hard-world rows from WorldSheet.
+                // Fallback to synthetic id range only when the sheet doesn't contain hard rows.
+                var hardRows = GetWorldRowsForMode(WorldMapMode.Hard);
+                if (hardRows.Count > 0)
+                {
+                    return hardRows.Select(r => r.Id).ToList();
+                }
+
                 return Enumerable.Range(hardWorldIdBase, _worldButtons.Length).ToList();
             }
 
@@ -457,6 +468,12 @@ namespace Nekoyume.UI
 
             if (mode == WorldMapMode.Hard)
             {
+                var hardRows = GetWorldRowsForMode(WorldMapMode.Hard);
+                if (hardRows.Count > 0)
+                {
+                    return hardRows.Count > index ? hardRows[index].Id : -1;
+                }
+
                 return hardWorldIdBase + index;
             }
 
@@ -487,12 +504,31 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            var prefix = hardWorldNamePrefix?.Trim();
-            if (!string.IsNullOrEmpty(prefix) &&
-                row.Name != null &&
-                row.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            // Live data compatibility: current hard-mode worlds are named like "HardMode1..9".
+            // This makes hard/normal classification resilient even when serialized inspector values lag behind.
+            if (!string.IsNullOrEmpty(row.Name) &&
+                row.Name.StartsWith("HardMode", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
+            }
+
+            var prefixRaw = hardWorldNamePrefix?.Trim();
+            if (!string.IsNullOrEmpty(prefixRaw) && row.Name != null)
+            {
+                // Allow multiple prefixes separated by comma/semicolon for live-data compatibility.
+                // e.g. "Hard_,HardMode"
+                var prefixes = prefixRaw
+                    .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim())
+                    .Where(p => !string.IsNullOrEmpty(p));
+
+                foreach (var p in prefixes)
+                {
+                    if (row.Name.StartsWith(p, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
             }
 
             return hardWorldIdStart > 0 && row.Id >= hardWorldIdStart;
@@ -594,6 +630,7 @@ namespace Nekoyume.UI
                 var canTryThisWorld =
                     IsStageClearedForUi(worldInformation, unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked = IsWorldUnlockedForUi(worldInformation, buttonWorldId, canTryThisWorld);
+                var openedLegacy = IsWorldOpenedInLegacyForUi(worldButton.Id);
 
                 UpdateNotificationInfo();
 
@@ -603,8 +640,8 @@ namespace Nekoyume.UI
                 if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
-                    worldButton.Unlock(SharedViewModel.UnlockedWorldIds != null &&
-                        !IsWorldOpenedInLegacyForUi(worldButton.Id));
+                    var crystalLock = SharedViewModel.UnlockedWorldIds != null && !openedLegacy;
+                    worldButton.Unlock(crystalLock);
                 }
                 else
                 {

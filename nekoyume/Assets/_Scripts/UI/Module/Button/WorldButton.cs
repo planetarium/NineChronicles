@@ -118,6 +118,79 @@ namespace Nekoyume.UI.Module
             _animationState.Subscribe(OnAnimationState).AddTo(go);
         }
 
+        private void EnsureOpenCostTextWired()
+        {
+            if (openCostText != null)
+            {
+                return;
+            }
+
+            var texts = GetComponentsInChildren<TMP_Text>(true);
+            if (texts == null || texts.Length == 0)
+            {
+                return;
+            }
+
+            static bool LooksNumeric(string s)
+            {
+                if (string.IsNullOrWhiteSpace(s))
+                {
+                    return false;
+                }
+
+                var hasDigit = false;
+                foreach (var ch in s)
+                {
+                    if (char.IsDigit(ch))
+                    {
+                        hasDigit = true;
+                        continue;
+                    }
+
+                    if (ch == ',')
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                return hasDigit;
+            }
+
+            TMP_Text best = null;
+            var bestScore = float.PositiveInfinity;
+            foreach (var t in texts)
+            {
+                if (t == null)
+                {
+                    continue;
+                }
+
+                var name = t.gameObject != null ? t.gameObject.name : string.Empty;
+                var isCostNamed = name.IndexOf("cost", StringComparison.OrdinalIgnoreCase) >= 0;
+                var isNumeric = LooksNumeric(t.text);
+                if (!isCostNamed && !isNumeric)
+                {
+                    continue;
+                }
+
+                var rt = t.GetComponent<RectTransform>();
+                var area = rt != null ? Mathf.Abs(rt.sizeDelta.x * rt.sizeDelta.y) : 999999f;
+                var score = area + (isCostNamed ? 0f : 1000f);
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    best = t;
+                }
+            }
+
+            if (best != null)
+            {
+                openCostText = best;
+            }
+        }
+
         private void OnEnable()
         {
             _state.SetValueAndForceNotify(_state.Value);
@@ -241,8 +314,20 @@ namespace Nekoyume.UI.Module
             Id = worldRow.Id;
             StageBegin = worldRow.StageBegin;
             StageEnd = worldRow.StageEnd;
+            EnsureOpenCostTextWired();
             if (openCostText != null)
             {
+                var prevText = openCostText.text;
+                var unlockRow = TableSheets.Instance.WorldUnlockSheet
+                    .OrderedList
+                    .FirstOrDefault(r => r.WorldIdToUnlock == Id);
+                if (unlockRow == null)
+                {
+                    _openCost = 0;
+                    openCostText.text = string.Empty;
+                    return;
+                }
+
                 _openCost = CrystalCalculator
                     .CalculateWorldUnlockCost(new[] { Id }, TableSheets.Instance.WorldUnlockSheet)
                     .MajorUnit;
@@ -256,12 +341,14 @@ namespace Nekoyume.UI.Module
             Id = worldId;
             StageBegin = stageBegin;
             StageEnd = stageEnd;
+            EnsureOpenCostTextWired();
 
             if (openCostText == null)
             {
                 return;
             }
 
+            var prevText = openCostText.text;
             var unlockRow = TableSheets.Instance.WorldUnlockSheet
                 .OrderedList
                 .FirstOrDefault(r => r.WorldIdToUnlock == worldId);

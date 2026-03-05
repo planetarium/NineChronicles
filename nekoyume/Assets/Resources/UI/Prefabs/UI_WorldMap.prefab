@@ -30411,9 +30411,9 @@ MonoBehaviour:
   hardWorldNamePrefix: Hard_
   hardWorldIdStart: 100
   hardWorldIdBase: 101
-  debugAssumeClearedStages: 1
+  debugAssumeClearedStages: 0
   debugAssumeClearedToStageId: 450
-  debugAssumeWorldsUnlocked: 1
+  debugAssumeWorldsUnlocked: 0
   debugAssumeUnlockedToWorldId: 9
   eventDungeonObjects:
   - eventId: 1012
