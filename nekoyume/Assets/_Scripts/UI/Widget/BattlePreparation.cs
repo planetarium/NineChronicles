@@ -106,6 +106,8 @@ namespace Nekoyume.UI
         private int _worldId;
         private int _stageId;
         private int _requiredCost;
+        private int _entryCostItemId;
+        private int _entryCostItemCount;
         private bool _trackGuideQuest;
 
         private readonly List<IDisposable> _disposables = new();
@@ -115,13 +117,7 @@ namespace Nekoyume.UI
             (startButton.Interactable || !EnoughToPlay);
 
         private bool EnoughToPlay =>
-            _stageType switch
-            {
-                StageType.EventDungeon =>
-                    RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
-                _ =>
-                    ReactiveAvatarState.ActionPoint >= _requiredCost
-            };
+            startButton != null && startButton.IsSubmittable;
 
         private bool IsFirstStage =>
             _stageType switch
@@ -400,6 +396,8 @@ namespace Nekoyume.UI
                     TableSheets.Instance.StageSheet.TryGetValue(
                         _stageId, out var stage, true);
                     _requiredCost = stage.CostAP;
+                    _entryCostItemId = stage.EntryCostItemId;
+                    _entryCostItemCount = stage.EntryCostItemCount;
                     var stakingLevel = States.Instance.StakingLevel;
                     if (_stageType is StageType.HackAndSlash && stakingLevel > 0)
                     {
@@ -411,13 +409,27 @@ namespace Nekoyume.UI
                                     stakingLevel);
                     }
 
-                    startButton.SetCost(CostType.ActionPoint, _requiredCost);
+                    if (_entryCostItemId > 0 && _entryCostItemCount > 0)
+                    {
+                        startButton.SetCost(
+                            new ConditionalCostButton.CostParam(CostType.ActionPoint, _requiredCost),
+                            new ConditionalCostButton.CostParam((CostType)_entryCostItemId, _entryCostItemCount));
+                    }
+                    else
+                    {
+                        startButton.SetCost(CostType.ActionPoint, _requiredCost);
+                    }
+
+                    startButton.SetCondition(null);
                     break;
                 }
                 case StageType.EventDungeon:
                 {
                     _requiredCost = 1;
+                    _entryCostItemId = 0;
+                    _entryCostItemCount = 0;
                     startButton.SetCost(CostType.EventDungeonTicket, _requiredCost);
+                    startButton.SetCondition(null);
                     break;
                 }
                 default:

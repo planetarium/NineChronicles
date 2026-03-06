@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
@@ -34,6 +35,17 @@ namespace Nekoyume.UI.Module
         {
             base.SetData(itemBase, onClick);
             Data = itemBase;
+            _disposables.DisposeAllAndClear();
+            if (touchHandler != null && onClick != null)
+            {
+                touchHandler.OnClick.Subscribe(_ => onClick?.Invoke()).AddTo(_disposables);
+            }
+        }
+
+        public void SetFavData(FungibleAssetValue fav, System.Action onClick = null)
+        {
+            base.SetData(fav, onClick);
+            Data = null;
             _disposables.DisposeAllAndClear();
             if (touchHandler != null && onClick != null)
             {
