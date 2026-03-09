@@ -71,15 +71,36 @@ namespace Nekoyume.UI
 
             public void AddReward(CountableItem reward)
             {
-                var sameReward = _rewards.FirstOrDefault(e =>
-                    e.ItemBase.Value.Equals(reward.ItemBase.Value));
-                if (sameReward is null)
+                if (reward.ItemBase.HasValue && reward.ItemBase.Value != null)
                 {
-                    _rewards.Add(reward);
-                    return;
-                }
+                    var rewardItemBase = reward.ItemBase.Value;
+                    var sameReward = _rewards.FirstOrDefault(e =>
+                        e.ItemBase.HasValue &&
+                        e.ItemBase.Value != null &&
+                        e.ItemBase.Value.Equals(rewardItemBase));
+                    if (sameReward is null)
+                    {
+                        _rewards.Add(reward);
+                        return;
+                    }
 
-                sameReward.Count.Value += reward.Count.Value;
+                    sameReward.Count.Value += reward.Count.Value;
+                }
+                else if (reward.FungibleAssetValue.HasValue)
+                {
+                    var fav = reward.FungibleAssetValue.Value;
+                    var sameReward = _rewards.FirstOrDefault(e =>
+                        !e.ItemBase.HasValue &&
+                        e.FungibleAssetValue.HasValue &&
+                        e.FungibleAssetValue.Value.Equals(fav));
+                    if (sameReward is null)
+                    {
+                        _rewards.Add(reward);
+                        return;
+                    }
+
+                    sameReward.Count.Value += reward.Count.Value;
+                }
             }
         }
 
@@ -108,8 +129,16 @@ namespace Nekoyume.UI
                 for (var i = 0; i < rewardItems.Count; i++)
                 {
                     var rt = items[i].RectTransform;
-                    var itemBase = rewardItems[i].ItemBase.Value;
-                    items[i].SetData(rewardItems[i], () => ShowTooltip(itemBase));
+                    var reward = rewardItems[i];
+                    if (reward.ItemBase.HasValue && reward.ItemBase.Value != null)
+                    {
+                        var itemBase = reward.ItemBase.Value;
+                        items[i].SetData(reward, () => ShowTooltip(itemBase));
+                    }
+                    else
+                    {
+                        items[i].SetData(reward);
+                    }
                     items[i].gameObject.SetActive(true);
                 }
             }
