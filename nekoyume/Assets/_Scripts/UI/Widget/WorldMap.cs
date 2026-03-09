@@ -85,6 +85,32 @@ namespace Nekoyume.UI
         [Tooltip("Hard-mode world id base for buttons when WorldSheet rows are missing. e.g., 101 => 101..109")]
         private int hardWorldIdBase = 101;
 
+        [SerializeField]
+        [Tooltip("Background image to swap on mode change.")]
+        private Image backgroundImage;
+
+        [SerializeField]
+        private Sprite normalBackgroundSprite;
+
+        [SerializeField]
+        private Sprite hardBackgroundSprite;
+
+        [SerializeField]
+        [Tooltip("Normal mode effect object (Bg_Effect_Normal). Active in Normal mode.")]
+        private GameObject normalEffectObject;
+
+        [SerializeField]
+        [Tooltip("Hard mode effect object (Bg_Effect_Hard). Active in Hard mode.")]
+        private GameObject hardEffectObject;
+
+        [SerializeField]
+        [Tooltip("Normal mode texture object (Bg_Tex_Normal). Active in Normal mode.")]
+        private GameObject normalTexObject;
+
+        [SerializeField]
+        [Tooltip("Hard mode texture object (Bg_Tex_Hard). Active in Hard mode.")]
+        private GameObject hardTexObject;
+
         [Header("Debug (local test)")]
         [SerializeField]
         [Tooltip("If enabled (Editor/Development only), stages up to the given id are treated as cleared in this WorldMap UI.")]
@@ -369,6 +395,22 @@ namespace Nekoyume.UI
             }
 
             BindWorldButtonsForMode(mode);
+
+            if (backgroundImage != null)
+            {
+                var sprite = mode == WorldMapMode.Hard ? hardBackgroundSprite : normalBackgroundSprite;
+                if (sprite != null)
+                    backgroundImage.sprite = sprite;
+            }
+
+            var isHard = mode == WorldMapMode.Hard;
+
+            if (normalEffectObject != null) normalEffectObject.SetActive(!isHard);
+            if (hardEffectObject != null)   hardEffectObject.SetActive(isHard);
+
+            if (normalTexObject != null) normalTexObject.SetActive(!isHard);
+            if (hardTexObject != null)   hardTexObject.SetActive(isHard);
+
             SetWorldInformation(SharedViewModel.WorldInformation);
 
             RestoreLastSelectedWorldForMode(mode);
