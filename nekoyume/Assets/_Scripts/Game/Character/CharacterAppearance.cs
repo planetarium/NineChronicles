@@ -51,7 +51,8 @@ namespace Nekoyume.Game.Character
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 digest.Costumes, armor, weapon, aura,
-                digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex, tableSheets);
+                digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex, tableSheets,
+                allEquipments: digest.Equipments);
         }
 
         public void Set(
@@ -74,7 +75,8 @@ namespace Nekoyume.Game.Character
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 costumes, armor, weapon, aura,
-                earIndex, lensIndex, hairIndex, tailIndex, tableSheets, isFriendCharacter, onFinish);
+                earIndex, lensIndex, hairIndex, tailIndex, tableSheets, isFriendCharacter, onFinish,
+                allEquipments: equipments);
         }
 
         public void Set(
@@ -161,7 +163,8 @@ namespace Nekoyume.Game.Character
             int tailIndex,
             TableSheets tableSheets,
             bool isFriendCharacter = false,
-            System.Action onFinish = null)
+            System.Action onFinish = null,
+            List<Equipment> allEquipments = null)
         {
             _animator = animator;
             _hudContainer = hudContainer;
@@ -233,6 +236,7 @@ namespace Nekoyume.Game.Character
                 UpdateTitle(title);
             }
 
+            UpdateSecondaryAura(allEquipments ?? new List<Equipment> { weapon, armor, aura }.Where(e => e != null).Cast<Equipment>().ToList(), costumes);
             onFinish?.Invoke();
         }
 
@@ -304,6 +308,16 @@ namespace Nekoyume.Game.Character
 
             var vfx = ResourcesHelper.GetAuraPrefab(aura.Id, aura.level);
             SpineController.UpdateAura(vfx);
+        }
+
+        private void UpdateSecondaryAura(List<Equipment> equipments, List<Costume> costumes)
+        {
+            var maxGrade = equipments.Select(e => e.Grade)
+                .Concat(costumes.Select(c => c.Grade))
+                .DefaultIfEmpty(0)
+                .Max();
+            var prefab = ResourcesHelper.GetSecondaryAuraPrefab(maxGrade);
+            SpineController.UpdateSecondaryAura(prefab);
         }
 
         private void UpdateEar(int index, bool isDcc, CostumeItemSheet sheet)

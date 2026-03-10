@@ -120,5 +120,11 @@ namespace Nekoyume.Helper
         {
             return Get<PortalRewardScriptalbeObject>().levelData;
         }
+
+        public static GameObject GetSecondaryAuraPrefab(int maxGrade)
+        {
+            var config = Get<Game.Character.SecondaryAuraConfig>();
+            return config == null ? null : config.GetPrefab(maxGrade);
+        }
     }
 }

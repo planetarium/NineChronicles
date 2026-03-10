@@ -36,11 +36,14 @@ namespace Nekoyume.Game.Avatar
         private DG.Tweening.Sequence _doFadeSequence;
         private GameObject _cachedWeaponVFX;
         private GameObject _cachedAuraVFX;
+        private GameObject _cachedSecondaryAuraVFX;
         private readonly List<Tweener> _fadeTweener = new();
         private bool _isActiveFullCostume;
         private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
         private GameObject _prevAuraPrefab;
+        private GameObject _prevSecondaryAuraPrefab;
         private GameObject _prevWeaponObj;
+        private GameObject _secondaryAuraRoot;
 
         public BoxCollider Collider => _isActiveFullCostume ? fullCostumeCollider : bodyCollider;
 
@@ -287,6 +290,40 @@ namespace Nekoyume.Game.Avatar
             }
 
             _cachedAuraVFX = vfx;
+        }
+
+        public void UpdateSecondaryAura(GameObject prefab)
+        {
+            if (_prevSecondaryAuraPrefab == prefab && _cachedSecondaryAuraVFX != null)
+            {
+                return;
+            }
+
+            _prevSecondaryAuraPrefab = prefab;
+            Destroy(_cachedSecondaryAuraVFX);
+            _cachedSecondaryAuraVFX = null;
+
+            if (prefab == null)
+            {
+                if (_secondaryAuraRoot != null)
+                {
+                    _secondaryAuraRoot.SetActive(false);
+                }
+
+                return;
+            }
+
+            if (_secondaryAuraRoot == null)
+            {
+                _secondaryAuraRoot = new GameObject("SecondaryAuraPos");
+                _secondaryAuraRoot.transform.SetParent(transform);
+                _secondaryAuraRoot.transform.localPosition = Vector3.zero;
+            }
+
+            _secondaryAuraRoot.SetActive(true);
+            var vfx = Instantiate(prefab, _secondaryAuraRoot.transform);
+            vfx.transform.localPosition = Vector3.zero;
+            _cachedSecondaryAuraVFX = vfx;
         }
 
         /// <summary>
