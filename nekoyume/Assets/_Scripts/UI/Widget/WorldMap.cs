@@ -19,7 +19,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.UI;
-using Toggle = UnityEngine.UI.Toggle;
+
 
 namespace Nekoyume.UI
 {
@@ -65,13 +65,17 @@ namespace Nekoyume.UI
 
         [Header("Mode Toggle")]
         [SerializeField]
-        private Nekoyume.UI.Module.Toggle modeToggle;
+        private Button normalModeButton;
 
         [SerializeField]
-        [Tooltip("Toggle ON => Hard mode, OFF => Normal mode.")]
-        private bool hardModeWhenToggleOn = true;
+        private Button hardModeButton;
 
-        private TextMeshProUGUI _modeToggleLabel;
+        private GameObject _normalModeSelectedImage;
+        private GameObject _normalModeNormalText;
+        private GameObject _normalModeSelectedText;
+        private GameObject _hardModeSelectedImage;
+        private GameObject _hardModeNormalText;
+        private GameObject _hardModeSelectedText;
 
         [SerializeField]
         [Tooltip("If a WorldSheet row matches either condition below, it is treated as a hard-mode world.")]
@@ -151,7 +155,6 @@ namespace Nekoyume.UI
         private WorldMapMode _currentMode = WorldMapMode.Normal;
         private int _lastSelectedWorldIdNormal = 1;
         private int _lastSelectedWorldIdHard = -1;
-        private bool _ignoreModeToggleEvent;
 
 #region Mono
 
@@ -298,80 +301,35 @@ namespace Nekoyume.UI
 
         private void InitializeModeToggles()
         {
-            // Auto-wire toggles from prefab hierarchy if not serialized.
-            if (worldMapRoot != null)
-            {
-                if (modeToggle == null)
-                {
-                    modeToggle = worldMapRoot.transform
-                        .Find("ModeToggle")
-                        ?.GetComponent<Nekoyume.UI.Module.Toggle>();
-                }
-
-                // Backward/compat path: previously it was a 2-toggle tab group.
-                // Convert it into a single toggle at runtime by hiding the normal toggle
-                // and allowing the remaining toggle to switch off.
-                if (modeToggle == null)
-                {
-                    var group = worldMapRoot.transform.Find("ModeToggleGroup");
-                    if (group != null)
-                    {
-                        // Hide the second toggle to make it a single-toggle UI.
-                        var normalToggleGo = group.Find("NormalToggle")?.gameObject;
-                        if (normalToggleGo != null)
-                        {
-                            normalToggleGo.SetActive(false);
-                        }
-
-                        // Allow switching off when only one toggle remains.
-                        var unityToggleGroup = group.GetComponent<UnityEngine.UI.ToggleGroup>();
-                        if (unityToggleGroup != null)
-                        {
-                            unityToggleGroup.allowSwitchOff = true;
-                        }
-
-                        modeToggle = group.Find("HardToggle")
-                            ?.GetComponent<Nekoyume.UI.Module.Toggle>();
-                    }
-                }
-            }
-
-            if (modeToggle == null)
+            if (normalModeButton == null && hardModeButton == null)
             {
                 _currentMode = WorldMapMode.Normal;
                 return;
             }
 
-            modeToggle.allowSwitchOffWhenIsOn = true;
-            _modeToggleLabel = modeToggle.GetComponentInChildren<TextMeshProUGUI>(true);
-
-            modeToggle.onValueChanged.AddListener(isOn =>
+            if (normalModeButton != null)
             {
-                if (_ignoreModeToggleEvent)
-                {
-                    return;
-                }
-
-                if (_modeToggleLabel != null)
-                {
-                    _modeToggleLabel.text = isOn ? "Hard" : "Normal";
-                }
-
-                var mode = hardModeWhenToggleOn
-                    ? (isOn ? WorldMapMode.Hard : WorldMapMode.Normal)
-                    : (isOn ? WorldMapMode.Normal : WorldMapMode.Hard);
-                ApplyMode(mode);
-            });
-
-            // Initialize current mode based on toggle state.
-            if (_modeToggleLabel != null)
-            {
-                _modeToggleLabel.text = modeToggle.isOn ? "Hard" : "Normal";
+                var t = normalModeButton.transform;
+                _normalModeSelectedImage = t.Find("SelectedImage")?.gameObject;
+                _normalModeNormalText    = t.Find("NormalText")?.gameObject;
+                _normalModeSelectedText  = t.Find("SelectedText")?.gameObject;
             }
 
-            _currentMode = hardModeWhenToggleOn
-                ? (modeToggle.isOn ? WorldMapMode.Hard : WorldMapMode.Normal)
-                : (modeToggle.isOn ? WorldMapMode.Normal : WorldMapMode.Hard);
+            if (hardModeButton != null)
+            {
+                var t = hardModeButton.transform;
+                _hardModeSelectedImage = t.Find("SelectedImage")?.gameObject;
+                _hardModeNormalText    = t.Find("NormalText")?.gameObject;
+                _hardModeSelectedText  = t.Find("SelectedText")?.gameObject;
+            }
+
+            normalModeButton?.onClick.AddListener(() => ApplyMode(WorldMapMode.Normal));
+            hardModeButton?.onClick.AddListener(() => ApplyMode(WorldMapMode.Hard));
+
+            // 초기 상태: Normal 선택
+            _currentMode = WorldMapMode.Normal;
+            SetModeButtonVisual(isSelected: true,  _normalModeSelectedImage, _normalModeNormalText, _normalModeSelectedText);
+            SetModeButtonVisual(isSelected: false, _hardModeSelectedImage,   _hardModeNormalText,   _hardModeSelectedText);
         }
 
         private void ApplyMode(WorldMapMode mode, bool force = false)
@@ -385,14 +343,9 @@ namespace Nekoyume.UI
             SaveLastSelectedWorldIdForMode(_currentMode);
             _currentMode = mode;
 
-            if (modeToggle != null)
-            {
-                _ignoreModeToggleEvent = true;
-                modeToggle.isOn = hardModeWhenToggleOn
-                    ? mode == WorldMapMode.Hard
-                    : mode == WorldMapMode.Normal;
-                _ignoreModeToggleEvent = false;
-            }
+            var normalSelected = mode == WorldMapMode.Normal;
+            SetModeButtonVisual(normalSelected,  _normalModeSelectedImage, _normalModeNormalText, _normalModeSelectedText);
+            SetModeButtonVisual(!normalSelected, _hardModeSelectedImage,   _hardModeNormalText,   _hardModeSelectedText);
 
             BindWorldButtonsForMode(mode);
 
@@ -414,6 +367,13 @@ namespace Nekoyume.UI
             SetWorldInformation(SharedViewModel.WorldInformation);
 
             RestoreLastSelectedWorldForMode(mode);
+        }
+
+        private static void SetModeButtonVisual(bool isSelected, GameObject selectedImage, GameObject normalText, GameObject selectedText)
+        {
+            if (selectedImage != null) selectedImage.SetActive(isSelected);
+            if (normalText   != null) normalText.SetActive(!isSelected);
+            if (selectedText != null) selectedText.SetActive(isSelected);
         }
 
         private void SaveLastSelectedWorldIdForMode(WorldMapMode mode)
