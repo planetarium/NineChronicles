@@ -289,7 +289,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private int? UpdateCp()
+        private long? UpdateCp()
         {
             switch (_stageType)
             {
