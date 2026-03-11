@@ -276,6 +276,7 @@ namespace Nekoyume.UI.Module
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
                     case CostType.ApPotion:
+                    case CostType.CatalystPotion:
                     case CostType.SilverDust:
                     case CostType.GoldDust:
                     case CostType.RubyDust:
@@ -325,6 +326,7 @@ namespace Nekoyume.UI.Module
                     return count >= cost;
                 case CostType.Hourglass:
                 case CostType.ApPotion:
+                case CostType.CatalystPotion:
                     var blockIndex = Game.Game.instance.Agent.BlockIndex;
                     inventory = States.Instance.CurrentAvatarState?.inventory;
                     if (inventory == null)
@@ -369,6 +371,9 @@ namespace Nekoyume.UI.Module
                         break;
                     case CostType.ApPotion:
                         paymentPopup.ShowLackApPotion(cost);
+                        break;
+                    case CostType.CatalystPotion:
+                        paymentPopup.ShowLackCatalystPotion(cost);
                         break;
                     case CostType.SilverDust:
                     case CostType.GoldDust:

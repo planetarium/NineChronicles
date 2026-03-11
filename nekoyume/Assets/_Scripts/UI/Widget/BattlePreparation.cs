@@ -396,8 +396,10 @@ namespace Nekoyume.UI
                     TableSheets.Instance.StageSheet.TryGetValue(
                         _stageId, out var stage, true);
                     _requiredCost = stage.CostAP;
-                    _entryCostItemId = stage.EntryCostItemId;
-                    _entryCostItemCount = stage.EntryCostItemCount;
+                    // _entryCostItemId = stage.EntryCostItemId;
+                    // _entryCostItemCount = stage.EntryCostItemCount;
+                    _entryCostItemId = 500001;
+                    _entryCostItemCount = 1;
                     var stakingLevel = States.Instance.StakingLevel;
                     if (_stageType is StageType.HackAndSlash && stakingLevel > 0)
                     {
