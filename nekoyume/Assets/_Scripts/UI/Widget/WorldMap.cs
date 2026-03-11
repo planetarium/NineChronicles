@@ -78,14 +78,6 @@ namespace Nekoyume.UI
         private GameObject _hardModeSelectedText;
 
         [SerializeField]
-        [Tooltip("If a WorldSheet row matches either condition below, it is treated as a hard-mode world.")]
-        private string hardWorldNamePrefix = "Hard_";
-
-        [SerializeField]
-        [Tooltip("Fallback hard-mode classification by id range (used when name prefix is not set or does not match).")]
-        private int hardWorldIdStart = 100;
-
-        [SerializeField]
         [Tooltip("Hard-mode world id base for buttons when WorldSheet rows are missing. e.g., 101 => 101..109")]
         private int hardWorldIdBase = 101;
 
@@ -493,47 +485,14 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-        private bool IsHardWorld(WorldSheet.Row row)
+        private static bool IsHardWorld(WorldSheet.Row row)
         {
             if (row is null)
             {
                 return false;
             }
 
-            // Exclude Mímisbrunnr from hard-mode classification. It has its own flow.
-            if (row.Id == GameConfig.MimisbrunnrWorldId)
-            {
-                return false;
-            }
-
-            // Live data compatibility: current hard-mode worlds are named like "HardMode1..9".
-            // This makes hard/normal classification resilient even when serialized inspector values lag behind.
-            if (!string.IsNullOrEmpty(row.Name) &&
-                row.Name.StartsWith("HardMode", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            var prefixRaw = hardWorldNamePrefix?.Trim();
-            if (!string.IsNullOrEmpty(prefixRaw) && row.Name != null)
-            {
-                // Allow multiple prefixes separated by comma/semicolon for live-data compatibility.
-                // e.g. "Hard_,HardMode"
-                var prefixes = prefixRaw
-                    .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(p => p.Trim())
-                    .Where(p => !string.IsNullOrEmpty(p));
-
-                foreach (var p in prefixes)
-                {
-                    if (row.Name.StartsWith(p, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return hardWorldIdStart > 0 && row.Id >= hardWorldIdStart;
+            return row.Id >= 10 && row.Id < GameConfig.MimisbrunnrWorldId;
         }
 
         public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
