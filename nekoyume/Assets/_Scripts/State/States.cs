@@ -637,6 +637,17 @@ namespace Nekoyume.State
                     1,
                     GameConfig.MimisbrunnrWorldId,
                 };
+            // For legacy avatars that cleared unlock conditions before world_ids was updated,
+            // merge worlds whose WorldUnlockSheet condition is already satisfied.
+            var worldUnlockSheet = Game.Game.instance.TableSheets.WorldUnlockSheet;
+            foreach (var unlockRow in worldUnlockSheet.OrderedList)
+            {
+                if (!unlockedIds.Contains(unlockRow.WorldIdToUnlock) &&
+                    avatarState.worldInformation.IsStageCleared(unlockRow.StageId))
+                {
+                    unlockedIds.Add(unlockRow.WorldIdToUnlock);
+                }
+            }
             Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (!isNewlySelected)
