@@ -382,6 +382,34 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("maintenance-max-version", Required = false,
+            HelpText = "Apply maintenance only to versions <= this value (e.g. '420.0.1'). No limit if empty.")]
+        public string MaintenanceMaxVersion
+        {
+            get => _maintenanceMaxVersion;
+            set
+            {
+                _maintenanceMaxVersion = value;
+                Empty = false;
+            }
+        }
+
+        private string _maintenanceMaxVersion;
+
+        [Option("min-required-version", Required = false,
+            HelpText = "Minimum required version. Clients below this version are forced to update (e.g. '420.0.2').")]
+        public string MinRequiredVersion
+        {
+            get => _minRequiredVersion;
+            set
+            {
+                _minRequiredVersion = value;
+                Empty = false;
+            }
+        }
+
+        private string _minRequiredVersion;
+
         [Option("testEnd", Required = false, HelpText = "Test has ended.")]
         public bool TestEnd
         {
