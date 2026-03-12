@@ -288,7 +288,7 @@ namespace Nekoyume.UI
 
                     if (_subrecipeIds != null && _subrecipeIds.Any())
                     {
-                        var isNormalRecipe = resultItem.Grade < 5;
+                        var isNormalRecipe = resultItem.Grade < 5 || resultItem.Grade == 8;
                         normalRecipeTabGroup.toggleGroup.gameObject.SetActive(isNormalRecipe);
                         legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(!isNormalRecipe);
 
@@ -494,7 +494,8 @@ namespace Nekoyume.UI
                     var showHammerPoint = hammerPointStates is not null &&
                         hammerPointStates.TryGetValue(
                             recipeInfo.RecipeId, out _hammerPointState) &&
-                        !isMimisbrunnrSubRecipe;
+                        !isMimisbrunnrSubRecipe &&
+                        TableSheets.Instance.CrystalHammerPointSheet.ContainsKey(recipeInfo.RecipeId);
 
                     hammerPointView.parentObject.SetActive(showHammerPoint);
                     if (showHammerPoint)
