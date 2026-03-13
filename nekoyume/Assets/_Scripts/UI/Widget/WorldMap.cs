@@ -502,6 +502,15 @@ namespace Nekoyume.UI
             HasNotification = false;
             SetWorldInformation(worldInformation);
 
+            if (hardModeButton != null)
+            {
+                var hardWorldIds = GetWorldIdsForMode(WorldMapMode.Hard);
+                var isHardModeUnlocked = hardWorldIds.Any(id =>
+                    worldInformation?.IsWorldUnlocked(id) ?? false);
+                var targetMode = isHardModeUnlocked ? WorldMapMode.Hard : WorldMapMode.Normal;
+                ApplyMode(targetMode);
+            }
+
             var status = Find<Status>();
             status.Close(true);
             Show(true);
