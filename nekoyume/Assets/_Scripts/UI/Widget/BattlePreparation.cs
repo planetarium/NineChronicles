@@ -412,8 +412,8 @@ namespace Nekoyume.UI
                     if (_entryCostItemId > 0 && _entryCostItemCount > 0)
                     {
                         startButton.SetCost(
-                            new ConditionalCostButton.CostParam(CostType.ActionPoint, _requiredCost),
-                            new ConditionalCostButton.CostParam((CostType)_entryCostItemId, _entryCostItemCount));
+                            new ConditionalCostButton.CostParam((CostType)_entryCostItemId, _entryCostItemCount),
+                            new ConditionalCostButton.CostParam(CostType.ActionPoint, _requiredCost));
                     }
                     else
                     {

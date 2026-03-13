@@ -284,7 +284,7 @@ namespace Nekoyume.UI.Module
                     case CostType.SapphireDust:
                         break;
                     default:
-                        return CostType.None;
+                        continue;
                 }
 
                 if (!CheckCostOfType(type, cost))
