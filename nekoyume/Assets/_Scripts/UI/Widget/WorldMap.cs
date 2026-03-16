@@ -597,7 +597,11 @@ namespace Nekoyume.UI
                 var unlockRow = TableSheets.Instance.WorldUnlockSheet
                     .OrderedList
                     .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
+                var unlockRowConsistent = unlockRow is null ||
+                    !TableSheets.Instance.WorldSheet.TryGetByStageId(unlockRow.StageId, out var stageWorld) ||
+                    stageWorld.Id == unlockRow.WorldId;
                 var canTryThisWorld =
+                    unlockRowConsistent &&
                     IsStageClearedForUi(worldInformation, unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked = IsWorldUnlockedForUi(worldInformation, buttonWorldId, canTryThisWorld);
                 var openedLegacy = IsWorldOpenedInLegacyForUi(worldButton.Id);
