@@ -48,5 +48,20 @@ namespace Nekoyume.Game.ScriptableObject
 
         [field: SerializeField]
         public string NcuJsonUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloVersionRegistryUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloMainnetUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloMainnetKrUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloInternalUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloInternalKrUrl { get; private set; }
     }
 }

@@ -419,7 +419,7 @@ namespace Nekoyume.Game.Scene
             var game = Game.instance;
 
             NcDebug.Log("[LoginScene] CoLogin() invoked");
-            if (CommandLineOptions.Maintenance)
+            if (IsUnderMaintenance(CommandLineOptions))
             {
                 ShowMaintenancePopup();
                 return;
@@ -695,6 +695,23 @@ namespace Nekoyume.Game.Scene
             }
 
             return true;
+        }
+
+        private static bool IsUnderMaintenance(CommandLineOptions options)
+        {
+            if (!options.Maintenance)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(options.MaintenanceMaxVersion))
+            {
+                return true;
+            }
+
+            return System.Version.TryParse(Application.version, out var current) &&
+                   System.Version.TryParse(options.MaintenanceMaxVersion, out var maxVer) &&
+                   current <= maxVer;
         }
 
         private void ShowMaintenancePopup()
