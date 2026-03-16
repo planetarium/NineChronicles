@@ -848,7 +848,7 @@ namespace Nekoyume.UI
             paymentPopup.ShowCheckPaymentCrystal(
                 States.Instance.CrystalBalance.MajorUnit,
                 cost,
-                L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost.ToCurrencyNotation()),
                 () =>
                 {
                     Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);

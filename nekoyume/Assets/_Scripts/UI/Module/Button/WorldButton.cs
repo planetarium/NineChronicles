@@ -363,7 +363,7 @@ namespace Nekoyume.UI.Module
             _openCost = CrystalCalculator
                 .CalculateWorldUnlockCost(new[] { Id }, TableSheets.Instance.WorldUnlockSheet)
                 .MajorUnit;
-            openCostText.text = _openCost.ToString();
+            openCostText.text = _openCost.ToCurrencyNotation();
         }
 
         public void SetOpenCostTextColor(BigInteger balance)

@@ -176,7 +176,7 @@ namespace Nekoyume.UI
         private void UpdateCrystalCost()
         {
             var crystalCost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
-            crystalText.text = $"{crystalCost:#,0}";
+            crystalText.text = crystalCost.ToCurrencyNotation();
             crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
         }
 

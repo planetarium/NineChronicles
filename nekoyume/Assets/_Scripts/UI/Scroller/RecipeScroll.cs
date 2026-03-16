@@ -452,7 +452,7 @@ namespace Nekoyume.UI.Scroller
 
             if (isActive)
             {
-                openAllRecipeArea.costText.text = _openCost.ToString();
+                openAllRecipeArea.costText.text = _openCost.ToCurrencyNotation();
 
                 var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
                 openAllRecipeArea.costText.color = hasEnoughBalance

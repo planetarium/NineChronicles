@@ -261,7 +261,7 @@ namespace Nekoyume.UI.Module
                 lockedObject.vfxObject.SetActive(unlockable);
                 equipmentView.Hide();
                 lockedObject.unlockInfoContainer.SetActive(true);
-                lockedObject.unlockPriceText.text = equipmentRow.CRYSTAL.ToString();
+                lockedObject.unlockPriceText.text = equipmentRow.CRYSTAL.ToCurrencyNotation();
                 lockedObject.unlockPriceText.color = unlockable
                     ? Palette.GetColor(ColorType.ButtonEnabled)
                     : Palette.GetColor(ColorType.ButtonDisabled);
