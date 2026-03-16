@@ -398,6 +398,11 @@ namespace Nekoyume.Game.Avatar
                 index = 10235001;
             }
 
+            if (index >= 10280000 && index <= 10284000)
+            {
+                index -= 10000;
+            }
+
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
             if (skinTone > 0)
