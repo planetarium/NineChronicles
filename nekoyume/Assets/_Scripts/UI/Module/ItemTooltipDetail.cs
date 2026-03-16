@@ -192,7 +192,7 @@ namespace Nekoyume.UI.Module
                         TableSheets.Instance.CrystalEquipmentGrindingSheet,
                         TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                         States.Instance.StakingLevel).MajorUnit;
-                    descriptionArea.crystalText.text = L10nManager.Localize("UI_CRYSTAL_VALUE", crystal);
+                    descriptionArea.crystalText.text = L10nManager.Localize("UI_CRYSTAL_VALUE", crystal.ToCurrencyNotation());
 
                     break;
                 }

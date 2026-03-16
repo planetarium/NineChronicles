@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
         public void SetData(MaterialItemSheet.Row itemRow, CostType costType, int count, BigInteger cost)
         {
             costIcon.overrideSprite = costIconData.GetIcon(costType);
-            costText.text = cost.ToString();
+            costText.text = cost.ToCurrencyNotation();
             countText.text = $"x{count}";
             SetData(itemRow);
         }

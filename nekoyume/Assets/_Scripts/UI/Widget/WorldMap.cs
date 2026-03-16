@@ -597,7 +597,11 @@ namespace Nekoyume.UI
                 var unlockRow = TableSheets.Instance.WorldUnlockSheet
                     .OrderedList
                     .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
+                var unlockRowConsistent = unlockRow is null ||
+                    !TableSheets.Instance.WorldSheet.TryGetByStageId(unlockRow.StageId, out var stageWorld) ||
+                    stageWorld.Id == unlockRow.WorldId;
                 var canTryThisWorld =
+                    unlockRowConsistent &&
                     IsStageClearedForUi(worldInformation, unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked = IsWorldUnlockedForUi(worldInformation, buttonWorldId, canTryThisWorld);
                 var openedLegacy = IsWorldOpenedInLegacyForUi(worldButton.Id);
@@ -844,7 +848,7 @@ namespace Nekoyume.UI
             paymentPopup.ShowCheckPaymentCrystal(
                 States.Instance.CrystalBalance.MajorUnit,
                 cost,
-                L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost.ToCurrencyNotation()),
                 () =>
                 {
                     Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);

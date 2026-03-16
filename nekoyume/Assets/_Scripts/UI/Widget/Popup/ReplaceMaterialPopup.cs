@@ -80,12 +80,12 @@ namespace Nekoyume.UI
                     TableSheets.Instance.PetOptionSheet);
             }
 
-            costText.text = cost.MajorUnit.ToString();
+            costText.text = cost.MajorUnit.ToCurrencyNotation();
 
             var currencyText = L10nManager.Localize("UI_CRYSTAL");
             var usageText = L10nManager.Localize("UI_CRYSTAL_REPLACE_MATERIAL");
             var content = L10nManager.Localize("UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                cost.MajorUnit, currencyText, usageText);
+                cost.MajorUnit.ToCurrencyNotation(), currencyText, usageText);
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
 
