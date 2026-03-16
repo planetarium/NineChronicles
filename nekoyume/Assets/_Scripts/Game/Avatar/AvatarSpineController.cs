@@ -222,11 +222,23 @@ namespace Nekoyume.Game.Avatar
             var weaponSlot = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
             var weaponSlotIndex = weaponSlot == null ? -1 : weaponSlot.Data.Index;
             var weaponSprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
+
             var newWeapon = MakeAttachment(weaponSprite);
-            skeletonAnimation.Skeleton.Data.Skins
-                .ForEach(skin => skin.SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon));
-            skeletonAnimation.Skeleton.FindSlot(WeaponSlot).Attachment = newWeapon;
+            var setupAttachmentName = weaponSlot?.Data?.AttachmentName ?? string.Empty;
+            skeletonAnimation.Skeleton.Data.Skins.ForEach(skin =>
+            {
+                skin.SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon);
+                if (!string.IsNullOrEmpty(setupAttachmentName) && setupAttachmentName != WeaponSlot)
+                {
+                    skin.SetAttachment(weaponSlotIndex, setupAttachmentName, newWeapon);
+                }
+            });
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
+            var slot = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+            if (slot != null)
+            {
+                slot.Attachment = newWeapon;
+            }
             SetVisibleBodyParts(AvatarPartsType.body_back, true);
             SetVisibleBodyParts(AvatarPartsType.body_front, false);
 
