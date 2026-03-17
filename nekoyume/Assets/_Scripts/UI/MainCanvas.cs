@@ -317,8 +317,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ArenaBoard>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<SeasonPassNewPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
@@ -484,6 +482,9 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<MarketExchangePopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
