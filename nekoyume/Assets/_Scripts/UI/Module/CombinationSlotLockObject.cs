@@ -174,7 +174,7 @@ namespace Nekoyume.UI.Model
                 _costType = CostType.NCG;
             }
 
-            costText.text = GetCost().ToString();
+            costText.text = GetCost().ToCurrencyNotation();
         }
     }
 }

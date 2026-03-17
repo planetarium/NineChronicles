@@ -37,9 +37,31 @@ namespace Nekoyume.Game.ScriptableObject
         public string ThorScheduleUrl { get; private set; }
 
         [field: SerializeField]
+        [System.Obsolete("Use EventRewardPopupDataJsonUrlMainNet or EventRewardPopupDataJsonUrlInternal instead")]
         public string EventRewardPopupDataJsonUrl { get; private set; }
 
         [field: SerializeField]
+        public string EventRewardPopupDataJsonUrlMainNet { get; private set; }
+
+        [field: SerializeField]
+        public string EventRewardPopupDataJsonUrlInternal { get; private set; }
+
+        [field: SerializeField]
         public string NcuJsonUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloVersionRegistryUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloMainnetUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloMainnetKrUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloInternalUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CloInternalKrUrl { get; private set; }
     }
 }

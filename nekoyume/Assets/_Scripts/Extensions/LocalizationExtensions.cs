@@ -700,6 +700,7 @@ namespace Nekoyume
                 5 => Palette.GetColor(EnumType.ColorType.TextGrade04),
                 6 => Palette.GetColor(EnumType.ColorType.TextGrade05),
                 7 => Palette.GetColor(EnumType.ColorType.TextGrade06),
+                8 => Palette.GetColor(EnumType.ColorType.TextGrade07),
                 _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }

@@ -163,7 +163,7 @@ namespace Nekoyume.UI
             var crystalReward = rewards.Assets
                 .Where(x => x.Currency.Ticker == "CRYSTAL")
                 .Sum(x => MathematicsExtensions.ConvertToInt32(x.GetQuantityString()));
-            crystalCountText.text = $"{crystalReward:#,0}";
+            crystalCountText.text = crystalReward.ToCurrencyNotation();
 
             foreach (var rune in runes)
             {
@@ -196,7 +196,10 @@ namespace Nekoyume.UI
             {
                 runes[index].Object.SetActive(true);
                 runes[index].Count.text = $"{count:#,0}";
-                runes[index].Icon.sprite = SpriteHelper.GetItemIcon(material.Id);
+                var id = material.Id;
+                runes[index].Icon.sprite = TableSheets.Instance.ItemSheet.TryGetValue(id, out var row)
+                    ? SpriteHelper.GetItemIcon(id, row.ItemSubType, row.Grade)
+                    : SpriteHelper.GetItemIcon(id);
 
                 index++;
             }

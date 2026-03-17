@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Lib9c;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using TMPro;
@@ -119,7 +120,14 @@ namespace Nekoyume.UI.Module.WorldBoss
                 {
                     var (itemId, quantity) = materials[i];
                     material.container.gameObject.SetActive(true);
-                    material.icon.sprite = SpriteHelper.GetItemIcon(itemId);
+                    if (TableSheets.Instance.ItemSheet.TryGetValue(itemId, out var row))
+                    {
+                        material.icon.sprite = SpriteHelper.GetItemIcon(itemId, row.ItemSubType, row.Grade);
+                    }
+                    else
+                    {
+                        material.icon.sprite = SpriteHelper.GetItemIcon(itemId);
+                    }
                     material.text.text = $"{quantity:#,0}";
                 }
                 else

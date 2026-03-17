@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using JetBrains.Annotations;
 using Nekoyume.L10n;
+using Nekoyume.Multiplanetary;
 
 namespace Nekoyume.Game.LiveAsset
 {
@@ -94,6 +95,7 @@ namespace Nekoyume.Game.LiveAsset
         [CanBeNull]
         public ApiClient.ThorSchedule ThorSchedule { get; private set; }
         public EventRewardPopupData EventRewardPopupData { get; private set; }
+        public Action<EventRewardPopupData> OnChangedEventRewardPopupData;
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
@@ -108,10 +110,51 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(InitializeThorSchedule());
             InitializeStakingResource().Forget();
 
+            // Select EventRewardPopupData URL based on network
+            var eventRewardPopupDataUrl = GetEventRewardPopupDataUrl();
             StartCoroutine(RequestManager.instance.GetJson(
-                _endpoint.EventRewardPopupDataJsonUrl,
+                eventRewardPopupDataUrl,
                 value => SetEventRewardPopupData(value).Forget()));
             _observableHasUnreadNcu.SetValueAndForceNotify(HasUnreadNcu);
+        }
+
+        private string GetEventRewardPopupDataUrl()
+        {
+            Multiplanetary.PlanetId? planetId = null;
+            if (Game.instance != null)
+            {
+                planetId = Game.instance.CurrentPlanetId;
+            }
+
+            // If PlanetId is not set yet, use default based on build type
+            if (!planetId.HasValue)
+            {
+#if UNITY_EDITOR
+                // Editor: use internal URL for testing
+                return !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlInternal)
+                    ? _endpoint.EventRewardPopupDataJsonUrlInternal
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#else
+                // Build: use mainnet URL as default
+                return !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlMainNet)
+                    ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#endif
+            }
+
+            // Determine network type and select appropriate URL
+            var isMainNet = PlanetId.IsMainNet(planetId.Value);
+            var url = isMainNet
+                ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                : _endpoint.EventRewardPopupDataJsonUrlInternal;
+
+            // Fallback to deprecated field if new fields are not set
+            if (string.IsNullOrEmpty(url))
+            {
+                url = _endpoint.EventRewardPopupDataJsonUrl;
+            }
+
+            return url;
         }
 
         private IEnumerator InitializeThorSchedule()
@@ -148,26 +191,28 @@ namespace Nekoyume.Game.LiveAsset
 
         public IEnumerator InitializeApplicationCLO()
         {
-            var osKey = string.Empty;
-#if UNITY_ANDROID
-            osKey = "-aos";
-#elif UNITY_IOS
-            osKey = "-ios";
-#endif
-
-            var languageKey = string.Empty;
-            if (GameConfig.IsKoreanBuild)
-            {
-                languageKey = "-kr";
-            }
-
-            var cloEndpoint = $"{_endpoint.CommandLineOptionsJsonUrlPrefix}{Application.version.Replace(".", "-")}{osKey}{languageKey}.json";
-            NcDebug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
+            // 1. version-registry.json으로 환경 결정
+            CloVersionRegistry registry = null;
             yield return StartCoroutine(
                 RequestManager.instance.GetJson(
-                    cloEndpoint,
-                    SetCommandLineOptions));
+                    _endpoint.CloVersionRegistryUrl,
+                    json => registry = JsonSerializer.Deserialize<CloVersionRegistry>(
+                        json, CommandLineOptions.JsonOptions)));
 
+            var env = registry?.GetEnvironment(Application.version) ?? "internal";
+            NcDebug.Log($"[InitializeApplicationCLO] version={Application.version}, env={env}");
+
+            // 2. 환경별 CLO 다운로드
+            var cloUrl = (env, GameConfig.IsKoreanBuild) switch
+            {
+                ("mainnet", true)  => _endpoint.CloMainnetKrUrl,
+                ("mainnet", false) => _endpoint.CloMainnetUrl,
+                (_, true)          => _endpoint.CloInternalKrUrl,
+                _                  => _endpoint.CloInternalUrl,
+            };
+            yield return StartCoroutine(RequestManager.instance.GetJson(cloUrl, SetCommandLineOptions));
+
+            // 3. registry 또는 env CLO 로드 실패 시 기존 default URL로 폴백
             if (CommandLineOptions == null)
             {
                 yield return StartCoroutine(
@@ -316,12 +361,51 @@ namespace Nekoyume.Game.LiveAsset
 
             await UniTask.WhenAll(tasks);
 
+            OnChangedEventRewardPopupData?.Invoke(EventRewardPopupData);
+
             return;
             UniTask<Sprite> GetSpriteTask(EventRewardPopupData.Content content)
             {
                 var uri = $"{_endpoint.ImageRootUrl}/EventRewardPopup/{content.ImageName}.png";
                 return GetTexture(uri).ContinueWith(sprite => content.Image = sprite);
             }
+        }
+
+        public void SetEventRewardPopupData(Multiplanetary.PlanetId? planetId)
+        {
+            if (planetId == null)
+            {
+#if UNITY_EDITOR
+                // Editor: use internal URL for testing
+                var url = !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlInternal)
+                    ? _endpoint.EventRewardPopupDataJsonUrlInternal
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#else
+                // Build: use mainnet URL as default
+                var url = !string.IsNullOrEmpty(_endpoint.EventRewardPopupDataJsonUrlMainNet)
+                    ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                    : _endpoint.EventRewardPopupDataJsonUrl;
+#endif
+                StartCoroutine(RequestManager.instance.GetJson(
+                    url,
+                    value => SetEventRewardPopupData(value).Forget()));
+                return;
+            }
+
+            var isMainNet = Multiplanetary.PlanetId.IsMainNet(planetId.Value);
+            var url2 = isMainNet
+                ? _endpoint.EventRewardPopupDataJsonUrlMainNet
+                : _endpoint.EventRewardPopupDataJsonUrlInternal;
+
+            // Fallback to deprecated field if new fields are not set
+            if (string.IsNullOrEmpty(url2))
+            {
+                url2 = _endpoint.EventRewardPopupDataJsonUrl;
+            }
+
+            StartCoroutine(RequestManager.instance.GetJson(
+                url2,
+                value => SetEventRewardPopupData(value).Forget()));
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)

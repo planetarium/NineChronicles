@@ -37,6 +37,7 @@ namespace Nekoyume
             CollectionState collectionState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
+            long shatterStrikeMaxDamage,
             out StageSimulator outSimulator,
             out AvatarState outAvatarForRendering)
         {
@@ -70,7 +71,7 @@ namespace Nekoyume
                     sheets.BuffLimitSheet,
                     sheets.BuffLinkSheet,
                     true,
-                    States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+                    shatterStrikeMaxDamage);
                 simulator.Simulate();
                 if (simulator.Log.IsClear)
                 {
@@ -96,8 +97,22 @@ namespace Nekoyume
                 foreach (var (id, count) in simulator.ItemMap)
                 {
                     model.AddReward(new CountableItem(
-                        ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[id]),
+                        ItemFactory.CreateMaterial(sheets.MaterialItemSheet[id]),
                         count));
+                }
+
+                foreach (var fav in simulator.FungibleAssetRewards)
+                {
+                    var ticker = fav.Key;
+                    var amount = fav.Value;
+                    if (amount <= 0)
+                    {
+                        continue;
+                    }
+
+                    var currency = Lib9c.Currencies.GetMinterlessCurrency(ticker);
+                    var fungibleAsset = currency * amount;
+                    model.AddReward(new CountableItem(fungibleAsset, amount, true));
                 }
             }
 

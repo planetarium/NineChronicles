@@ -36,11 +36,14 @@ namespace Nekoyume.Game.Avatar
         private DG.Tweening.Sequence _doFadeSequence;
         private GameObject _cachedWeaponVFX;
         private GameObject _cachedAuraVFX;
+        private GameObject _cachedSecondaryAuraVFX;
         private readonly List<Tweener> _fadeTweener = new();
         private bool _isActiveFullCostume;
         private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
         private GameObject _prevAuraPrefab;
+        private GameObject _prevSecondaryAuraPrefab;
         private GameObject _prevWeaponObj;
+        private GameObject _secondaryAuraRoot;
 
         public BoxCollider Collider => _isActiveFullCostume ? fullCostumeCollider : bodyCollider;
 
@@ -219,11 +222,23 @@ namespace Nekoyume.Game.Avatar
             var weaponSlot = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
             var weaponSlotIndex = weaponSlot == null ? -1 : weaponSlot.Data.Index;
             var weaponSprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
+
             var newWeapon = MakeAttachment(weaponSprite);
-            skeletonAnimation.Skeleton.Data.Skins
-                .ForEach(skin => skin.SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon));
-            skeletonAnimation.Skeleton.FindSlot(WeaponSlot).Attachment = newWeapon;
+            var setupAttachmentName = weaponSlot?.Data?.AttachmentName ?? string.Empty;
+            skeletonAnimation.Skeleton.Data.Skins.ForEach(skin =>
+            {
+                skin.SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon);
+                if (!string.IsNullOrEmpty(setupAttachmentName) && setupAttachmentName != WeaponSlot)
+                {
+                    skin.SetAttachment(weaponSlotIndex, setupAttachmentName, newWeapon);
+                }
+            });
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
+            var slot = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+            if (slot != null)
+            {
+                slot.Attachment = newWeapon;
+            }
             SetVisibleBodyParts(AvatarPartsType.body_back, true);
             SetVisibleBodyParts(AvatarPartsType.body_front, false);
 
@@ -289,6 +304,40 @@ namespace Nekoyume.Game.Avatar
             _cachedAuraVFX = vfx;
         }
 
+        public void UpdateSecondaryAura(GameObject prefab)
+        {
+            if (_prevSecondaryAuraPrefab == prefab && _cachedSecondaryAuraVFX != null)
+            {
+                return;
+            }
+
+            _prevSecondaryAuraPrefab = prefab;
+            Destroy(_cachedSecondaryAuraVFX);
+            _cachedSecondaryAuraVFX = null;
+
+            if (prefab == null)
+            {
+                if (_secondaryAuraRoot != null)
+                {
+                    _secondaryAuraRoot.SetActive(false);
+                }
+
+                return;
+            }
+
+            if (_secondaryAuraRoot == null)
+            {
+                _secondaryAuraRoot = new GameObject("SecondaryAuraPos");
+                _secondaryAuraRoot.transform.SetParent(transform);
+                _secondaryAuraRoot.transform.localPosition = Vector3.zero;
+            }
+
+            _secondaryAuraRoot.SetActive(true);
+            var vfx = Instantiate(prefab, _secondaryAuraRoot.transform);
+            vfx.transform.localPosition = Vector3.zero;
+            _cachedSecondaryAuraVFX = vfx;
+        }
+
         /// <summary>
         /// Updates the avatar's full costume by loading the specified SkeletonDataAsset
         /// and refreshing the visual elements accordingly.
@@ -347,6 +396,11 @@ namespace Nekoyume.Game.Avatar
             if (index == 10255000)
             {
                 index = 10235001;
+            }
+
+            if (index >= 10280000 && index <= 10284000)
+            {
+                index -= 10000;
             }
 
             var s = SplitIndex(index);

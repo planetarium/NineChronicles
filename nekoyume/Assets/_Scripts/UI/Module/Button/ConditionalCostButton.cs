@@ -3,6 +3,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,6 +49,20 @@ namespace Nekoyume.UI.Module
         private List<GameObject> costParents = null;
 
         private readonly Dictionary<CostType, long> _costMap = new();
+        private static CostIconDataScriptableObject _costIconData;
+
+        private static CostIconDataScriptableObject CostIconData
+        {
+            get
+            {
+                if (_costIconData is null)
+                {
+                    _costIconData = Resources.Load<CostIconDataScriptableObject>("ScriptableObject/CostIconData");
+                }
+
+                return _costIconData;
+            }
+        }
 
         public long GetCost(CostType type) =>
             _costMap.TryGetValue(type, out var cost)
@@ -97,6 +112,8 @@ namespace Nekoyume.UI.Module
         {
             base.UpdateObjects();
 
+            EnsureCostObjectsExistForTypes(_costMap.Keys);
+
             foreach (var costObject in costObjects)
             {
                 var exist = _costMap.ContainsKey(costObject.type);
@@ -140,6 +157,105 @@ namespace Nekoyume.UI.Module
             });
         }
 
+        private void EnsureCostObjectsExistForTypes(IEnumerable<CostType> types)
+        {
+            if (types is null || costObjects is null || costObjects.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var type in types)
+            {
+                EnsureCostObjectExists(type);
+            }
+        }
+
+        private void EnsureCostObjectExists(CostType type)
+        {
+            if (costObjects is null || costObjects.Count == 0)
+            {
+                return;
+            }
+
+            if (costObjects.Any(o => o.type == type))
+            {
+                return;
+            }
+
+            var template = costObjects[0];
+            if (template.costTexts is null || template.costTexts.Count == 0)
+            {
+                return;
+            }
+
+            var iconData = CostIconData;
+            var iconSprite = iconData != null ? iconData.GetIcon(type) : null;
+            var newTexts = new List<CostText>(template.costTexts.Count);
+
+            foreach (var t in template.costTexts)
+            {
+                if (t.parent is null)
+                {
+                    continue;
+                }
+
+                var parentTransform = t.parent.transform.parent;
+                if (parentTransform is null)
+                {
+                    continue;
+                }
+
+                var clonedParent = Instantiate(t.parent, parentTransform);
+                clonedParent.name = type.ToString();
+                clonedParent.SetActive(false);
+
+                if (iconSprite != null)
+                {
+                    var iconImage =
+                        clonedParent.transform.Find("Icon")?.GetComponentInChildren<Image>(true)
+                        ?? clonedParent.GetComponentInChildren<Image>(true);
+
+                    if (iconImage != null)
+                    {
+                        iconImage.overrideSprite = iconSprite;
+                        iconImage.sprite = iconSprite;
+                    }
+                }
+
+                var tmp = clonedParent.GetComponentInChildren<TMP_Text>(true);
+                if (tmp is null)
+                {
+                    Destroy(clonedParent);
+                    continue;
+                }
+
+                newTexts.Add(new CostText
+                {
+                    parent = clonedParent,
+                    text = tmp,
+                });
+            }
+
+            if (newTexts.Count == template.costTexts.Count)
+            {
+                costObjects.Add(new CostObject
+                {
+                    type = type,
+                    costTexts = newTexts,
+                });
+            }
+            else
+            {
+                foreach (var ct in newTexts)
+                {
+                    if (ct.parent != null)
+                    {
+                        Destroy(ct.parent);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Checks if costs are enough to pay for current avatar.
         /// </summary>
@@ -160,6 +276,7 @@ namespace Nekoyume.UI.Module
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
                     case CostType.ApPotion:
+                    case CostType.CatalystPotion:
                     case CostType.SilverDust:
                     case CostType.GoldDust:
                     case CostType.RubyDust:
@@ -167,7 +284,7 @@ namespace Nekoyume.UI.Module
                     case CostType.SapphireDust:
                         break;
                     default:
-                        return CostType.None;
+                        continue;
                 }
 
                 if (!CheckCostOfType(type, cost))
@@ -209,6 +326,7 @@ namespace Nekoyume.UI.Module
                     return count >= cost;
                 case CostType.Hourglass:
                 case CostType.ApPotion:
+                case CostType.CatalystPotion:
                     var blockIndex = Game.Game.instance.Agent.BlockIndex;
                     inventory = States.Instance.CurrentAvatarState?.inventory;
                     if (inventory == null)
@@ -253,6 +371,9 @@ namespace Nekoyume.UI.Module
                         break;
                     case CostType.ApPotion:
                         paymentPopup.ShowLackApPotion(cost);
+                        break;
+                    case CostType.CatalystPotion:
+                        paymentPopup.ShowLackCatalystPotion(cost);
                         break;
                     case CostType.SilverDust:
                     case CostType.GoldDust:

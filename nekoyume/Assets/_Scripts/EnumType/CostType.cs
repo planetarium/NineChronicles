@@ -17,4 +17,5 @@ public enum CostType
     SapphireDust = 600206,
     SilverDust = 800201,
     ApPotion = 500000,
+    CatalystPotion = 500001,
 }

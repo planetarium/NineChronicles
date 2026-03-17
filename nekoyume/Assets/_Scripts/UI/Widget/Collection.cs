@@ -58,6 +58,7 @@ namespace Nekoyume.UI
 
         private enum SortType
         {
+            StatOperationType,
             Id,
             Grade,
             LevelOrQuantity,
@@ -97,7 +98,7 @@ namespace Nekoyume.UI
         private UIFlip sortFlip;
 
         [SerializeField]
-        private SortType currentSortType = SortType.Id;
+        private SortType currentSortType = SortType.StatOperationType;
 
         private bool _isSortDescending = true;
 
@@ -146,6 +147,9 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            // 기본 정렬: StatOperationType(Percentage 우선)
+            currentSortType = SortType.StatOperationType;
 
             backButton.onClick.AddListener(() =>
             {
@@ -482,6 +486,10 @@ namespace Nekoyume.UI
 
             sortDropdown.AddOptions(options);
 
+            // 현재 설정된 정렬 타입이 드롭다운에 반영되도록 설정
+            sortDropdown.SetValueWithoutNotify((int)currentSortType);
+            sortDropdown.RefreshShownValue();
+
             sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
         }
 
@@ -489,6 +497,11 @@ namespace Nekoyume.UI
         {
             switch (sortType)
             {
+                case SortType.StatOperationType:
+                {
+                    // “스탯 효과”
+                    return L10nManager.Localize("UI_STATS_BONUS");
+                }
                 case SortType.Id:
                 {
                     return L10nManager.Localize("UI_ID");
@@ -580,7 +593,7 @@ namespace Nekoyume.UI
             {
                 return a.Active ? 1 : -1;
             }
-            
+
             // 4. 활성화 된 것이 나중에 나오도록 정렬
 
             // 설정된 타입별로 정렬
@@ -590,7 +603,7 @@ namespace Nekoyume.UI
                 return sortByTypeValue;
             }
 
-            // 다른 조건이 같다면 ID로 비교
+            // 최종 타이브레이크: ID 내림차순(결정적 정렬)
             if (a.Row.Id != b.Row.Id)
             {
                 return a.Row.Id > b.Row.Id ? -1 : 1;
@@ -599,11 +612,100 @@ namespace Nekoyume.UI
             return 0;
         }
 
+        private static long GetStatModifierValueSum(
+            CollectionModel model,
+            StatModifier.OperationType operationType)
+        {
+            if (model?.Row?.StatModifiers == null || model.Row.StatModifiers.Count == 0)
+            {
+                return 0;
+            }
+
+            long sum = 0;
+            foreach (var modifier in model.Row.StatModifiers)
+            {
+                if (modifier is null || modifier.Operation != operationType)
+                {
+                    continue;
+                }
+
+                sum += modifier.Value;
+            }
+
+            return sum;
+        }
+
+        private static bool HasStatModifierOperation(
+            CollectionModel model,
+            StatModifier.OperationType operationType)
+        {
+            if (model?.Row?.StatModifiers == null || model.Row.StatModifiers.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (var modifier in model.Row.StatModifiers)
+            {
+                if (modifier is not null && modifier.Operation == operationType)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private int SortByType(CollectionModel a, CollectionModel b, SortType type)
         {
             var sortTypeWeight = _isSortDescending ? 1 : -1;
             switch (type)
             {
+                case SortType.StatOperationType:
+                {
+                    // 1) Percentage 그룹(Percentage가 하나라도 있는 항목) 우선
+                    // 2) 그룹 내: 해당 타입의 Value 합이 큰 순서
+                    //    - Percentage 그룹: Percentage 합 → (동률이면) Add 합
+                    //    - Add 그룹: Add 합 → (동률이면) Percentage 합
+                    var aHasPercentage = HasStatModifierOperation(a, StatModifier.OperationType.Percentage);
+                    var bHasPercentage = HasStatModifierOperation(b, StatModifier.OperationType.Percentage);
+                    if (aHasPercentage != bHasPercentage)
+                    {
+                        var groupCompare = aHasPercentage ? -1 : 1;
+                        return groupCompare * sortTypeWeight;
+                    }
+
+                    var aPercentageSum = GetStatModifierValueSum(a, StatModifier.OperationType.Percentage);
+                    var bPercentageSum = GetStatModifierValueSum(b, StatModifier.OperationType.Percentage);
+                    var aAddSum = GetStatModifierValueSum(a, StatModifier.OperationType.Add);
+                    var bAddSum = GetStatModifierValueSum(b, StatModifier.OperationType.Add);
+
+                    if (aHasPercentage)
+                    {
+                        if (aPercentageSum != bPercentageSum)
+                        {
+                            return bPercentageSum.CompareTo(aPercentageSum) * sortTypeWeight;
+                        }
+
+                        if (aAddSum != bAddSum)
+                        {
+                            return bAddSum.CompareTo(aAddSum) * sortTypeWeight;
+                        }
+                    }
+                    else
+                    {
+                        if (aAddSum != bAddSum)
+                        {
+                            return bAddSum.CompareTo(aAddSum) * sortTypeWeight;
+                        }
+
+                        if (aPercentageSum != bPercentageSum)
+                        {
+                            return bPercentageSum.CompareTo(aPercentageSum) * sortTypeWeight;
+                        }
+                    }
+
+                    return 0;
+                }
                 case SortType.Id:
                 {
                     return (b.Row.Id - a.Row.Id) * sortTypeWeight;
@@ -714,24 +816,40 @@ namespace Nekoyume.UI
 
         private bool ApplyGradeFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+            if (itemFilterOptions.Grade == ItemFilterPopupBase.GradeFilterOption.All)
             {
                 return true;
             }
 
-            var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
-                hasFlag |= itemFilterOptions.Grade.HasFlag(gradeFlag);
-
-                if (hasFlag)
+                // 실제 등급 값(1..8)을 기준으로 필터 옵션을 판정한다.
+                var grade = (Nekoyume.Model.EnumType.Grade)material.Grade;
+                var option = GradeToFilterOption(grade);
+                if (option != ItemFilterPopupBase.GradeFilterOption.All &&
+                    itemFilterOptions.Grade.HasFlag(option))
                 {
-                    break;
+                    return true;
                 }
             }
 
-            return hasFlag;
+            return false;
+        }
+
+        private static ItemFilterPopupBase.GradeFilterOption GradeToFilterOption(Nekoyume.Model.EnumType.Grade grade)
+        {
+            return grade switch
+            {
+                Nekoyume.Model.EnumType.Grade.Normal => ItemFilterPopupBase.GradeFilterOption.BelowEpic,
+                Nekoyume.Model.EnumType.Grade.Rare => ItemFilterPopupBase.GradeFilterOption.BelowEpic,
+                Nekoyume.Model.EnumType.Grade.Epic => ItemFilterPopupBase.GradeFilterOption.Epic,
+                Nekoyume.Model.EnumType.Grade.Unique => ItemFilterPopupBase.GradeFilterOption.Unique,
+                Nekoyume.Model.EnumType.Grade.Legendary => ItemFilterPopupBase.GradeFilterOption.Legendary,
+                Nekoyume.Model.EnumType.Grade.Divinity => ItemFilterPopupBase.GradeFilterOption.Divinity,
+                Nekoyume.Model.EnumType.Grade.Mythic => ItemFilterPopupBase.GradeFilterOption.Mythic,
+                Nekoyume.Model.EnumType.Grade.Transcendent => ItemFilterPopupBase.GradeFilterOption.Transcendent,
+                _ => ItemFilterPopupBase.GradeFilterOption.All,
+            };
         }
 
         private bool ApplyElementalFilterOption(CollectionModel model)

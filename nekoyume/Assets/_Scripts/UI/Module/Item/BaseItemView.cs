@@ -15,7 +15,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-
 namespace Nekoyume
 {
     using Lib9c;
@@ -320,7 +319,16 @@ namespace Nekoyume
             gameObject.SetActive(true);
             ClearItem();
             AddSimpleTooltip(itemId, amount);
-            ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId);
+
+            try
+            {
+                var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
+                ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId, row.ItemSubType, row.Grade);
+            }
+            catch
+            {
+                ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId);
+            }
             CountText.text = $"x{amount}";
             try
             {

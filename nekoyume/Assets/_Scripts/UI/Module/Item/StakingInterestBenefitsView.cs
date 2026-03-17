@@ -1,3 +1,4 @@
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using TMPro;
@@ -19,7 +20,9 @@ namespace Nekoyume.UI.Module
 
         public void Set(int runeId, int count)
         {
-            iconImage.sprite = SpriteHelper.GetItemIcon(runeId);
+            iconImage.sprite = TableSheets.Instance.ItemSheet.TryGetValue(runeId, out var row)
+                ? SpriteHelper.GetItemIcon(runeId, row.ItemSubType, row.Grade)
+                : SpriteHelper.GetItemIcon(runeId);
             countText.text = $"+{count}";
         }
 

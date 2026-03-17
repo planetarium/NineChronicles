@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Nekoyume.UI
 {
     public struct ItemFilterOptions
     {
-        public ItemFilterPopupBase.Grade Grade;
+        public ItemFilterPopupBase.GradeFilterOption Grade;
         public ItemFilterPopupBase.Elemental Elemental;
         public ItemFilterPopupBase.ItemType ItemType;
         public ItemFilterPopupBase.UpgradeLevel UpgradeLevel;
@@ -19,7 +20,7 @@ namespace Nekoyume.UI
         public string SearchText;
 
         public bool IsNeedFilter =>
-            Grade != ItemFilterPopupBase.Grade.All ||
+            Grade != ItemFilterPopupBase.GradeFilterOption.All ||
             Elemental != ItemFilterPopupBase.Elemental.All ||
             ItemType != ItemFilterPopupBase.ItemType.All ||
             UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
@@ -32,20 +33,22 @@ namespace Nekoyume.UI
 #region Internal Type
 
         /// <summary>
-        /// 아무것도 선택하지 않은 상태가 필터링을 하지 않아 전체 아이템을 보여주는 것으로 간주한다.
+        /// 등급 필터 옵션(UI 토글/프리팹과 분리된, 실제 필터링에 사용되는 타입)
         /// </summary>
         [Flags]
-        public enum Grade
+        public enum GradeFilterOption
         {
             All = 0,
-            Normal = 1 << 0,
-            Rare = 1 << 1,
-            Epic = 1 << 2,
-            Unique = 1 << 3,
-            Legendary = 1 << 4,
-            Divinity = 1 << 5,
-            Mythic = 1 << 6,
+            BelowEpic = 1 << 0, // Normal + Rare
+            Epic = 1 << 1,
+            Unique = 1 << 2,
+            Legendary = 1 << 3,
+            Divinity = 1 << 4,
+            Mythic = 1 << 5,
+            Transcendent = 1 << 6,
         }
+
+        private const string BelowEpicGradeKey = "UI_GRADE_BELOW_EPIC";
 
         [Flags]
         public enum Elemental
@@ -130,10 +133,13 @@ namespace Nekoyume.UI
         [Serializable]
         private class GradeToggle : ItemToggleType
         {
-            public Grade grade;
+            public GradeFilterOption option;
 
-            public override bool IsAll => grade == Grade.All;
-            public override string GetOptionName => grade.ToString();
+            public override bool IsAll => option == GradeFilterOption.All;
+            public override string GetOptionName =>
+                option == GradeFilterOption.BelowEpic
+                    ? L10nManager.Localize(BelowEpicGradeKey)
+                    : option.ToString();
         }
 
         [Serializable]
@@ -160,7 +166,18 @@ namespace Nekoyume.UI
             public UpgradeLevel upgradeLevel;
 
             public override bool IsAll => upgradeLevel == UpgradeLevel.All;
-            public override string GetOptionName => upgradeLevel.ToString();
+            public override string GetOptionName => upgradeLevel switch
+            {
+                UpgradeLevel.All => "All",
+                UpgradeLevel.Level0 => "+0",
+                UpgradeLevel.Level1 => "+1",
+                UpgradeLevel.Level2 => "+2",
+                UpgradeLevel.Level3 => "+3",
+                UpgradeLevel.Level4 => "+4",
+                UpgradeLevel.Level5 => "+5",
+                UpgradeLevel.Level6More => "+6 more",
+                _ => upgradeLevel.ToString()
+            };
         }
 
         [Serializable]
@@ -218,6 +235,10 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            // 신규 등급이 enum에 추가되었는데 프리팹 토글이 누락된 경우(예: Transcendent),
+            // 런타임에서 최소한의 보정(토글 복제)으로 크래시를 방지합니다.
+            EnsureGradeToggles();
+            ValidateGradeTogglesOrThrow();
             InitializeToggleGroup();
 
             CloseWidget = () =>
@@ -236,6 +257,97 @@ namespace Nekoyume.UI
 
 #endregion Popup
 
+        /// <summary>
+        /// grade 토글 목록이 enum 정의와 일치하는지 검증합니다.
+        /// 누락되면 자동 보정하지 않고 즉시 예외를 던져(빠르게 발견) 프리팹 수정으로 해결하도록 합니다.
+        /// </summary>
+        private void ValidateGradeTogglesOrThrow()
+        {
+            if (gradeToggles is null || gradeToggles.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    $"{GetType().Name}: gradeToggles is null or empty. " +
+                    "Please update the prefab to include grade toggles for all grades.");
+            }
+
+            foreach (var t in gradeToggles)
+            {
+                if (t is null || t.toggle == null)
+                {
+                    throw new InvalidOperationException(
+                        $"{GetType().Name}: gradeToggles contains a null Toggle reference. " +
+                        "Please fix the prefab toggle bindings.");
+                }
+            }
+
+            // Flags enum이지만, 현재는 power-of-two 값들만 정의되어 있으므로 정의된 값들을 모두 요구한다.
+            var definedOptions = (GradeFilterOption[])Enum.GetValues(typeof(GradeFilterOption));
+            foreach (var opt in definedOptions)
+            {
+                if (opt == GradeFilterOption.All)
+                {
+                    continue;
+                }
+
+                if (!gradeToggles.Exists(x => x.option == opt))
+                {
+                    throw new InvalidOperationException(
+                        $"{GetType().Name}: missing grade toggle for '{opt}'. " +
+                        "Please update the prefab to include this grade toggle.");
+                }
+            }
+        }
+
+        private void EnsureGradeToggles()
+        {
+            if (gradeToggles is null || gradeToggles.Count == 0)
+            {
+                return;
+            }
+
+            // Template: 가장 높은 등급 토글(=보통 마지막)을 복제해 새 토글을 만든다.
+            GradeToggle template = null;
+            foreach (var t in gradeToggles)
+            {
+                if (t is null || t.toggle == null) continue;
+                if (t.option == GradeFilterOption.All) continue;
+                if (template == null || (int)t.option > (int)template.option) template = t;
+            }
+
+            if (template == null || template.toggle == null)
+            {
+                return;
+            }
+
+            var definedOptions = (GradeFilterOption[])Enum.GetValues(typeof(GradeFilterOption));
+            var createdCount = 0;
+            foreach (var opt in definedOptions)
+            {
+                if (opt == GradeFilterOption.All) continue;
+                if (gradeToggles.Exists(x => x != null && x.option == opt)) continue;
+
+                // Clone template toggle GameObject under same parent so layout works.
+                var clonedGo = Instantiate(template.toggle.gameObject, template.toggle.transform.parent);
+                clonedGo.name = $"{template.toggle.gameObject.name}_{opt}";
+                var clonedToggle = clonedGo.GetComponent<Toggle>();
+                if (clonedToggle == null)
+                {
+                    Destroy(clonedGo);
+                    continue;
+                }
+
+                // Ensure it's off by default (BindToggleEvent에서 All 토글 로직이 다시 정리함).
+                clonedToggle.isOn = false;
+
+                gradeToggles.Add(new GradeToggle
+                {
+                    toggle = clonedToggle,
+                    option = opt,
+                });
+                createdCount++;
+            }
+        }
+
         private void InitializeToggleGroup()
         {
             BindToggleEvent(gradeToggles);
@@ -250,11 +362,22 @@ namespace Nekoyume.UI
         {
             foreach (var item in toggles)
             {
-                item.toggle.name = item.GetOptionName;
-                var textComponent = item.toggle.GetComponentInChildren<Text>();
-                if (textComponent != null)
+                var optionName = item.GetOptionName;
+                item.toggle.name = optionName;
+
+                // 일부 프리팹은 UGUI Text 대신 TMP를 사용합니다.
+                // 템플릿 토글을 복제해서 누락 등급을 자동 생성할 때(예: Transcendent),
+                // TMP 라벨을 갱신하지 않으면 텍스트가 그대로 복제되어 "Mythic이 2개"처럼 보일 수 있습니다.
+                var uguiText = item.toggle.GetComponentInChildren<Text>(true);
+                if (uguiText != null)
                 {
-                    textComponent.text = item.GetOptionName;
+                    uguiText.text = optionName;
+                }
+
+                var tmpText = item.toggle.GetComponentInChildren<TMP_Text>(true);
+                if (tmpText != null)
+                {
+                    tmpText.text = optionName;
                 }
 
                 if (item.IsAll)
@@ -375,7 +498,10 @@ namespace Nekoyume.UI
 
             foreach (var gradeToggle in gradeToggles)
             {
-                itemFilterOptionType.Grade |= gradeToggle.toggle.isOn ? gradeToggle.grade : Grade.All;
+                if (gradeToggle.toggle.isOn && gradeToggle.option != GradeFilterOption.All)
+                {
+                    itemFilterOptionType.Grade |= gradeToggle.option;
+                }
             }
 
             foreach (var elementalToggle in elementalToggles)
@@ -421,11 +547,13 @@ namespace Nekoyume.UI
 
         private void SetTogglesFromFilterOption()
         {
-            if (_itemFilterOptions.Grade != Grade.All)
+            if (_itemFilterOptions.Grade != GradeFilterOption.All)
             {
                 foreach (var gradeToggle in gradeToggles)
                 {
-                    gradeToggle.toggle.isOn = _itemFilterOptions.Grade.HasFlag(gradeToggle.grade);
+                    gradeToggle.toggle.isOn =
+                        gradeToggle.option != GradeFilterOption.All &&
+                        _itemFilterOptions.Grade.HasFlag(gradeToggle.option);
                 }
             }
             else
@@ -521,7 +649,7 @@ namespace Nekoyume.UI
                     return ItemType.All;
             }
         }
-        
+
         public static WithSkill ItemSubTypeToWithSkill(bool skillContains)
         {
             return skillContains ? WithSkill.With : WithSkill.None;

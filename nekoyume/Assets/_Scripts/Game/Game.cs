@@ -118,6 +118,7 @@ namespace Nekoyume.Game
                 NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
                 _currentPlanetId = value;
                 LiveAssetManager.instance.SetThorSchedule(value);
+                LiveAssetManager.instance.SetEventRewardPopupData(value);
             }
         }
 
@@ -1494,7 +1495,18 @@ namespace Nekoyume.Game
 
         public bool CheckRequiredUpdate()
         {
-            if (!_commandLineOptions.RequiredUpdate)
+            var needsUpdate = _commandLineOptions.RequiredUpdate;
+
+            if (!needsUpdate && !string.IsNullOrEmpty(_commandLineOptions.MinRequiredVersion))
+            {
+                if (System.Version.TryParse(Application.version, out var current) &&
+                    System.Version.TryParse(_commandLineOptions.MinRequiredVersion, out var minRequired))
+                {
+                    needsUpdate = current < minRequired;
+                }
+            }
+
+            if (!needsUpdate)
             {
                 return false;
             }

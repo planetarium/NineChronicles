@@ -91,11 +91,15 @@ namespace Nekoyume.UI.Module
                     iconName = string.Format(IconNameFormat, $"{(int)model.Type:000}");
                     break;
                 case ShortcutHelper.PlaceType.MobileShop:
+                case ShortcutHelper.PlaceType.Collection:
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.PCShop}");
                     break;
                 case ShortcutHelper.PlaceType.Upgrade:
                 case ShortcutHelper.PlaceType.Grinding:
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.Craft}");
+                    break;
+                case ShortcutHelper.PlaceType.PatrolReward:
+                    iconName = "icon_Navigation_015";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

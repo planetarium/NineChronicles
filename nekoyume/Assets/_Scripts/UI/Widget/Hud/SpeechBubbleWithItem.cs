@@ -4,6 +4,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume;
 
 namespace Nekoyume.UI
 {
@@ -54,7 +55,7 @@ namespace Nekoyume.UI
         public void SetCrystal(long crystal)
         {
             Item = null;
-            crystalView.amountText.text = crystal.ToString();
+            crystalView.amountText.text = crystal.ToCurrencyNotation();
 
             _showItemView = false;
             _showNCGView = false;
