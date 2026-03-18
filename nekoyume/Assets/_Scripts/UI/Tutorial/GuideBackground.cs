@@ -56,7 +56,7 @@ namespace Nekoyume.UI
                 data.buttonRaycastPadding,
                 data.targetPositionOffset,
                 data.targetSizeOffset);
-            SetMaskSize(data.target);
+            SetMaskSize(data.target, data.targetSizeOffset);
 
             mask.rectTransform.position = data.target ? data.target.position : Vector3.zero;
             mask.alpha = data.isEnableMask ? alpha : 0.0f;
@@ -136,7 +136,7 @@ namespace Nekoyume.UI
                 .OnComplete(() => callback?.Invoke());
         }
 
-        private void SetMaskSize(RectTransform target)
+        private void SetMaskSize(RectTransform target, Vector2 targetSizeOffset = default)
         {
             mask.rectTransform.sizeDelta = _cachedMaskSize;
 
@@ -145,9 +145,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var effectiveSize = target.sizeDelta + targetSizeOffset;
             var maskSize = mask.rectTransform.sizeDelta;
-            maskSize.x = Mathf.Max(maskSize.x, target.sizeDelta.x * 1.5f);
-            maskSize.y = Mathf.Max(maskSize.y, target.sizeDelta.y * 1.5f);
+            maskSize.x = Mathf.Max(maskSize.x, effectiveSize.x * 1.5f);
+            maskSize.y = Mathf.Max(maskSize.y, effectiveSize.y * 1.5f);
             mask.rectTransform.sizeDelta = maskSize;
 
             var menu = target.GetComponent<MainMenu>();
