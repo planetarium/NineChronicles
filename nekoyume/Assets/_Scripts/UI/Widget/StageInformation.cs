@@ -170,7 +170,7 @@ namespace Nekoyume.UI
                     States.Instance.CurrentAvatarState?.level ?? 1);
             }).AddTo(_disposablesOnShow);
 
-            closeButtonText.text = L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}");
+            closeButtonText.text = worldRow.GetLocalizedName();
 
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {

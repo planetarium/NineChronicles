@@ -683,7 +683,7 @@ namespace Nekoyume.Helper
                     StageType.HackAndSlash,
                     worldMap.SharedViewModel.SelectedWorldId.Value,
                     worldMap.SharedViewModel.SelectedStageId.Value,
-                    $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {worldMap.SharedViewModel.SelectedStageId.Value}",
+                    $"{L10nManager.LocalizeWorldName(worldId)} {worldMap.SharedViewModel.SelectedStageId.Value}",
                     true,
                     showByGuideQuest
                 );
