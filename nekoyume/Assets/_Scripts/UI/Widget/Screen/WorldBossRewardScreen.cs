@@ -163,7 +163,7 @@ namespace Nekoyume.UI
             var crystalReward = rewards.Assets
                 .Where(x => x.Currency.Ticker == "CRYSTAL")
                 .Sum(x => MathematicsExtensions.ConvertToInt32(x.GetQuantityString()));
-            crystalCountText.text = $"{crystalReward:#,0}";
+            crystalCountText.text = crystalReward.ToCurrencyNotation();
 
             foreach (var rune in runes)
             {

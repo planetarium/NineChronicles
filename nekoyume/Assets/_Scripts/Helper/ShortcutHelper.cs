@@ -12,6 +12,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -44,6 +45,7 @@ namespace Nekoyume.Helper
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade, // Upgrade icon is same as Craft.
             Collection = 19,
+            PatrolReward = 20,
         }
 
         #region AcquisitionPlace
@@ -67,6 +69,11 @@ namespace Nekoyume.Helper
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
                 }
+            }
+
+            if (itemId == (int)CostType.CatalystPotion)
+            {
+                acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
             }
 
             switch (itemSubType)
@@ -193,6 +200,22 @@ namespace Nekoyume.Helper
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
                 }
+            }
+
+            // If can get this item from patrol reward...
+            try
+            {
+                var level = States.Instance.CurrentAvatarState.level;
+                var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                var patrolRow = TableSheets.Instance.PatrolRewardSheet.FindByLevel(level, blockIndex);
+                if (patrolRow.Rewards.Any(r => r.ItemId == itemId))
+                {
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PatrolReward));
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                // No active patrol reward policy
             }
 
             return acquisitionPlaceList;
@@ -450,6 +473,18 @@ namespace Nekoyume.Helper
                     shortcutAction = () => ShortcutActionForEventDungeon(caller);
                     guideText = L10nManager.Localize("UI_EVENT_DUNGEON");
                     break;
+                case PlaceType.PatrolReward:
+                    shortcutAction = () =>
+                    {
+                        if (caller is ItemTooltip)
+                        {
+                            caller.Close();
+                        }
+
+                        Widget.Find<PatrolRewardPopup>().Show();
+                    };
+                    guideText = L10nManager.Localize("UI_PATROL_REWARD");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -648,7 +683,7 @@ namespace Nekoyume.Helper
                     StageType.HackAndSlash,
                     worldMap.SharedViewModel.SelectedWorldId.Value,
                     worldMap.SharedViewModel.SelectedStageId.Value,
-                    $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {worldMap.SharedViewModel.SelectedStageId.Value}",
+                    $"{L10nManager.LocalizeWorldName(worldId)} {worldMap.SharedViewModel.SelectedStageId.Value}",
                     true,
                     showByGuideQuest
                 );
@@ -853,6 +888,7 @@ namespace Nekoyume.Helper
                     );
                 case PlaceType.Quest:
                 case PlaceType.Staking:
+                case PlaceType.PatrolReward:
                 case PlaceType.Craft:
                 case PlaceType.Upgrade:
                 case PlaceType.Summon:
@@ -897,6 +933,7 @@ namespace Nekoyume.Helper
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive()
                     && !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,
+                PlaceType.PatrolReward => true,
                 PlaceType.Craft => true,
                 PlaceType.Upgrade => true,
                 PlaceType.Summon => true,

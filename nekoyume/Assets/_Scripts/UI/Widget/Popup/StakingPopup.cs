@@ -582,41 +582,77 @@ namespace Nekoyume.UI
             regularFixedSheet.TryGetValue(level, out var regularFixed);
 
             var materialSheet = TableSheets.Instance.MaterialItemSheet;
-            for (var i = 0; i < interestBenefitsViews.Length; i++)
-            {
-                var result = GetReward(regular, regularFixed, (long)deposit, i);
-                result *= Mathf.Max(rewardCount, 1);
-                if (result <= 0)
-                {
-                    interestBenefitsViews[i].gameObject.SetActive(false);
-                    continue;
-                }
+            var displayIndex = 0;
 
-                interestBenefitsViews[i].gameObject.SetActive(true);
-                if (regular != null)
+            if (regular != null)
+            {
+                for (var i = 0; i < regular.Rewards.Count && displayIndex < interestBenefitsViews.Length; i++)
                 {
+                    var result = GetReward(regular, regularFixed, (long)deposit, i);
+                    result *= Mathf.Max(rewardCount, 1);
+                    if (result <= 0)
+                    {
+                        continue;
+                    }
+
+                    var view = interestBenefitsViews[displayIndex];
+                    view.gameObject.SetActive(true);
                     switch (regular.Rewards[i].Type)
                     {
                         case StakeRegularRewardSheet.StakeRewardType.Item:
-                            interestBenefitsViews[i].Set(
+                            view.Set(
                                 ItemFactory.CreateMaterial(materialSheet,
                                     regular.Rewards[i].ItemId),
                                 (int)result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Rune:
-                            interestBenefitsViews[i].Set(
+                            view.Set(
                                 regular.Rewards[i].ItemId,
                                 (int)result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Currency:
                             var ticker = regular.Rewards[i].CurrencyTicker;
-                            interestBenefitsViews[i].Set(
+                            view.Set(
                                 ticker,
                                 (int)result,
                                 ticker.Equals(Currencies.Crystal.Ticker));
                             break;
                     }
+                    displayIndex++;
                 }
+            }
+
+            if (regularFixed != null && regular != null)
+            {
+                var regularItemIds = regular.Rewards.Select(r => r.ItemId).ToHashSet();
+                foreach (var fixedReward in regularFixed.Rewards)
+                {
+                    if (regularItemIds.Contains(fixedReward.ItemId))
+                    {
+                        continue;
+                    }
+
+                    if (displayIndex >= interestBenefitsViews.Length)
+                    {
+                        break;
+                    }
+
+                    var count = (int)(fixedReward.Count * (long)Mathf.Max(rewardCount, 1));
+                    if (count <= 0)
+                    {
+                        continue;
+                    }
+
+                    var view = interestBenefitsViews[displayIndex];
+                    view.gameObject.SetActive(true);
+                    view.Set(ItemFactory.CreateMaterial(materialSheet, fixedReward.ItemId), count);
+                    displayIndex++;
+                }
+            }
+
+            for (var i = displayIndex; i < interestBenefitsViews.Length; i++)
+            {
+                interestBenefitsViews[i].gameObject.SetActive(false);
             }
 
             var remainingBlock = Math.Max(rewardBlockInterval - waitedBlockRange, 0);

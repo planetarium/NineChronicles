@@ -32,6 +32,7 @@ using Nekoyume.Action.ValidatorDelegation;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module;
 using GeneratedApiNamespace.ArenaServiceClient;
+using Nekoyume.TableData;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -227,6 +228,15 @@ namespace Nekoyume.Blockchain
                 TotalPlayCount = playCount,
                 ApStoneCount = apStoneCount
             };
+
+            // Stage entry material cost (StageSheet.Row.EntryCostItemId/Count)
+            if (TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow) &&
+                stageRow.EntryCostItemId > 0 &&
+                stageRow.EntryCostItemCount > 0)
+            {
+                action.EntryCostItemId = stageRow.EntryCostItemId;
+                action.EntryCostItemCount = checked(stageRow.EntryCostItemCount * playCount);
+            }
             ProcessAction(action);
             _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<HackAndSlash>()
@@ -528,6 +538,37 @@ namespace Nekoyume.Blockchain
                 worldId = worldId,
                 stageId = stageId
             };
+
+            // Stage entry material cost (StageSheet.Row.EntryCostItemId/Count)
+            if (TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow) &&
+                stageRow.EntryCostItemId > 0 &&
+                stageRow.EntryCostItemCount > 0)
+            {
+                // HackAndSlashSweep action computes playCount internally as:
+                // (ActionPointMax / costAp) * apStoneCount + (actionPoint / costAp)
+                // where costAp is affected by staking level.
+                var costAp = stageRow.CostAP;
+                var stakingLevel = States.Instance.StakingLevel;
+                if (stakingLevel > 0)
+                {
+                    costAp = TableSheets.Instance.StakeActionPointCoefficientSheet
+                        .GetActionPointByStaking(costAp, 1, stakingLevel);
+                }
+
+                var actionPointMax = Action.DailyReward.ActionPointMax;
+                if (TableSheets.Instance.GameConfigSheet.TryGetValue("action_point_max", out var apMaxRow))
+                {
+                    actionPointMax = TableExtensions.ParseInt(apMaxRow.Value);
+                }
+
+                var apMaxPlayCount = costAp > 0 ? actionPointMax / costAp : 0;
+                var apStonePlayCount = apMaxPlayCount * apStoneCount;
+                var apPlayCount = costAp > 0 ? actionPoint / costAp : 0;
+                var sweepPlayCount = apStonePlayCount + apPlayCount;
+
+                action.entryCostItemId = stageRow.EntryCostItemId;
+                action.entryCostItemCount = checked(stageRow.EntryCostItemCount * sweepPlayCount);
+            }
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalLayerModifier.RemoveItem(avatarAddress, apStoneRow.ItemId, apStoneCount);

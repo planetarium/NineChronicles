@@ -304,6 +304,23 @@ namespace Nekoyume.UI
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
 
+        public void ShowLackCatalystPotion(long cost)
+        {
+            SetPopupType(PopupType.AttractAction);
+
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.CatalystPotion);
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
+            costText.text = cost.ToString();
+            var content = GetLackCatalystPotionContentString();
+
+            buttonYes.SetCondition(CheckClearRequiredStageMonsterCollection);
+            buttonYes.UpdateObjects();
+
+            YesCallback = AttractToMonsterCollection;
+
+            Show(title, content, L10nManager.Localize("UI_MENU_MONSTER_COLLECTION"), string.Empty, false);
+        }
+
         public void ShowLackHourglass(long cost)
         {
             var itemId = 400000;
@@ -580,6 +597,11 @@ namespace Nekoyume.UI
         {
             var canAttract = CanAttractShop();
             return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");
+        }
+
+        public static string GetLackCatalystPotionContentString()
+        {
+            return L10nManager.Localize("UI_LACK_CATALYST_POTION");
         }
 
         // TODO: 공용으로 뺄 수 없을지 확인.

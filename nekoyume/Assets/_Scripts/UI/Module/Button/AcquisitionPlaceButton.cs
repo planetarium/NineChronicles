@@ -98,6 +98,9 @@ namespace Nekoyume.UI.Module
                 case ShortcutHelper.PlaceType.Grinding:
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.Craft}");
                     break;
+                case ShortcutHelper.PlaceType.PatrolReward:
+                    iconName = "icon_Navigation_015";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

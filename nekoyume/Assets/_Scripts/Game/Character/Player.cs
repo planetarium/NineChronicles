@@ -156,14 +156,21 @@ namespace Nekoyume.Game.Character
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
 
+            var allEquipments = new List<Equipment>();
+            if (model.weapon != null) allEquipments.Add(model.weapon);
+            if (model.armor != null) allEquipments.Add(model.armor);
+            if (model.belt != null) allEquipments.Add(model.belt);
+            if (model.necklace != null) allEquipments.Add(model.necklace);
+            if (model.ring != null) allEquipments.Add(model.ring);
+            if (model.aura != null) allEquipments.Add(model.aura);
+            if (model.Grimoire != null) allEquipments.Add(model.Grimoire);
+
             appearance.Set(
                 avatarAddress,
                 Animator,
                 HudContainer,
                 costumes.ToList(),
-                armor,
-                weapon,
-                aura,
+                allEquipments,
                 model.earIndex,
                 model.lensIndex,
                 model.hairIndex,

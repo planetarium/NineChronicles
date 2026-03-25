@@ -166,7 +166,18 @@ namespace Nekoyume.UI
             public UpgradeLevel upgradeLevel;
 
             public override bool IsAll => upgradeLevel == UpgradeLevel.All;
-            public override string GetOptionName => upgradeLevel.ToString();
+            public override string GetOptionName => upgradeLevel switch
+            {
+                UpgradeLevel.All => "All",
+                UpgradeLevel.Level0 => "+0",
+                UpgradeLevel.Level1 => "+1",
+                UpgradeLevel.Level2 => "+2",
+                UpgradeLevel.Level3 => "+3",
+                UpgradeLevel.Level4 => "+4",
+                UpgradeLevel.Level5 => "+5",
+                UpgradeLevel.Level6More => "+6 more",
+                _ => upgradeLevel.ToString()
+            };
         }
 
         [Serializable]
