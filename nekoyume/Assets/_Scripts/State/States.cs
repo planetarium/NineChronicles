@@ -637,6 +637,18 @@ namespace Nekoyume.State
                     1,
                     GameConfig.MimisbrunnrWorldId,
                 };
+            // World 10 (HardMode1) unlock: add to unlockedIds only when stage 450
+            // (the last stage of World 9) has been cleared.
+            // This handles legacy avatars whose world_ids state predates World 10's addition.
+            var worldUnlockSheet = Game.Game.instance.TableSheets.WorldUnlockSheet;
+            foreach (var unlockRow in worldUnlockSheet.OrderedList)
+            {
+                if (unlockRow.WorldIdToUnlock == 10 && !unlockedIds.Contains(unlockRow.WorldIdToUnlock) &&
+                    avatarState.worldInformation.IsStageCleared(unlockRow.StageId))
+                {
+                    unlockedIds.Add(unlockRow.WorldIdToUnlock);
+                }
+            }
             Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (!isNewlySelected)

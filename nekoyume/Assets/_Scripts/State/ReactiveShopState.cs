@@ -311,6 +311,11 @@ namespace Nekoyume.State
                 equipment.level = product.Level;
             }
 
+            if (tradableItem is ItemBase itemBaseTemp)
+            {
+                itemBaseTemp.ElementalType = product.ElementalType;
+            }
+
             itemBase = (ItemBase)tradableItem;
             return itemBase is not null;
         }

@@ -114,7 +114,8 @@ namespace Nekoyume.UI
                 TableSheets.Instance.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
 
-            if (_recipeRow.GetResultEquipmentItemRow().Grade < 5)
+            if (_recipeRow.GetResultEquipmentItemRow().Grade < 5 ||
+                _recipeRow.GetResultEquipmentItemRow().Grade == 8)
             {
                 normalRecipeTabGroup.gameObject.SetActive(true);
                 legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);

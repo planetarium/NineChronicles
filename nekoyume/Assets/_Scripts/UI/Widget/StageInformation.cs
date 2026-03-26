@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Libplanet.Types.Assets;
 using Nekoyume.ApiClient;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -169,7 +170,7 @@ namespace Nekoyume.UI
                     States.Instance.CurrentAvatarState?.level ?? 1);
             }).AddTo(_disposablesOnShow);
 
-            closeButtonText.text = L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}");
+            closeButtonText.text = worldRow.GetLocalizedName();
 
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {
@@ -318,21 +319,55 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateStageInfoRewards(List<MaterialItemSheet.Row> rewardItemRows)
+        private void UpdateStageInfoRewards(
+            List<MaterialItemSheet.Row> rewardItemRows,
+            List<StageSheet.FavRewardData> favRewards)
         {
-            var rewardItemCount = rewardItemRows.Count;
-            for (var i = 0; i < rewardsAreaItemViews.Count; i++)
+            var slotCount = rewardsAreaItemViews.Count;
+
+            var itemCount = Math.Min(rewardItemRows.Count, slotCount);
+            for (var i = 0; i < itemCount; i++)
             {
                 var itemView = rewardsAreaItemViews[i];
-                if (i < rewardItemCount)
-                {
-                    itemView.Show();
-                    itemView.SetData(rewardItemRows[i], () => ShowTooltip(itemView));
-                    continue;
-                }
-
-                itemView.Hide();
+                itemView.Show();
+                itemView.SetData(rewardItemRows[i], () => ShowTooltip(itemView));
             }
+
+            var favCount = favRewards?.Count ?? 0;
+            var favSlotCount = Math.Min(favCount, Math.Max(0, slotCount - itemCount));
+            for (var i = 0; i < favSlotCount; i++)
+            {
+                var fav = favRewards[i];
+                var itemView = rewardsAreaItemViews[itemCount + i];
+                itemView.Show();
+
+                var currency = Currency.Legacy(fav.Ticker, 0, null);
+                var favIconValue = currency * 0;
+                itemView.SetFavData(favIconValue, () => ShowFavTooltip(fav.Ticker));
+            }
+
+            for (var i = itemCount + favSlotCount; i < slotCount; i++)
+            {
+                rewardsAreaItemViews[i].Hide();
+            }
+        }
+
+        private static void ShowFavTooltip(string ticker)
+        {
+            AudioController.PlayClick();
+            var amount = "0";
+            try
+            {
+                var bal = States.Instance.CurrentAvatarBalances.Values
+                    .FirstOrDefault(v => v.Currency.Ticker.Equals(ticker, StringComparison.OrdinalIgnoreCase));
+                amount = string.IsNullOrEmpty(bal.Currency.Ticker) ? "0" : bal.ToCurrencyNotation();
+            }
+            catch
+            {
+                amount = "0";
+            }
+
+            Find<FungibleAssetTooltip>().Show(ticker, amount, null);
         }
 
         private void UpdateStageInformationForWorld(int stageId, int characterLevel)
@@ -350,7 +385,7 @@ namespace Nekoyume.UI
 
             var stageSheet = TableSheets.Instance.StageSheet;
             stageSheet.TryGetValue(stageId, out var stageRow, true);
-            UpdateStageInfoRewards(stageRow.GetRewardItemRows());
+            UpdateStageInfoRewards(stageRow.GetRewardItemRows(), stageRow.FavRewards);
 
             var exp = StageRewardExpHelper.GetExp(characterLevel, stageId);
             expText.text = $"EXP +{exp}";
@@ -376,7 +411,7 @@ namespace Nekoyume.UI
 
             titleText.text = $"Stage {stageRow.GetStageNumber()}";
             UpdateStageInfoMonsters(stageWaveRow.TotalMonsterIds);
-            UpdateStageInfoRewards(stageRow.GetRewardItemRows());
+            UpdateStageInfoRewards(stageRow.GetRewardItemRows(), null);
 
             var exp = RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
                 eventDungeonStageId.ToEventDungeonStageNumber(),

@@ -41,7 +41,7 @@ namespace Nekoyume
 
         public static string GetLocalizedName(this WorldSheet.Row worldRow)
         {
-            return L10nManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper().Replace(" ", "_")}");
+            return L10nManager.LocalizeWorldName(worldRow.Id);
         }
 
         public static bool ContainsStageId(this WorldSheet.Row worldRow, int stageId)

@@ -443,9 +443,16 @@ namespace Nekoyume.UI.Scroller
 
             var isActive = _unlockableRecipeIds.Any();
             openAllRecipeArea.container.SetActive(isActive);
+
+            var rectTransform = GetComponent<RectTransform>();
+            var delta = rectTransform.sizeDelta;
+            delta.y = isActive ? -208f : -130.99997f;
+            rectTransform.sizeDelta = delta;
+            Relayout();
+
             if (isActive)
             {
-                openAllRecipeArea.costText.text = _openCost.ToString();
+                openAllRecipeArea.costText.text = _openCost.ToCurrencyNotation();
 
                 var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
                 openAllRecipeArea.costText.color = hasEnoughBalance

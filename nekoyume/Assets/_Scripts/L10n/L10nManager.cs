@@ -553,6 +553,15 @@ namespace Nekoyume.L10n
                 7 => Localize("WORLD_NAME_NIFLHEIM"),
                 8 => Localize("WORLD_NAME_HEL"),
                 9 => Localize("WORLD_NAME_VANAHEIM"),
+                10 => Localize("WORLD_NAME_HARD_YGGDRASIL"),
+                11 => Localize("WORLD_NAME_HARD_ALFHEIM"),
+                12 => Localize("WORLD_NAME_HARD_SVARTALFHEIM"),
+                13 => Localize("WORLD_NAME_HARD_ASGARD"),
+                14 => Localize("WORLD_NAME_HARD_MUSPELHEIM"),
+                15 => Localize("WORLD_NAME_HARD_JOTUNHEIM"),
+                16 => Localize("WORLD_NAME_HARD_NIFLHEIM"),
+                17 => Localize("WORLD_NAME_HARD_HEL"),
+                18 => Localize("WORLD_NAME_HARD_VANAHEIM"),
                 10001 => Localize("WORLD_NAME_MIMISBRUNNR"),
                 _ => $"Invalid_World_ID_{worldId}"
             };

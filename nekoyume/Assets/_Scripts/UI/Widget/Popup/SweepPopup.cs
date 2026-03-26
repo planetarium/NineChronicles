@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -117,6 +118,24 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI informationText;
 
+        [SerializeField]
+        private GameObject EntryItem_Have;
+
+        [SerializeField]
+        private Image EntryItem_Have_Icon;
+
+        [SerializeField]
+        private TMP_Text EntryItem_Have_Count;
+
+        [SerializeField]
+        private GameObject EntryItem_Have2;
+
+        [SerializeField]
+        private Image EntryItem_Have2_Icon;
+
+        [SerializeField]
+        private TMP_Text EntryItem_Have2_Count;
+
         private readonly ReactiveProperty<int> _apStoneCount = new();
         private readonly ReactiveProperty<int> _ap = new();
         private readonly ReactiveProperty<int> _ticketCount = new();
@@ -124,6 +143,8 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
 
         private StageSheet.Row _stageRow;
+        private int _entryCostItemId;
+        private int _entryCostItemCount;
         private EventDungeonStageSheet.Row _eventDungeonStageRow;
         private int _worldId;
         private int _costAp;
@@ -205,6 +226,8 @@ namespace Nekoyume.UI
             _isEventDungeonMode = false;
             _worldId = worldId;
             _stageRow = stageRow;
+            _entryCostItemId = stageRow.EntryCostItemId;
+            _entryCostItemCount = stageRow.EntryCostItemCount;
             _apStoneCount.SetValueAndForceNotify(0);
             _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
             _ticketCount.SetValueAndForceNotify(0);
@@ -224,6 +247,7 @@ namespace Nekoyume.UI
             contentText.text =
                 $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
 
+            UpdateEntryCostView();
             base.Show(ignoreShowAnimation);
         }
 
@@ -337,6 +361,7 @@ namespace Nekoyume.UI
             }
 
             UpdateView();
+            UpdateEntryCostView();
         }
 
         private void SubscribeInventory()
@@ -380,6 +405,7 @@ namespace Nekoyume.UI
                 }
 
                 _cp.Value = Util.TotalCP(BattleType.Adventure);
+                UpdateEntryCostView();
             }).AddTo(_disposables);
         }
 
@@ -417,6 +443,51 @@ namespace Nekoyume.UI
             // Disable AP stone related UI for event dungeon
             haveApStoneText.text = "0";
             apStoneText.text = "";
+        }
+
+        private void UpdateEntryCostView()
+        {
+            var shouldShow = _entryCostItemId > 0 && _entryCostItemCount > 0 && !_isEventDungeonMode;
+
+            EntryItem_Have?.SetActive(shouldShow);
+            EntryItem_Have2?.SetActive(shouldShow);
+
+            if (!shouldShow) return;
+
+            var costIconData = Resources.Load<CostIconDataScriptableObject>("ScriptableObject/CostIconData");
+            var icon = costIconData?.GetIcon((CostType)_entryCostItemId)
+                ?? SpriteHelper.GetItemIcon(_entryCostItemId);
+
+            if (icon != null)
+            {
+                if (EntryItem_Have_Icon != null) { EntryItem_Have_Icon.sprite = icon; EntryItem_Have_Icon.overrideSprite = icon; }
+                if (EntryItem_Have2_Icon != null) { EntryItem_Have2_Icon.sprite = icon; EntryItem_Have2_Icon.overrideSprite = icon; }
+            }
+
+            var available = GetEntryCostAvailable();
+
+            var (apPlayCount, apStonePlayCount) = GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
+            var totalPlayCount = apPlayCount + apStonePlayCount;
+            var needed = totalPlayCount * _entryCostItemCount;
+            var countColor = available >= needed
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
+
+            if (EntryItem_Have_Count != null) { EntryItem_Have_Count.text = available.ToString(); EntryItem_Have_Count.color = countColor; }
+            if (EntryItem_Have2_Count != null) { EntryItem_Have2_Count.text = available.ToString(); EntryItem_Have2_Count.color = countColor; }
+        }
+
+        private int GetEntryCostAvailable()
+        {
+            var inventory = States.Instance.CurrentAvatarState?.inventory;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var costType = (CostType)_entryCostItemId;
+            return costType switch
+            {
+                CostType.Hourglass or CostType.ApPotion or CostType.CatalystPotion =>
+                    inventory?.GetUsableItemCount(costType, blockIndex) ?? 0,
+                _ => inventory?.GetMaterialCount(_entryCostItemId) ?? 0
+            };
         }
 
         private void UpdateCpView()
@@ -636,6 +707,17 @@ namespace Nekoyume.UI
                 if (_useSweep && TryGetRequiredCP(_stageRow.Id, out var row))
                 {
                     if (_cp.Value < row.RequiredCP)
+                    {
+                        startButton.Interactable = false;
+                        return;
+                    }
+                }
+
+                if (_entryCostItemId > 0 && _entryCostItemCount > 0)
+                {
+                    var (apPlayCount, apStonePlayCount) = GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
+                    var totalPlayCount = apPlayCount + apStonePlayCount;
+                    if (totalPlayCount * _entryCostItemCount > GetEntryCostAvailable())
                     {
                         startButton.Interactable = false;
                         return;

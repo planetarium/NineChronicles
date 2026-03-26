@@ -191,26 +191,28 @@ namespace Nekoyume.Game.LiveAsset
 
         public IEnumerator InitializeApplicationCLO()
         {
-            var osKey = string.Empty;
-#if UNITY_ANDROID
-            osKey = "-aos";
-#elif UNITY_IOS
-            osKey = "-ios";
-#endif
-
-            var languageKey = string.Empty;
-            if (GameConfig.IsKoreanBuild)
-            {
-                languageKey = "-kr";
-            }
-
-            var cloEndpoint = $"{_endpoint.CommandLineOptionsJsonUrlPrefix}{Application.version.Replace(".", "-")}{osKey}{languageKey}.json";
-            NcDebug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
+            // 1. version-registry.json으로 환경 결정
+            CloVersionRegistry registry = null;
             yield return StartCoroutine(
                 RequestManager.instance.GetJson(
-                    cloEndpoint,
-                    SetCommandLineOptions));
+                    _endpoint.CloVersionRegistryUrl,
+                    json => registry = JsonSerializer.Deserialize<CloVersionRegistry>(
+                        json, CommandLineOptions.JsonOptions)));
 
+            var env = registry?.GetEnvironment(Application.version) ?? "internal";
+            NcDebug.Log($"[InitializeApplicationCLO] version={Application.version}, env={env}");
+
+            // 2. 환경별 CLO 다운로드
+            var cloUrl = (env, GameConfig.IsKoreanBuild) switch
+            {
+                ("mainnet", true)  => _endpoint.CloMainnetKrUrl,
+                ("mainnet", false) => _endpoint.CloMainnetUrl,
+                (_, true)          => _endpoint.CloInternalKrUrl,
+                _                  => _endpoint.CloInternalUrl,
+            };
+            yield return StartCoroutine(RequestManager.instance.GetJson(cloUrl, SetCommandLineOptions));
+
+            // 3. registry 또는 env CLO 로드 실패 시 기존 default URL로 폴백
             if (CommandLineOptions == null)
             {
                 yield return StartCoroutine(

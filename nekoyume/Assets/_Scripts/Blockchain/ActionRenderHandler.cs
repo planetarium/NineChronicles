@@ -2354,6 +2354,54 @@ namespace Nekoyume.Blockchain
                     });
             }
 
+            // HackAndSlash FAV 보상 잔고 업데이트 (무한의탑과 동일한 패턴)
+            var fungibleAssetRewards = simulator.FungibleAssetRewards;
+            if (fungibleAssetRewards.Count > 0)
+            {
+                var balances = await UniTask.RunOnThreadPool(() =>
+                {
+                    var gameStates = Game.Game.instance.States;
+                    var agentAddr = gameStates.AgentState.address;
+                    var avatarAddr = eval.Action.AvatarAddress;
+                    var states = eval.OutputState;
+                    var balanceList = new List<(Currency currency, FungibleAssetValue balance, bool isCrystal)>();
+                    foreach (var (ticker, amount) in fungibleAssetRewards)
+                    {
+                        if (amount > 0)
+                        {
+                            try
+                            {
+                                var currency = Currencies.GetCurrencyByTicker(ticker);
+                                var recipientAddress = Currencies.PickAddress(currency, agentAddr, avatarAddr);
+                                var balance = StateGetter.GetBalance(states, recipientAddress, currency);
+                                var isCrystal = currency.Equals(Currencies.Crystal);
+                                balanceList.Add((currency, balance, isCrystal));
+                            }
+                            catch (Exception ex)
+                            {
+                                NcDebug.LogWarning($"[HackAndSlash] Failed to get balance for {ticker}: {ex.Message}");
+                            }
+                        }
+                    }
+
+                    return balanceList;
+                });
+
+                await UniTask.SwitchToMainThread();
+                var gameStates = Game.Game.instance.States;
+                foreach (var (currency, balance, isCrystal) in balances)
+                {
+                    if (isCrystal)
+                    {
+                        gameStates.SetCrystalBalance(balance);
+                    }
+                    else
+                    {
+                        gameStates.SetCurrentAvatarBalance(balance);
+                    }
+                }
+            }
+
             BattleRenderer.Instance.PrepareStage(log);
         }
 

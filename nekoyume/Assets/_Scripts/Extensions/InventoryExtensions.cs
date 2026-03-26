@@ -136,7 +136,7 @@ namespace Nekoyume
         }.Select(cost => (int)cost).ToArray();
 
         // Get the priority by Id or ItemSubType of the material group about Inventory sorting.
-        // Dust -> ApStone or Hourglass (Tradable -> UnTradable) -> CustomCraft(Drawing) -> Hammer -> Others
+        // Dust -> 500001 -> ApStone or Hourglass (Tradable -> UnTradable) -> CustomCraft(Drawing) -> Hammer -> Others
         public static int GetMaterialPriority(this Material material)
         {
             if (DustIds.Contains(material.Id))
@@ -144,19 +144,24 @@ namespace Nekoyume
                 return 0;
             }
 
-            if (material.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
+            if (material.Id == 500001)
             {
                 return 1;
             }
 
-            if (material.ItemSubType is ItemSubType.Circle or ItemSubType.Scroll)
+            if (material.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
             {
                 return 2;
             }
 
-            if (ItemEnhancement.HammerIds.Contains(material.Id))
+            if (material.ItemSubType is ItemSubType.Circle or ItemSubType.Scroll)
             {
                 return 3;
+            }
+
+            if (ItemEnhancement.HammerIds.Contains(material.Id))
+            {
+                return 4;
             }
 
             return int.MaxValue;

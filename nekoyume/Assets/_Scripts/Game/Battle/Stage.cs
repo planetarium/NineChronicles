@@ -1418,7 +1418,14 @@ namespace Nekoyume.Game.Battle
                     var currency = Currencies.GetMinterlessCurrency(ticker);
                     var fungibleAsset = currency * amount;
                     var countableItem = new CountableItem(fungibleAsset, amount, true);
-                    _infiniteTowerResultModel.AddReward(countableItem);
+                    if (StageType == StageType.InfiniteTower)
+                    {
+                        _infiniteTowerResultModel.AddReward(countableItem);
+                    }
+                    else
+                    {
+                        _battleResultModel.AddReward(countableItem);
+                    }
                 }
             }
 

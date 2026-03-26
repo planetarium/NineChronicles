@@ -80,6 +80,7 @@ SpriteAtlas:
     - 185aaf8bb42334190a6f4d375e6e6f67: 21300000
     - cf3941ab6508d4ee7b66668948a7358e: 21300000
     - 212e8ccb019094b3a8323acc3cfa5d5d: 21300000
+    - aa70b64c18f2949d3a9adbd59cae09f2: 21300000
     - 11da2efc3a40748dcb0b6549824f2431: 21300000
     - 0ac1923dbb8a74c84b21170f57eee604: 21300000
     - e123146d88eb44a739883087e4b9967b: 21300000
@@ -122,6 +123,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 185aaf8bb42334190a6f4d375e6e6f67, type: 3}
   - {fileID: 21300000, guid: cf3941ab6508d4ee7b66668948a7358e, type: 3}
   - {fileID: 21300000, guid: 212e8ccb019094b3a8323acc3cfa5d5d, type: 3}
+  - {fileID: 21300000, guid: aa70b64c18f2949d3a9adbd59cae09f2, type: 3}
   - {fileID: 21300000, guid: 11da2efc3a40748dcb0b6549824f2431, type: 3}
   - {fileID: 21300000, guid: 0ac1923dbb8a74c84b21170f57eee604, type: 3}
   - {fileID: 21300000, guid: e123146d88eb44a739883087e4b9967b, type: 3}
@@ -163,6 +165,7 @@ SpriteAtlas:
   - icon_Combination_Event
   - Item_Recipebg_02
   - UI_Combination_bg_06_add
+  - Item_Recipebg_08
   - icon_Combination_equip
   - UI_stage_icon_Hammer_01
   - Item_Recipebg_03

@@ -100,6 +100,20 @@ namespace Nekoyume
                         ItemFactory.CreateMaterial(sheets.MaterialItemSheet[id]),
                         count));
                 }
+
+                foreach (var fav in simulator.FungibleAssetRewards)
+                {
+                    var ticker = fav.Key;
+                    var amount = fav.Value;
+                    if (amount <= 0)
+                    {
+                        continue;
+                    }
+
+                    var currency = Lib9c.Currencies.GetMinterlessCurrency(ticker);
+                    var fungibleAsset = currency * amount;
+                    model.AddReward(new CountableItem(fungibleAsset, amount, true));
+                }
             }
 
             return model;
