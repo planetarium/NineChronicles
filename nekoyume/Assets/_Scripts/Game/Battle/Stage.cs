@@ -693,7 +693,7 @@ namespace Nekoyume.Game.Battle
 
         private string GetCurrentInfiniteTowerBackgroundKey()
         {
-            return $"{InfiniteTowerBackgroundKey}{_adventureBossFloorCount % 3 + 1}";
+            return $"{InfiniteTowerBackgroundKey}{_infiniteTowerFloorCount % 3 + 1}";
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
