@@ -122,6 +122,11 @@ namespace Nekoyume.Game.Battle
 
         private void LateUpdate()
         {
+            if (_cameraTransform is null)
+            {
+                return;
+            }
+
             var camPosX = _cameraTransform.position.x;
 
             if (!Mathf.Approximately(parallaxSpeed, 0.0f))
