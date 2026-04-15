@@ -1141,6 +1141,24 @@ namespace Nekoyume.Game.Battle
             }
         }
 
+        public IEnumerator CoFullBuffRemovalAttack(
+            CharacterBase caster,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+#if TEST_LOG
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoFullBuffRemovalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
+            var character = GetActor(caster);
+            if (character)
+            {
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBlowAttack);
+                character.AddAction(actionParams);
+                yield return null;
+            }
+        }
+
         public IEnumerator CoDoubleAttackWithCombo(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
