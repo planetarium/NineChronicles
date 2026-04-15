@@ -119,6 +119,10 @@ namespace Nekoyume.UI
             {
                 background = "chapter_09_01";
             }
+            if (background is "EventDungeon_07_03" or "EventDungeon_07_02")
+            {
+                background = "EventDungeon_07_01";
+            }
 
             imagCanvasGroup.alpha = 1f;
             _shouldClose = false;
