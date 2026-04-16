@@ -363,23 +363,17 @@ namespace Nekoyume.UI
         private void RefreshSeasonPassCourageAmount(int playCount, bool isEventDungeon = false)
         {
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            if (seasonPassManager.CurrentSeasonPassData != null)
+            if (!isEventDungeon && seasonPassManager.CurrentSeasonPassData != null)
             {
-                var actionType = isEventDungeon
-                    ? SeasonPassServiceClient.ActionType.event_dungeon
-                    : SeasonPassServiceClient.ActionType.hack_and_slash_sweep;
                 var expAmount = seasonPassManager.ExpPointAmount(
-                    SeasonPassServiceClient.PassType.CouragePass, actionType);
-                var showCourage = expAmount > 0;
+                    SeasonPassServiceClient.PassType.CouragePass,
+                    SeasonPassServiceClient.ActionType.hack_and_slash_sweep);
                 foreach (var item in seasonPassObjs)
                 {
-                    item.SetActive(showCourage);
+                    item.SetActive(true);
                 }
 
-                if (showCourage)
-                {
-                    seasonPassCourageAmount.text = $"+{expAmount * playCount}";
-                }
+                seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else
             {
