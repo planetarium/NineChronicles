@@ -336,7 +336,7 @@ namespace Nekoyume.UI
                         materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
                         Game.Game.instance.Agent?.BlockIndex ?? -1);
                 apStoneSlider.Set(0,
-                    Math.Min(haveApStoneCount, MaxApStoneCount),
+                    GetMaxApStoneCountWithEntryCost(haveApStoneCount),
                     0,
                     MaxApStoneCount, 1,
                     x => _apStoneCount.Value = x);
@@ -398,7 +398,7 @@ namespace Nekoyume.UI
                         x => _ap.Value = x * _costAp);
 
                     apStoneSlider.Set(0,
-                        Math.Min(haveApStoneCount, MaxApStoneCount),
+                        GetMaxApStoneCountWithEntryCost(haveApStoneCount),
                         0,
                         MaxApStoneCount, 1,
                         x => _apStoneCount.Value = x);
@@ -488,6 +488,35 @@ namespace Nekoyume.UI
                     inventory?.GetUsableItemCount(costType, blockIndex) ?? 0,
                 _ => inventory?.GetMaterialCount(_entryCostItemId) ?? 0
             };
+        }
+
+        /// <summary>
+        /// Returns the max AP stone count considering both inventory and
+        /// entry cost material limits (e.g., catalyst potion).
+        /// Each AP stone yields (actionPointMax / costAp) plays, so the
+        /// max stones = entryCostAvailable / entryCostPerPlay / playsPerStone.
+        /// </summary>
+        private int GetMaxApStoneCountWithEntryCost(int haveApStoneCount)
+        {
+            var max = Math.Min(haveApStoneCount, MaxApStoneCount);
+            if (_entryCostItemId <= 0 || _entryCostItemCount <= 0)
+            {
+                return max;
+            }
+
+            var costAp = States.Instance.StakingLevel > 0
+                ? TableSheets.Instance.StakeActionPointCoefficientSheet.GetActionPointByStaking(
+                    _stageRow.CostAP, 1, States.Instance.StakingLevel)
+                : _stageRow.CostAP;
+            var playsPerStone = States.Instance.GameConfigState.ActionPointMax / costAp;
+            if (playsPerStone <= 0)
+            {
+                return max;
+            }
+
+            var maxPlaysByEntryCost = GetEntryCostAvailable() / _entryCostItemCount;
+            var maxStonesByEntryCost = maxPlaysByEntryCost / playsPerStone;
+            return Math.Min(max, maxStonesByEntryCost);
         }
 
         private void UpdateCpView()
