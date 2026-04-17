@@ -22,6 +22,15 @@ namespace Nekoyume.Game.VFX.Skill
 
         /// <summary>
         /// Maps skill categories that share VFX with an existing category.
+        /// VFX prefab names are generated as "{SkillCategory}_{size}_{elemental}".
+        /// If a new SkillCategory has no dedicated VFX prefab, add a mapping here
+        /// to reuse an existing one. Without this, the VFX lookup returns null and
+        /// damage display is silently skipped (see CoBlowAttack null check pattern).
+        ///
+        /// When adding a new skill to lib9c, also check:
+        /// 1. IStage / IArena interface — add Co{SkillName} method
+        /// 2. Stage.cs / RaidStage.cs / Arena.cs / TestArena.cs — implement the method
+        /// 3. This method — map to existing VFX or add new prefab under VFX/SkillVfx/
         /// </summary>
         private static SkillCategory ResolveVfxCategory(SkillCategory category)
         {
