@@ -13,6 +13,7 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.State;
@@ -67,6 +68,38 @@ namespace Nekoyume.Game.Battle
             }
 
             yield return StartCoroutine(param.func(infos));
+
+            if (param.buffInfos != null)
+            {
+                foreach (var info in param.buffInfos)
+                {
+                    if (info.Target.Id.Equals(me.Id))
+                    {
+                        me.CharacterModel = info.Target;
+                    }
+                    else
+                    {
+                        enemy.CharacterModel = info.Target;
+                    }
+                }
+            }
+
+            var skillCategory = infos.First().SkillCategory;
+            if (skillCategory is SkillCategory.FullBuffRemovalAttack)
+            {
+                foreach (var info in infos)
+                {
+                    var target = info.Target.Id.Equals(me.Id) ? me : enemy;
+                    var keysToRemove = target.CharacterModel.Buffs
+                        .Where(kvp => kvp.Value is StatBuff sb && sb.RowData.Value > 0)
+                        .Select(kvp => kvp.Key)
+                        .ToList();
+                    foreach (var key in keysToRemove)
+                    {
+                        target.CharacterModel.Buffs.Remove(key);
+                    }
+                }
+            }
 
             me.UpdateStatusUI();
             enemy.UpdateStatusUI();

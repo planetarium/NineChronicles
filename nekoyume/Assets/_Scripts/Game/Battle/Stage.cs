@@ -32,6 +32,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.AdventureBoss;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
@@ -1300,7 +1301,7 @@ namespace Nekoyume.Game.Battle
 
             yield return StartCoroutine(func(infos));
 
-            yield return StartCoroutine(CoAfterSkill(character, buffInfos));
+            yield return StartCoroutine(CoAfterSkill(character, infos, buffInfos));
         }
 
 #endregion
@@ -1354,7 +1355,10 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        private IEnumerator CoAfterSkill(Actor character, IEnumerable<Skill.SkillInfo> buffInfos)
+        private IEnumerator CoAfterSkill(
+            Actor character,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoAfterSkill)}() enter. character: {character.Id}");
@@ -1364,8 +1368,6 @@ namespace Nekoyume.Game.Battle
                 throw new ArgumentNullException(nameof(character));
             }
 
-            character.UpdateActorHud();
-
             if (buffInfos is not null)
             {
                 foreach (var buffInfo in buffInfos)
@@ -1373,12 +1375,40 @@ namespace Nekoyume.Game.Battle
                     var buffCharacter = GetActor(buffInfo.Target);
                     if (!buffCharacter)
                     {
-                        throw new ArgumentNullException(nameof(buffCharacter));
+                        continue;
                     }
 
+                    buffCharacter.Set(buffInfo.Target, TableSheets.Instance);
                     buffCharacter.UpdateActorHud();
                 }
             }
+
+            if (skillInfos != null)
+            {
+                var skillCategory = skillInfos.First().SkillCategory;
+                if (skillCategory is SkillCategory.FullBuffRemovalAttack)
+                {
+                    foreach (var info in skillInfos)
+                    {
+                        var targetActor = GetActor(info.Target);
+                        if (!targetActor)
+                        {
+                            continue;
+                        }
+
+                        var keysToRemove = targetActor.CharacterModel.Buffs
+                            .Where(kvp => kvp.Value is StatBuff sb && sb.RowData.Value > 0)
+                            .Select(kvp => kvp.Key)
+                            .ToList();
+                        foreach (var key in keysToRemove)
+                        {
+                            targetActor.CharacterModel.Buffs.Remove(key);
+                        }
+                    }
+                }
+            }
+
+            character.UpdateActorHud();
 
             yield return new WaitForSeconds(SkillDelay);
             var enemy = GetComponentsInChildren<Actor>()
