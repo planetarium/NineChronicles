@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module
         public void Set(CollectionModel itemData)
         {
             gameObject.SetActive(true);
-            nameText.text = L10nManager.LocalizeCollectionName(itemData.Row.Id);
+            nameText.gameObject.SetActive(false);
 
             var stat = itemData.Row.StatModifiers;
             for (var i = 0; i < statTexts.Length; i++)
