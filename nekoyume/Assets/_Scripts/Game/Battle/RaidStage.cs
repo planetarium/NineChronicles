@@ -123,8 +123,11 @@ namespace Nekoyume.Game.Battle
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
             var skillDelay = new WaitForSeconds(this.skillDelay);
 
-            foreach (var e in data.Log)
+            var eventCount = data.Log.events.Count;
+            for (var i = 0; i < eventCount; i++)
             {
+                var e = data.Log.events[i];
+                e.LogEvent(i + 1, eventCount);
                 yield return StartCoroutine(e.CoExecute(this));
 
                 while (_actionQueue.TryDequeue(out var param))

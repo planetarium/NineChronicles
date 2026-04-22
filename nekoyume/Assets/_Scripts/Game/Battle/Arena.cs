@@ -151,8 +151,11 @@ namespace Nekoyume.Game.Battle
         {
             yield return StartCoroutine(CoStart(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress));
 
-            foreach (var e in log)
+            var eventCount = log.Events.Count;
+            for (var i = 0; i < eventCount; i++)
             {
+                var e = log.Events[i];
+                e.LogEvent(i + 1, eventCount);
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
