@@ -1,0 +1,50 @@
+name: Deploy NCG whitepaper to GitHub Pages
+
+# Publishes the static site under `docs/whitepaper/` to GitHub Pages.
+# Trigger: any push to the default branch that touches the whitepaper
+# folder or this workflow file. Unrelated game-client changes do not
+# redeploy.
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - "docs/whitepaper/**"
+      - ".github/workflows/whitepaper-pages.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One in-flight deploy at a time; cancel older runs in favour of newer ones
+# so a rapid sequence of edits doesn't fan out into duplicated deployments.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Whitepaper is fully self-contained — no submodules needed.
+          submodules: false
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact (docs/whitepaper only)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/whitepaper
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
