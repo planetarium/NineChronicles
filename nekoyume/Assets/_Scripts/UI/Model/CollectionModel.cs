@@ -37,19 +37,40 @@ namespace Nekoyume.UI.Model
 
             foreach (var row in collectionSheet.Values)
             {
-                var itemType = itemSheet[row.Materials.First().ItemId].ItemType;
+                if (!itemSheet.TryGetValue(
+                        row.Materials.First().ItemId,
+                        out var firstItemRow))
+                {
+                    continue;
+                }
+
+                var itemType = firstItemRow.ItemType;
                 var active = activateCollectionIds.Contains(row.Id);
                 var model = new CollectionModel(row, itemType, active);
 
+                var skipRow = false;
                 foreach (var requiredMaterial in model.Row.Materials)
                 {
+                    if (!itemSheet.TryGetValue(
+                            requiredMaterial.ItemId,
+                            out var materialRow))
+                    {
+                        skipRow = true;
+                        break;
+                    }
+
                     var collectionMaterial = new CollectionMaterial(
                         requiredMaterial,
-                        itemSheet[requiredMaterial.ItemId].Grade,
+                        materialRow.Grade,
                         model.ItemType,
                         model.Active);
 
                     model.Materials.Add(collectionMaterial);
+                }
+
+                if (skipRow)
+                {
+                    continue;
                 }
 
                 models.Add(model);

@@ -608,13 +608,66 @@ namespace Nekoyume.UI.Module
                 .FirstOrDefault();
             if (targetQuest is null)
             {
-                return null;
+                return GetFakeHardModeWorldQuest();
             }
 
             var targetStageId = targetQuest.Goal;
             return !TableSheets.Instance.WorldSheet.TryGetByStageId(targetStageId, out _)
                 ? null
                 : targetQuest;
+        }
+
+        /// <summary>
+        /// Fallback for legacy accounts whose QuestList doesn't yet contain
+        /// hard-mode WorldQuest entries. Creates a fake WorldQuest pointing
+        /// to the first uncompleted hard-mode stage.
+        /// Same pattern as <see cref="GetTargetEventDungeonQuest"/>.
+        /// </summary>
+        private static WorldQuest GetFakeHardModeWorldQuest()
+        {
+            var worldInfo = SharedViewModel.avatarState?.worldInformation;
+            if (worldInfo is null || !worldInfo.IsStageCleared(450))
+            {
+                return null;
+            }
+
+            var worldSheet = TableSheets.Instance.WorldSheet;
+            var hardRows = worldSheet.OrderedList
+                .Where(row => row.Id >= 10 && row.Id < GameConfig.MimisbrunnrWorldId)
+                .OrderBy(row => row.Id);
+
+            foreach (var hardRow in hardRows)
+            {
+                int goal;
+                if (worldInfo.TryGetWorld(hardRow.Id, out var hardWorld) &&
+                    hardWorld.IsStageCleared)
+                {
+                    if (hardWorld.StageClearedId >= hardRow.StageEnd)
+                    {
+                        continue;
+                    }
+
+                    goal = hardWorld.StageClearedId + 1;
+                }
+                else
+                {
+                    goal = hardRow.StageBegin;
+                }
+
+                if (!worldSheet.TryGetByStageId(goal, out _))
+                {
+                    continue;
+                }
+
+                // NOTE: Make fake world quest (same pattern as GetTargetEventDungeonQuest).
+                var goalText = goal.ToString(CultureInfo.InvariantCulture);
+                var row = new WorldQuestSheet.Row();
+                row.Set(new[] { goalText, goalText, goalText });
+                var reward = new QuestReward(new Dictionary<int, int>());
+                return new WorldQuest(row, reward);
+            }
+
+            return null;
         }
 
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
@@ -629,7 +682,7 @@ namespace Nekoyume.UI.Module
             }
 
             var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-            return questList?
+            var result = questList?
                 .OfType<CombinationEquipmentQuest>()
                 .Select(quest => recipeSheet.TryGetValue(quest.RecipeId, out var recipeRow)
                     ? (quest, unlockStageId: recipeRow.UnlockStage)
@@ -639,6 +692,62 @@ namespace Nekoyume.UI.Module
                 .OrderBy(tuple => tuple.unlockStageId)
                 .Select(tuple => tuple.quest)
                 .FirstOrDefault();
+
+            return result ?? GetFakeCombinationEquipmentQuest(questList, lastClearedStageId);
+        }
+
+        /// <summary>
+        /// Fallback for legacy accounts whose QuestList doesn't yet contain
+        /// new CombinationEquipmentQuest entries (added on next HAS).
+        /// Finds the first missing quest from the sheet and creates a fake one.
+        /// </summary>
+        private static CombinationEquipmentQuest GetFakeCombinationEquipmentQuest(
+            QuestList questList, int lastClearedStageId)
+        {
+            var questSheet = Game.Game.instance.TableSheets
+                .CombinationEquipmentQuestSheet;
+            var recipeSheet = Game.Game.instance.TableSheets
+                .EquipmentItemRecipeSheet;
+
+            var existingIds = questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Select(q => q.Id)
+                .ToHashSet() ?? new HashSet<int>();
+
+            var targetRow = questSheet.OrderedList
+                .Where(row => !existingIds.Contains(row.Id))
+                .Where(row =>
+                {
+                    if (!recipeSheet.TryGetValue(row.RecipeId, out var recipeRow))
+                    {
+                        return false;
+                    }
+
+                    return recipeRow.UnlockStage <= lastClearedStageId;
+                })
+                .OrderBy(row =>
+                    recipeSheet.TryGetValue(row.RecipeId, out var r)
+                        ? r.UnlockStage
+                        : int.MaxValue)
+                .FirstOrDefault();
+
+            if (targetRow is null)
+            {
+                return null;
+            }
+
+            if (!recipeSheet.TryGetValue(targetRow.RecipeId, out var recipeRow))
+            {
+                return null;
+            }
+
+            // NOTE: Make fake quest (same pattern as GetTargetCraftEventItemQuest).
+            var goalText = targetRow.Id.ToString(CultureInfo.InvariantCulture);
+            var recipeIdText = targetRow.RecipeId.ToString(CultureInfo.InvariantCulture);
+            var row = new CombinationEquipmentQuestSheet.Row();
+            row.Set(new[] { goalText, goalText, goalText, recipeIdText });
+            var reward = new QuestReward(new Dictionary<int, int>());
+            return new CombinationEquipmentQuest(row, reward, recipeRow.UnlockStage);
         }
 
         private static WorldQuest GetTargetEventDungeonQuest()
