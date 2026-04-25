@@ -693,7 +693,7 @@ namespace Nekoyume.Game.Battle
 
         private string GetCurrentInfiniteTowerBackgroundKey()
         {
-            return $"{InfiniteTowerBackgroundKey}{_adventureBossFloorCount % 3 + 1}";
+            return $"{InfiniteTowerBackgroundKey}{_infiniteTowerFloorCount % 3 + 1}";
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -1131,6 +1131,24 @@ namespace Nekoyume.Game.Battle
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBuffRemovalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
+            var character = GetActor(caster);
+            if (character)
+            {
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBlowAttack);
+                character.AddAction(actionParams);
+                yield return null;
+            }
+        }
+
+        public IEnumerator CoFullBuffRemovalAttack(
+            CharacterBase caster,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+#if TEST_LOG
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoFullBuffRemovalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)

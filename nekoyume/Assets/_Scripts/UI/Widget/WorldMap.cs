@@ -506,7 +506,28 @@ namespace Nekoyume.UI
             {
                 var hardWorldIds = GetWorldIdsForMode(WorldMapMode.Hard);
                 var isHardModeUnlocked = hardWorldIds.Any(id =>
-                    worldInformation?.IsWorldUnlocked(id) ?? false);
+                {
+                    if (worldInformation?.IsWorldUnlocked(id) ?? false)
+                    {
+                        return true;
+                    }
+
+                    // Fallback for legacy accounts whose worldInformation
+                    // doesn't contain hard worlds yet (added on next HAS).
+                    var unlockRow = TableSheets.Instance.WorldUnlockSheet
+                        .OrderedList
+                        .FirstOrDefault(row => row.WorldIdToUnlock == id);
+                    if (unlockRow is null)
+                    {
+                        return false;
+                    }
+
+                    var unlockRowConsistent = !TableSheets.Instance.WorldSheet
+                        .TryGetByStageId(unlockRow.StageId, out var stageWorld) ||
+                        stageWorld.Id == unlockRow.WorldId;
+                    return unlockRowConsistent &&
+                        IsStageClearedForUi(worldInformation, unlockRow.StageId);
+                });
                 var targetMode = isHardModeUnlocked ? WorldMapMode.Hard : WorldMapMode.Normal;
                 ApplyMode(targetMode);
             }
@@ -735,8 +756,34 @@ namespace Nekoyume.UI
                 .OrderBy(x => x.Goal)
                 .FirstOrDefault()?
                 .Goal ?? -1;
-            StageIdToNotify = questStageId;
 
+            // Fallback for legacy accounts whose QuestList doesn't yet
+            // contain hard-mode WorldQuest entries (added on next HAS).
+            if (questStageId < 0)
+            {
+                var worldInfo = SharedViewModel.WorldInformation
+                    ?? Game.Game.instance.States.CurrentAvatarState?.worldInformation;
+                if (worldInfo != null && IsStageClearedForUi(worldInfo, 450))
+                {
+                    foreach (var hardRow in GetWorldRowsForMode(WorldMapMode.Hard))
+                    {
+                        if (IsStageClearedForUi(worldInfo, hardRow.StageEnd))
+                        {
+                            continue;
+                        }
+
+                        var nextStage = IsStageClearedForUi(worldInfo, hardRow.StageBegin)
+                            ? worldInfo.TryGetWorld(hardRow.Id, out var hw) && hw.IsStageCleared
+                                ? hw.StageClearedId + 1
+                                : hardRow.StageBegin
+                            : hardRow.StageBegin;
+                        questStageId = nextStage;
+                        break;
+                    }
+                }
+            }
+
+            StageIdToNotify = questStageId;
             HasNotification = questStageId > 0;
         }
 
