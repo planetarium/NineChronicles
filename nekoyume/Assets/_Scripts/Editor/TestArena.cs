@@ -221,6 +221,16 @@ namespace SimulationTest
             yield return null;
         }
 
+        public IEnumerator CoFullBuffRemovalAttack(
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
+        {
+            var target = caster.Id == me.Id ? me : enemy;
+            var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoBlowAttack);
+            target.AddAction(actionParams);
+            yield return null;
+        }
 
         public IEnumerator CoDoubleAttackWithCombo(ArenaCharacter caster, IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos, IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {

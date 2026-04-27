@@ -15,6 +15,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData.AdventureBoss;
@@ -122,8 +123,11 @@ namespace Nekoyume.Game.Battle
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
             var skillDelay = new WaitForSeconds(this.skillDelay);
 
-            foreach (var e in data.Log)
+            var eventCount = data.Log.events.Count;
+            for (var i = 0; i < eventCount; i++)
             {
+                var e = data.Log.events[i];
+                e.LogEvent(i + 1, eventCount);
                 yield return StartCoroutine(e.CoExecute(this));
 
                 while (_actionQueue.TryDequeue(out var param))
@@ -234,6 +238,31 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(param.ActionCoroutine(infos));
             param.RaidCharacter.CurrentAction = null;
 
+            if (param.BuffInfos != null)
+            {
+                foreach (var info in param.BuffInfos)
+                {
+                    RaidCharacter target = info.Target.Id == _player.Id ? _player : _boss;
+                    target.Set(info.Target);
+                }
+            }
+
+            if (infos.Count > 0 && infos.First().SkillCategory is SkillCategory.FullBuffRemovalAttack)
+            {
+                foreach (var info in infos)
+                {
+                    RaidCharacter target = info.Target.Id == _player.Id ? _player : _boss;
+                    var keysToRemove = target.Model.Buffs
+                        .Where(kvp => kvp.Value is StatBuff sb && sb.RowData.Value > 0)
+                        .Select(kvp => kvp.Key)
+                        .ToList();
+                    foreach (var key in keysToRemove)
+                    {
+                        target.Model.Buffs.Remove(key);
+                    }
+                }
+            }
+
             _player.UpdateStatusUI();
             _boss.UpdateStatusUI();
         }
@@ -321,6 +350,19 @@ namespace Nekoyume.Game.Battle
         }
 
         public IEnumerator CoBuffRemovalAttack(
+            CharacterBase caster,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
+            _actionQueue.Enqueue(actionParams);
+            yield break;
+        }
+
+        public IEnumerator CoFullBuffRemovalAttack(
             CharacterBase caster,
             int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,

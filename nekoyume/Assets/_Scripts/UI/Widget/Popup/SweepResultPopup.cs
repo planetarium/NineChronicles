@@ -188,7 +188,7 @@ namespace Nekoyume.UI
             _sweepRewind.SetValueAndForceNotify(true);
             PlayDirector();
 
-            RefreshSeasonPassCourageAmount(playCount);
+            RefreshSeasonPassCourageAmount(playCount, true);
         }
 
         private void UpdateTitleDeco(int worldId)
@@ -360,16 +360,19 @@ namespace Nekoyume.UI
             AudioController.instance.StopMusicAll();
         }
 
-        private void RefreshSeasonPassCourageAmount(int playCount)
+        private void RefreshSeasonPassCourageAmount(int playCount, bool isEventDungeon = false)
         {
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            if (seasonPassManager.CurrentSeasonPassData != null)
+            if (!isEventDungeon && seasonPassManager.CurrentSeasonPassData != null)
             {
+                var expAmount = seasonPassManager.ExpPointAmount(
+                    SeasonPassServiceClient.PassType.CouragePass,
+                    SeasonPassServiceClient.ActionType.hack_and_slash_sweep);
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-                var expAmount = seasonPassManager.ExpPointAmount(SeasonPassServiceClient.PassType.CouragePass, SeasonPassServiceClient.ActionType.hack_and_slash_sweep);
+
                 seasonPassCourageAmount.text = $"+{expAmount * playCount}";
             }
             else

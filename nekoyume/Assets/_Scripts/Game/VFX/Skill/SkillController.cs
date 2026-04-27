@@ -19,6 +19,28 @@ namespace Nekoyume.Game.VFX.Skill
 #endif
 
         private IObjectPool _pool;
+
+        /// <summary>
+        /// Maps skill categories that share VFX with an existing category.
+        /// VFX prefab names are generated as "{SkillCategory}_{size}_{elemental}".
+        /// If a new SkillCategory has no dedicated VFX prefab, add a mapping here
+        /// to reuse an existing one. Without this, the VFX lookup returns null and
+        /// damage display is silently skipped (see CoBlowAttack null check pattern).
+        ///
+        /// When adding a new skill to lib9c, also check:
+        /// 1. IStage / IArena interface — add Co{SkillName} method
+        /// 2. Stage.cs / RaidStage.cs / Arena.cs / TestArena.cs — implement the method
+        /// 3. This method — map to existing VFX or add new prefab under VFX/SkillVfx/
+        /// </summary>
+        private static SkillCategory ResolveVfxCategory(SkillCategory category)
+        {
+            return category switch
+            {
+                SkillCategory.FullBuffRemovalAttack => SkillCategory.BuffRemovalAttack,
+                _ => category
+            };
+        }
+
         public async UniTask InitializeAsync(IObjectPool objectPool)
         {
             _pool = objectPool;
@@ -62,11 +84,12 @@ namespace Nekoyume.Game.VFX.Skill
                 position.y = Stage.StageStartPosition;
             }
 
-            var skillName = $"{skillInfo.SkillCategory}_{size}_{elemental}".ToLower();
+            var vfxCategory = ResolveVfxCategory(skillInfo.SkillCategory);
+            var skillName = $"{vfxCategory}_{size}_{elemental}".ToLower();
             if (skillInfo.SkillCategory == SkillCategory.BlowAttack &&
                 skillInfo.SkillTargetType == SkillTargetType.Enemies)
             {
-                skillName = $"{skillInfo.SkillCategory}_m_{elemental}_area".ToLower();
+                skillName = $"{vfxCategory}_m_{elemental}_area".ToLower();
             }
             else
             {
@@ -106,11 +129,12 @@ namespace Nekoyume.Game.VFX.Skill
                 position.y = Stage.StageStartPosition;
             }
 
-            var skillName = $"{skillInfo.SkillCategory}_{size}_{elemental}".ToLower();
+            var vfxCategory = ResolveVfxCategory(skillInfo.SkillCategory);
+            var skillName = $"{vfxCategory}_{size}_{elemental}".ToLower();
             if (skillInfo.SkillCategory == SkillCategory.BlowAttack &&
                 skillInfo.SkillTargetType == SkillTargetType.Enemies)
             {
-                skillName = $"{skillInfo.SkillCategory}_m_{elemental}_area".ToLower();
+                skillName = $"{vfxCategory}_m_{elemental}_area".ToLower();
             }
             else
             {
@@ -138,8 +162,9 @@ namespace Nekoyume.Game.VFX.Skill
             SkillCategory skillCategory,
             ElementalType elementalType)
         {
+            var vfxCategory = ResolveVfxCategory(skillCategory);
             var skillName =
-                $"casting_{skillCategory}_{elementalType}".ToLower();
+                $"casting_{vfxCategory}_{elementalType}".ToLower();
             var go = _pool.Get(skillName, false, position) ??
                 _pool.Get(skillName, true, position);
 
@@ -177,11 +202,12 @@ namespace Nekoyume.Game.VFX.Skill
                 position.y = Stage.StageStartPosition;
             }
 
-            var skillName = $"{skillCategory}_{size}_{elemental}".ToLower();
+            var vfxCategory = ResolveVfxCategory(skillCategory);
+            var skillName = $"{vfxCategory}_{size}_{elemental}".ToLower();
             if (skillCategory == SkillCategory.BlowAttack &&
                 skillTargetType == SkillTargetType.Enemies)
             {
-                skillName = $"{skillCategory}_m_{elemental}_area".ToLower();
+                skillName = $"{vfxCategory}_m_{elemental}_area".ToLower();
             }
             else
             {

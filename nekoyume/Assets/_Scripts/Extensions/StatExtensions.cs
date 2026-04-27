@@ -18,7 +18,7 @@ namespace Nekoyume
                     ? stat.BaseValue / 100m
                     : stat.BaseValue;
 
-            return $"{stat.StatType} +{(float)value}";
+            return $"{stat.StatType} +{value:0.##}";
         }
 
         /// <param name="statModifier"> StatModifier contains StatType, Operation, Value

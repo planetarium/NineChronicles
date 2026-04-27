@@ -112,7 +112,8 @@ namespace Nekoyume.Game.Battle
                     }
                 }
 
-                _images[i].localPosition = new Vector3(_parallaxSize * i * childSizeAdjust + initPosition.x, initPosition.y, initPosition.z);
+                var overlap = i > 0 ? 0.01f : 0f;
+                _images[i].localPosition = new Vector3((_parallaxSize * i - overlap) * childSizeAdjust + initPosition.x, initPosition.y, initPosition.z);
             }
 
             _lastCameraX = _cameraTransform.position.x;
@@ -122,6 +123,11 @@ namespace Nekoyume.Game.Battle
 
         private void LateUpdate()
         {
+            if (_cameraTransform is null)
+            {
+                return;
+            }
+
             var camPosX = _cameraTransform.position.x;
 
             if (!Mathf.Approximately(parallaxSpeed, 0.0f))
