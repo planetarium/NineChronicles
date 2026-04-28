@@ -19,6 +19,8 @@ namespace Nekoyume
 {
     public static class ActionBaseExtensions
     {
+        public static bool EnableBattleLog = false;
+
         public static ActionTypeAttribute GetActionTypeAttribute(this ActionBase actionBase)
         {
             var gameActionType = actionBase.GetType();
@@ -32,6 +34,7 @@ namespace Nekoyume
 #if !DEBUG_USE
             return;
 #endif
+            if (!EnableBattleLog) return;
 
             var sb = new StringBuilder();
 
@@ -193,6 +196,7 @@ namespace Nekoyume
 #if !DEBUG_USE
             return;
 #endif
+            if (!EnableBattleLog) return;
 
             var sb = new StringBuilder();
 
