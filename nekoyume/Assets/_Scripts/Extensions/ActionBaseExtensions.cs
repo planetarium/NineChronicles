@@ -19,6 +19,8 @@ namespace Nekoyume
 {
     public static class ActionBaseExtensions
     {
+        public static bool EnableBattleLog = false;
+
         public static ActionTypeAttribute GetActionTypeAttribute(this ActionBase actionBase)
         {
             var gameActionType = actionBase.GetType();
@@ -32,6 +34,7 @@ namespace Nekoyume
 #if !DEBUG_USE
             return;
 #endif
+            if (!EnableBattleLog) return;
 
             var sb = new StringBuilder();
 
@@ -51,7 +54,7 @@ namespace Nekoyume
                     sb.AppendLine($"- WaveNumber: {spawnWave.WaveNumber}, WaveTurn: {spawnWave.WaveTurn}, HasBoss: {spawnWave.HasBoss}");
                     foreach (var enemy in spawnWave.Enemies)
                     {
-                        sb.AppendLine($"- Enemy: {enemy.RowData.Id} (Lv.{enemy.Level})");
+                        sb.AppendLine($"- Enemy: {enemy.RowData?.Id ?? enemy.CharacterId} (Lv.{enemy.Level})");
                     }
 
                     break;
@@ -193,6 +196,7 @@ namespace Nekoyume
 #if !DEBUG_USE
             return;
 #endif
+            if (!EnableBattleLog) return;
 
             var sb = new StringBuilder();
 
