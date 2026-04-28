@@ -51,7 +51,7 @@ namespace Nekoyume
                     sb.AppendLine($"- WaveNumber: {spawnWave.WaveNumber}, WaveTurn: {spawnWave.WaveTurn}, HasBoss: {spawnWave.HasBoss}");
                     foreach (var enemy in spawnWave.Enemies)
                     {
-                        sb.AppendLine($"- Enemy: {enemy.RowData.Id} (Lv.{enemy.Level})");
+                        sb.AppendLine($"- Enemy: {enemy.RowData?.Id ?? enemy.CharacterId} (Lv.{enemy.Level})");
                     }
 
                     break;
