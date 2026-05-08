@@ -347,7 +347,8 @@ namespace Nekoyume.Multiplanetary
                 .ToArray();
             clo.RpcServerHosts = uris.Select(uri => uri.Host);
 
-            // FIXME: RpcServer is selected randomly for now.
+            // Random pick is the fallback. RPCAgent.Initialize replaces this with a
+            // health-aware selection via RpcEndpointProber. See issue #7260.
             var uri = uris[Random.Range(0, uris.Length)];
             clo.RpcServerHost = uri.Host;
             clo.RpcServerPort = uri.Port;
