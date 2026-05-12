@@ -1,26 +1,29 @@
-#nullable enable
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
+using Bencodex;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Libplanet.Types.Blocks;
+using MagicOnion;
+using MagicOnion.Client;
+using MagicOnion.Unity;
+using Nekoyume.Shared.Services;
 
 namespace Nekoyume.Multiplanetary
 {
     /// <summary>
     /// Picks healthy RPC endpoints from a candidate list (issue #7260).
-    /// Replaces random selection in <see cref="PlanetSelector"/> and
-    /// <see cref="Nekoyume.Blockchain.RPCAgent"/>.
+    /// Probes the gRPC <c>GetTip</c> unary on the same channel gameplay uses, so
+    /// hostname/port assumptions about a sibling GraphQL endpoint don't apply.
     /// </summary>
     public static class RpcEndpointProber
     {
-        private const int StaleTipThreshold = 30;
+        public const int StaleTipThreshold = 30;
         private const int BaseScore = 1000;
         private const int FailurePenalty = 100;
         private const int FreshnessPenaltyPerBlock = 10;
@@ -39,35 +42,52 @@ namespace Nekoyume.Multiplanetary
         {
             public Uri Uri { get; }
             public bool Healthy { get; }
-            public bool PreloadEnded { get; }
             public long Tip { get; }
             public int LatencyMs { get; }
 
-            public ProbeResult(Uri uri, bool healthy, bool preloadEnded, long tip, int latencyMs)
+            public ProbeResult(Uri uri, bool healthy, long tip, int latencyMs)
             {
                 Uri = uri;
                 Healthy = healthy;
-                PreloadEnded = preloadEnded;
                 Tip = tip;
                 LatencyMs = latencyMs;
             }
         }
 
+        public readonly struct ProbeReport
+        {
+            /// <summary>Picked URI, or <c>null</c> if no candidate passed the filters.</summary>
+            public Uri Pick { get; }
+
+            /// <summary>Raw probe results for every candidate (empty when probing was skipped).</summary>
+            public IReadOnlyList<ProbeResult> Results { get; }
+
+            /// <summary>Maximum tip observed across healthy probes (0 if none healthy).</summary>
+            public long MaxTip { get; }
+
+            public ProbeReport(Uri pick, IReadOnlyList<ProbeResult> results, long maxTip)
+            {
+                Pick = pick;
+                Results = results;
+                MaxTip = maxTip;
+            }
+        }
+
         /// <summary>
-        /// Probes each candidate via the headless GraphQL <c>nodeStatus</c> endpoint and
-        /// returns the highest-scoring healthy URI. Returns <c>null</c> if every probe fails
-        /// so the caller can fall back to a random pick.
+        /// Probes each candidate via gRPC <c>GetTip</c> and returns a <see cref="ProbeReport"/>
+        /// containing the picked URI plus every raw result. <see cref="ProbeReport.Pick"/> is
+        /// <c>null</c> if no candidate passed the filters so the caller can fall back to a random pick.
         /// </summary>
-        public static async UniTask<Uri?> PickBestRpcAsync(IReadOnlyList<Uri> uris, int timeoutMs)
+        public static async UniTask<ProbeReport> PickBestRpcAsync(IReadOnlyList<Uri> uris, int timeoutMs)
         {
             if (uris == null || uris.Count == 0)
             {
-                return null;
+                return new ProbeReport(null, Array.Empty<ProbeResult>(), 0L);
             }
 
             if (uris.Count == 1)
             {
-                return uris[0];
+                return new ProbeReport(uris[0], Array.Empty<ProbeResult>(), 0L);
             }
 
             var probes = uris.Select(uri => ProbeAsync(uri, timeoutMs)).ToArray();
@@ -79,12 +99,14 @@ namespace Nekoyume.Multiplanetary
                 .DefaultIfEmpty(0L)
                 .Max();
 
-            return results
-                .Where(r => r.Healthy && r.PreloadEnded && (maxTip - r.Tip) <= StaleTipThreshold)
+            var pick = results
+                .Where(r => r.Healthy && (maxTip - r.Tip) <= StaleTipThreshold)
                 .Select(r => (Uri: r.Uri, Score: Score(r, maxTip)))
                 .OrderByDescending(t => t.Score)
-                .Select(t => (Uri?)t.Uri)
+                .Select(t => t.Uri)
                 .FirstOrDefault();
+
+            return new ProbeReport(pick, results, maxTip);
         }
 
         public static int Score(in ProbeResult r, long maxTip)
@@ -105,43 +127,57 @@ namespace Nekoyume.Multiplanetary
 
         public static async UniTask<ProbeResult> ProbeAsync(Uri uri, int timeoutMs)
         {
-            // Headless exposes GraphQL on https at the same hostname as the gRPC URI.
-            var probeUrl = $"https://{uri.Host}/graphql";
-            const string body = "{\"query\":\"{nodeStatus{tip{index} preloadEnded}}\"}";
-
-            using var cts = new CancellationTokenSource(timeoutMs);
-            using var http = new HttpClient
-            {
-                Timeout = TimeSpan.FromMilliseconds(timeoutMs),
-            };
-
+            GrpcChannelx channel = null;
             var sw = Stopwatch.StartNew();
             try
             {
-                using var content = new StringContent(body, Encoding.UTF8, "application/json");
-                using var response = await http.PostAsync(probeUrl, content, cts.Token);
+                channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(uri.Host, uri.Port, true));
+                var svc = MagicOnionClient.Create<IBlockChainService>(channel);
+
+                var tipTask = svc.GetTip().ResponseAsync;
+                using var delayCts = new CancellationTokenSource();
+                var delayTask = Task.Delay(timeoutMs, delayCts.Token);
+                var winner = await Task.WhenAny(tipTask, delayTask);
                 sw.Stop();
 
-                if (!response.IsSuccessStatusCode)
+                if (winner != tipTask)
+                {
+                    // Observe any later fault on the abandoned tipTask so it doesn't
+                    // surface as an unobserved exception.
+                    _ = tipTask.ContinueWith(_ => { }, TaskScheduler.Default);
+                    RecordFailure(uri.Host);
+                    return new ProbeResult(uri, false, 0, (int)sw.ElapsedMilliseconds);
+                }
+
+                delayCts.Cancel();
+                var tipBytes = await tipTask;
+                var tip = DecodeTipIndex(tipBytes);
+                if (tip <= 0)
                 {
                     RecordFailure(uri.Host);
-                    return new ProbeResult(uri, false, false, 0, (int)sw.ElapsedMilliseconds);
+                    return new ProbeResult(uri, false, 0, (int)sw.ElapsedMilliseconds);
                 }
-
-                var text = await response.Content.ReadAsStringAsync();
-                if (TryParseProbe(text, out var tip, out var preloadEnded))
-                {
-                    return new ProbeResult(uri, true, preloadEnded, tip, (int)sw.ElapsedMilliseconds);
-                }
-
-                RecordFailure(uri.Host);
-                return new ProbeResult(uri, false, false, 0, (int)sw.ElapsedMilliseconds);
+                return new ProbeResult(uri, true, tip, (int)sw.ElapsedMilliseconds);
             }
             catch (Exception)
             {
                 sw.Stop();
                 RecordFailure(uri.Host);
-                return new ProbeResult(uri, false, false, 0, (int)sw.ElapsedMilliseconds);
+                return new ProbeResult(uri, false, 0, (int)sw.ElapsedMilliseconds);
+            }
+            finally
+            {
+                if (channel != null)
+                {
+                    try
+                    {
+                        await channel.ShutdownAsync();
+                    }
+                    catch
+                    {
+                        // Shutdown failure shouldn't taint the probe result.
+                    }
+                }
             }
         }
 
@@ -174,40 +210,36 @@ namespace Nekoyume.Multiplanetary
             }
         }
 
-        private static bool TryParseProbe(string body, out long tip, out bool preloadEnded)
+        private static long DecodeTipIndex(byte[] bytes)
         {
-            tip = 0;
-            // Default to true so headless versions that don't expose preloadEnded still pass.
-            preloadEnded = true;
             try
             {
-                using var doc = JsonDocument.Parse(body);
-                if (!doc.RootElement.TryGetProperty("data", out var data) ||
-                    !data.TryGetProperty("nodeStatus", out var nodeStatus) ||
-                    nodeStatus.ValueKind != JsonValueKind.Object)
-                {
-                    return false;
-                }
-
-                if (nodeStatus.TryGetProperty("tip", out var tipEl) &&
-                    tipEl.ValueKind == JsonValueKind.Object &&
-                    tipEl.TryGetProperty("index", out var indexEl) &&
-                    indexEl.TryGetInt64(out var tipIndex))
-                {
-                    tip = tipIndex;
-                }
-
-                if (nodeStatus.TryGetProperty("preloadEnded", out var pe) &&
-                    (pe.ValueKind == JsonValueKind.True || pe.ValueKind == JsonValueKind.False))
-                {
-                    preloadEnded = pe.GetBoolean();
-                }
-
-                return tip > 0;
+                var codec = new Codec();
+                var dict = (Dictionary)codec.Decode(bytes);
+                var block = BlockMarshaler.UnmarshalBlock(dict);
+                return block.Index;
             }
             catch
             {
-                return false;
+                return 0;
+            }
+        }
+
+        internal static void ResetFailuresForTests()
+        {
+            FailureCounts.Clear();
+        }
+
+        internal static void RewindFailureClockForTests(string host, TimeSpan delta)
+        {
+            if (string.IsNullOrEmpty(host) || !FailureCounts.TryGetValue(host, out var record))
+            {
+                return;
+            }
+
+            lock (record)
+            {
+                record.LastUpdated -= delta;
             }
         }
 

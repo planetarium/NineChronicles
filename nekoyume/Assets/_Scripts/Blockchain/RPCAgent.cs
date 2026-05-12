@@ -266,17 +266,62 @@ namespace Nekoyume.Blockchain
 
             try
             {
-                var best = await RpcEndpointProber.PickBestRpcAsync(uris, timeoutMs: 3000);
-                if (best is not null && !string.Equals(best.Host, options.RpcServerHost, StringComparison.OrdinalIgnoreCase))
+                var report = await RpcEndpointProber.PickBestRpcAsync(uris, timeoutMs: 3000);
+                LogProbeReport(report);
+                if (report.Pick is not null && !string.Equals(report.Pick.Host, options.RpcServerHost, StringComparison.OrdinalIgnoreCase))
                 {
-                    NcDebug.Log($"[RPCAgent] Health-aware pick: {options.RpcServerHost} -> {best.Host}");
-                    options.RpcServerHost = best.Host;
+                    NcDebug.Log($"[RPCAgent] Health-aware pick: {options.RpcServerHost} -> {report.Pick.Host}");
+                    options.RpcServerHost = report.Pick.Host;
                 }
             }
             catch (Exception e)
             {
                 NcDebug.Log($"[RPCAgent] RPC probe failed; keeping random pick {options.RpcServerHost}.\n{e}");
             }
+        }
+
+        private static void LogProbeReport(RpcEndpointProber.ProbeReport report)
+        {
+            if (report.Results.Count == 0)
+            {
+                return;
+            }
+
+            var sb = new System.Text.StringBuilder();
+            sb.Append("[RPCAgent] Probe results (maxTip=").Append(report.MaxTip).AppendLine("):");
+            var ranked = report.Results
+                .Select(r => (Result: r, Score: r.Healthy ? RpcEndpointProber.Score(r, report.MaxTip) : int.MinValue))
+                .OrderByDescending(t => t.Score)
+                .ToArray();
+            foreach (var (r, score) in ranked)
+            {
+                var fail = RpcEndpointProber.GetFailureCount(r.Uri.Host);
+                if (!r.Healthy)
+                {
+                    sb.Append("  ").Append(r.Uri.Host)
+                        .Append(": UNHEALTHY lat=").Append(r.LatencyMs).Append("ms fail=").Append(fail.ToString("0.0"))
+                        .AppendLine();
+                    continue;
+                }
+
+                var behind = Math.Max(0L, report.MaxTip - r.Tip);
+                if (behind > RpcEndpointProber.StaleTipThreshold)
+                {
+                    sb.Append("  ").Append(r.Uri.Host)
+                        .Append(": STALE lat=").Append(r.LatencyMs).Append("ms tip=").Append(r.Tip)
+                        .Append(" behind=").Append(behind).Append(" fail=").Append(fail.ToString("0.0"))
+                        .AppendLine();
+                    continue;
+                }
+
+                sb.Append("  ").Append(r.Uri.Host)
+                    .Append(": score=").Append(score)
+                    .Append(" lat=").Append(r.LatencyMs).Append("ms tip=").Append(r.Tip)
+                    .Append(" behind=").Append(behind)
+                    .Append(" fail=").Append(fail.ToString("0.0"))
+                    .AppendLine();
+            }
+            NcDebug.Log(sb.ToString().TrimEnd());
         }
 
         public IValue GetState(Address accountAddress, Address address)
