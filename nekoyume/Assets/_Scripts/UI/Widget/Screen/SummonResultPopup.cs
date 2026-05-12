@@ -96,7 +96,7 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            var great = resultList.Any(res => res.Grade >= 5);
+            var great = resultList.Any(res => res.Grade >= 7);
             summonItemViewParentObject.SetActive(false);
             manySummonItemViewParentObject.SetActive(false);
             singleSummonItemView.Hide();
