@@ -193,6 +193,18 @@ MonoBehaviour:
     ticker: RUNESTONE_YGGCRI
     icon: {fileID: 21300000, guid: 3929f235d19d64836a60b02a2b484d30, type: 3}
     sortingOrder: 2807
+  - id: 20003
+    ticker: RUNESTONE_GOLDENFRUIT
+    icon: {fileID: 21300000, guid: 92b594a5e7764a0990e0f841ca5ab86d, type: 3}
+    sortingOrder: 2697
+  - id: 10055
+    ticker: RUNESTONE_SIGHT
+    icon: {fileID: 21300000, guid: 2525d1b187ac4501ba5a0d7caa82c55a, type: 3}
+    sortingOrder: 2698
+  - id: 10056
+    ticker: RUNESTONE_BIFROST
+    icon: {fileID: 21300000, guid: d34b2fd3ee7b4c0fafd523e5a0163a82, type: 3}
+    sortingOrder: 2699
   - id: 10051
     ticker: RUNESTONE_MJOLNIR
     icon: {fileID: 21300000, guid: d6dcd4e8c9b004c4eaf181222dcf6364, type: 3}
