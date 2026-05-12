@@ -38,6 +38,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using Nekoyume.Multiplanetary;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
 using Nekoyume.State;
@@ -46,7 +47,6 @@ using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using UnityEngine.Networking;
 using NCTx = Libplanet.Types.Tx.Transaction;
-using Random = System.Random;
 
 namespace Nekoyume.Blockchain
 {
@@ -118,6 +118,7 @@ namespace Nekoyume.Blockchain
 
         private readonly List<string> cachedRpcServerHosts = new();
         private int cachedRpcServerPort;
+        private string _currentRpcServerHost;
         private CancellationTokenSource cancellationTokenSource;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -182,6 +183,9 @@ namespace Nekoyume.Blockchain
             cachedRpcServerPort = options.RpcServerPort;
             NcDebug.Log($"[RPCAgent] Cached RPC server hosts: \n{string.Join(",\n", cachedRpcServerHosts)}");
 
+            yield return SelectHealthyRpcHostAsync(options).ToCoroutine();
+
+            _currentRpcServerHost = options.RpcServerHost;
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
                 new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
@@ -243,6 +247,90 @@ namespace Nekoyume.Blockchain
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
             NcDebug.Log($"[RPCAgent] Finish initialization");
+        }
+
+        private async UniTask SelectHealthyRpcHostAsync(CommandLineOptions options)
+        {
+            // The PlanetSelector seeded `options.RpcServerHost` with a random pick.
+            // Replace it with a probed pick when possible so we don't anchor the session
+            // to a stale external-operator headless. See issue #7260.
+            if (cachedRpcServerHosts.Count <= 1)
+            {
+                return;
+            }
+
+            var port = options.RpcServerPort;
+            var uris = cachedRpcServerHosts
+                .Select(host => new Uri($"http://{host}:{port}"))
+                .ToArray();
+
+            try
+            {
+                var report = await RpcEndpointProber.PickBestRpcAsync(uris, timeoutMs: 3000);
+                LogProbeReport(report);
+                if (report.Pick is not null && !string.Equals(report.Pick.Host, options.RpcServerHost, StringComparison.OrdinalIgnoreCase))
+                {
+                    NcDebug.Log($"[RPCAgent] Health-aware pick: {options.RpcServerHost} -> {report.Pick.Host}");
+                    options.RpcServerHost = report.Pick.Host;
+                }
+            }
+            catch (Exception e)
+            {
+                NcDebug.Log($"[RPCAgent] RPC probe failed; keeping random pick {options.RpcServerHost}.\n{e}");
+            }
+        }
+
+        private static void LogProbeReport(RpcEndpointProber.ProbeReport report)
+        {
+            if (report.Results.Count == 0)
+            {
+                return;
+            }
+
+            if (report.FastPath && report.Pick is not null)
+            {
+                var winner = report.Results[report.Results.Count - 1];
+                NcDebug.Log(
+                    $"[RPCAgent] Fast-path pick: {winner.Uri.Host} lat={winner.LatencyMs}ms tip={winner.Tip} " +
+                    $"(remaining probes draining in background)");
+                return;
+            }
+
+            var sb = new System.Text.StringBuilder();
+            sb.Append("[RPCAgent] Probe results (maxTip=").Append(report.MaxTip).AppendLine("):");
+            var ranked = report.Results
+                .Select(r => (Result: r, Score: r.Healthy ? RpcEndpointProber.Score(r, report.MaxTip) : int.MinValue))
+                .OrderByDescending(t => t.Score)
+                .ToArray();
+            foreach (var (r, score) in ranked)
+            {
+                var fail = RpcEndpointProber.GetFailureCount(r.Uri.Host);
+                if (!r.Healthy)
+                {
+                    sb.Append("  ").Append(r.Uri.Host)
+                        .Append(": UNHEALTHY lat=").Append(r.LatencyMs).Append("ms fail=").Append(fail.ToString("0.0"))
+                        .AppendLine();
+                    continue;
+                }
+
+                var behind = Math.Max(0L, report.MaxTip - r.Tip);
+                if (behind > RpcEndpointProber.StaleTipThreshold)
+                {
+                    sb.Append("  ").Append(r.Uri.Host)
+                        .Append(": STALE lat=").Append(r.LatencyMs).Append("ms tip=").Append(r.Tip)
+                        .Append(" behind=").Append(behind).Append(" fail=").Append(fail.ToString("0.0"))
+                        .AppendLine();
+                    continue;
+                }
+
+                sb.Append("  ").Append(r.Uri.Host)
+                    .Append(": score=").Append(score)
+                    .Append(" lat=").Append(r.LatencyMs).Append("ms tip=").Append(r.Tip)
+                    .Append(" behind=").Append(behind)
+                    .Append(" fail=").Append(fail.ToString("0.0"))
+                    .AppendLine();
+            }
+            NcDebug.Log(sb.ToString().TrimEnd());
         }
 
         public IValue GetState(Address accountAddress, Address address)
@@ -1186,13 +1274,26 @@ namespace Nekoyume.Blockchain
             // Dict to store tried RPC server hosts. (host, tried)
             var triedRPCHost = cachedRpcServerHosts.ToDictionary(key => key, value => false);
             NcDebug.Log($"[RPCAgent] RetryRpc()... Trying to reconnect to RPC server {RpcConnectionRetryCount} times.");
-            var random = new Random();
+            // The host that just disconnected has earned a failure for this rotation; bias against it.
+            if (!string.IsNullOrEmpty(_currentRpcServerHost))
+            {
+                RpcEndpointProber.RecordFailure(_currentRpcServerHost);
+            }
+            // Score-only ordering is a stable sort, so ties default to cachedRpcServerHosts
+            // index order. On a clean session every host scores 1000 — without a tie-break
+            // every disconnect would funnel retry to the same first host (which may be the
+            // external/stale operator we're trying to avoid). Break ties randomly per rotation.
+            var random = new System.Random();
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
-                // Find a new RPC server host to connect that has not been tried yet.
+                // Pick the untried host with the best (highest) score from failure history.
                 var newRpcServerHost = triedRPCHost
-                    .Where(pair => !pair.Value).OrderBy(_ => random.Next()).FirstOrDefault().Key;
+                    .Where(pair => !pair.Value)
+                    .Select(pair => pair.Key)
+                    .OrderByDescending(RpcEndpointProber.ScoreHostByHistory)
+                    .ThenBy(_ => random.Next())
+                    .FirstOrDefault();
                 if (newRpcServerHost is null)
                 {
                     NcDebug.Log("[RPCAgent] All RPC server hosts are tried. <b>Retry failed.</b>");
@@ -1221,6 +1322,7 @@ namespace Nekoyume.Blockchain
                 {
                     NcDebug.Log($"[RPCAgent] RpcException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{re}");
                     triedRPCHost[newRpcServerHost] = true;
+                    RpcEndpointProber.RecordFailure(newRpcServerHost);
                     retryCount--;
                     continue;
                 }
@@ -1234,6 +1336,7 @@ namespace Nekoyume.Blockchain
                     NcDebug.Log("[RPCAgent] Trying to join hub...");
                     await Join(true);
                     NcDebug.Log("[RPCAgent] Join complete! Registering disconnect event...");
+                    _currentRpcServerHost = newRpcServerHost;
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
@@ -1244,6 +1347,7 @@ namespace Nekoyume.Blockchain
                 {
                     NcDebug.Log($"[RPCAgent] TimeoutException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{toe}");
                     triedRPCHost[newRpcServerHost] = true;
+                    RpcEndpointProber.RecordFailure(newRpcServerHost);
                     retryCount--;
                 }
                 catch (AggregateException ae)
@@ -1252,6 +1356,7 @@ namespace Nekoyume.Blockchain
                     {
                         NcDebug.Log($"[RPCAgent] RpcException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{re}");
                         triedRPCHost[newRpcServerHost] = true;
+                        RpcEndpointProber.RecordFailure(newRpcServerHost);
                         retryCount--;
                     }
                     else
@@ -1264,6 +1369,7 @@ namespace Nekoyume.Blockchain
                 {
                     NcDebug.Log($"[RPCAgent] ObjectDisposedException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{ode}");
                     triedRPCHost[newRpcServerHost] = true;
+                    RpcEndpointProber.RecordFailure(newRpcServerHost);
                     retryCount--;
                 }
                 catch (Exception e)
