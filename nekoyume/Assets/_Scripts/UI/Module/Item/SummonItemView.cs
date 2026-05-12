@@ -119,18 +119,10 @@ namespace Nekoyume.UI.Module
             canvasGroup.alpha = 1;
             animator.SetTrigger(AnimatorHashShow);
 
-            if (grade5Effect.activeSelf || grade6Effect.activeSelf || grade7Effect.activeSelf || grade8Effect.activeSelf)
+            if (grade7Effect.activeSelf || grade8Effect.activeSelf)
             {
                 var effect = gradeEffect.GetComponent<UIParticle>();
-                if (grade5Effect.activeSelf)
-                {
-                    effect.scale = 80;
-                }
-                else if (grade6Effect.activeSelf)
-                {
-                    effect.scale = 160;
-                }
-                else if (grade7Effect.activeSelf)
+                if (grade7Effect.activeSelf)
                 {
                     effect.scale = 240;
                 }
