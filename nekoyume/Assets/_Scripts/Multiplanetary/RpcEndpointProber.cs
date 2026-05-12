@@ -18,8 +18,10 @@ namespace Nekoyume.Multiplanetary
 {
     /// <summary>
     /// Picks healthy RPC endpoints from a candidate list (issue #7260).
-    /// Probes the gRPC <c>GetTip</c> unary on the same channel gameplay uses, so
-    /// hostname/port assumptions about a sibling GraphQL endpoint don't apply.
+    /// Probes the gRPC <c>GetTip</c> unary over a transient channel — same
+    /// protocol/port that gameplay later uses, so hostname/port assumptions
+    /// about a sibling GraphQL endpoint don't apply. The probe channel is
+    /// shut down before the production <c>RPCAgent</c> channel is opened.
     /// </summary>
     public static class RpcEndpointProber
     {
@@ -59,54 +61,90 @@ namespace Nekoyume.Multiplanetary
             /// <summary>Picked URI, or <c>null</c> if no candidate passed the filters.</summary>
             public Uri Pick { get; }
 
-            /// <summary>Raw probe results for every candidate (empty when probing was skipped).</summary>
+            /// <summary>
+            /// Probe results gathered up to the moment <see cref="Pick"/> was decided.
+            /// On fast-path picks this contains only the responders observed so far —
+            /// remaining probes are drained in the background to keep failure
+            /// counters fresh without holding up <c>RPCAgent.Initialize</c>.
+            /// </summary>
             public IReadOnlyList<ProbeResult> Results { get; }
 
             /// <summary>Maximum tip observed across healthy probes (0 if none healthy).</summary>
             public long MaxTip { get; }
 
-            public ProbeReport(Uri pick, IReadOnlyList<ProbeResult> results, long maxTip)
+            /// <summary>
+            /// <c>true</c> when a healthy response within the fast-path latency window
+            /// was accepted before every candidate finished probing.
+            /// </summary>
+            public bool FastPath { get; }
+
+            public ProbeReport(Uri pick, IReadOnlyList<ProbeResult> results, long maxTip, bool fastPath)
             {
                 Pick = pick;
                 Results = results;
                 MaxTip = maxTip;
+                FastPath = fastPath;
             }
         }
 
         /// <summary>
-        /// Probes each candidate via gRPC <c>GetTip</c> and returns a <see cref="ProbeReport"/>
-        /// containing the picked URI plus every raw result. <see cref="ProbeReport.Pick"/> is
-        /// <c>null</c> if no candidate passed the filters so the caller can fall back to a random pick.
+        /// Probes each candidate via gRPC <c>GetTip</c> and returns a <see cref="ProbeReport"/>.
+        /// Accepts the first healthy responder within <paramref name="fastPathLatencyMs"/> so
+        /// <c>RPCAgent.Initialize</c> isn't held up by the slowest candidate in the common case;
+        /// if no host hits the fast-path window, scores every responder once they all finish and
+        /// picks the highest. <see cref="ProbeReport.Pick"/> is <c>null</c> when every candidate
+        /// failed so the caller can fall back to a random pick.
         /// </summary>
-        public static async UniTask<ProbeReport> PickBestRpcAsync(IReadOnlyList<Uri> uris, int timeoutMs)
+        public static async UniTask<ProbeReport> PickBestRpcAsync(
+            IReadOnlyList<Uri> uris, int timeoutMs, int fastPathLatencyMs = 500)
         {
             if (uris == null || uris.Count == 0)
             {
-                return new ProbeReport(null, Array.Empty<ProbeResult>(), 0L);
+                return new ProbeReport(null, Array.Empty<ProbeResult>(), 0L, fastPath: false);
             }
 
             if (uris.Count == 1)
             {
-                return new ProbeReport(uris[0], Array.Empty<ProbeResult>(), 0L);
+                return new ProbeReport(uris[0], Array.Empty<ProbeResult>(), 0L, fastPath: false);
             }
 
-            var probes = uris.Select(uri => ProbeAsync(uri, timeoutMs)).ToArray();
-            var results = await UniTask.WhenAll(probes);
+            var pending = uris.Select(uri => ProbeAsync(uri, timeoutMs).AsTask()).ToList();
+            var observed = new List<ProbeResult>(uris.Count);
 
-            var maxTip = results
+            while (pending.Count > 0)
+            {
+                var finished = await Task.WhenAny(pending);
+                pending.Remove(finished);
+                var result = await finished;
+                observed.Add(result);
+
+                if (result.Healthy && result.LatencyMs <= fastPathLatencyMs)
+                {
+                    // Fast-path: this candidate is healthy AND fast enough that further
+                    // scoring won't change the call. Let the remaining probes finish in
+                    // the background (ProbeAsync swallows its own exceptions and updates
+                    // the failure counter) so we don't lose telemetry, but stop blocking
+                    // Initialize on the slowest candidate.
+                    _ = Task.WhenAll(pending);
+                    return new ProbeReport(result.Uri, observed, result.Tip, fastPath: true);
+                }
+            }
+
+            // No fast-path hit — score every responder and pick the best.
+            var maxTip = observed
                 .Where(r => r.Healthy)
                 .Select(r => r.Tip)
                 .DefaultIfEmpty(0L)
                 .Max();
 
-            var pick = results
+            var pick = observed
                 .Where(r => r.Healthy && (maxTip - r.Tip) <= StaleTipThreshold)
                 .Select(r => (Uri: r.Uri, Score: Score(r, maxTip)))
                 .OrderByDescending(t => t.Score)
                 .Select(t => t.Uri)
                 .FirstOrDefault();
 
-            return new ProbeReport(pick, results, maxTip);
+            return new ProbeReport(pick, observed, maxTip, fastPath: false);
         }
 
         public static int Score(in ProbeResult r, long maxTip)

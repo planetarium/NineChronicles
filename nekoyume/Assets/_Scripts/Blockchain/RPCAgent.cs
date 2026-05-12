@@ -287,6 +287,15 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
+            if (report.FastPath && report.Pick is not null)
+            {
+                var winner = report.Results[report.Results.Count - 1];
+                NcDebug.Log(
+                    $"[RPCAgent] Fast-path pick: {winner.Uri.Host} lat={winner.LatencyMs}ms tip={winner.Tip} " +
+                    $"(remaining probes draining in background)");
+                return;
+            }
+
             var sb = new System.Text.StringBuilder();
             sb.Append("[RPCAgent] Probe results (maxTip=").Append(report.MaxTip).AppendLine("):");
             var ranked = report.Results
