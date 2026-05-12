@@ -1270,6 +1270,11 @@ namespace Nekoyume.Blockchain
             {
                 RpcEndpointProber.RecordFailure(_currentRpcServerHost);
             }
+            // Score-only ordering is a stable sort, so ties default to cachedRpcServerHosts
+            // index order. On a clean session every host scores 1000 — without a tie-break
+            // every disconnect would funnel retry to the same first host (which may be the
+            // external/stale operator we're trying to avoid). Break ties randomly per rotation.
+            var random = new System.Random();
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
@@ -1278,6 +1283,7 @@ namespace Nekoyume.Blockchain
                     .Where(pair => !pair.Value)
                     .Select(pair => pair.Key)
                     .OrderByDescending(RpcEndpointProber.ScoreHostByHistory)
+                    .ThenBy(_ => random.Next())
                     .FirstOrDefault();
                 if (newRpcServerHost is null)
                 {
