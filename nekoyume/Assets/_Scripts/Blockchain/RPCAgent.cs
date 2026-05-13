@@ -137,10 +137,20 @@ namespace Nekoyume.Blockchain
         public static void OnRuntimeInitialize()
         {
             // Initialize gRPC channel provider when the application is loaded.
+            //
+            // Keepalive surfaces zombie connections (NAT/proxy idle drop, server soft-hang,
+            // mobile network switch) that TCP RST alone never reports. Without these, a
+            // dropped channel can sit waiting indefinitely; subsequent retry / deadline
+            // logic (#7258, #7264) can't engage because no error ever fires. The headless
+            // side sets Kestrel Http2.KeepAlivePingDelay accordingly in a coordinated PR.
             GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
                 new DefaultGrpcChannelProvider(new[]
                 {
                     new ChannelOption("grpc.max_receive_message_length", -1),
+                    new ChannelOption("grpc.keepalive_time_ms", 30000),
+                    new ChannelOption("grpc.keepalive_timeout_ms", 10000),
+                    new ChannelOption("grpc.keepalive_permit_without_calls", 1),
+                    new ChannelOption("grpc.http2.max_pings_without_data", 0),
                 })
             ));
         }
