@@ -45,10 +45,16 @@ namespace Nekoyume.GraphQL.GraphTypes
     public class TipResultQuery
     {
         public TipResult Tip;
+        public AppProtocolVersionResult AppProtocolVersion;
     }
 
     public class TipResult
     {
         public string Id;
+    }
+
+    public class AppProtocolVersionResult
+    {
+        public int Version;
     }
 }
