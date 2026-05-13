@@ -222,6 +222,10 @@ namespace Nekoyume.Blockchain
             // OnRuntimeInitialize seeded defaults before CLO was loaded; this call
             // applies per-environment overrides for all downstream ForTarget() users
             // (this.Initialize, RetryRpc, RpcEndpointProber).
+            //
+            // MUST run before any GrpcChannelx.ForTarget call below — channels opened
+            // against the seeded provider would otherwise keep its options after the
+            // re-register destroys that host.
             RegisterGrpcChannelProvider(
                 options.RpcKeepaliveDisabled,
                 options.RpcKeepaliveTimeMs,

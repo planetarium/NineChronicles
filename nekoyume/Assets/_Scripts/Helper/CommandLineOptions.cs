@@ -357,7 +357,8 @@ namespace Nekoyume.Helper
         }
 
         [Option("rpc-keepalive-time-ms", Required = false,
-            HelpText = "gRPC keepalive PING interval in ms. 0 = use built-in default.")]
+            HelpText = "gRPC keepalive PING interval in ms. 0 = use built-in default. " +
+                "Values below ~10000 risk server-side ENHANCE_YOUR_CALM rejection.")]
         public int RpcKeepaliveTimeMs
         {
             get => rpcKeepaliveTimeMs;
