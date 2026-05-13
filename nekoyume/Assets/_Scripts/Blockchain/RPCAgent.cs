@@ -133,15 +133,47 @@ namespace Nekoyume.Blockchain
         private string _currentRpcServerHost;
         private CancellationTokenSource cancellationTokenSource;
 
+        // Built-in keepalive defaults. Surface zombie connections (NAT/proxy idle drop,
+        // server soft-hang, mobile network switch) that TCP RST alone never reports.
+        // Without these, a dropped channel sits waiting indefinitely; retry / deadline
+        // logic (#7258, #7264) can't engage because no error ever fires. The headless
+        // side ships a coordinated Kestrel Http2.KeepAlivePingDelay env-driven setting.
+        private const int DefaultKeepaliveTimeMs = 30000;
+        private const int DefaultKeepaliveTimeoutMs = 10000;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void OnRuntimeInitialize()
         {
-            // Initialize gRPC channel provider when the application is loaded.
+            // Boot-time fallback registration. RPCAgent.Initialize re-registers once
+            // CommandLineOptions are loaded so per-environment overrides can apply.
+            RegisterGrpcChannelProvider(
+                keepaliveDisabled: false,
+                keepaliveTimeMs: DefaultKeepaliveTimeMs,
+                keepaliveTimeoutMs: DefaultKeepaliveTimeoutMs);
+        }
+
+        private static void RegisterGrpcChannelProvider(
+            bool keepaliveDisabled,
+            int keepaliveTimeMs,
+            int keepaliveTimeoutMs)
+        {
+            var channelOptions = new List<ChannelOption>
+            {
+                new("grpc.max_receive_message_length", -1),
+            };
+
+            if (!keepaliveDisabled)
+            {
+                var timeMs = keepaliveTimeMs > 0 ? keepaliveTimeMs : DefaultKeepaliveTimeMs;
+                var timeoutMs = keepaliveTimeoutMs > 0 ? keepaliveTimeoutMs : DefaultKeepaliveTimeoutMs;
+                channelOptions.Add(new ChannelOption("grpc.keepalive_time_ms", timeMs));
+                channelOptions.Add(new ChannelOption("grpc.keepalive_timeout_ms", timeoutMs));
+                channelOptions.Add(new ChannelOption("grpc.keepalive_permit_without_calls", 1));
+                channelOptions.Add(new ChannelOption("grpc.http2.max_pings_without_data", 0));
+            }
+
             GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
-                new DefaultGrpcChannelProvider(new[]
-                {
-                    new ChannelOption("grpc.max_receive_message_length", -1),
-                })
+                new DefaultGrpcChannelProvider(channelOptions)
             ));
         }
         //
@@ -185,6 +217,19 @@ namespace Nekoyume.Blockchain
             Action<bool> callback)
         {
             NcDebug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
+
+            // Re-register the channel provider with values from CommandLineOptions.
+            // OnRuntimeInitialize seeded defaults before CLO was loaded; this call
+            // applies per-environment overrides for all downstream ForTarget() users
+            // (this.Initialize, RetryRpc, RpcEndpointProber).
+            //
+            // MUST run before any GrpcChannelx.ForTarget call below — channels opened
+            // against the seeded provider would otherwise keep its options after the
+            // re-register destroys that host.
+            RegisterGrpcChannelProvider(
+                options.RpcKeepaliveDisabled,
+                options.RpcKeepaliveTimeMs,
+                options.RpcKeepaliveTimeoutMs);
 
             cachedRpcServerHosts.Clear();
             foreach (var rpcServerHost in options.RpcServerHosts)
