@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GraphQL;
 using Libplanet.Crypto;
 using Libplanet.Types.Blocks;
+using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.UI.Model;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -87,6 +88,24 @@ query {{
         public class StateQuery
         {
             public List<ArenaParticipantModel> ArenaParticipants;
+        }
+
+        public static async Task<int?> QueryNodeAppProtocolVersionAsync(this NineChroniclesAPIClient client)
+        {
+            if (!client.IsInitialized)
+            {
+                return null;
+            }
+
+            const string query = @"query {
+                nodeStatus {
+                    appProtocolVersion {
+                        version
+                    }
+                }
+            }";
+            var response = await client.GetObjectAsync<NodeStatusResponse>(query);
+            return response?.NodeStatus?.AppProtocolVersion?.Version;
         }
     }
 }
