@@ -57,6 +57,18 @@ namespace Nekoyume.Blockchain
     {
         private const int RpcConnectionRetryCount = 6;
         private const float TxProcessInterval = 1.0f;
+
+        // PutTransaction retry budget — 1 initial call + (MaxStageAttempts - 1) retries.
+        // Backoff array length is exactly MaxStageAttempts - 1 (no wait after the final attempt).
+        private const int MaxStageAttempts = 4;
+
+        private static readonly TimeSpan[] StageRetryBackoffs =
+        {
+            TimeSpan.FromSeconds(2),
+            TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(10),
+        };
+
         private readonly ConcurrentQueue<(ActionBase, Func<TxId, Task<bool>>)> _queuedActions = new();
 
         private readonly TransactionMap _transactions = new(20);
@@ -1184,13 +1196,157 @@ namespace Nekoyume.Blockchain
                 $" Actions=[{actionsText}]");
 
             _onMakeTransactionSubject.OnNext((tx, new List<ActionBase> { action.Item1 }));
-            var result = await _service.PutTransaction(tx.Serialize());
-            OnTxStageEnded.OnNext(result);
-            if (gameActionId != Guid.Empty)
+
+            // Same signed bytes are reused across attempts, so the server safely rejects
+            // any duplicate as NonceTooLow / false. Only transient gRPC codes trigger the
+            // retry path — validation failures (InvalidArgument, etc.) propagate immediately.
+            // Per-host failures are also recorded with RpcEndpointProber so future reconnects
+            // (RetryRpc) and next-session probes (PR #7261) can rotate away from the host
+            // accumulating timeouts.
+            //
+            // We snapshot _service / _currentRpcServerHost up front: a concurrent RetryRpc
+            // can swap _service mid-loop, and once that happens this MakeTransaction's
+            // context (host attribution, in-flight call) is stale. On detected swap we
+            // bail out without emitting OnTxStageEnded(false) — the existing OnNext(false)
+            // handler force-exits the session, which is wrong when the agent has just
+            // recovered onto a healthy channel for everything else.
+            var service = _service;
+            var hostAtStart = _currentRpcServerHost;
+            var txBytes = tx.Serialize();
+            var history = new List<string>(MaxStageAttempts);
+
+            for (var attempt = 0; attempt < MaxStageAttempts; attempt++)
             {
-                _transactions.TryAdd(gameActionId, tx.Id);
+                if (!ReferenceEquals(service, _service))
+                {
+                    NcDebug.LogWarning(
+                        $"[RPCAgent] PutTransaction aborted: channel swapped mid-retry. " +
+                        $"TxId={tx.Id} completedAttempts={attempt} history=[{string.Join(",", history)}]");
+                    return;
+                }
+
+                if (attempt > 0)
+                {
+                    try
+                    {
+                        await Task.Delay(StageRetryBackoffs[attempt - 1], cancellationTokenSource.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+                }
+
+                try
+                {
+                    var result = await service.PutTransaction(txBytes);
+
+                    // Ambiguous false on a retry: an earlier attempt may have client-side
+                    // timed out but actually staged on the server, in which case the server
+                    // now sees this duplicate as NonceTooLow and answers false. Confirm via
+                    // IsTransactionStaged before signalling failure so we don't push the user
+                    // through UI_TX_STAGE_FAILED → SetConfirmCallbackToExit for a tx that is
+                    // already in flight.
+                    //
+                    // attempt 0 is skipped from this probe path on purpose: the only way a
+                    // first attempt reaches result=false here is a legitimate server-side
+                    // rejection (the only client/transport errors come back as exceptions,
+                    // which retry below). Probing in that case would just hide real failures.
+                    if (!result && attempt > 0)
+                    {
+                        bool? confirmedStaged = null;
+                        try
+                        {
+                            confirmedStaged = await service.IsTransactionStaged(tx.Id.ToByteArray());
+                        }
+                        catch (Exception probeErr)
+                        {
+                            NcDebug.LogWarning(
+                                $"[RPCAgent] PutTransaction retry-false staged probe threw " +
+                                $"TxId={tx.Id}: {probeErr.Message}");
+                        }
+
+                        if (confirmedStaged == true)
+                        {
+                            NcDebug.Log(
+                                $"[RPCAgent] PutTransaction retry returned false but tx is staged — " +
+                                $"earlier attempt succeeded. TxId={tx.Id} attempts={attempt + 1} " +
+                                $"history=[{string.Join(",", history)}]");
+                            OnTxStageEnded.OnNext(true);
+                            if (gameActionId != Guid.Empty)
+                            {
+                                _transactions.TryAdd(gameActionId, tx.Id);
+                            }
+                            return;
+                        }
+
+                        if (confirmedStaged is null)
+                        {
+                            // Probe itself failed — the channel is unstable, so we can't
+                            // tell whether the original attempt staged. Same reasoning as
+                            // the swap/dispose branches: bail without firing OnNext(false)
+                            // so the agent's own reconnect handles it instead of force-
+                            // exiting the user over an unverifiable result.
+                            NcDebug.LogError(
+                                $"[RPCAgent] PutTransaction retry returned false and staged probe " +
+                                $"is inconclusive — bailing without surfacing failure to UI. " +
+                                $"TxId={tx.Id} attempts={attempt + 1} history=[{string.Join(",", history)}]");
+                            return;
+                        }
+                        // confirmedStaged == false → genuine failure, fall through to OnNext.
+                    }
+
+                    if (attempt > 0)
+                    {
+                        NcDebug.Log(
+                            $"[RPCAgent] PutTransaction succeeded on attempt {attempt + 1}/{MaxStageAttempts} " +
+                            $"TxId={tx.Id} history=[{string.Join(",", history)}]");
+                    }
+
+                    OnTxStageEnded.OnNext(result);
+                    if (gameActionId != Guid.Empty)
+                    {
+                        _transactions.TryAdd(gameActionId, tx.Id);
+                    }
+                    return;
+                }
+                catch (RpcException e) when (IsTransientStageError(e))
+                {
+                    history.Add($"attempt{attempt}={e.StatusCode}");
+                    if (!string.IsNullOrEmpty(hostAtStart))
+                    {
+                        RpcEndpointProber.RecordFailure(hostAtStart);
+                    }
+                }
+                catch (TimeoutException)
+                {
+                    history.Add($"attempt{attempt}=Timeout");
+                    if (!string.IsNullOrEmpty(hostAtStart))
+                    {
+                        RpcEndpointProber.RecordFailure(hostAtStart);
+                    }
+                }
+                catch (ObjectDisposedException ode)
+                {
+                    // Channel disposed under our feet — RetryRpc is taking over.
+                    // Same reasoning as the swap branch above: don't force-exit.
+                    NcDebug.LogWarning(
+                        $"[RPCAgent] PutTransaction aborted: channel disposed mid-call. " +
+                        $"TxId={tx.Id} attempts={attempt + 1} history=[{string.Join(",", history)}]: {ode.Message}");
+                    return;
+                }
             }
+
+            NcDebug.LogError(
+                $"[RPCAgent] PutTransaction failed after {MaxStageAttempts} attempts. " +
+                $"TxId={tx.Id} history=[{string.Join(",", history)}]");
+            OnTxStageEnded.OnNext(false);
         }
+
+        private static bool IsTransientStageError(RpcException e) =>
+            e.StatusCode == StatusCode.DeadlineExceeded ||
+            e.StatusCode == StatusCode.Unavailable ||
+            e.StatusCode == StatusCode.ResourceExhausted;
 
         private async Task<long> GetNonceAsync()
         {
