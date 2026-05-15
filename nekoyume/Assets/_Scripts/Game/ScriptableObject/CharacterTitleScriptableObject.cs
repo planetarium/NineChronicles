@@ -9,6 +9,7 @@ namespace Nekoyume
     public class CharacterTitleScriptableObject : ScriptableObject
     {
         public List<CharacterTitleData> title;
+        public List<CharacterTitleIdOverride> titleByItemId;
     }
 
     [Serializable]
@@ -18,6 +19,16 @@ namespace Nekoyume
         [SerializeField] private GameObject title;
 
         public int Grade => grade;
+        public GameObject Title => title;
+    }
+
+    [Serializable]
+    public class CharacterTitleIdOverride
+    {
+        [SerializeField] private int itemId;
+        [SerializeField] private GameObject title;
+
+        public int ItemId => itemId;
         public GameObject Title => title;
     }
 }
