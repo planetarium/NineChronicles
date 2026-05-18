@@ -40,6 +40,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private GameObject selected;
 
         private GameObject _rankObject;
+        private List<RewardItem> _materialSlots;
 
         public void Reset()
         {
@@ -113,9 +114,10 @@ namespace Nekoyume.UI.Module.WorldBoss
             crystalItem.container.gameObject.SetActive(crystal > 0);
             crystalItem.text.text = crystal.ToCurrencyNotation();
 
-            for (var i = 0; i < materialItems.Length; i++)
+            var slots = EnsureMaterialSlots(materials.Count);
+            for (var i = 0; i < slots.Count; i++)
             {
-                var material = materialItems[i];
+                var material = slots[i];
                 if (i < materials.Count)
                 {
                     var (itemId, quantity) = materials[i];
@@ -135,6 +137,33 @@ namespace Nekoyume.UI.Module.WorldBoss
                     material.container.gameObject.SetActive(false);
                 }
             }
+        }
+
+        // Prefab ships with a fixed-size materialItems array; clone the first slot when the
+        // data has more entries so newer reward rows (e.g. WorldBossContributionRewardSheet
+        // with 4+ materials) don't get truncated.
+        private List<RewardItem> EnsureMaterialSlots(int requiredCount)
+        {
+            _materialSlots ??= new List<RewardItem>(materialItems ?? Array.Empty<RewardItem>());
+            if (_materialSlots.Count == 0)
+            {
+                return _materialSlots;
+            }
+
+            var template = _materialSlots[0];
+            var parent = template.container.transform.parent;
+            while (_materialSlots.Count < requiredCount)
+            {
+                var clone = Instantiate(template.container, parent);
+                _materialSlots.Add(new RewardItem
+                {
+                    container = clone,
+                    icon = clone.GetComponentInChildren<Image>(true),
+                    text = clone.GetComponentInChildren<TextMeshProUGUI>(true),
+                });
+            }
+
+            return _materialSlots;
         }
     }
 }
