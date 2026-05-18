@@ -130,7 +130,7 @@ namespace Nekoyume.Blockchain
 
         private readonly List<string> cachedRpcServerHosts = new();
         private int cachedRpcServerPort;
-        private string _currentRpcServerHost;
+        public ReactiveProperty<string> CurrentRpcServerHost { get; } = new(string.Empty);
         private CancellationTokenSource cancellationTokenSource;
 
         // Built-in keepalive defaults. Surface zombie connections (NAT/proxy idle drop,
@@ -242,7 +242,7 @@ namespace Nekoyume.Blockchain
 
             yield return SelectHealthyRpcHostAsync(options).ToCoroutine();
 
-            _currentRpcServerHost = options.RpcServerHost;
+            CurrentRpcServerHost.Value = options.RpcServerHost;
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
                 new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
@@ -1249,14 +1249,14 @@ namespace Nekoyume.Blockchain
             // (RetryRpc) and next-session probes (PR #7261) can rotate away from the host
             // accumulating timeouts.
             //
-            // We snapshot _service / _currentRpcServerHost up front: a concurrent RetryRpc
+            // We snapshot _service / CurrentRpcServerHost up front: a concurrent RetryRpc
             // can swap _service mid-loop, and once that happens this MakeTransaction's
             // context (host attribution, in-flight call) is stale. On detected swap we
             // bail out without emitting OnTxStageEnded(false) — the existing OnNext(false)
             // handler force-exits the session, which is wrong when the agent has just
             // recovered onto a healthy channel for everything else.
             var service = _service;
-            var hostAtStart = _currentRpcServerHost;
+            var hostAtStart = CurrentRpcServerHost.Value;
             var txBytes = tx.Serialize();
             var history = new List<string>(MaxStageAttempts);
 
@@ -1476,9 +1476,9 @@ namespace Nekoyume.Blockchain
             var triedRPCHost = cachedRpcServerHosts.ToDictionary(key => key, value => false);
             NcDebug.Log($"[RPCAgent] RetryRpc()... Trying to reconnect to RPC server {RpcConnectionRetryCount} times.");
             // The host that just disconnected has earned a failure for this rotation; bias against it.
-            if (!string.IsNullOrEmpty(_currentRpcServerHost))
+            if (!string.IsNullOrEmpty(CurrentRpcServerHost.Value))
             {
-                RpcEndpointProber.RecordFailure(_currentRpcServerHost);
+                RpcEndpointProber.RecordFailure(CurrentRpcServerHost.Value);
             }
             // Score-only ordering is a stable sort, so ties default to cachedRpcServerHosts
             // index order. On a clean session every host scores 1000 — without a tie-break
@@ -1537,7 +1537,7 @@ namespace Nekoyume.Blockchain
                     NcDebug.Log("[RPCAgent] Trying to join hub...");
                     await Join(true);
                     NcDebug.Log("[RPCAgent] Join complete! Registering disconnect event...");
-                    _currentRpcServerHost = newRpcServerHost;
+                    CurrentRpcServerHost.Value = newRpcServerHost;
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
