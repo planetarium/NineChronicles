@@ -98,9 +98,9 @@ namespace Nekoyume.UI.Module
             var grade = Util.GetTickerGrade(fav.Currency.Ticker);
             grade8Effect.SetActive(grade == 8);
             grade7Effect.SetActive(grade == 7);
-            grade6Effect.SetActive(grade == 6);
-            grade5Effect.SetActive(grade == 5);
-            grade4Effect.SetActive(grade == 4);
+            grade6Effect.SetActive(false);
+            grade5Effect.SetActive(false);
+            grade4Effect.SetActive(false);
 
             countText.text = fav.GetQuantityString();
             countText.gameObject.SetActive(true);
