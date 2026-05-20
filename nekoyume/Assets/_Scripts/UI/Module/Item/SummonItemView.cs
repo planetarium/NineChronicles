@@ -101,6 +101,7 @@ namespace Nekoyume.UI.Module
             grade6Effect.SetActive(false);
             grade5Effect.SetActive(false);
             grade4Effect.SetActive(false);
+            gradeEffect.SetActive(false);
 
             countText.text = fav.GetQuantityString();
             countText.gameObject.SetActive(true);
