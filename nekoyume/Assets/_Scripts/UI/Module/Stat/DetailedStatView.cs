@@ -58,21 +58,10 @@ namespace Nekoyume.UI.Module
         {
             const string none = "-";
             statTypeText.text = statType.ToString();
-            valueText.text = addValue > 0 ? FormatCollectionAddValue(statType, addValue) : none;
+            valueText.text = addValue > 0 ? $"+{statType.ValueToString(addValue)}" : none;
             valueText2.text = percentageValue > 0 ? $"+{percentageValue:0.#\\%}" : none;
 
             gameObject.SetActive(true);
-        }
-
-        // CollectionEffect feeds Add values as integer-percent units (matching the sibling
-        // Percentage column in CollectionSheet — e.g. CDMG +75 means +75%). ValueToString
-        // assumes Permyriad for CDMG/DRR so we short-circuit those here to avoid the
-        // /100 conversion and render with a percent suffix.
-        private static string FormatCollectionAddValue(StatType statType, long addValue)
-        {
-            return statType is StatType.CDMG or StatType.DRR
-                ? $"+{addValue:0.#\\%}"
-                : $"+{statType.ValueToString(addValue)}";
         }
 
         public override void Hide()
