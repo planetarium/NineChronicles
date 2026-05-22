@@ -233,7 +233,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+            var clone = ResourcesHelper.GetCharacterTitle(title.Id, title.Grade,
                 title.GetLocalizedNonColoredName(false));
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }

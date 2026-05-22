@@ -356,7 +356,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+            var clone = ResourcesHelper.GetCharacterTitle(costume.Id, costume.Grade,
                 costume.GetLocalizedNonColoredName(false));
             _cachedCharacterTitle = Instantiate(clone, _hudContainer.transform);
             _cachedCharacterTitle.name = costume.Id.ToString();

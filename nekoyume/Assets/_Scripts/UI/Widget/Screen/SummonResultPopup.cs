@@ -158,6 +158,7 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
+            var great = resultList.Any(fav => Util.GetTickerGrade(fav.Currency.Ticker) >= 7);
             summonItemViewParentObject.SetActive(false);
             manySummonItemViewParentObject.SetActive(false);
             singleSummonItemView.Hide();
@@ -203,7 +204,7 @@ namespace Nekoyume.UI
             }
 
             var costType = (CostType)summonRow.CostMaterial;
-            StartPlayVideo(costType, true);
+            StartPlayVideo(costType, great);
             RefreshUI(costType, summonRow, summonCount, bonus);
         }
 

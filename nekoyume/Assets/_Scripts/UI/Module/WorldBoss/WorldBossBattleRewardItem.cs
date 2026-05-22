@@ -75,8 +75,16 @@ namespace Nekoyume.UI.Module.WorldBoss
                 Destroy(_rankObject);
             }
 
-            rankText.gameObject.SetActive(false);
-            rankingImageContainer.gameObject.SetActive(false);
+            // Rank/ranking image are battle/grade-tab artifacts; season-pool variants
+            // strip those GameObjects so the references can be unassigned in their prefab.
+            if (rankText != null)
+            {
+                rankText.gameObject.SetActive(false);
+            }
+            if (rankingImageContainer != null)
+            {
+                rankingImageContainer.gameObject.SetActive(false);
+            }
             selected.SetActive(false);
 
             BigInteger runeSum = 0;

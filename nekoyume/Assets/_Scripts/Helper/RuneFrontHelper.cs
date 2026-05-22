@@ -165,7 +165,11 @@ namespace Nekoyume.Helper
                 tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
                 tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
             {
-                valueString = $"{buffRow.StatType.ValueToString(curPower)}%";
+                // ValueToString already appends '%' for CRI/DRR/CDMG; avoid double-mark.
+                var formatted = buffRow.StatType.ValueToString(curPower);
+                valueString = buffRow.StatType is StatType.CRI or StatType.DRR or StatType.CDMG
+                    ? formatted
+                    : $"{formatted}%";
             }
             else if (isPercent)
             {
