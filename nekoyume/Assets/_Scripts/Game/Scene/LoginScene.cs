@@ -15,6 +15,7 @@ using Libplanet.Crypto;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
+using Nekoyume.GraphQL;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
@@ -317,8 +318,10 @@ namespace Nekoyume.Game.Scene
             RankPopup.UpdateSharedModel();
             Helper.Util.TryGetAppProtocolVersionFromToken(
                 CommandLineOptions.AppProtocolVersion,
-                out var appProtocolVersion);
-            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
+                out var localApv);
+            var versionSystem = Widget.Find<VersionSystem>();
+            versionSystem.SetVersion(localApv);
+            ApplyNodeAppProtocolVersion(versionSystem, localApv).Forget();
             Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
 
             StartCoroutine(game.CoUpdate());
@@ -331,6 +334,47 @@ namespace Nekoyume.Game.Scene
             EnterNext().Forget();
             totalSw.Stop();
             NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
+        }
+
+        private static async UniTaskVoid ApplyNodeAppProtocolVersion(VersionSystem versionSystem, int localApv)
+        {
+            var rpcClient = ApiClients.Instance.RpcGraphQlClient;
+            if (rpcClient == null || !rpcClient.IsInitialized)
+            {
+                NcDebug.LogWarning("[LoginScene] ApplyNodeAppProtocolVersion()... RpcGraphQlClient is not initialized. Keep using local APV.");
+                return;
+            }
+
+            int? nodeApv;
+            try
+            {
+                nodeApv = await rpcClient.QueryNodeAppProtocolVersionAsync();
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogWarning($"[LoginScene] ApplyNodeAppProtocolVersion()... query failed, keep using local APV. {e}");
+                return;
+            }
+
+            if (nodeApv is null)
+            {
+                NcDebug.LogWarning("[LoginScene] ApplyNodeAppProtocolVersion()... node APV is null, keep using local APV.");
+                return;
+            }
+
+            if (nodeApv.Value != localApv)
+            {
+                NcDebug.LogWarning($"[LoginScene] APV mismatch detected. local: {localApv}, node: {nodeApv.Value}. Applying node APV.");
+            }
+            else
+            {
+                NcDebug.Log($"[LoginScene] APV from node confirmed: {nodeApv.Value}");
+            }
+
+            if (versionSystem != null)
+            {
+                versionSystem.SetVersion(nodeApv.Value);
+            }
         }
 
         private async UniTask EnterNext()

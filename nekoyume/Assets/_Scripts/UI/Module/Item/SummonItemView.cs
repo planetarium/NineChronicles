@@ -98,9 +98,10 @@ namespace Nekoyume.UI.Module
             var grade = Util.GetTickerGrade(fav.Currency.Ticker);
             grade8Effect.SetActive(grade == 8);
             grade7Effect.SetActive(grade == 7);
-            grade6Effect.SetActive(grade == 6);
-            grade5Effect.SetActive(grade == 5);
-            grade4Effect.SetActive(grade == 4);
+            grade6Effect.SetActive(false);
+            grade5Effect.SetActive(false);
+            grade4Effect.SetActive(false);
+            gradeEffect.SetActive(false);
 
             countText.text = fav.GetQuantityString();
             countText.gameObject.SetActive(true);
@@ -119,18 +120,10 @@ namespace Nekoyume.UI.Module
             canvasGroup.alpha = 1;
             animator.SetTrigger(AnimatorHashShow);
 
-            if (grade5Effect.activeSelf || grade6Effect.activeSelf || grade7Effect.activeSelf || grade8Effect.activeSelf)
+            if (grade7Effect.activeSelf || grade8Effect.activeSelf)
             {
                 var effect = gradeEffect.GetComponent<UIParticle>();
-                if (grade5Effect.activeSelf)
-                {
-                    effect.scale = 80;
-                }
-                else if (grade6Effect.activeSelf)
-                {
-                    effect.scale = 160;
-                }
-                else if (grade7Effect.activeSelf)
+                if (grade7Effect.activeSelf)
                 {
                     effect.scale = 240;
                 }

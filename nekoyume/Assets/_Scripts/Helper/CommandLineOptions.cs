@@ -338,6 +338,49 @@ namespace Nekoyume.Helper
             }
         }
 
+        private bool rpcKeepaliveDisabled;
+
+        private int rpcKeepaliveTimeMs;
+
+        private int rpcKeepaliveTimeoutMs;
+
+        [Option("rpc-keepalive-disabled", Required = false,
+            HelpText = "Disable gRPC HTTP/2 keepalive PINGs on the RPC channel.")]
+        public bool RpcKeepaliveDisabled
+        {
+            get => rpcKeepaliveDisabled;
+            set
+            {
+                rpcKeepaliveDisabled = value;
+                Empty = false;
+            }
+        }
+
+        [Option("rpc-keepalive-time-ms", Required = false,
+            HelpText = "gRPC keepalive PING interval in ms. 0 = use built-in default. " +
+                "Values below ~10000 risk server-side ENHANCE_YOUR_CALM rejection.")]
+        public int RpcKeepaliveTimeMs
+        {
+            get => rpcKeepaliveTimeMs;
+            set
+            {
+                rpcKeepaliveTimeMs = value;
+                Empty = false;
+            }
+        }
+
+        [Option("rpc-keepalive-timeout-ms", Required = false,
+            HelpText = "gRPC keepalive PING ACK timeout in ms. 0 = use built-in default.")]
+        public int RpcKeepaliveTimeoutMs
+        {
+            get => rpcKeepaliveTimeoutMs;
+            set
+            {
+                rpcKeepaliveTimeoutMs = value;
+                Empty = false;
+            }
+        }
+
         [Option("auto-play", Required = false, HelpText = "Play automatically in background.")]
         public bool AutoPlay
         {

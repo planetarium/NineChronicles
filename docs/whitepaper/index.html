@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Nine Chronicles Gold (NCG) — Whitepaper, Token Distribution & Economics</title>
+  <meta name="description" content="Official whitepaper for Nine Chronicles Gold (NCG): the in-game currency and governance token of the Nine Chronicles network. Total supply 1,000,000,000 NCG with detailed allocation across mining, staking, foundation, partnerships, and reserves. Includes WNCG (ERC-20) bridging." />
+  <meta name="keywords" content="NCG, Nine Chronicles Gold, WNCG, Wrapped NCG, Nine Chronicles whitepaper, NCG tokenomics, NCG distribution, NCG supply, blockchain RPG, Libplanet, decentralized MMORPG token, ERC-20" />
+  <meta name="author" content="Nine Chronicles Ltd" />
+  <meta name="theme-color" content="#0a0908" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f4f1ec" media="(prefers-color-scheme: light)" />
+
+  <link rel="canonical" href="https://gold.nine-chronicles.com/" />
+
+  <!-- Favicon (NCG color icon) -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/icons/ncg-color.png" />
+  <link rel="apple-touch-icon" href="assets/icons/ncg-color.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:site_name" content="Nine Chronicles Gold" />
+  <meta property="og:title" content="Nine Chronicles Gold (NCG) — Whitepaper & Token Overview" />
+  <meta property="og:description" content="Official whitepaper for Nine Chronicles Gold (NCG): supply, distribution, governance, and economics." />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gold.nine-chronicles.com/assets/diagrams/hero-1440.webp" />
+  <meta property="og:image:width" content="1440" />
+  <meta property="og:image:height" content="799" />
+  <meta property="og:image:alt" content="Nine Chronicles Gold — whitepaper hero" />
+  <meta property="og:url" content="https://gold.nine-chronicles.com/" />
+  <meta property="article:published_time" content="2026-04-25" />
+  <meta property="article:modified_time" content="2026-04-25" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Nine Chronicles Gold (NCG) — Whitepaper & Token Overview" />
+  <meta name="twitter:description" content="Official whitepaper for Nine Chronicles Gold (NCG): supply, distribution, governance, and economics." />
+  <meta name="twitter:image" content="https://gold.nine-chronicles.com/assets/diagrams/hero-1440.webp" />
+
+  <!-- Fonts: Inter + JetBrains Mono. Loaded non-render-blocking via the
+       preload/onload swap pattern so first paint is not gated on Google Fonts. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+  <noscript>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+  </noscript>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- JSON-LD: a graph describing the whitepaper article, the publishing org,
+       and the NCG token entity itself so generative search engines can extract
+       structured facts (supply, ticker, etc) without parsing prose. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": "https://gold.nine-chronicles.com/#article",
+        "headline": "Nine Chronicles Gold (NCG) — Whitepaper & Token Overview",
+        "description": "Official token overview, distribution structure, supply schedule, and economics of Nine Chronicles Gold (NCG).",
+        "url": "https://gold.nine-chronicles.com/",
+        "mainEntityOfPage": "https://gold.nine-chronicles.com/",
+        "image": "https://gold.nine-chronicles.com/assets/diagrams/hero-1440.webp",
+        "datePublished": "2020-10-01",
+        "dateModified": "2026-04-25",
+        "inLanguage": "en",
+        "author":    { "@id": "https://gold.nine-chronicles.com/#org" },
+        "publisher": { "@id": "https://gold.nine-chronicles.com/#org" },
+        "about":     { "@id": "https://gold.nine-chronicles.com/#ncg" }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://gold.nine-chronicles.com/#org",
+        "name": "Nine Chronicles Ltd",
+        "url": "https://nine-chronicles.com/",
+        "logo": "https://gold.nine-chronicles.com/assets/icons/ncg-color.png",
+        "sameAs": [
+          "https://github.com/planetarium",
+          "https://twitter.com/NineChronicles"
+        ]
+      },
+      {
+        "@type": ["Thing", "DigitalDocument"],
+        "@id": "https://gold.nine-chronicles.com/#ncg",
+        "name": "Nine Chronicles Gold",
+        "alternateName": ["NCG", "Wrapped NCG", "WNCG"],
+        "description": "Nine Chronicles Gold (NCG) is the in-game currency and governance token of the Nine Chronicles network — an open source, decentralized RPG built on Libplanet. WNCG is its 1:1-backed ERC-20 wrapper.",
+        "url": "https://gold.nine-chronicles.com/",
+        "image": "https://gold.nine-chronicles.com/assets/icons/ncg-color.png",
+        "additionalProperty": [
+          { "@type": "PropertyValue", "name": "Ticker", "value": "NCG" },
+          { "@type": "PropertyValue", "name": "Total Supply", "value": "1,000,000,000 NCG" },
+          { "@type": "PropertyValue", "name": "Initial Circulating Supply", "value": "25,000,000 NCG" },
+          { "@type": "PropertyValue", "name": "Wrapped ERC-20 Contract", "value": "0xf203Ca1769ca8e9e8FE1DA9D147DB68B6c919817" },
+          { "@type": "PropertyValue", "name": "Block Time", "value": "10 seconds" },
+          { "@type": "PropertyValue", "name": "Initial Block Reward", "value": "10 NCG" },
+          { "@type": "PropertyValue", "name": "Halving Period", "value": "Every 4 years" }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="#">
+      <img src="assets/icons/ncg-color.png" width="28" height="28" alt="" decoding="async" />
+      <span>Nine Chronicles Gold</span>
+      <small>Whitepaper</small>
+    </a>
+    <span class="site-header__spacer"></span>
+    <nav aria-label="Primary">
+      <a href="https://nine-chronicles.com/" target="_blank" rel="noopener">Game</a>
+      <a href="https://github.com/planetarium" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Toggle color theme" id="themeToggle">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <main class="content">
+
+    <h1>Nine Chronicles Gold</h1>
+    <p class="subtitle">The in-game currency and governance token powering the Nine Chronicles network.</p>
+
+    <figure class="hero">
+      <img src="assets/diagrams/hero-720.webp"
+           srcset="assets/diagrams/hero-380.webp 380w,
+                   assets/diagrams/hero-720.webp 720w,
+                   assets/diagrams/hero-1440.webp 1440w"
+           sizes="(max-width: 540px) 95vw, (max-width: 980px) 700px, 760px"
+           width="1440" height="799"
+           alt="Nine Chronicles game world illustration"
+           fetchpriority="high"
+           decoding="async" />
+    </figure>
+
+    <!-- ===== Summary ===== -->
+    <section id="summary" aria-labelledby="h-summary">
+      <span class="eyebrow">§ 01 — Overview</span>
+      <h2 id="h-summary">Summary</h2>
+      <ul class="lead">
+        <li>
+          <strong>Nine Chronicles Gold (NCG)</strong> is the main in-game currency and governance token used in the Nine Chronicles network. The supply is limited by design, and players can spend NCG to craft powerful items, trade with other users, challenge each other, and grow. It also powers the world's governance and ecosystem programs.
+        </li>
+        <li>
+          <strong>Wrapped NCG (WNCG)</strong> is a 1:1 NCG-backed ERC-20 token that delivers the power of NCG with the flexibility of an ERC-20 token. <a href="https://ninechronicles.medium.com/introducing-wrapped-ncg-expanding-beyond-the-game-f2019260bc79" target="_blank" rel="noopener">Introducing Wrapped NCG →</a>
+        </li>
+      </ul>
+
+      <h3>Key Metrics</h3>
+      <ul class="metrics" role="list">
+        <li class="metric"><span class="metric__label">Name</span><span class="metric__value">Nine Chronicles Gold</span></li>
+        <li class="metric"><span class="metric__label">Ticker</span><span class="metric__value">NCG</span></li>
+        <li class="metric"><span class="metric__label">Initial Circ. Supply</span><span class="metric__value">25,000,000</span></li>
+        <li class="metric"><span class="metric__label">Total Supply</span><span class="metric__value">1,000,000,000</span></li>
+        <li class="metric metric--wide"><span class="metric__label">Project Website</span><span class="metric__value"><a href="https://nine-chronicles.com/" target="_blank" rel="noopener">nine-chronicles.com ↗</a></span></li>
+      </ul>
+    </section>
+
+    <!-- ===== What is Nine Chronicles ===== -->
+    <section id="what-is" aria-labelledby="h-what">
+      <span class="eyebrow">§ 02 — The Game</span>
+      <h2 id="h-what">What is Nine Chronicles?</h2>
+      <p>
+        <a href="https://nine-chronicles.com/" target="_blank" rel="noopener"><em>Nine Chronicles</em></a> is an open source, decentralized RPG set in a fantasy world — powered by its players, and supported by a complex economy where supply and demand are the greatest currency.
+      </p>
+
+      <h3>Why 100% decentralized? Is it important?</h3>
+      <p>
+        We want to create a whole new fantasy world that doesn't depend on the game company — an online world that can exist as long as there are players, and a world that is fully owned by the community. That's why we made Nine Chronicles 100% fully decentralized. Every action is saved on-chain so that you can verify the whole world's status by yourself. To achieve this mission, we've built <a href="https://github.com/planetarium/libplanet" target="_blank" rel="noopener">Libplanet</a>, a new distributed ledger technology library for implementing P2P MMO games. Nine Chronicles is the first game based on Libplanet.
+      </p>
+
+      <h3>Screenshots</h3>
+      <div class="screenshots">
+        <a class="nolink-underline" href="assets/screenshots/new-character.webp" target="_blank" rel="noopener">
+          <img src="assets/screenshots/new-character.webp" width="1200" height="750" alt="Character creation screen" loading="lazy" decoding="async" />
+          <span>New Character</span>
+        </a>
+        <a class="nolink-underline" href="assets/screenshots/event.webp" target="_blank" rel="noopener">
+          <img src="assets/screenshots/event.webp" width="1200" height="750" alt="In-game event interface" loading="lazy" decoding="async" />
+          <span>Event</span>
+        </a>
+        <a class="nolink-underline" href="assets/screenshots/dungeon.webp" target="_blank" rel="noopener">
+          <img src="assets/screenshots/dungeon.webp" width="800" height="600" alt="Dungeon exploration" loading="lazy" decoding="async" />
+          <span>Dungeon</span>
+        </a>
+        <a class="nolink-underline" href="assets/screenshots/challenge.webp" target="_blank" rel="noopener">
+          <img src="assets/screenshots/challenge.webp" width="800" height="600" alt="Player versus player arena" loading="lazy" decoding="async" />
+          <span>Challenge</span>
+        </a>
+        <a class="nolink-underline" href="assets/screenshots/item-creation.webp" target="_blank" rel="noopener">
+          <img src="assets/screenshots/item-creation.webp" width="800" height="600" alt="Item crafting" loading="lazy" decoding="async" />
+          <span>Item Creation</span>
+        </a>
+        <a class="nolink-underline" href="assets/screenshots/market.webp" target="_blank" rel="noopener">
+          <img src="assets/screenshots/market.webp" width="1200" height="678" alt="Decentralized marketplace" loading="lazy" decoding="async" />
+          <span>Market</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== Blockchain ===== -->
+    <section id="blockchain" aria-labelledby="h-chain">
+      <span class="eyebrow">§ 03 — Network</span>
+      <h2 id="h-chain">Nine Chronicles Blockchain</h2>
+      <p>
+        <strong>Nine Chronicles</strong> became the world's first fully decentralized online RPG when we launched the mainnet in October 2020. Nine Chronicles Blockchain is an independent Layer 1 network operated solely for Nine Chronicles.
+      </p>
+
+      <figure>
+        <img src="assets/diagrams/blockchain-network.webp"
+             width="1400" height="538"
+             alt="Nine Chronicles blockchain network architecture"
+             loading="lazy" decoding="async" />
+        <figcaption>Nine Chronicles network architecture — independent Layer 1 powered by Libplanet.</figcaption>
+      </figure>
+
+      <h3>Network at a glance</h3>
+      <ul class="stats" role="list">
+        <li class="stat"><span class="stat__value">400k</span><span class="stat__label">Registered users</span></li>
+        <li class="stat"><span class="stat__value">30k</span><span class="stat__label">Daily active users</span></li>
+        <li class="stat"><span class="stat__value">110k</span><span class="stat__label">Monthly active users</span></li>
+        <li class="stat"><span class="stat__value">300k</span><span class="stat__label">Daily transactions</span></li>
+        <li class="stat"><span class="stat__value">2.5M+</span><span class="stat__label">On-chain battles</span></li>
+        <li class="stat"><span class="stat__value">1M+</span><span class="stat__label">Player-crafted NFTs</span></li>
+        <li class="stat"><span class="stat__value">80k+</span><span class="stat__label">NFTs traded on-chain</span></li>
+        <li class="stat"><span class="stat__value">10s</span><span class="stat__label">Block target time</span></li>
+      </ul>
+      <p style="font-size: 13.5px; color: var(--text-dim); margin-top: -8px;">
+        Source: <a href="https://twitter.com/NineChronicles/status/1734419849206772037" target="_blank" rel="noopener">@NineChronicles</a>
+      </p>
+    </section>
+
+    <!-- ===== Economics & Usage ===== -->
+    <section id="economics" aria-labelledby="h-econ">
+      <span class="eyebrow">§ 04 — Economics</span>
+      <h2 id="h-econ">Economics and NCG Usage</h2>
+
+      <figure>
+        <img src="assets/diagrams/ncg-economics.webp"
+             width="1400" height="790"
+             alt="NCG usage and economics overview"
+             loading="lazy" decoding="async" />
+        <figcaption>NCG usage and economics: spending, staking, and circulation.</figcaption>
+      </figure>
+
+      <p>
+        Nine Chronicles Gold (NCG) is the base token used in the Nine Chronicles network. Players can spend NCG to craft powerful items, trade with other users, challenge each other, and accelerate growth, while also participating in governance and staking.
+      </p>
+      <p>
+        As a free-to-play game, NCG isn't necessary in the beginning stages of exploration, but the game is designed so that NCG's needs are gradually increased as players grow more powerful. Eventually, players can stake NCG to earn potions and unique items which can be used by them or circulated to other users for profit.
+      </p>
+
+      <h3>Spending NCG</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="ico" aria-hidden="true">📈</span>
+          <span><strong>Accelerating Growth</strong>Each action created by a user is capped by an energy gauge which refills every 8 hours. To refill energy faster, players may purchase energy potions from the public market. Crafting items also takes a set amount of time, which can be accelerated by purchasing hourglasses from the market.</span>
+        </li>
+        <li>
+          <span class="ico" aria-hidden="true">🔨</span>
+          <span><strong>Crafting Items</strong>Crafting equipment above a certain level requires a certain amount of NCG, and the more competitive the equipment, the higher the requirement.</span>
+        </li>
+        <li>
+          <span class="ico" aria-hidden="true">⚖️</span>
+          <span><strong>Trading Items</strong>NCG is used to sell or purchase items from the public market. Any player can list items on the market, and get paid when another player makes a purchase. There is a set % fee for trading items on the market, and the fee is currently locked. There is a plan to circulate the fee back to NCG holders.</span>
+        </li>
+        <li>
+          <span class="ico" aria-hidden="true">🤺</span>
+          <span><strong>Challenging Players</strong>Players pay an entrance fee in NCG to enter a battle arena to challenge other players. The pool created from the entrance fee is split among the winners each week.</span>
+        </li>
+      </ul>
+
+      <h3>Staking NCG</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="ico" aria-hidden="true">🏦</span>
+          <span><strong>Earning Tradeable In-Game Reward</strong>Staking the main token for periodic in-game reward is a key feature of Nine Chronicles. Instead of purchasing items off the market, players can stake their token and receive energy potions, hourglasses, and other exclusive consumables periodically. This effectively reduces the surplus supply of NCG and gives the players a share of the pie by allowing them to create in-game items that can be sold.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ===== Distribution ===== -->
+    <section id="distribution" aria-labelledby="h-dist">
+      <span class="eyebrow">§ 05 — Token Distribution</span>
+      <h2 id="h-dist">Distribution</h2>
+      <p>
+        The total supply of NCG is fixed at <strong>1,000,000,000</strong> tokens. Each allocation has its own purpose, lockup schedule, and category. Click any row below to expand its detailed terms.
+      </p>
+
+      <table class="dist" aria-label="NCG distribution table">
+        <colgroup>
+          <col class="col-name" />
+          <col class="col-category" />
+          <col class="col-amount" />
+          <col class="col-percent" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Allocation</th>
+            <th class="col-category-th">Category</th>
+            <th style="text-align:right;">Amount (NCG)</th>
+            <th style="text-align:right;">% of supply</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-seed"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Seed Sale</span></button><span class="category category--mobile">Presale</span></td><td class="col-category-cell"><span class="category">Presale</span></td>
+            <td class="amount">30,000,000</td>
+            <td class="amount">3.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-seed">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>For the earliest supporters (April 2020).</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>1/24 distributed at NCG TGE, rest evenly distributed daily over 23 months.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-public"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Public Presale</span></button><span class="category category--mobile">Presale</span></td><td class="col-category-cell"><span class="category">Presale</span></td>
+            <td class="amount">20,000,000</td>
+            <td class="amount">2.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-public">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>First crowdfunding (July / Sept 2020).</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>—</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-mining"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Mining / Staking Reward</span></button><span class="category category--mobile">Mining/Staking</span></td><td class="col-category-cell"><span class="category">Mining/Staking</span></td>
+            <td class="amount">250,000,000</td>
+            <td class="amount">25.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-mining">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Mining and staking reward for network participants.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>Distributed based on a halving release schedule (10 NCG per block at a 10-second target, halving every 4 years; will be distributed at a similar rate after PoS migration).</p></div>
+                <div class="row-detail__field" style="grid-column: 1 / -1;">
+                  <h4>Reward structure</h4>
+                  <p>Block generation cycle: 10 seconds &middot; Initial block reward: 10 NCG &middot; Halving: every 4 years</p>
+                  <table class="subtable">
+                    <thead>
+                      <tr><th>Starting Year</th><th>Reward / block (NCG)</th><th>Annual Reward (NCG)</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>2020</td><td>10</td><td>126,144,000</td></tr>
+                      <tr><td>2024</td><td>5</td><td>63,072,000</td></tr>
+                      <tr><td>2028</td><td>2.5</td><td>31,536,000</td></tr>
+                      <tr><td>2032</td><td>1.25</td><td>15,768,000</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-content"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Content Creation Reward</span></button><span class="category category--mobile">Content / Community</span></td><td class="col-category-cell"><span class="category">Content / Community</span></td>
+            <td class="amount">250,000,000</td>
+            <td class="amount">25.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-content">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Content and ecosystem fund for developers and creators. Mostly undeployed; major deployment will start after Nine Chronicles governance setup.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>Unlocked at the same rate as Mining / Staking reward.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-foundation"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Foundation</span></button><span class="category category--mobile">Foundation</span></td><td class="col-category-cell"><span class="category">Foundation</span></td>
+            <td class="amount">250,000,000</td>
+            <td class="amount">25.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-foundation">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Nine Chronicles Ltd team allocation.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>Evenly distributed daily over 72 months.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-growth"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Growth Partnership Sale</span></button><span class="category category--mobile">Ongoing Sale</span></td><td class="col-category-cell"><span class="category">Ongoing Sale</span></td>
+            <td class="amount">52,000,000</td>
+            <td class="amount">5.2%</td>
+          </tr>
+          <tr class="row-detail" id="d-growth">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Post-mainnet launch partnership round (Aug 2021).</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>1/24 distributed at WNCG TGE, rest evenly distributed monthly over 23 months.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-miso"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">MISO Launchpad</span></button><span class="category category--mobile">Ongoing Sale</span></td><td class="col-category-cell"><span class="category">Ongoing Sale</span></td>
+            <td class="amount">2,000,000</td>
+            <td class="amount">0.2%</td>
+          </tr>
+          <tr class="row-detail" id="d-miso">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Launchpad sale for WNCG introduction (Aug 2021).</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>—</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-postlaunch"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Post Launchpad Allocation</span></button><span class="category category--mobile">Ongoing Sale</span></td><td class="col-category-cell"><span class="category">Ongoing Sale</span></td>
+            <td class="amount">46,000,000</td>
+            <td class="amount">4.6%</td>
+          </tr>
+          <tr class="row-detail" id="d-postlaunch">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Method for players from multiple platforms and new partners to onboard the network. Currently unsold; sales will be communicated.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>Evenly distributed daily over 24 months.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-partnership"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Partnership</span></button><span class="category category--mobile">Partnership</span></td><td class="col-category-cell"><span class="category">Partnership</span></td>
+            <td class="amount">30,000,000</td>
+            <td class="amount">3.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-partnership">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Gaming, publishing, and crypto exchange partnerships.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>1/24 distributed at the transaction date, rest evenly distributed monthly over 23 months.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-activation"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Activation</span></button><span class="category category--mobile">Others</span></td><td class="col-category-cell"><span class="category">Others</span></td>
+            <td class="amount">40,000,000</td>
+            <td class="amount">4.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-activation">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Airdrop, marketing partnership, and initial play-to-earn pool.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>Unlocked after 1 month and evenly distributed monthly over 5 months.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-summary"><td class="name"><button type="button" class="row-toggle" aria-expanded="false" aria-controls="d-reserve"><svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><polyline points="3,1 7,5 3,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="row-toggle__label">Reserve</span></button><span class="category category--mobile">Others</span></td><td class="col-category-cell"><span class="category">Others</span></td>
+            <td class="amount">30,000,000</td>
+            <td class="amount">3.0%</td>
+          </tr>
+          <tr class="row-detail" id="d-reserve">
+            <td colspan="4">
+              <div class="row-detail__inner">
+                <div class="row-detail__field"><h4>Description</h4><p>Spare reserve for special purposes.</p></div>
+                <div class="row-detail__field"><h4>Lockup</h4><p>Unlocked after 1 month. Will not be circulated by default, but prior notice will be made to the community in the required circumstances.</p></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-total">
+            <td>Total</td>
+            <td class="col-category-cell"></td>
+            <td class="amount">1,000,000,000</td>
+            <td class="amount">100.0%</td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <aside class="callout">
+        <svg class="callout__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <div>
+          <p>For reference, NCG in circulation has the potential to be bridged to WNCG at any given time. Consequently, the overall token quantity specified in this whitepaper comprises the collective sum of both WNCG and NCG tokens.</p>
+          <p>The data shown on <a href="https://etherscan.io/token/0xf203Ca1769ca8e9e8FE1DA9D147DB68B6c919817" target="_blank" rel="noopener">Etherscan</a> for the maximum supply of WNCG corresponds to the cumulative quantity of tokens that are presently bridged. Hence, the maximum supply of WNCG displayed on Etherscan is a flexible segment that could expand at any time, possibly equating to the total supply as delineated in the whitepaper.</p>
+          <p>To align with the "Total Supply" listed on CMC, update the "Current Block #" field to the latest block number and add the cumulative total of "Current Distributed NCG."</p>
+          <p>Note: CMC may not always reflect real-time information from the API due to caching. For the most accurate and up-to-date distribution data, refer to the Supply API at <a href="https://supply-api-9c.herokuapp.com/" target="_blank" rel="noopener">supply-api-9c.herokuapp.com</a>.</p>
+        </div>
+      </aside>
+
+      <h3>Live distribution data</h3>
+      <ul class="resources">
+        <li><a class="nolink-underline" href="https://supply-api-9c.herokuapp.com/" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+          <span>Supply API <span class="source">supply-api-9c.herokuapp.com</span></span>
+        </a></li>
+        <li><a class="nolink-underline" href="https://docs.google.com/spreadsheets/d/1jXYwujV45eLQlfDrNYKF9lrEiME7EOygMvD7FY93420/edit?usp=sharing" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <span>NCG Distribution Table (mainnet) <span class="source">Google Sheets</span></span>
+        </a></li>
+        <li><a class="nolink-underline" href="https://etherscan.io/token/0xf203Ca1769ca8e9e8FE1DA9D147DB68B6c919817" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/></svg>
+          <span>WNCG on Etherscan <span class="source">0xf203…9817</span></span>
+        </a></li>
+      </ul>
+    </section>
+
+    <!-- ===== Funding & Partnerships ===== -->
+    <section id="funding" aria-labelledby="h-fund">
+      <span class="eyebrow">§ 06 — Funding</span>
+      <h2 id="h-fund">Funding and Partnerships</h2>
+      <ul class="articles">
+        <li><a class="nolink-underline" href="https://www.binance.com/en/blog/ecosystem/binance-labs-makes-strategic-investment-in-nine-chronicles-to-bring-opensource-blockchain-gaming-mainstream-421499824684903295" target="_blank" rel="noopener"><span class="pub">Binance Blog</span><span class="title">Binance Labs Makes Strategic Investment in Nine Chronicles</span></a></li>
+        <li><a class="nolink-underline" href="https://ninechronicles.medium.com/nine-chronicles-raises-2-6m-growth-round-led-by-animoca-brands-1ecdc079de57" target="_blank" rel="noopener"><span class="pub">Medium</span><span class="title">Nine Chronicles Raises $2.6M Growth Round Led By Animoca Brands</span></a></li>
+        <li><a class="nolink-underline" href="https://medium.com/nine-chronicles/nine-chronicles-partnership-ubisoft-x-hashed-7cefdb7aff05" target="_blank" rel="noopener"><span class="pub">Medium</span><span class="title">Nine Chronicles Partnership: Ubisoft x Hashed</span></a></li>
+      </ul>
+    </section>
+
+    <!-- ===== Roadmap ===== -->
+    <section id="roadmap" aria-labelledby="h-roadmap">
+      <span class="eyebrow">§ 07 — Roadmap</span>
+      <h2 id="h-roadmap">Roadmap</h2>
+      <ul class="resources">
+        <li><a href="https://docs.nine-chronicles.com/introduction/intro/roadmap" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>
+          <span>Nine Chronicles Roadmap <span class="source">docs.nine-chronicles.com</span></span>
+        </a></li>
+      </ul>
+    </section>
+
+    <!-- ===== Source Code & Docs ===== -->
+    <section id="source" aria-labelledby="h-source">
+      <span class="eyebrow">§ 08 — Source &amp; Docs</span>
+      <h2 id="h-source">Source Code &amp; Documentation</h2>
+      <ul class="resources">
+        <li><a href="https://github.com/planetarium" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.04c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 0z"/></svg>
+          <span>Planetarium on GitHub <span class="source">github.com/planetarium</span></span>
+        </a></li>
+        <li><a href="https://docs.nine-chronicles.com/" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Nine Chronicles Documentation <span class="source">docs.nine-chronicles.com</span></span>
+        </a></li>
+      </ul>
+    </section>
+
+    <!-- ===== Articles & Media ===== -->
+    <section id="media" aria-labelledby="h-media">
+      <span class="eyebrow">§ 09 — Press</span>
+      <h2 id="h-media">Articles and Media Mentions</h2>
+      <ul class="articles">
+        <li><a href="https://www.coindesk.com/sponsored-content/planetarium-labs-poised-nine-chronicles-for-winter-proof-sustainable-growth/" target="_blank" rel="noopener"><span class="pub">CoinDesk</span><span class="title">Planetarium Labs poised Nine Chronicles for winter-proof sustainable growth</span></a></li>
+        <li><a href="https://cointelegraph.com/press-releases/nine-chronicles-announces-mint-date-for-its-nft-project-de-centralized-cat" target="_blank" rel="noopener"><span class="pub">Cointelegraph</span><span class="title">Nine Chronicles announces mint date for its NFT project, De:Centralized Cat</span></a></li>
+        <li><a href="https://decrypt.co/14824/ubisoft-backed-startup-launches-evolutionary-decentralized-rpg" target="_blank" rel="noopener"><span class="pub">Decrypt</span><span class="title">Ubisoft-backed startup launches 'evolutionary' decentralized RPG</span></a></li>
+        <li><a href="https://venturebeat.com/2021/08/04/planetarium-raises-2-6m-for-decentralized-rpg-nine-chronicles/" target="_blank" rel="noopener"><span class="pub">VentureBeat</span><span class="title">Planetarium nabs $2.6M for decentralized RPG Nine Chronicles</span></a></li>
+        <li><a href="https://www.thegamer.com/nine-chronicles-mmo-p2p/" target="_blank" rel="noopener"><span class="pub">TheGamer</span><span class="title">Nine Chronicles Is An MMO That Runs On A P2P Network, Giving Players Full Control</span></a></li>
+        <li><a href="https://dappsmarket.net/other/nine-chronicles-pr/" target="_blank" rel="noopener"><span class="pub">DAppsMarket (JP)</span><span class="title">ブロックチェーンゲーム「ナインクロニクル」が無料版アルファの配信を開始</span></a></li>
+        <li><a href="https://www.chainnews.com/news/461252471191.htm" target="_blank" rel="noopener"><span class="pub">ChainNews (CN)</span><span class="title">育碧支持的链游公司 Planetarium 推出其区块链游戏 Nine Chronicles 公测版本</span></a></li>
+        <li><a href="https://www.presse-citron.net/nine-chronicles-un-rpg-gratuit-et-totalement-decentralise-via-la-blockchain/" target="_blank" rel="noopener"><span class="pub">Presse-Citron (FR)</span><span class="title">Nine Chronicles, un RPG gratuit et totalement décentralisé via la blockchain</span></a></li>
+        <li><a href="https://www.coindesk.com/every-game-this-south-korean-startup-makes-has-its-own-blockchain" target="_blank" rel="noopener"><span class="pub">CoinDesk</span><span class="title">Every Game This South Korean Startup Makes Has Its Own Blockchain</span></a></li>
+      </ul>
+    </section>
+
+    <!-- ===== Brand assets ===== -->
+    <section id="brand" aria-labelledby="h-brand">
+      <span class="eyebrow">§ 10 — Brand Assets</span>
+      <h2 id="h-brand">NCG &amp; WNCG Icons</h2>
+      <p>Free to use for exchange listings, integrations, and editorial coverage.</p>
+      <div class="brand-assets">
+        <div class="brand-asset"><div class="brand-asset__chip"><img src="assets/icons/ncg-color.png" width="44" height="44" alt="" loading="lazy" decoding="async" /></div><span class="brand-asset__name">NCG · Color</span><a class="nolink-underline" href="assets/icons/ncg-color.png" download>Download PNG</a></div>
+        <div class="brand-asset"><div class="brand-asset__chip"><img src="assets/icons/ncg-grayscale.png" width="44" height="44" alt="" loading="lazy" decoding="async" /></div><span class="brand-asset__name">NCG · Grayscale</span><a class="nolink-underline" href="assets/icons/ncg-grayscale.png" download>Download PNG</a></div>
+        <div class="brand-asset"><div class="brand-asset__chip dark"><img src="assets/icons/ncg-white.png" width="44" height="44" alt="" loading="lazy" decoding="async" /></div><span class="brand-asset__name">NCG · White</span><a class="nolink-underline" href="assets/icons/ncg-white.png" download>Download PNG</a></div>
+        <div class="brand-asset"><div class="brand-asset__chip"><img src="assets/icons/wncg-color.png" width="44" height="44" alt="" loading="lazy" decoding="async" /></div><span class="brand-asset__name">WNCG · Color</span><a class="nolink-underline" href="assets/icons/wncg-color.png" download>Download PNG</a></div>
+        <div class="brand-asset"><div class="brand-asset__chip"><img src="assets/icons/wncg-grayscale.png" width="44" height="44" alt="" loading="lazy" decoding="async" /></div><span class="brand-asset__name">WNCG · Grayscale</span><a class="nolink-underline" href="assets/icons/wncg-grayscale.png" download>Download PNG</a></div>
+        <div class="brand-asset"><div class="brand-asset__chip dark"><img src="assets/icons/wncg-white.png" width="44" height="44" alt="" loading="lazy" decoding="async" /></div><span class="brand-asset__name">WNCG · White</span><a class="nolink-underline" href="assets/icons/wncg-white.png" download>Download PNG</a></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Sticky TOC ===== -->
+  <aside class="toc" aria-label="Table of contents">
+    <div class="toc__title">On this page</div>
+    <ol>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#what-is">What is Nine Chronicles?</a></li>
+      <li><a href="#blockchain">Nine Chronicles Blockchain</a></li>
+      <li><a href="#economics">Economics &amp; NCG Usage</a></li>
+      <li><a href="#distribution">Distribution</a></li>
+      <li><a href="#funding">Funding &amp; Partnerships</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#source">Source &amp; Docs</a></li>
+      <li><a href="#media">Articles &amp; Media</a></li>
+      <li><a href="#brand">Brand Assets</a></li>
+    </ol>
+  </aside>
+
+</div>
+
+<footer class="site-footer">
+  <p>
+    © Nine Chronicles Ltd · Nine Chronicles Gold (NCG) ·
+    <a href="https://nine-chronicles.com/" target="_blank" rel="noopener">nine-chronicles.com</a> ·
+    <a href="https://github.com/planetarium" target="_blank" rel="noopener">GitHub</a>
+  </p>
+</footer>
+
+<script>
+  // -- Theme toggle (persists to localStorage)
+  (function () {
+    var key = "ncg-wp-theme";
+    var saved = null;
+    try { saved = localStorage.getItem(key); } catch (e) {}
+    if (saved === "light" || saved === "dark") {
+      document.documentElement.setAttribute("data-theme", saved);
+    }
+    var btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var current = document.documentElement.getAttribute("data-theme");
+      var next = current === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem(key, next); } catch (e) {}
+    });
+  })();
+
+  // -- Distribution table: expand/collapse rows via the row's <button>
+  (function () {
+    var buttons = document.querySelectorAll(".dist .row-toggle");
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("aria-controls");
+        var detail = document.getElementById(id);
+        if (!detail) return;
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!open));
+        detail.classList.toggle("is-open", !open);
+      });
+    });
+  })();
+
+  // -- TOC active section highlight (IntersectionObserver)
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll(".toc a[href^='#']"));
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    var byId = {};
+    links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = byId[entry.target.id];
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove("is-active"); });
+          link.classList.add("is-active");
+        }
+      });
+    }, { rootMargin: "-30% 0px -60% 0px", threshold: 0 });
+    Object.keys(byId).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  })();
+</script>
+
+
+</body>
+</html>
