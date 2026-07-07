@@ -62,7 +62,7 @@ namespace Nekoyume.UI.Module
                     normalLevelText.text = string.Format(
                         LevelTextFormat,
                         equipmentStat.StatType,
-                        equipmentStat.StatType.ValueToString((long)equipmentStat.TotalValue));
+                        equipmentStat.StatType.ValueToShortString((long)equipmentStat.TotalValue));
                     normalLevelText.gameObject.SetActive(true);
                     break;
                 case ConsumableItemSheet.Row consumableRow:
@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module
                     normalLevelText.text = string.Format(
                         LevelTextFormat,
                         consumableStat.StatType,
-                        consumableStat.StatType.ValueToString((long)consumableStat.TotalValue));
+                        consumableStat.StatType.ValueToShortString((long)consumableStat.TotalValue));
                     normalLevelText.gameObject.SetActive(true);
                     break;
                 case MaterialItemSheet.Row:
