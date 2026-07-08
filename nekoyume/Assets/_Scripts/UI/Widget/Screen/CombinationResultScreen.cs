@@ -213,11 +213,14 @@ namespace Nekoyume.UI
             _resultItem.mainStatText.text = string.Empty;
             _resultItem.cpText.text = string.Empty;
 
-            _itemOptionInfo = itemUsable is Equipment equipment
+            var equipment = itemUsable as Equipment;
+            _itemOptionInfo = equipment != null
                 ? new ItemOptionInfo(equipment)
                 : new ItemOptionInfo(itemUsable);
 
-            var statOptions = _itemOptionInfo.StatOptions;
+            var statOptions = equipment != null
+                ? EquipmentStatOptionHelper.GetStatOptions(equipment, _itemOptionInfo)
+                : _itemOptionInfo.StatOptions;
             var statOptionsCount = statOptions.Count;
             var statOptionsIconCount = statOptions.Sum(tuple => tuple.count);
             var skillOptions = _itemOptionInfo.SkillOptions;
