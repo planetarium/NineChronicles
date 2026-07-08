@@ -44,7 +44,7 @@ namespace Tests.EditMode
             "200,0,0,0,0,0,0,0,0,0,5,100,0,6,100,0,7,100,0,,,\n";
 
         // 11 columns: id,result_equipment_id,...,sub_recipe_id,sub_recipe_id_2,sub_recipe_id_3
-        private const string RecipeCsv =
+        private static readonly string RecipeCsv =
             "id,result_equipment_id,material_id,material_count,required_action_point,required_gold,required_block_index,unlock_stage,sub_recipe_id,sub_recipe_id_2,sub_recipe_id_3\n" +
             "1," + NonMainStatEquipmentId + ",0,0,0,0,0,0,100,,\n" +
             "2," + NonMainStatWithSkillEquipmentId + ",0,0,0,0,0,0,101,,\n" +
