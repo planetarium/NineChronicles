@@ -180,7 +180,8 @@ namespace Nekoyume.UI.Module
                         statView.Hide();
                     }
 
-                    foreach (var (type, value, count) in optionInfo.StatOptions)
+                    var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, optionInfo);
+                    foreach (var (type, value, count) in statOptions)
                     {
                         AddStat(type, value, count);
                         statCount += count;
