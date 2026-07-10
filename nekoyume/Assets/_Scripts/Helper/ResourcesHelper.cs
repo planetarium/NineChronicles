@@ -30,10 +30,18 @@ namespace Nekoyume.Helper
             return default;
         }
 
-        public static GameObject GetCharacterTitle(int grade, string text)
+        public static GameObject GetCharacterTitle(int itemId, int grade, string text)
         {
-            var datas = Get<CharacterTitleScriptableObject>().title;
-            var data = datas.FirstOrDefault(x => x.Grade == grade);
+            var so = Get<CharacterTitleScriptableObject>();
+
+            var overrideData = so.titleByItemId?.FirstOrDefault(x => x.ItemId == itemId);
+            if (overrideData != null && overrideData.Title != null)
+            {
+                overrideData.Title.GetComponentInChildren<TextMeshProUGUI>().text = text;
+                return overrideData.Title;
+            }
+
+            var data = so.title.FirstOrDefault(x => x.Grade == grade);
             if (data == null)
             {
                 return null;

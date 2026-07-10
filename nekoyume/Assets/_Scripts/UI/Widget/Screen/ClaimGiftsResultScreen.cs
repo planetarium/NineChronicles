@@ -93,6 +93,7 @@ namespace Nekoyume.UI
             if (costume is not null && costume.ItemSubType == ItemSubType.Title)
             {
                 var clone = ResourcesHelper.GetCharacterTitle(
+                    costume.Id,
                     costume.Grade,
                     costume.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);

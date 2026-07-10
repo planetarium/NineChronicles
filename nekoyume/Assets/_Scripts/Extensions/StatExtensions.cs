@@ -12,13 +12,13 @@ namespace Nekoyume
     {
         public static string DecimalStatToString(this DecimalStat stat)
         {
-            var value =
+            var isPermyriadPercent =
                 stat.StatType == StatType.DRR ||
-                stat.StatType == StatType.CDMG
-                    ? stat.BaseValue / 100m
-                    : stat.BaseValue;
+                stat.StatType == StatType.CDMG;
+            var value = isPermyriadPercent ? stat.BaseValue / 100m : stat.BaseValue;
+            var suffix = isPermyriadPercent ? "%" : string.Empty;
 
-            return $"{stat.StatType} +{value:0.##}";
+            return $"{stat.StatType} +{value:0.##}{suffix}";
         }
 
         /// <param name="statModifier"> StatModifier contains StatType, Operation, Value
@@ -87,8 +87,8 @@ namespace Nekoyume
                 case StatType.DRR:
                 case StatType.CDMG:
                     return isSigned
-                        ? (value / 100m).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
-                        : (value / 100m).ToString("0.##", CultureInfo.InvariantCulture);
+                        ? (value / 100m).ToString("+0.##\\%;-0.##\\%", CultureInfo.InvariantCulture)
+                        : (value / 100m).ToString("0.##\\%", CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
@@ -111,7 +111,7 @@ namespace Nekoyume
                     return $"{value:0.##\\%}";
                 case StatType.DRR:
                 case StatType.CDMG:
-                    return ((long)(value / 100m)).ToCurrencyNotation();
+                    return $"{((long)(value / 100m)).ToCurrencyNotation()}%";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
