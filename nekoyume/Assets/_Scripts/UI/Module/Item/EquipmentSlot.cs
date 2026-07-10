@@ -288,8 +288,10 @@ namespace Nekoyume.UI.Module
                 optionTagBg.saturation = data.GradeHsvSaturation;
                 optionTagBg.value = data.GradeHsvValue;
 
-                var optionInfo = new ItemOptionInfo(Item as Equipment);
-                var optionCount = optionInfo.StatOptions.Sum(x => x.count);
+                var equipment = Item as Equipment;
+                var optionInfo = new ItemOptionInfo(equipment);
+                var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, optionInfo);
+                var optionCount = statOptions.Sum(x => x.count);
                 var index = 0;
                 for (var i = 0; i < optionCount; ++i)
                 {

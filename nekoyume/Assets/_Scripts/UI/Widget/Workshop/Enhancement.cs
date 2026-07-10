@@ -563,9 +563,10 @@ namespace Nekoyume.UI
                     statTooltip.gameObject.SetActive(true);
                 });
 
-                for (var statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
+                var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, itemOptionInfo);
+                for (var statIndex = 0; statIndex < statOptions.Count; statIndex++)
                 {
-                    var (optionStatType, value, count) = itemOptionInfo.StatOptions[statIndex];
+                    var (optionStatType, value, count) = statOptions[statIndex];
                     var statView = statViews[statIndex];
                     statView.gameObject.SetActive(true);
                     statView.Set(

@@ -227,7 +227,7 @@ namespace Nekoyume.UI
                 mainStatTotalValue,
                 mainStatTotalValue - mainStatTotalValuePre);
 
-            var statOptions = itemOptionInfo.StatOptions;
+            var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, itemOptionInfo);
             var statOptionsCount = statOptions.Count;
             for (var i = 0; i < _itemStatOptionViews.Count; i++)
             {
