@@ -46,7 +46,8 @@ namespace Nekoyume.UI.Module
             background.value = data.GradeHsvValue;
             var optionInfo = new ItemOptionInfo(equipment);
 
-            var optionCount = optionInfo.StatOptions.Sum(x => x.count);
+            var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, optionInfo);
+            var optionCount = statOptions.Sum(x => x.count);
             var index = 0;
             for (var i = 0; i < optionCount; ++i)
             {

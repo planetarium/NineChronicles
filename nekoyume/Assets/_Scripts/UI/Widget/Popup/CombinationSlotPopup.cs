@@ -194,16 +194,19 @@ namespace Nekoyume.UI
             var statValueString = statType.ValueToString(itemOptionInfo.MainStat.totalValue);
             information.MainStatViews[0].UpdateView($"{statType} {statValueString}", string.Empty);
 
+            var statOptions = resultModel.itemUsable is Equipment equipment
+                ? EquipmentStatOptionHelper.GetStatOptions(equipment, itemOptionInfo)
+                : itemOptionInfo.StatOptions;
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
-                if (i >= itemOptionInfo.StatOptions.Count)
+                if (i >= statOptions.Count)
                 {
                     optionView.Hide();
                     continue;
                 }
 
-                var (type, value, count) = itemOptionInfo.StatOptions[i];
+                var (type, value, count) = statOptions[i];
                 optionView.UpdateView($"{type} +{type.ValueToString(value)}", string.Empty, count);
                 optionView.Show();
             }
@@ -269,17 +272,18 @@ namespace Nekoyume.UI
                 mainStatView.Show();
             }
 
+            var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, itemOptionInfo);
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
                 if ((row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0) ||
-                    i >= itemOptionInfo.StatOptions.Count)
+                    i >= statOptions.Count)
                 {
                     optionView.Hide();
                     continue;
                 }
 
-                var (type, _, count) = itemOptionInfo.StatOptions[i];
+                var (type, _, count) = statOptions[i];
                 var text = string.Format(
                     format,
                     type,
@@ -332,6 +336,7 @@ namespace Nekoyume.UI
 
             var itemOptionInfoPre = new ItemOptionInfo(preEquipment);
             var itemOptionInfo = new ItemOptionInfo(equipment);
+            var statOptions = EquipmentStatOptionHelper.GetStatOptions(equipment, itemOptionInfo);
 
             var statType = itemOptionInfo.MainStat.type;
             var statValueString = statType.ValueToString(itemOptionInfo.MainStat.totalValue);
@@ -349,14 +354,14 @@ namespace Nekoyume.UI
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
-                if (i >= itemOptionInfo.StatOptions.Count &&
+                if (i >= statOptions.Count &&
                     i >= itemOptionInfoPre.StatOptions.Count)
                 {
                     optionView.Hide();
                     continue;
                 }
 
-                var (type, value, count) = itemOptionInfo.StatOptions[i];
+                var (type, value, count) = statOptions[i];
                 var (_, preValue, _) = itemOptionInfoPre.StatOptions[i];
                 var rate = RateOfChange(preValue, value);
                 var rateString = rate > 0 ? $" (+{rate}%)" : string.Empty;
