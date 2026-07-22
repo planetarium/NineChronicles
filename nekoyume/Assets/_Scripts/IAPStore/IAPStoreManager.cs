@@ -493,7 +493,7 @@ namespace Nekoyume.IAPStore
             PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}][{p.message}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
-                ("product-id", p.productId),
+                ("product-id", i.definition.id),
                 ("result", p.reason.ToString()),
                 ("message", p.message.ToString()));
 
