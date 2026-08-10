@@ -114,6 +114,15 @@ namespace Nekoyume.UI
 #endif
         }
 
+        /// <summary>
+        /// 플랫폼과 무관하게 실제 NCG 거래소(P2P 마켓플레이스)를 연다.
+        /// Show()의 모바일 -> MobileShop 리다이렉트를 우회한다.
+        /// </summary>
+        public void ShowExchange(bool ignoreShowAnimation = false)
+        {
+            ShowAsync(ignoreShowAnimation);
+        }
+
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);
