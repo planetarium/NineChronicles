@@ -52,7 +52,6 @@ namespace Nekoyume.UI.Module.Ncu
         public string GameId;           // RB-1A2B33 — 포탈 API #2 전까지 빈 값(있으면 표시)
         public string WalletAddress;    // 0x… 전문(표시 축약은 컴포넌트가) — 없으면 숨김
         public bool ShowLinkElements;   // 식별자/뱃지/연동버튼 노출(K버전=false)
-        public string PlayUrl;          // "플레이 하러 가기"
         public string LinkUrl;          // "연동하러 가기"(포탈) — 미연동 && CanLink일 때
         public bool CanLink;            // 연동 버튼 노출(미연동 && ShowLinkElements && 포탈연동 지원)
     }
@@ -89,7 +88,6 @@ namespace Nekoyume.UI.Module.Ncu
         public const string KeyPlay = "UI_NCU_PLAY";
         public const string KeyLink = "UI_NCU_LINK";
         public const string KeyRetry = "UI_NCU_RETRY";
-        public const string KeyWallet = "UI_NCU_WALLET";
         public const string KeyLoadFailed = "UI_NCU_LOAD_FAILED";
         public const string KeyPetpop = "UI_NCU_PROJECT_PETPOP";
         // 배지 — NCU 전용 키. 예전엔 공용 UI_CONNECTED/UI_NOT_CONNECTED를 재활용했는데,
@@ -99,10 +97,7 @@ namespace Nekoyume.UI.Module.Ncu
         public const string KeyBadgeUnlinked = "UI_NCU_BADGE_UNLINKED";
 
         // TODO(CMS/서버상수): 포탈 versions[]와 동일한 하드코딩 placeholder. 상수화/CMS화 대상.
-        private const string RbWeb2PlayUrl = "https://verse8.io/G8w7m7T";   // 카드(web2)
-        private const string RbWeb3PlayUrl = "https://ragnarokbreaker.fun"; // 토큰(web3)
         private const string PortalLinkUrl = "https://nine-chronicles.com/ncu"; // 연동하러 가기(포탈)
-        private const string PetpopPlayUrl = "https://petpop.io";           // PETPOP placeholder
 
         // 응답+프로파일 → 프로젝트별 표시 모델. isQuerying=true면 모든 상태를 조회중으로,
         //   isFailed=true면 모두 조회 실패로(재시도 버튼). 둘 다 false면 응답을 그대로 읽는다.
@@ -137,7 +132,6 @@ namespace Nekoyume.UI.Module.Ncu
                 GameId = petpopConn != null ? petpopConn.Nickname : null,
                 WalletAddress = petpopConn != null ? petpopConn.KaiaWalletAddr : null,
                 ShowLinkElements = profile.ShowLinkElements,
-                PlayUrl = PetpopPlayUrl,
                 LinkUrl = null,
                 CanLink = false, // 연동 생성은 펫팝 소관 — 포탈 "연동하러 가기" 없음
             };
@@ -194,7 +188,6 @@ namespace Nekoyume.UI.Module.Ncu
                 GameId = conn != null ? conn.Nickname : null, // API #2 전까지 빈 값
                 WalletAddress = conn != null ? conn.Address : null,
                 ShowLinkElements = profile.ShowLinkElements,
-                PlayUrl = isCard ? RbWeb2PlayUrl : RbWeb3PlayUrl,
                 LinkUrl = PortalLinkUrl,
                 CanLink = profile.ShowLinkElements && state == NcuConnectionState.Unlinked,
             };

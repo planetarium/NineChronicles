@@ -380,7 +380,7 @@ namespace Nekoyume.UI
                 if (i < count)
                 {
                     block.gameObject.SetActive(true);
-                    block.Set(view.Servers[i], RefreshNcuLinkStatus);
+                    block.Set(view.Servers[i], RefreshNcuLinkStatus, PlaySelectedBanner);
                 }
                 else
                 {
@@ -389,6 +389,20 @@ namespace Nekoyume.UI
             }
 
             ResizeServerRail(count);
+        }
+
+        // 행의 "플레이 하러 가기"는 우측 배너 이미지를 누른 것과 같은 동작이어야 한다.
+        //   목적지·서명 URL·인게임 이동 판단이 전부 라이브에셋 데이터에 들어있으므로
+        //   여기서 URL을 따로 들고 있지 않고 EventView에 그대로 위임한다.
+        //   (선택된 탭 = 그 배너이므로 행이 가리키는 곳과 이미지가 가리키는 곳은 늘 같다.)
+        private void PlaySelectedBanner()
+        {
+            if (eventView == null)
+            {
+                return;
+            }
+
+            eventView.InvokeButtonAction();
         }
 
         // 레일 높이는 "켜진 행 수"를 따라간다. 고정값을 두면 서버가 1개인 탭(RB web2/web3처럼

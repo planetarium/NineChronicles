@@ -1,6 +1,4 @@
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +6,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.Ncu
 {
     // (NCU) 좌측 리스트에서 선택된 탭 아래에 붙는 서버 행 1개.
-    //   행 = 상태점 + 서버 이름 + 연동여부 + 액션 버튼 하나(Wallet / Link / Retry).
+    //   행 = 상태점 + 서버 이름 + 연동여부 + 액션 버튼 하나(플레이 / 연동 / 재시도).
     //   NcuServerBlockView로부터 렌더하며, 프리팹 ref는 부분 배선 가능 — 전부 null-guard.
     public class NcuServerBlock : MonoBehaviour
     {
@@ -31,16 +29,14 @@ namespace Nekoyume.UI.Module.Ncu
         [SerializeField] private Color dotUnlinkedColor = new Color(0.55f, 0.57f, 0.60f);
         [SerializeField] private Color dotFailedColor = new Color(0.85f, 0.35f, 0.18f);
 
-        // 단일 액션 버튼 — 라벨/동작이 상태에 따라 바뀐다(Wallet ↔ Link ↔ Retry).
+        // 단일 액션 버튼 — 라벨/동작이 상태에 따라 바뀐다(플레이 ↔ 연동 ↔ 재시도).
         [SerializeField] private Button actionButton;
         [SerializeField] private TextMeshProUGUI actionLabel;
 
         [Header("State overlays")]
         [SerializeField] private GameObject skeletonRoot; // 조회 중
 
-        private string _walletFull;
-
-        public void Set(NcuServerBlockView view, System.Action onRetry)
+        public void Set(NcuServerBlockView view, System.Action onRetry, System.Action onPlay)
         {
             if (view == null)
             {
@@ -64,9 +60,8 @@ namespace Nekoyume.UI.Module.Ncu
                 SetText(badgeText, Localize(NcuLinkStatusView.BadgeKey(view.State)));
 
                 // (시안 B) 행에는 "연동됐는지 아닌지"만 남긴다.
-                //   게임ID·지갑주소·복사·힌트는 좁은 좌측 행에서 읽히지도 않고 자리도 없어
-                //   Wallet 버튼 뒤(다음 화면)로 넘긴다. 값 자체는 계속 들고 있는다.
-                _walletFull = view.WalletAddress;
+                //   게임ID·지갑주소·힌트는 좁은 좌측 행에서 읽히지도 않고 자리도 없다.
+                //   값은 뷰모델(NcuServerBlockView)에 그대로 있으니 상세 화면이 생기면 거기서 쓴다.
                 SetActiveSafe(idsRoot, false);
                 SetActiveSafe(hintRoot, false);
             }
@@ -100,7 +95,7 @@ namespace Nekoyume.UI.Module.Ncu
 
             // --- 단일 액션 버튼 ---
             //   시안은 버튼이 하나뿐이고 상태에 따라 라벨만 바뀐다.
-            //   연동됨=Wallet / 미연동=Link / 실패=Retry / 조회중=숨김.
+            //   연동됨=플레이 하러 가기 / 미연동=연동하러 가기 / 실패=다시 시도 / 조회중=숨김.
             if (actionButton != null)
             {
                 string labelKey = null;
@@ -118,9 +113,10 @@ namespace Nekoyume.UI.Module.Ncu
                 }
                 else if (view.State == NcuConnectionState.Linked && view.ShowLinkElements)
                 {
-                    // TODO: 시안의 "다음 화면"이 생기면 그쪽으로. 그전까지는 주소 복사.
-                    labelKey = NcuLinkStatusView.KeyWallet;
-                    onClick = CopyWallet;
+                    // 연동이 끝난 사람에게 남은 할 일은 "가서 하는 것"이다.
+                    //   목적지는 배너 이미지 클릭과 같은 경로로 위임한다(서명 URL·인게임 이동 포함).
+                    labelKey = NcuLinkStatusView.KeyPlay;
+                    onClick = () => onPlay?.Invoke();
                 }
 
                 var showAction = labelKey != null && !querying;
@@ -131,19 +127,6 @@ namespace Nekoyume.UI.Module.Ncu
                     Wire(actionButton, () => onClick?.Invoke());
                 }
             }
-        }
-
-        private void CopyWallet()
-        {
-            if (string.IsNullOrEmpty(_walletFull))
-            {
-                return;
-            }
-            Helper.ClipboardHelper.CopyToClipboard(_walletFull);
-            OneLineSystem.Push(
-                MailType.System,
-                L10nManager.Localize("UI_COPIED"),
-                NotificationCell.NotificationType.Notification);
         }
 
         private static void OpenUrl(string url)

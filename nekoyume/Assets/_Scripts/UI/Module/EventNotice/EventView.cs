@@ -42,20 +42,42 @@ namespace Nekoyume.UI.Module
         private bool _useAgentAddress;
         private EventButtonType _buttonType;
         private InGameNavigationData _inGameNavigationData;
+        private Action _navigationAction;
 
         private void Awake()
         {
-            urlButton.onClick.AddListener(() =>
-            {
-                var url = _url;
-                if (_useAgentAddress)
-                {
-                    var address = States.Instance.AgentState.address;
-                    url = string.Format(url, address);
-                }
+            urlButton.onClick.AddListener(OpenUrl);
+        }
 
-                Helper.Util.OpenURL(url);
-            });
+        private void OpenUrl()
+        {
+            if (string.IsNullOrEmpty(_url))
+            {
+                return;
+            }
+
+            var url = _url;
+            if (_useAgentAddress)
+            {
+                var address = States.Instance.AgentState.address;
+                url = string.Format(url, address);
+            }
+
+            Helper.Util.OpenURL(url);
+        }
+
+        // 이미지(버튼)를 누른 것과 완전히 같은 동작. URL이면 서명 URL로 이동, 인게임이면 그 이동.
+        //   NCU 서버 행의 "플레이 하러 가기"가 이 경로를 그대로 탄다 — 서명 URL 조립은 Set()에서
+        //   이미 끝나 있으므로 밖에서 다시 만들면 파라미터가 어긋난다.
+        public void InvokeButtonAction()
+        {
+            if (_buttonType == EventButtonType.IN_GAME)
+            {
+                _navigationAction?.Invoke();
+                return;
+            }
+
+            OpenUrl();
         }
 
         public void Set(Sprite eventSprite, string url, bool useAgentAddress, bool sign)
@@ -68,6 +90,11 @@ namespace Nekoyume.UI.Module
             eventImage.overrideSprite = eventSprite;
             navigationButton.gameObject.SetActive(false);
             urlButton.gameObject.SetActive(false);
+
+            // 눌릴 데가 없는 상태(coming soon 등)다. 지우지 않으면 직전 배너의 목적지가 남아
+            //   InvokeButtonAction이 엉뚱한 곳으로 보낸다.
+            _url = null;
+            _navigationAction = null;
         }
 
         public void Set(
@@ -103,6 +130,7 @@ namespace Nekoyume.UI.Module
             _useAgentAddress = useAgentAddress;
             _buttonType = buttonType;
             _inGameNavigationData = inGameNavigationData;
+            _navigationAction = null;
 
             if (_buttonType == EventButtonType.URL)
             {
@@ -124,6 +152,7 @@ namespace Nekoyume.UI.Module
                     _inGameNavigationData.WorldId,
                     _inGameNavigationData.StageId
                 );
+                _navigationAction = action;
                 navigationButton.Set(action);
             }
         }
