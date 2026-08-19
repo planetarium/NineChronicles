@@ -86,6 +86,10 @@ namespace Nekoyume.UI.Module.Ncu
         public const string KeyNoticeNotShared = "UI_NCU_NOTICE_NOT_SHARED";
         public const string KeyHintLinkReward = "UI_NCU_HINT_LINK_REWARD";
         public const string KeyPlay = "UI_NCU_PLAY";
+        // 버튼 문구도 연동 여부에 따라 갈라 쓴다. 배지와 같은 말을 반복하지 않으면서
+        //   "처음 가는 것"과 "이어서 하는 것"의 어감이 언어마다 다르기 때문에 키를 나눈다.
+        public const string KeyPlayLinked = "UI_NCU_PLAY_LINKED";
+        public const string KeyPlayUnlinked = "UI_NCU_PLAY_UNLINKED";
         public const string KeyLink = "UI_NCU_LINK";
         public const string KeyRetry = "UI_NCU_RETRY";
         public const string KeyLoadFailed = "UI_NCU_LOAD_FAILED";
@@ -238,6 +242,17 @@ namespace Nekoyume.UI.Module.Ncu
                 }
             }
             return null;
+        }
+
+        // 버튼 라벨 키(상태별). 조회 중/실패는 연동 여부를 아직 모르므로 중립 문구로 둔다.
+        public static string PlayLabelKey(NcuConnectionState state)
+        {
+            switch (state)
+            {
+                case NcuConnectionState.Linked: return KeyPlayLinked;
+                case NcuConnectionState.Unlinked: return KeyPlayUnlinked;
+                default: return KeyPlay;
+            }
         }
 
         // 배지 라벨 키(상태별). Failed는 신규 키.

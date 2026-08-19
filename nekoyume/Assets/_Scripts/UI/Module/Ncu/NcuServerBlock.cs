@@ -94,15 +94,15 @@ namespace Nekoyume.UI.Module.Ncu
             }
 
             // --- 액션 버튼 ---
-            //   상태와 무관하게 항상 "플레이 하러 가기" 하나다. 연동 여부는 옆 배지가 이미
-            //   말하고 있으므로 버튼까지 상태를 따라가면 같은 정보를 두 번 말하면서 갈 곳만 없앤다.
+            //   어떤 상태에서도 하는 일은 하나 — 플레이하러 간다. 문구만 연동 여부에 따라 갈린다
+            //   (동작이 상태를 타면 갈 곳이 사라지지만, 문구가 상태를 타는 건 번역 품질 문제다).
             //   조회 중에도 숨기지 않는다 — 목적지는 배너에서 오고 연동상태 조회와 무관해서,
             //   숨기면 포탈 응답이 느린 동안 멀쩡한 플레이 링크가 사라졌다 나타난다.
             //   목적지는 배너 이미지 클릭과 같은 경로로 위임한다(서명 URL·인게임 이동 포함).
             if (actionButton != null)
             {
                 SetActiveSafe(actionButton.gameObject, true);
-                SetText(actionLabel, Localize(NcuLinkStatusView.KeyPlay));
+                SetText(actionLabel, Localize(NcuLinkStatusView.PlayLabelKey(view.State)));
                 Wire(actionButton, () => onPlay?.Invoke());
             }
         }
