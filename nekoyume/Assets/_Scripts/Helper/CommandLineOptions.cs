@@ -621,6 +621,18 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("portal-host", Required = false, HelpText = "portal service host (NCU link-status)")]
+        public string PortalHost
+        {
+            get => _portalHost;
+            set
+            {
+                _portalHost = value;
+                Empty = false;
+            }
+        }
+        private string _portalHost;
+
         [Option("google-market-url", Required = false, HelpText = "google market url")]
         public string GoogleMarketUrl
         {
