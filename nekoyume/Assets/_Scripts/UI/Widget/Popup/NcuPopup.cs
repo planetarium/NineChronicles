@@ -317,13 +317,27 @@ namespace Nekoyume.UI
                 // 조회 자체가 실패한 경우. 그냥 리턴하면 조회중 상태가 그대로 남아
                 //   스피너가 영구 고정되고 재시도 버튼도 안 뜬다. 실패로 렌더한다.
                 NcDebug.LogWarning("[NcuPopup] NCU link-status unavailable.");
-                ApplyNcuLinkStatus(null, isQuerying: false);
+                ApplyNcuLinkStatus(null, isQuerying: false, isFailed: true);
                 return;
             }
 
             _ncuLinkStatus = status;
             ApplyNcuLinkStatus(status, isQuerying: false); // 렌더 먼저 — 로그 NRE가 렌더를 막지 않도록.
             LogNcuLinkStatus(status);
+        }
+
+        // 응답 → 표시 모델 → 선택된 탭 아래 렌더. 렌더 진입점은 이 하나뿐이다.
+        //   isFailed: 조회 자체가 실패(응답 없음). 이때 응답이 null이라 conn도 없는데,
+        //     그걸 "미연동"으로 그리면 이미 연동한 사람에게 거짓말을 하고 재시도 버튼 대신
+        //     연동 버튼이 뜬다. 실패는 미연동과 구분해서 넘긴다.
+        private void ApplyNcuLinkStatus(
+            ApiClient.NcuServiceManager.NcuLinkStatusResponse status,
+            bool isQuerying,
+            bool isFailed = false)
+        {
+            _ncuProjectViews = NcuLinkStatusView.Build(
+                status, ResolveBuildProfile(), isQuerying, isFailed);
+            RenderSelectedProjectServers();
         }
 
 

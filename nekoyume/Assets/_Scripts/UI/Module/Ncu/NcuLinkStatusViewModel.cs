@@ -104,11 +104,13 @@ namespace Nekoyume.UI.Module.Ncu
         private const string PortalLinkUrl = "https://nine-chronicles.com/ncu"; // 연동하러 가기(포탈)
         private const string PetpopPlayUrl = "https://petpop.io";           // PETPOP placeholder
 
-        // 응답+프로파일 → 프로젝트별 표시 모델. isQuerying=true면 모든 상태를 조회중으로.
+        // 응답+프로파일 → 프로젝트별 표시 모델. isQuerying=true면 모든 상태를 조회중으로,
+        //   isFailed=true면 모두 조회 실패로(재시도 버튼). 둘 다 false면 응답을 그대로 읽는다.
         public static List<NcuProjectView> Build(
             NcuServiceManager.NcuLinkStatusResponse response,
             NcuBuildProfile profile,
-            bool isQuerying)
+            bool isQuerying,
+            bool isFailed = false)
         {
             var result = new List<NcuProjectView>();
 
@@ -125,7 +127,7 @@ namespace Nekoyume.UI.Module.Ncu
             var petpopBlock = new NcuServerBlockView
             {
                 ConnectionKey = ProjectPetpop,
-                State = DeriveState(petpopConn, isQuerying),
+                State = DeriveState(petpopConn, isQuerying, isFailed),
                 NameL10nKey = KeyPetpop,
                 DescL10nKey = null,
                 // (시안 B) 행은 이름 + 연동여부 두 줄이다. 예전엔 서버가 1개인 프로젝트의
@@ -146,11 +148,11 @@ namespace Nekoyume.UI.Module.Ncu
             //   (기존 1탭 2블록 → 2탭 각 1블록. 각 탭당 서버 1개라 "미공유" 고지 불필요.)
             if (profile.RbTabVisible)
             {
-                result.Add(BuildRbTab(response, ProjectRbWeb2, ConnRagnarokWallet, profile, isQuerying));
+                result.Add(BuildRbTab(response, ProjectRbWeb2, ConnRagnarokWallet, profile, isQuerying, isFailed));
                 // 토큰(web3) 탭은 IncludeTokenServer일 때만(K버전 제외).
                 if (profile.IncludeTokenServer)
                 {
-                    result.Add(BuildRbTab(response, ProjectRbWeb3, ConnAbstractWallet, profile, isQuerying));
+                    result.Add(BuildRbTab(response, ProjectRbWeb3, ConnAbstractWallet, profile, isQuerying, isFailed));
                 }
             }
 
@@ -163,10 +165,11 @@ namespace Nekoyume.UI.Module.Ncu
             string projectViewId,
             string connKey,
             NcuBuildProfile profile,
-            bool isQuerying)
+            bool isQuerying,
+            bool isFailed)
         {
             var view = new NcuProjectView { ProjectId = projectViewId, ShowNotice = false };
-            var block = BuildRbBlock(response, connKey, profile, isQuerying);
+            var block = BuildRbBlock(response, connKey, profile, isQuerying, isFailed);
             view.Servers.Add(block);
             return view;
         }
@@ -175,10 +178,11 @@ namespace Nekoyume.UI.Module.Ncu
             NcuServiceManager.NcuLinkStatusResponse response,
             string connKey,
             NcuBuildProfile profile,
-            bool isQuerying)
+            bool isQuerying,
+            bool isFailed)
         {
             var conn = FindConnection(response, ProjectRagnarok, connKey);
-            var state = DeriveState(conn, isQuerying);
+            var state = DeriveState(conn, isQuerying, isFailed);
             var isCard = connKey == ConnRagnarokWallet;
             return new NcuServerBlockView
             {
@@ -197,11 +201,16 @@ namespace Nekoyume.UI.Module.Ncu
         }
 
         private static NcuConnectionState DeriveState(
-            NcuServiceManager.NcuConnection conn, bool isQuerying)
+            NcuServiceManager.NcuConnection conn, bool isQuerying, bool isFailed)
         {
             if (isQuerying)
             {
                 return NcuConnectionState.Querying;
+            }
+            // 응답 자체가 없는 경우. conn == null 로 흘려보내면 "미연동"이 되어버린다.
+            if (isFailed)
+            {
+                return NcuConnectionState.Failed;
             }
             if (conn == null)
             {
