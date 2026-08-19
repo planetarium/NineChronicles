@@ -380,7 +380,7 @@ namespace Nekoyume.UI
                 if (i < count)
                 {
                     block.gameObject.SetActive(true);
-                    block.Set(view.Servers[i], RefreshNcuLinkStatus, PlaySelectedBanner);
+                    block.Set(view.Servers[i], PlaySelectedBanner);
                 }
                 else
                 {

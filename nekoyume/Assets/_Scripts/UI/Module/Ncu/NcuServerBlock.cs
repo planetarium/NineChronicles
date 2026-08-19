@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.Ncu
 {
     // (NCU) 좌측 리스트에서 선택된 탭 아래에 붙는 서버 행 1개.
-    //   행 = 상태점 + 서버 이름 + 연동여부 + 액션 버튼 하나(플레이 / 연동 / 재시도).
+    //   행 = 상태점 + 서버 이름 + 연동여부 배지 + "플레이 하러 가기" 버튼.
     //   NcuServerBlockView로부터 렌더하며, 프리팹 ref는 부분 배선 가능 — 전부 null-guard.
     public class NcuServerBlock : MonoBehaviour
     {
@@ -29,14 +29,14 @@ namespace Nekoyume.UI.Module.Ncu
         [SerializeField] private Color dotUnlinkedColor = new Color(0.55f, 0.57f, 0.60f);
         [SerializeField] private Color dotFailedColor = new Color(0.85f, 0.35f, 0.18f);
 
-        // 단일 액션 버튼 — 라벨/동작이 상태에 따라 바뀐다(플레이 ↔ 연동 ↔ 재시도).
+        // 액션 버튼 — 상태와 무관하게 항상 "플레이 하러 가기".
         [SerializeField] private Button actionButton;
         [SerializeField] private TextMeshProUGUI actionLabel;
 
         [Header("State overlays")]
         [SerializeField] private GameObject skeletonRoot; // 조회 중
 
-        public void Set(NcuServerBlockView view, System.Action onRetry, System.Action onPlay)
+        public void Set(NcuServerBlockView view, System.Action onPlay)
         {
             if (view == null)
             {
@@ -93,52 +93,21 @@ namespace Nekoyume.UI.Module.Ncu
                     : linked ? dotLinkedColor : dotUnlinkedColor;
             }
 
-            // --- 단일 액션 버튼 ---
-            //   시안은 버튼이 하나뿐이고 상태에 따라 라벨만 바뀐다.
-            //   실패=다시 시도 / 연동가능한 미연동=연동하러 가기 / 그 외=플레이 하러 가기 / 조회중=숨김.
+            // --- 액션 버튼 ---
+            //   항상 "플레이 하러 가기" 하나다. 연동 여부는 옆 배지가 이미 말하고 있으므로
+            //   버튼까지 상태를 따라 바뀌면 같은 정보를 두 번 말하면서 갈 곳만 없애게 된다.
+            //   목적지는 배너 이미지 클릭과 같은 경로로 위임한다(서명 URL·인게임 이동 포함).
+            //   조회 중에만 숨긴다 — 무엇을 보여줄지 아직 정해지지 않은 상태라서다.
             if (actionButton != null)
             {
-                string labelKey = null;
-                System.Action onClick = null;
-
-                if (failed)
+                SetActiveSafe(actionButton.gameObject, !querying);
+                if (!querying)
                 {
-                    labelKey = NcuLinkStatusView.KeyRetry;
-                    onClick = () => onRetry?.Invoke();
-                }
-                else if (view.CanLink && view.State == NcuConnectionState.Unlinked)
-                {
-                    labelKey = NcuLinkStatusView.KeyLink;
-                    onClick = () => OpenUrl(view.LinkUrl);
-                }
-                else
-                {
-                    // 그 외에는 전부 "가서 하는 것". 연동은 플레이의 전제가 아니다 —
-                    //   미연동이라고 버튼을 비우면 (연동을 펫팝에 위임하는 PETPOP처럼
-                    //   CanLink=false인 행에서) 아무것도 누를 수 없는 행이 남는다.
-                    //   목적지는 배너 이미지 클릭과 같은 경로로 위임한다(서명 URL·인게임 이동 포함).
-                    labelKey = NcuLinkStatusView.KeyPlay;
-                    onClick = () => onPlay?.Invoke();
-                }
-
-                var showAction = labelKey != null && !querying;
-                SetActiveSafe(actionButton.gameObject, showAction);
-                if (showAction)
-                {
-                    SetText(actionLabel, Localize(labelKey));
-                    Wire(actionButton, () => onClick?.Invoke());
+                    SetText(actionLabel, Localize(NcuLinkStatusView.KeyPlay));
+                    Wire(actionButton, () => onPlay?.Invoke());
                 }
             }
         }
-
-        private static void OpenUrl(string url)
-        {
-            if (!string.IsNullOrEmpty(url))
-            {
-                Helper.Util.OpenURL(url);
-            }
-        }
-
 
         private static string Localize(string key)
         {
