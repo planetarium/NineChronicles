@@ -95,7 +95,7 @@ namespace Nekoyume.UI.Module.Ncu
 
             // --- 단일 액션 버튼 ---
             //   시안은 버튼이 하나뿐이고 상태에 따라 라벨만 바뀐다.
-            //   연동됨=플레이 하러 가기 / 미연동=연동하러 가기 / 실패=다시 시도 / 조회중=숨김.
+            //   실패=다시 시도 / 연동가능한 미연동=연동하러 가기 / 그 외=플레이 하러 가기 / 조회중=숨김.
             if (actionButton != null)
             {
                 string labelKey = null;
@@ -111,9 +111,11 @@ namespace Nekoyume.UI.Module.Ncu
                     labelKey = NcuLinkStatusView.KeyLink;
                     onClick = () => OpenUrl(view.LinkUrl);
                 }
-                else if (view.State == NcuConnectionState.Linked && view.ShowLinkElements)
+                else
                 {
-                    // 연동이 끝난 사람에게 남은 할 일은 "가서 하는 것"이다.
+                    // 그 외에는 전부 "가서 하는 것". 연동은 플레이의 전제가 아니다 —
+                    //   미연동이라고 버튼을 비우면 (연동을 펫팝에 위임하는 PETPOP처럼
+                    //   CanLink=false인 행에서) 아무것도 누를 수 없는 행이 남는다.
                     //   목적지는 배너 이미지 클릭과 같은 경로로 위임한다(서명 URL·인게임 이동 포함).
                     labelKey = NcuLinkStatusView.KeyPlay;
                     onClick = () => onPlay?.Invoke();
