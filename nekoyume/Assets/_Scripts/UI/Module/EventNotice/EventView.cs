@@ -42,7 +42,8 @@ namespace Nekoyume.UI.Module
         private bool _useAgentAddress;
         private EventButtonType _buttonType;
         private InGameNavigationData _inGameNavigationData;
-        private Action _navigationAction;
+        // System.Action 을 풀네임으로 — 이 네임스페이스에서는 Nekoyume.Action(lib9c)이 Action 을 가린다.
+        private System.Action _navigationAction;
 
         private void Awake()
         {
