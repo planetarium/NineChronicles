@@ -49,7 +49,9 @@ namespace Nekoyume.UI
             sellButton.onClick.AddListener(() =>
             {
                 Find<ItemCountAndPricePopup>().Close();
-                Find<ShopSell>().Show();
+                // 거래소 안의 판매 탭이다. Show() 는 모바일에서 MobileShop 으로 리다이렉트하므로
+                //   여기서 부르면 거래소를 열어놓고 모바일 샵으로 튕겨나간다(PLD-1491).
+                Find<ShopSell>().ShowExchange();
                 gameObject.SetActive(false);
             });
 
