@@ -301,9 +301,20 @@ namespace Nekoyume.IAPStore
         //   PURCHASE_LIMIT_EXCEED 등으로 실패한 결제가 두 번째 시도에서 200 을 받아
         //   consume/acknowledge 되어버린다 — 배송도 환불도 못 받는 상태로 굳는다.
         //   확정은 VALID 일 때만 한다. 아니면 Pending 을 유지해 스토어 환불로 흘려보낸다.
-        private static bool IsDelivered(ReceiptDetailSchema result)
+        //   판정은 서버와 맞춘다. 서버(#481)는 `tx_status is not None` 이면 "배송 디스패치됨"
+        //   으로 보고 status 를 더 보지 않는다 — status = VALID 는 유일한 commit 보다 훨씬
+        //   앞에서 메모리에만 세팅되고 그 사이에 배송이 실행되므로, 배송 후 죽으면 DB 에
+        //   INIT 이 남는다. 그래서 tx 가 있으면 status 를 신뢰하지 않는다.
+        //   시즌패스류는 tx_status 가 영구 NULL 이라 status == VALID 로 판정한다.
+        private static bool IsDelivered(InAppPurchaseServiceClient.ReceiptDetailSchema result)
         {
-            return result != null && result.Status == ReceiptStatus.VALID;
+            if (result == null)
+            {
+                return false;
+            }
+
+            return result.TxStatus != null
+                   || result.Status == InAppPurchaseServiceClient.ReceiptStatus.VALID;
         }
 
         // 체인 상태(AgentState/CurrentAvatarState/PlanetId)가 준비될 때까지 기다린 뒤
@@ -396,6 +407,20 @@ namespace Nekoyume.IAPStore
             if (string.IsNullOrEmpty(pData.PlanetId))
             {
                 pData.PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString();
+            }
+
+            // 주소/행성 중 하나라도 비면 보내지 않는다. 서버는 agentAddress 만 null 검사하므로
+            //   avatar_addr="" 로 영수증이 만들어지고 검증까지 통과해(status=VALID) 클라가
+            //   확정해버린다 — 아무도 못 받는 결제가 확정된다. 상태를 기다렸다가 다시 온다.
+            if (string.IsNullOrEmpty(pData.AgentAddressHex)
+                || string.IsNullOrEmpty(pData.AvatarAddressHex)
+                || string.IsNullOrEmpty(pData.PlanetId))
+            {
+                NcDebug.LogWarning(
+                    $"[RePurchaseTryAsync] Incomplete owner data, deferring. tx: {product.transactionID} "
+                    + $"agent: {pData.AgentAddressHex} avatar: {pData.AvatarAddressHex} planet: {pData.PlanetId}");
+                DeferPurchaseUntilStateReadyAsync(product);
+                return;
             }
 
             var result = await ApiClients.Instance.IAPServiceManager
