@@ -565,12 +565,13 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
         {
-            NcDebug.LogError($"[IStoreListener PurchaseFail] reason: {p}, Product: {i.metadata.localizedTitle}");
-            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p}]");
-            if (p == PurchaseFailureReason.PurchasingUnavailable)
-            {
-                // IAP may be disabled in device settings.
-            }
+            // IAP 5.0.4 의 레거시 shim(PurchasingManager.OnPurchaseFailedAction)은 이 구식
+            //   콜백만 호출한다. IDetailedStoreListener.OnPurchaseFailed 는 5.0.4 에서
+            //   호출되는 곳이 없다(PurchaseFailureDescription 이 콜백용으로 생성되지 않음).
+            //   4.x 에서는 상세 콜백이 불렸기 때문에 로딩 종료가 그쪽에만 있었고, 5.0.4
+            //   업그레이드 후로는 구매 취소·결제 거부 시 스피너가 영구히 도는 상태가 됐다.
+            //   실제로 불리는 이쪽에서 처리한다.
+            HandlePurchaseFailed(i, p, p.ToString());
         }
 
         /// <summary>
@@ -578,38 +579,42 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
-            NcDebug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
-            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}][{p.message}]");
+            // 5.0.4 에서는 호출되지 않는다. 상위 버전에서 되살아나면 같은 처리를 타도록
+            //   위임만 한다(로딩 종료가 한쪽에만 있어서 생긴 문제를 반복하지 않기 위해).
+            HandlePurchaseFailed(i, p.reason, $"{p.reason} :: {p.message}");
+        }
+
+        // 결제 실패 공통 처리. 어느 콜백으로 들어와도 같은 결과여야 한다.
+        private void HandlePurchaseFailed(Product i, PurchaseFailureReason reason, string detail)
+        {
+            var productId = i?.definition?.id ?? "unknown";
+            NcDebug.LogError(
+                $"[PurchaseFail] reason: {detail}, Product: {i?.metadata?.localizedTitle ?? productId}");
+            PurchaseLog(productId, i?.transactionID ?? string.Empty, $"PurchaseFailed[{detail}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
-                ("product-id", i.definition.id),
-                ("result", p.reason.ToString()),
-                ("message", p.message.ToString()));
+                ("product-id", productId),
+                ("result", reason.ToString()),
+                ("message", detail));
 
-            Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
-            Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+            // 스피너를 반드시 끈다. 이게 빠져 있어서 취소/거부 후 상품 팝업을 닫을 때까지
+            //   로딩이 계속 돌았다.
+            Widget.Find<SeasonPassPremiumPopup>()?.PurchaseButtonLoadingEnd();
+            Widget.Find<ShopListPopup>()?.PurchaseButtonLoadingEnd();
+            Widget.Find<MobileShop>()?.RefreshGrid();
 
-            switch (p.reason)
+            // 사용자가 스스로 취소한 경우는 알릴 것이 없다. 그 외(결제 거부, 상품 없음,
+            //   이미 보유 등)는 왜 안 됐는지 알려줘야 한다 — 지금까지는 아무 안내가 없었다.
+            if (reason == PurchaseFailureReason.UserCancelled)
             {
-                case PurchaseFailureReason.PurchasingUnavailable:
-                    break;
-                case PurchaseFailureReason.ExistingPurchasePending:
-                    break;
-                case PurchaseFailureReason.ProductUnavailable:
-                    break;
-                case PurchaseFailureReason.SignatureInvalid:
-                    break;
-                case PurchaseFailureReason.UserCancelled:
-                    break;
-                case PurchaseFailureReason.PaymentDeclined:
-                    break;
-                case PurchaseFailureReason.DuplicateTransaction:
-                    break;
-                case PurchaseFailureReason.Unknown:
-                    break;
-                default:
-                    break;
+                return;
             }
+
+            Widget.Find<IconAndButtonSystem>().Show(
+                "UI_ERROR",
+                "UI_IAP_PURCHASE_FAILED",
+                "UI_OK",
+                true);
         }
 
         public async UniTaskVoid OnPurchaseFreeAsync(string sku)
