@@ -295,6 +295,63 @@ namespace Nekoyume.IAPStore
         /// Tx정보만 남아 있는 경우 구매처리
         /// </summary>
         /// <param name="product"></param>
+        // 배송이 실제로 끝났는가. 서버 /purchase/request 는 같은 order_id 의 영수증이 이미
+        //   있으면 **상태와 무관하게** 200 + 그 영수증을 돌려준다(purchase.py 의 prev_receipt
+        //   early-return). 그래서 result != null 만 보고 확정하면, 첫 시도가 INVALID /
+        //   PURCHASE_LIMIT_EXCEED 등으로 실패한 결제가 두 번째 시도에서 200 을 받아
+        //   consume/acknowledge 되어버린다 — 배송도 환불도 못 받는 상태로 굳는다.
+        //   확정은 VALID 일 때만 한다. 아니면 Pending 을 유지해 스토어 환불로 흘려보낸다.
+        //   판정은 서버와 맞춘다. 서버(#481)는 `tx_status is not None` 이면 "배송 디스패치됨"
+        //   으로 보고 status 를 더 보지 않는다 — status = VALID 는 유일한 commit 보다 훨씬
+        //   앞에서 메모리에만 세팅되고 그 사이에 배송이 실행되므로, 배송 후 죽으면 DB 에
+        //   INIT 이 남는다. 그래서 tx 가 있으면 status 를 신뢰하지 않는다.
+        //   시즌패스류는 tx_status 가 영구 NULL 이라 status == VALID 로 판정한다.
+        private static bool IsDelivered(InAppPurchaseServiceClient.ReceiptDetailSchema result)
+        {
+            if (result == null)
+            {
+                return false;
+            }
+
+            return result.TxStatus != null
+                   || result.Status == InAppPurchaseServiceClient.ReceiptStatus.VALID;
+        }
+
+        // 체인 상태(AgentState/CurrentAvatarState/PlanetId)가 준비될 때까지 기다린 뒤
+        //   정상 구매 요청 경로로 보낸다. 결제는 이미 끝났고 스토어는 Pending 으로 들고 있으므로
+        //   여기서 놓치면 배송이 사라진다 — 타임아웃 시에도 Pending 을 유지해
+        //   다음 기동의 재전달에 맡기고, 무슨 일이 있었는지는 남긴다.
+        private async void DeferPurchaseUntilStateReadyAsync(Product product)
+        {
+            var timeout = TimeSpan.FromSeconds(StateWaitTimeoutSeconds);
+            var cts = new System.Threading.CancellationTokenSource(timeout);
+            try
+            {
+                await UniTask.WaitUntil(
+                    () => States.Instance?.AgentState?.address != null
+                          && States.Instance?.CurrentAvatarState?.address != null
+                          && Game.Game.instance?.CurrentPlanetId != null,
+                    cancellationToken: cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                NcDebug.LogError(
+                    $"[DeferPurchaseUntilStateReadyAsync] Timeout({timeout.TotalSeconds}s). tx: {product.transactionID}");
+                Analyzer.Instance.Track(
+                    "Unity/Shop/IAP/ProcessPurchase/StateWaitTimeout",
+                    ("product-id", product.definition.id),
+                    ("transaction-id", product.transactionID));
+                return;
+            }
+            finally
+            {
+                cts.Dispose();
+            }
+
+            NcDebug.Log($"[DeferPurchaseUntilStateReadyAsync] State ready. tx: {product.transactionID}");
+            RePurchaseTryAsync(product);
+        }
+
         private async void OnlyTxRetryPurchaseAsync(Product product)
         {
             var result = await ApiClients.Instance.IAPServiceManager
@@ -303,9 +360,9 @@ namespace Nekoyume.IAPStore
                     product.transactionID,
                     product.appleOriginalTransactionID);
 
-            if (result is null)
+            if (!IsDelivered(result))
             {
-                NcDebug.LogError($"[OnlyTxRetryPurchaseAsync] Failed");
+                NcDebug.LogError($"[OnlyTxRetryPurchaseAsync] Not delivered (status: {result?.Status.ToString() ?? "null"})");
             }
             else
             {
@@ -313,6 +370,9 @@ namespace Nekoyume.IAPStore
                 RemoveLocalTransactions(product.transactionID);
             }
         }
+
+        // 로그인/상태 초기화가 늦는 기기를 감안한 상한. 넘으면 다음 기동 재전달에 맡긴다.
+        private const int StateWaitTimeoutSeconds = 60;
 
         private async void RePurchaseTryAsync(Product product)
         {
@@ -339,7 +399,7 @@ namespace Nekoyume.IAPStore
                 pData.AgentAddressHex = states?.AgentState?.address.ToHex();
             }
 
-            if (string.IsNullOrEmpty(pData.AgentAddressHex))
+            if (string.IsNullOrEmpty(pData.AvatarAddressHex))
             {
                 pData.AvatarAddressHex = states?.CurrentAvatarState?.address.ToHex();
             }
@@ -347,6 +407,20 @@ namespace Nekoyume.IAPStore
             if (string.IsNullOrEmpty(pData.PlanetId))
             {
                 pData.PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString();
+            }
+
+            // 주소/행성 중 하나라도 비면 보내지 않는다. 서버는 agentAddress 만 null 검사하므로
+            //   avatar_addr="" 로 영수증이 만들어지고 검증까지 통과해(status=VALID) 클라가
+            //   확정해버린다 — 아무도 못 받는 결제가 확정된다. 상태를 기다렸다가 다시 온다.
+            if (string.IsNullOrEmpty(pData.AgentAddressHex)
+                || string.IsNullOrEmpty(pData.AvatarAddressHex)
+                || string.IsNullOrEmpty(pData.PlanetId))
+            {
+                NcDebug.LogWarning(
+                    $"[RePurchaseTryAsync] Incomplete owner data, deferring. tx: {product.transactionID} "
+                    + $"agent: {pData.AgentAddressHex} avatar: {pData.AvatarAddressHex} planet: {pData.PlanetId}");
+                DeferPurchaseUntilStateReadyAsync(product);
+                return;
             }
 
             var result = await ApiClients.Instance.IAPServiceManager
@@ -358,12 +432,18 @@ namespace Nekoyume.IAPStore
                     product.transactionID,
                     product.appleOriginalTransactionID);
 
-            if (result is null)
+            if (!IsDelivered(result))
             {
-                NcDebug.LogError($"[RePurchaseTryAsync] Failed {pData.Receipt} AgentAddressHex: {pData.AgentAddressHex} AvatarAddressHex: {pData.AvatarAddressHex} PlanetId: {pData.PlanetId}");
+                NcDebug.LogError($"[RePurchaseTryAsync] Not delivered (status: {result?.Status.ToString() ?? "null"}) {pData.Receipt} AgentAddressHex: {pData.AgentAddressHex} AvatarAddressHex: {pData.AvatarAddressHex} PlanetId: {pData.PlanetId}");
+                Analyzer.Instance.Track(
+                    "Unity/Shop/IAP/RePurchaseTry/NotDelivered",
+                    ("product-id", product.definition.id),
+                    ("transaction-id", product.transactionID),
+                    ("status", result?.Status.ToString() ?? "null"));
             }
             else
             {
+                NcDebug.Log($"[RePurchaseTryAsync] Delivered. agent: {pData.AgentAddressHex} avatar: {pData.AvatarAddressHex}");
                 _controller.ConfirmPendingPurchase(product);
                 RemoveLocalTransactions(product.transactionID);
             }
@@ -414,7 +494,11 @@ namespace Nekoyume.IAPStore
                         || Game.Game.instance?.CurrentPlanetId == null)
                     {
                         NcDebug.Log($"[ProcessPurchase] AgentState{states?.AgentState?.address.ToHex()}, AvatarState{states?.CurrentAvatarState?.address.ToHex()} or PlanetId{Game.Game.instance?.CurrentPlanetId.ToString()} is null");
-                        OnlyTxRetryPurchaseAsync(e.purchasedProduct);
+                        // 예전에는 여기서 바로 OnlyTxRetryPurchaseAsync(=/purchase/retry)를 불렀다.
+                        //   retry 는 order_id 로 기존 영수증을 찾는 API 라, 아직 /request 가 한 번도
+                        //   가지 않은 최초 배송에서는 "Receipt not found" 로 영구 실패한다.
+                        //   상태가 준비되기를 기다렸다가 정상 경로(/request)로 보낸다.
+                        DeferPurchaseUntilStateReadyAsync(e.purchasedProduct);
                         return PurchaseProcessingResult.Pending;
                     }
 
@@ -451,15 +535,20 @@ namespace Nekoyume.IAPStore
 
             try
             {
-                if (e.purchasedProduct.availableToPurchase)
+                // availableToPurchase 로 배송 여부를 가르지 않는다.
+                //   이 플래그는 "지금 구매를 시도할 수 있는가"(카탈로그에 있는가)를 뜻하며
+                //   ProcessPurchase 는 이미 결제가 끝난 뒤 호출되므로 판단 근거가 아니다.
+                //   게이트는 IAP 4.9.3 시절에 들어왔고 그때는 카탈로그 인스턴스가 그대로
+                //   전달돼 true 였다. 5.0.4 부터 Google 경로가 Product 를 복제하면서
+                //   플래그를 잃어(항상 false) 안드로이드 결제가 전부 막혔다.
+                //   영수증 검증은 서버가 한다 — 서버가 모르는 상품이면 서버가 거절한다.
+                if (!e.purchasedProduct.availableToPurchase)
                 {
-                    OnPurchaseRequestAsync(e);
-                    return PurchaseProcessingResult.Pending;
+                    NcDebug.LogWarning(
+                        $"[ProcessPurchase] availableToPurchase=false but proceeding. product: {e.purchasedProduct.definition.id}");
                 }
 
-                Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
-                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
-                NcDebug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
+                OnPurchaseRequestAsync(e);
                 return PurchaseProcessingResult.Pending;
             }
             catch (Exception error)
@@ -476,12 +565,13 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
         {
-            NcDebug.LogError($"[IStoreListener PurchaseFail] reason: {p}, Product: {i.metadata.localizedTitle}");
-            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p}]");
-            if (p == PurchaseFailureReason.PurchasingUnavailable)
-            {
-                // IAP may be disabled in device settings.
-            }
+            // IAP 5.0.4 의 레거시 shim(PurchasingManager.OnPurchaseFailedAction)은 이 구식
+            //   콜백만 호출한다. IDetailedStoreListener.OnPurchaseFailed 는 5.0.4 에서
+            //   호출되는 곳이 없다(PurchaseFailureDescription 이 콜백용으로 생성되지 않음).
+            //   4.x 에서는 상세 콜백이 불렸기 때문에 로딩 종료가 그쪽에만 있었고, 5.0.4
+            //   업그레이드 후로는 구매 취소·결제 거부 시 스피너가 영구히 도는 상태가 됐다.
+            //   실제로 불리는 이쪽에서 처리한다.
+            HandlePurchaseFailed(i, p, p.ToString());
         }
 
         /// <summary>
@@ -489,38 +579,42 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
-            NcDebug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
-            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}][{p.message}]");
+            // 5.0.4 에서는 호출되지 않는다. 상위 버전에서 되살아나면 같은 처리를 타도록
+            //   위임만 한다(로딩 종료가 한쪽에만 있어서 생긴 문제를 반복하지 않기 위해).
+            HandlePurchaseFailed(i, p.reason, $"{p.reason} :: {p.message}");
+        }
+
+        // 결제 실패 공통 처리. 어느 콜백으로 들어와도 같은 결과여야 한다.
+        private void HandlePurchaseFailed(Product i, PurchaseFailureReason reason, string detail)
+        {
+            var productId = i?.definition?.id ?? "unknown";
+            NcDebug.LogError(
+                $"[PurchaseFail] reason: {detail}, Product: {i?.metadata?.localizedTitle ?? productId}");
+            PurchaseLog(productId, i?.transactionID ?? string.Empty, $"PurchaseFailed[{detail}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
-                ("product-id", p.productId),
-                ("result", p.reason.ToString()),
-                ("message", p.message.ToString()));
+                ("product-id", productId),
+                ("result", reason.ToString()),
+                ("message", detail));
 
-            Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
-            Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+            // 스피너를 반드시 끈다. 이게 빠져 있어서 취소/거부 후 상품 팝업을 닫을 때까지
+            //   로딩이 계속 돌았다.
+            Widget.Find<SeasonPassPremiumPopup>()?.PurchaseButtonLoadingEnd();
+            Widget.Find<ShopListPopup>()?.PurchaseButtonLoadingEnd();
+            Widget.Find<MobileShop>()?.RefreshGrid();
 
-            switch (p.reason)
+            // 사용자가 스스로 취소한 경우는 알릴 것이 없다. 그 외(결제 거부, 상품 없음,
+            //   이미 보유 등)는 왜 안 됐는지 알려줘야 한다 — 지금까지는 아무 안내가 없었다.
+            if (reason == PurchaseFailureReason.UserCancelled)
             {
-                case PurchaseFailureReason.PurchasingUnavailable:
-                    break;
-                case PurchaseFailureReason.ExistingPurchasePending:
-                    break;
-                case PurchaseFailureReason.ProductUnavailable:
-                    break;
-                case PurchaseFailureReason.SignatureInvalid:
-                    break;
-                case PurchaseFailureReason.UserCancelled:
-                    break;
-                case PurchaseFailureReason.PaymentDeclined:
-                    break;
-                case PurchaseFailureReason.DuplicateTransaction:
-                    break;
-                case PurchaseFailureReason.Unknown:
-                    break;
-                default:
-                    break;
+                return;
             }
+
+            Widget.Find<IconAndButtonSystem>().Show(
+                "UI_ERROR",
+                "UI_IAP_PURCHASE_FAILED",
+                "UI_OK",
+                true);
         }
 
         public async UniTaskVoid OnPurchaseFreeAsync(string sku)
@@ -707,8 +801,16 @@ namespace Nekoyume.IAPStore
                 Widget.Find<ShopListPopup>()?.PurchaseButtonLoadingEnd();
                 Widget.Find<SeasonPassPremiumPopup>()?.PurchaseButtonLoadingEnd();
 
-                if (result is null)
+                // 배송 완료(VALID)가 아니면 확정하지 않는다 — IsDelivered 주석 참조.
+                if (!IsDelivered(result))
                 {
+                    NcDebug.LogError(
+                        $"[OnPurchaseRequestAsync] Not delivered (status: {result?.Status.ToString() ?? "null"}) tx: {e.purchasedProduct.transactionID}");
+                    Analyzer.Instance.Track(
+                        "Unity/Shop/IAP/PurchaseResult",
+                        ("product-id", e.purchasedProduct.definition.id),
+                        ("result", "NotDelivered"),
+                        ("status", result?.Status.ToString() ?? "null"));
                     popup.Show(
                         "UI_ERROR",
                         "UI_IAP_PURCHASE_FAILED",

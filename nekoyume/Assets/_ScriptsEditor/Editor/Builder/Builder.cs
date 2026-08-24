@@ -452,6 +452,15 @@ namespace NekoyumeEditor
                 pbxProject.RemoveFileFromBuild(unityFrameworkTargetGuid, frameworkGuid);
             }
 
+            // Unity IAP 5.x adds a Swift (StoreKit 2) plugin, so Xcode embeds the Swift
+            // runtime dylibs into UnityFramework.framework/Frameworks, which the App Store
+            // rejects (error 90206). Embed the Swift standard libraries in the main app
+            // target instead of the nested UnityFramework.
+            pbxProject.SetBuildProperty(unityFrameworkTargetGuid,
+                "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
+            pbxProject.SetBuildProperty(pbxProject.GetUnityMainTargetGuid(),
+                "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "YES");
+
             // xcode 15 error
             //pbxProject.AddBuildProperty(unityFrameworkTargetGuid, "OTHER_LDFLAGS", "-ld64");
 

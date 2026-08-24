@@ -29,6 +29,8 @@ namespace Nekoyume.ApiClient
 
         public ArenaServiceManager Arenaservicemanager { get; private set; }
 
+        public NcuServiceManager NcuServiceManager { get; private set; }
+
         public NineChroniclesAPIClient MimirClient { get; private set; }
 
         // Game.IAPStoreManager와 기능 정리 가능할지도?
@@ -61,6 +63,7 @@ namespace Nekoyume.ApiClient
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             Arenaservicemanager = new ArenaServiceManager(clo.ArenaServiceHost);
+            NcuServiceManager = new NcuServiceManager(clo.PortalHost);
             MimirClient = new NineChroniclesAPIClient(clo.MimirServiceHost);
             ApplySeasonPassMarketUrl(clo);
 
