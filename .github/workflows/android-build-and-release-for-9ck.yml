@@ -107,7 +107,7 @@ jobs:
           buildName: ${{ matrix.targetPlatform }}
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}
-          androidTargetSdkVersion: AndroidApiLevel34
+          androidTargetSdkVersion: AndroidApiLevel36
           customParameters: -identifier com.planetariumlabs.ninechroniclesmobilek -playerName Nine-Chronicles-K
           allowDirtyBuild: true
 

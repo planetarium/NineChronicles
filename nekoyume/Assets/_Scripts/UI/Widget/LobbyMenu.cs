@@ -487,9 +487,20 @@ namespace Nekoyume.UI
             }
 
 # if UNITY_ANDROID || UNITY_IOS
-            Close();
-            Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            var goldBalanceState = States.Instance.GoldBalanceState;
+            if (!Game.LiveAsset.GameConfig.IsKoreanBuild &&
+                goldBalanceState != null && goldBalanceState.Gold.MajorUnit >= 1)
+            {
+                // 한국 빌드가 아니고 NCG 보유자(>= 1)면 PC와 동일하게 분기 팝업을 노출한다.
+                Find<MarketExchangePopup>().Show();
+            }
+            else
+            {
+                // 한국 빌드 또는 NCG 미보유 -> 기존처럼 모바일 샵으로 직행한다.
+                Close();
+                Find<MobileShop>().ShowAsTab().Forget();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            }
 # else
             Find<MarketExchangePopup>().Show();
 #endif

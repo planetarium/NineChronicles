@@ -245,6 +245,31 @@ namespace Nekoyume.UI
 #endif
         }
 
+        /// <summary>
+        /// 플랫폼과 무관하게 실제 NCG 거래소의 판매 화면을 연다.
+        /// Show()의 모바일 -> MobileShop 리다이렉트를 우회한다. ShopBuy.ShowExchange 와 대응.
+        /// </summary>
+        public void ShowExchange(bool ignoreShowAnimation = false)
+        {
+            ShowExchangeAsync(ignoreShowAnimation).Forget();
+        }
+
+        private async UniTaskVoid ShowExchangeAsync(bool ignoreShowAnimation)
+        {
+            // ShowAsync 는 market 조회를 로딩 화면 없이 기다린다. 호출부(거래소 판매 탭)가 곧바로
+            //   ShopBuy 를 숨기므로 그 사이 빈 화면이 뜨고, WidgetStack 최상단이 비활성 위젯이라
+            //   안드로이드 back 도 먹지 않는다. ShopBuy.ShowAsync / PaymentPopup 과 같이 감싼다.
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);
+            try
+            {
+                await ShowAsync(ignoreShowAnimation);
+            }
+            finally
+            {
+                Find<LoadingScreen>().Close();
+            }
+        }
+
         public async UniTask ShowAsync(bool ignoreShowAnimation = false)
         {
             inventory.SetShop(ShowItemTooltip);
