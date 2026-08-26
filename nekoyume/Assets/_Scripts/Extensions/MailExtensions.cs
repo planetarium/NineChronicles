@@ -8,6 +8,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using UnityEngine;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume
 {
@@ -49,7 +50,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            InAppPurchaseServiceClient.ProductSchema product = null;
+            ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
             {
                 product = GetProductFromMemo(mail.Memo);
@@ -83,9 +84,9 @@ namespace Nekoyume
             return sku;
         }
 
-        public static InAppPurchaseServiceClient.ProductSchema GetProductFromMemo(string memo)
+        public static ProductSchema GetProductFromMemo(string memo)
         {
-            InAppPurchaseServiceClient.ProductSchema product = null;
+            ProductSchema product = null;
             var sku = GetSkuFromMemo(memo);
     
             if (!string.IsNullOrEmpty(sku))
@@ -200,7 +201,7 @@ namespace Nekoyume
             var game = Game.Game.instance;
             var agentAddr = game.Agent.Address;
 
-            InAppPurchaseServiceClient.ProductSchema product = null;
+            ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
             {
                 product = GetProductFromMemo(mail.Memo);

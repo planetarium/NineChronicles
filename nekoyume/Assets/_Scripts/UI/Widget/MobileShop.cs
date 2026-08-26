@@ -13,6 +13,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume.UI
 {
@@ -53,7 +54,7 @@ namespace Nekoyume.UI
 
         private string _lastSelectedCategory;
 
-        public static InAppPurchaseServiceClient.L10NSchema MOBILE_L10N_SCHEMA;
+        public static L10NSchema MOBILE_L10N_SCHEMA;
 
         protected override void Awake()
         {
@@ -78,7 +79,7 @@ namespace Nekoyume.UI
             ShowAsync(ignoreShowAnimation);
         }
 
-        public async void ShowAsProduct(InAppPurchaseServiceClient.ProductSchema product, UnityEngine.Purchasing.Product purchasingData)
+        public async void ShowAsProduct(ProductSchema product, UnityEngine.Purchasing.Product purchasingData)
         {
             await ShowAsync();
 
@@ -192,7 +193,7 @@ namespace Nekoyume.UI
             loading.Close();
         }
 
-        private async Task InitializeObj(IEnumerable<InAppPurchaseServiceClient.CategorySchema> categorySchemas)
+        private async Task InitializeObj(IEnumerable<CategorySchema> categorySchemas)
         {
             var renderCategory = categorySchemas
                 .Where(c => c.Active && c.Name != "NoShow")
@@ -319,7 +320,7 @@ namespace Nekoyume.UI
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
         }
 
-        public static async Task<IReadOnlyList<InAppPurchaseServiceClient.CategorySchema>> GetCategorySchemas()
+        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
         {
             return await ApiClients.Instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());

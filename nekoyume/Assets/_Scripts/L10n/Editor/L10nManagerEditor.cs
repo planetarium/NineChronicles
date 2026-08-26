@@ -10,6 +10,7 @@ using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume.L10n.Editor
 {
@@ -119,9 +120,9 @@ namespace Nekoyume.L10n.Editor
             await L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv", true);
 
             //인터널 마켓서비스에서 l10n 다운로드하여 빌드전 포함되도록 함
-            var iapClient = new InAppPurchaseServiceClient("https://xd2n1dpmce.execute-api.us-east-2.amazonaws.com/internal");
-            await IAPL10nDownload(iapClient, InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobile);
-            await IAPL10nDownload(iapClient, InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobilek);
+            var iapClient = new InAppPurchaseServiceClient("https://iap-internal-api.9c.gg");
+            await IAPL10nDownload(iapClient, PackageName.com_planetariumlabs_ninechroniclesmobile);
+            await IAPL10nDownload(iapClient, PackageName.com_planetariumlabs_ninechroniclesmobilek);
 
             foreach (var languageType in Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>())
             {
@@ -173,9 +174,9 @@ namespace Nekoyume.L10n.Editor
             }
         }
 
-        private static async Task IAPL10nDownload(InAppPurchaseServiceClient client, InAppPurchaseServiceClient.PackageName packageName)
+        private static async Task IAPL10nDownload(InAppPurchaseServiceClient client, PackageName packageName)
         {
-            InAppPurchaseServiceClient.L10NSchema MOBILE_L10N_SCHEMA = null;
+            L10NSchema MOBILE_L10N_SCHEMA = null;
             await client.GetL10nAsync(packageName,
                 (success) =>
                 {

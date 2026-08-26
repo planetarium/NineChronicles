@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.ApiClient;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume.UI.Module
 {
@@ -71,7 +72,7 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI mileageText;
 
         private RectTransform _rect;
-        private InAppPurchaseServiceClient.ProductSchema _data;
+        private ProductSchema _data;
         private UnityEngine.Purchasing.Product _purchasingData;
 
         private void Awake()
@@ -132,7 +133,7 @@ namespace Nekoyume.UI.Module
             productImage.SetNativeSize();
         }
 
-        public void SetData(InAppPurchaseServiceClient.ProductSchema data, bool isRecommended)
+        public void SetData(ProductSchema data, bool isRecommended)
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
@@ -140,7 +141,7 @@ namespace Nekoyume.UI.Module
             recommended.SetActive(isRecommended);
         }
 
-        public void SetData(InAppPurchaseServiceClient.ProductSchema data)
+        public void SetData(ProductSchema data)
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
@@ -150,7 +151,7 @@ namespace Nekoyume.UI.Module
         private void Refresh()
         {
             _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku());
-            if (_purchasingData == null && _data.ProductType == InAppPurchaseServiceClient.ProductType.IAP)
+            if (_purchasingData == null && _data.ProductType == ProductType.IAP)
             {
                 gameObject.SetActive(false);
                 return;
@@ -158,13 +159,13 @@ namespace Nekoyume.UI.Module
 
             switch (_data.Size)
             {
-                case InAppPurchaseServiceClient.ProductAssetUISize._1x1:
+                case ProductAssetUISize._1x1:
                     _rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 230);
                     bottomButtonLayoutElement.minHeight = 65;
                     bottomLayout.spacing = 0;
                     rewardLayout.gameObject.SetActive(false);
                     break;
-                case InAppPurchaseServiceClient.ProductAssetUISize._1x2:
+                case ProductAssetUISize._1x2:
                     _rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 467);
                     bottomButtonLayoutElement.minHeight = 75;
                     bottomLayout.spacing = 3;
@@ -227,7 +228,7 @@ namespace Nekoyume.UI.Module
             }
             switch (_data.ProductType)
             {
-                case InAppPurchaseServiceClient.ProductType.IAP:
+                case ProductType.IAP:
                     var metadata = _purchasingData?.metadata;
                     NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
                     foreach (var item in price)
@@ -248,14 +249,14 @@ namespace Nekoyume.UI.Module
                         tagObj.SetActive(true);
                     }
                     break;
-                case InAppPurchaseServiceClient.ProductType.FREE:
+                case ProductType.FREE:
                     foreach (var item in price)
                     {
                         item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
                     }
                     _purchasingData = null;
                     break;
-                case InAppPurchaseServiceClient.ProductType.MILEAGE:
+                case ProductType.MILEAGE:
                     foreach (var item in price)
                     {
                         item.text = L10nManager.Localize("UI_MILEAGE_PRICE", _data.MileagePrice?.ToCurrencyNotation());
@@ -323,7 +324,7 @@ namespace Nekoyume.UI.Module
 
         public bool IsNotification()
         {
-            if (_data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
+            if (_data.ProductType != ProductType.FREE)
             {
                 return false;
             }
