@@ -842,10 +842,39 @@ namespace Nekoyume.Game
             else
             {
                 // Download and save sheets for the current planet
-                var downloadedSheets = await DownloadSheet(CurrentPlanetId.Value, _commandLineOptions.SheetBucketUrl, differentSheetNames);
+                var downloadedSheets = await DownloadSheet(
+                    CurrentPlanetId.Value,
+                    _commandLineOptions.SheetBucketUrl,
+                    differentSheetNames,
+                    quitOnFailure: false);
                 foreach (var pair in downloadedSheets)
                 {
                     csvDict[pair.Key] = pair.Value;
+                }
+
+                // 버킷은 체인보다 늦을 수 있다(patch 직후, 신규 시트). 여기 온 시트는 노드
+                // 해시가 있었으므로 노드에는 반드시 있으니, 버킷이 못 준 것은 노드에서 받는다.
+                var missingFromBucket = differentSheetNames
+                    .Where(name => !csvDict.TryGetValue(name, out var csv) ||
+                                   string.IsNullOrEmpty(csv))
+                    .ToList();
+                if (missingFromBucket.Count > 0)
+                {
+                    NcDebug.LogWarning(
+                        $"[SheetHash] bucket has no data for {missingFromBucket.Count} sheet(s):" +
+                        $" {string.Join(", ", missingFromBucket)}. Falling back to the node.");
+                    var addressToName = missingFromBucket.ToDictionary(
+                        name => Addresses.TableSheet.Derive(name),
+                        name => name);
+                    var fromNode = await Agent.GetSheetsAsync(addressToName.Keys);
+                    foreach (var pair in fromNode)
+                    {
+                        if (addressToName.TryGetValue(pair.Key, out var sheetName) &&
+                            pair.Value is Text text)
+                        {
+                            csvDict[sheetName] = text.ToDotnetString();
+                        }
+                    }
                 }
 
                 NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] download sheet: {sw.Elapsed}");
@@ -854,6 +883,20 @@ namespace Nekoyume.Game
 
                 sw.Restart();
             }
+
+            // 노드도 버킷도 주지 못한 시트가 남아 있으면 번들 CSV 로 간다. 최신이 아닐 수는
+            // 있어도, 빈 값을 넘겨 TableSheets.Initialize 가 ERROR_INITIALIZE_FAILED 로 부팅을
+            // 끊는 것보다는 낫다. 번들 CSV 는 그 체인의 제네시스가 쓰는 것과 같은 데이터다.
+            foreach (var asset in csvAssets)
+            {
+                if (!csvDict.TryGetValue(asset.name, out var csv) || string.IsNullOrEmpty(csv))
+                {
+                    NcDebug.LogWarning(
+                        $"[SheetHash] {asset.name} - no data from node or bucket. Using local data.");
+                    csvDict[asset.name] = asset.text;
+                }
+            }
+
             TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
@@ -1665,8 +1708,12 @@ namespace Nekoyume.Game
         /// <param name="sheetBuckUrl">The base URL of the sheet bucket.</param>
         /// <param name="sheetNames">A collection of sheet names to be downloaded.</param>
         /// <returns>A dictionary mapping sheet names to their downloaded content.</returns>
+        /// <param name="quitOnFailure">
+        /// 받아오지 못한 시트가 있을 때 부팅을 끊을지. 호출부가 대체 경로를 갖고 있으면
+        /// false 로 넘겨 받아온 것만 돌려받는다.
+        /// </param>
         public static async Task<IDictionary<string, string>> DownloadSheet(PlanetId planetId,
-            string sheetBuckUrl, ICollection<string> sheetNames)
+            string sheetBuckUrl, ICollection<string> sheetNames, bool quitOnFailure = true)
         {
             NcDebug.Log($"[DownloadSheet] {sheetBuckUrl}/{planetId}");
             var planet = planetId.ToString();
@@ -1717,7 +1764,7 @@ namespace Nekoyume.Game
                                 {
                                     await UniTask.Delay(TimeSpan.FromSeconds(delayBetweenRetries), cancellationToken: cts.Token);
                                 }
-                                else
+                                else if (quitOnFailure)
                                 {
                                     await UniTask.SwitchToMainThread();
                                     Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
@@ -1743,7 +1790,10 @@ namespace Nekoyume.Game
                     await UniTask.SwitchToMainThread();
                     var errorMessage = $"Failed to download and save sheet {csvName} after {maxRetries} attempts.";
                     Debug.LogError(errorMessage);
-                    Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
+                    if (quitOnFailure)
+                    {
+                        Game.QuitWithMessage("ERROR_DOWNLOAD_SHEET_FAILED", errorMessage);
+                    }
                 }
             });
 
