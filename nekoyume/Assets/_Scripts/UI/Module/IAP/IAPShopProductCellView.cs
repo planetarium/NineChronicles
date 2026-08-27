@@ -71,6 +71,16 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI mileageText;
 
+        // 복권 티켓 뱃지 — 마일리지 뱃지를 복제한 슬롯 3개(LEGEND/PREMIUM/STANDARD 최대치).
+        //   런타임 Instantiate 대신 고정 슬롯을 쓰는 건 이 셀의 기존 방식(rewardViews 등)과
+        //   같은 방침이고, 스크롤 리스트에서 셀이 재사용될 때 GC 를 만들지 않기 때문이다.
+        [SerializeField]
+        private GameObject[] voucherObjs;
+        [SerializeField]
+        private Image[] voucherIcons;
+        [SerializeField]
+        private TextMeshProUGUI[] voucherTexts;
+
         private RectTransform _rect;
         private ProductSchema _data;
         private UnityEngine.Purchasing.Product _purchasingData;
@@ -218,6 +228,8 @@ namespace Nekoyume.UI.Module
                 mileageObj.SetActive(false);
             }
 
+            UpdateVoucherTickets();
+
             tagObj.SetActive(false);
             discount.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
@@ -360,6 +372,38 @@ namespace Nekoyume.UI.Module
             }
 
             return _data.Order;
+        }
+        /// <summary>
+        /// 복권 티켓 뱃지 갱신. 슬롯보다 종류가 많으면 넘치는 종류는 표시하지 못하므로
+        /// 마지막 슬롯에서 잘린다 — 지금 정책상 종류는 3개(LEGEND/PREMIUM/STANDARD)라
+        /// 슬롯 수와 같다. 종류가 늘면 슬롯도 같이 늘려야 한다.
+        /// </summary>
+        private void UpdateVoucherTickets()
+        {
+            if (voucherObjs == null || voucherObjs.Length == 0)
+            {
+                return;
+            }
+
+            // IAP#487 배포 전 클라이언트/서버 조합에서는 필드 자체가 없다 → null 이면 빈 목록.
+            var tickets = VoucherTicketPresenter.Sort(_data?.VoucherTicketList);
+            for (var i = 0; i < voucherObjs.Length; i++)
+            {
+                var show = i < tickets.Count;
+                voucherObjs[i].SetActive(show);
+                if (!show)
+                {
+                    continue;
+                }
+
+                var ticket = tickets[i];
+                voucherTexts[i].text = $"x{ticket.Count}";
+                var sprite = VoucherTicketPresenter.LoadIcon(ticket.TicketType, true);
+                if (sprite != null)
+                {
+                    voucherIcons[i].sprite = sprite;
+                }
+            }
         }
     }
 }

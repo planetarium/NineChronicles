@@ -73,6 +73,14 @@ namespace Nekoyume.UI
         private GameObject mileageObject;
         [SerializeField]
         private TextMeshProUGUI mileageText;
+
+        // 복권 티켓 뱃지 — 마일리지 뱃지를 복제한 슬롯 3개(LEGEND/PREMIUM/STANDARD 최대치).
+        [SerializeField]
+        private GameObject[] voucherObjects;
+        [SerializeField]
+        private Image[] voucherIcons;
+        [SerializeField]
+        private TextMeshProUGUI[] voucherTexts;
         [SerializeField]
         private TextMeshProUGUI titleText;
 
@@ -237,6 +245,8 @@ namespace Nekoyume.UI
                 mileageObject.SetActive(false);
             }
 
+            UpdateVoucherTickets();
+
             // Initialize IAP Reward
             var iapRewardIndex = 0;
             foreach (var item in _data.FavList)
@@ -372,6 +382,37 @@ namespace Nekoyume.UI
             var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
                 .FirstOrDefault(p => p.definition.id == product.Sku());
             Show(product, purchasingProduct).Forget();
+        }
+
+        /// <summary>
+        /// 복권 티켓 뱃지 갱신. 순서·아이콘 규칙은 상품 셀과 공유한다
+        /// (<see cref="Nekoyume.UI.Module.VoucherTicketPresenter"/>).
+        /// </summary>
+        private void UpdateVoucherTickets()
+        {
+            if (voucherObjects == null || voucherObjects.Length == 0)
+            {
+                return;
+            }
+
+            var tickets = Nekoyume.UI.Module.VoucherTicketPresenter.Sort(_data?.VoucherTicketList);
+            for (var i = 0; i < voucherObjects.Length; i++)
+            {
+                var show = i < tickets.Count;
+                voucherObjects[i].SetActive(show);
+                if (!show)
+                {
+                    continue;
+                }
+
+                var ticket = tickets[i];
+                voucherTexts[i].text = $"x{ticket.Count}";
+                var sprite = Nekoyume.UI.Module.VoucherTicketPresenter.LoadIcon(ticket.TicketType, false);
+                if (sprite != null)
+                {
+                    voucherIcons[i].sprite = sprite;
+                }
+            }
         }
     }
 }
