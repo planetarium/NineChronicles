@@ -794,6 +794,20 @@ namespace Nekoyume.Game
                 var nodeHash = hashDict.ContainsKey(derivedAddress) ? hashDict[derivedAddress] : null;
                 var nodeHashStr = nodeHash != null ? ByteUtil.Hex(nodeHash) : "None";
 
+                if (nodeHash is null)
+                {
+                    // 노드에 그 주소가 아예 없다 = 그 체인에 patch_table_sheet 된 적이 없는
+                    // 시트다. 이때 다운로드를 요청하면 받아올 것이 없어 빈 값이 되고,
+                    // TableSheets.Initialize 가 ERROR_INITIALIZE_FAILED 로 부팅을 끊는다.
+                    // 번들의 CSV 는 그 체인의 제네시스가 쓰는 것과 같은 데이터이므로 그것을
+                    // 기본값으로 삼는다. 신규 시트를 클라에 먼저 넣어도 되게 하려면 이 분기가
+                    // 필요하다 — 없으면 "체인 patch 먼저, 클라 번들 나중" 순서가 강제된다.
+                    csvDict[asset.name] = asset.text;
+                    NcDebug.LogWarning(
+                        $"[SheetHash] {asset.name} - node has no sheet. Using local data.");
+                    continue;
+                }
+
                 if (nodeHashStr != normalizedLocalHashStr)
                 {
                     NcDebug.Log($"[SheetHash] {asset.name} - Hash mismatch. Local: {normalizedLocalHashStr}, Node: {nodeHashStr}");

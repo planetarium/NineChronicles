@@ -336,18 +336,19 @@ namespace Nekoyume.Game
         public SynthesizeWeightSheet SynthesizeWeightSheet { get; private set; }
 
         /// <summary>
-        /// 아이템·통화별 거래·합성 제한. 체인에 patch_table_sheet 로 올라오기 전에는 클라가
-        /// 이 CSV 를 번들에 갖고 있지 않으므로 <c>null</c> 이다.
+        /// 아이템·통화별 거래·합성 제한.
         /// </summary>
         /// <remarks>
-        /// null 인 이유: 시트 로드는 <c>AddressableAssetsContainer.tableCsvAssets</c> 를 순회하며
-        /// 채워지고(<c>Game.SyncTableSheetsAsync</c>), 그 목록에 없는 시트는 프로퍼티가 설정되지
-        /// 않는다. 반대로 CSV 를 번들에 넣으면 노드에 시트가 없는 동안 해시가 반드시 불일치해
-        /// 빈 값이 내려오고, <c>Initialize</c> 가 ERROR_INITIALIZE_FAILED 로 부팅을 끊는다.
-        /// 그래서 번들 등록은 각 체인 patch 이후로 미뤄져 있다. 읽는 쪽은 null 을 확인할 것.
+        /// 행이 없는 것과 제한이 없는 것은 같다 — 조회 API(<c>IsItemMarketRegistrable</c> 등)가
+        /// 미등재 키에 대해 "허용"을 돌려주므로, 호출부는 비었는지 따로 보지 않고 그냥 물어도
+        /// 된다. 정책이 실제로 실려 있는지 확인하려면 <c>Values.Any()</c> 로 보면 된다.
+        ///
+        /// 체인에 patch_table_sheet 된 적이 없어도 이 프로퍼티는 채워진다 —
+        /// <c>Game.SyncTableSheetsAsync</c> 가 노드에 없는 시트는 번들 CSV 를 기본값으로 쓴다.
+        /// 그 폴백이 없으면 빈 값이 내려와 <c>Initialize</c> 가 ERROR_INITIALIZE_FAILED 로
+        /// 부팅을 끊는다.
         /// </remarks>
         [UsedImplicitly]
-        [CanBeNull]
         public RestrictionSheet RestrictionSheet { get; private set; }
 
         public void ItemSheetInitialize()
