@@ -397,7 +397,8 @@ namespace Nekoyume.UI.Module
                 }
 
                 var ticket = tickets[i];
-                voucherTexts[i].text = $"x{ticket.Count}";
+                // 마일리지와 같은 표기 — 수량만 낸다("x" 접두 없음).
+                voucherTexts[i].text = ticket.Count.ToString();
                 var sprite = VoucherTicketPresenter.LoadIcon(ticket.TicketType, true);
                 if (sprite != null)
                 {
