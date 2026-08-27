@@ -30,17 +30,26 @@ namespace Nekoyume.EditorTools
                 return;
             }
 
-            var shop = Widget.Find<MobileShop>();
+            // 데스크톱 타겟에서는 위젯이 **생성조차 되지 않는다** — MainCanvas.cs:191 의
+            //   `#if APPLY_MEMORY_IOS_OPTIMIZATION || UNITY_ANDROID || UNITY_IOS` 안에
+            //   Widget.Create<MobileShop>() 이 있다. 그래서 Find 는 WidgetNotFoundException 을
+            //   던진다(Widget.cs:184). 없으면 MainCanvas 와 **같은 경로**로 직접 만든다.
+            //   Create 는 Pool 에 등록하므로 이후 Find 도 정상 동작한다.
+            if (!Widget.TryFind<MobileShop>(out var shop))
+            {
+                shop = Widget.Create<MobileShop>();
+            }
+
             if (shop == null)
             {
                 EditorUtility.DisplayDialog("Mobile Shop",
-                    "MobileShop 위젯을 찾지 못했습니다. 로비까지 진입했는지 확인하세요.", "OK");
+                    "MobileShop 위젯을 만들지 못했습니다. 로비까지 진입했는지 확인하세요.", "OK");
                 return;
             }
 
             shop.ShowAsTab().Forget();
-            var header = Widget.Find<HeaderMenuStatic>();
-            if (header != null)
+            // 헤더도 같은 이유로 없을 수 있다 — Find 는 던지므로 TryFind 로 받는다(있으면 갱신).
+            if (Widget.TryFind<HeaderMenuStatic>(out var header))
             {
                 header.UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }
