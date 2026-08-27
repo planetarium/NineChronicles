@@ -15,6 +15,10 @@ using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using UnityEngine.Purchasing;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
+// UnityEngine.Purchasing.ProductType 과 이름이 겹친다. 이 파일은 생성 enum(IAP/FREE/MILEAGE)만
+// 쓰므로 bare 이름을 생성 쪽으로 고정한다(Unity 쪽 값은 이 파일에서 쓰지 않는다).
+using ProductType = GeneratedApiNamespace.InAppPurchaseServiceClient.ProductType;
 
 namespace Nekoyume.UI
 {
@@ -69,10 +73,18 @@ namespace Nekoyume.UI
         private GameObject mileageObject;
         [SerializeField]
         private TextMeshProUGUI mileageText;
+
+        // 복권 티켓 뱃지 — 마일리지 뱃지를 복제한 슬롯 3개(LEGEND/PREMIUM/STANDARD 최대치).
+        [SerializeField]
+        private GameObject[] voucherObjects;
+        [SerializeField]
+        private Image[] voucherIcons;
+        [SerializeField]
+        private TextMeshProUGUI[] voucherTexts;
         [SerializeField]
         private TextMeshProUGUI titleText;
 
-        private InAppPurchaseServiceClient.ProductSchema _data;
+        private ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
         private bool _isInLobby;
 
@@ -115,7 +127,7 @@ namespace Nekoyume.UI
             buyButton.onClick.AddListener(() =>
             {
                 var currentMileage = ApiClients.Instance.IAPServiceManager.CurrentMileage.Value;
-                if (_data.ProductType == InAppPurchaseServiceClient.ProductType.MILEAGE && _data.MileagePrice > currentMileage)
+                if (_data.ProductType == ProductType.MILEAGE && _data.MileagePrice > currentMileage)
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_CODE_NOT_ENOUGH_MILEAGE"), NotificationCell.NotificationType.Alert);
                     return;
@@ -135,7 +147,7 @@ namespace Nekoyume.UI
 
                 switch (_data.ProductType)
                 {
-                    case InAppPurchaseServiceClient.ProductType.IAP:
+                    case ProductType.IAP:
                         ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku(), States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
                             //success
                             () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku()); },
@@ -148,10 +160,10 @@ namespace Nekoyume.UI
                                     NotificationCell.NotificationType.Alert);
                             }).AsUniTask().Forget();
                         break;
-                    case InAppPurchaseServiceClient.ProductType.FREE:
+                    case ProductType.FREE:
                         Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku()).Forget();
                         break;
-                    case InAppPurchaseServiceClient.ProductType.MILEAGE:
+                    case ProductType.MILEAGE:
                         Game.Game.instance.IAPStoreManager.OnPurchaseMileageAsync(_data.Sku()).Forget();
                         break;
                     default:
@@ -187,7 +199,7 @@ namespace Nekoyume.UI
             productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.GetDetailImagePath()}");
         }
 
-        public async UniTask Show(InAppPurchaseServiceClient.ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
+        public async UniTask Show(ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
         {
             _data = data;
             _puchasingData = purchasingData;
@@ -200,20 +212,20 @@ namespace Nekoyume.UI
 
             switch (_data.ProductType)
             {
-                case InAppPurchaseServiceClient.ProductType.IAP:
+                case ProductType.IAP:
                     NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
                     foreach (var item in priceTexts)
                     {
                         item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
                     }
                     break;
-                case InAppPurchaseServiceClient.ProductType.FREE:
+                case ProductType.FREE:
                     foreach (var item in priceTexts)
                     {
                         item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
                     }
                     break;
-                case InAppPurchaseServiceClient.ProductType.MILEAGE:
+                case ProductType.MILEAGE:
                     foreach (var item in priceTexts)
                     {
                         item.text = L10nManager.Localize("UI_MILEAGE_PRICE", _data.MileagePrice?.ToCurrencyNotation());
@@ -232,6 +244,8 @@ namespace Nekoyume.UI
             {
                 mileageObject.SetActive(false);
             }
+
+            UpdateVoucherTickets();
 
             // Initialize IAP Reward
             var iapRewardIndex = 0;
@@ -270,7 +284,7 @@ namespace Nekoyume.UI
             discountText.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
 
-            if (isDiscount && _data.ProductType == InAppPurchaseServiceClient.ProductType.IAP)
+            if (isDiscount && _data.ProductType == ProductType.IAP)
             {
                 discountText.text = _data.Discount.ToString();
                 foreach (var item in preDiscountPrice)
@@ -291,7 +305,7 @@ namespace Nekoyume.UI
             }
 
             var currentMileage = ApiClients.Instance.IAPServiceManager.CurrentMileage.Value;
-            if (_data.ProductType == InAppPurchaseServiceClient.ProductType.MILEAGE && _data.MileagePrice > currentMileage)
+            if (_data.ProductType == ProductType.MILEAGE && _data.MileagePrice > currentMileage)
             {
                 buttonDisableObj.SetActive(true);
                 buyButton.interactable = true;
@@ -368,6 +382,38 @@ namespace Nekoyume.UI
             var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
                 .FirstOrDefault(p => p.definition.id == product.Sku());
             Show(product, purchasingProduct).Forget();
+        }
+
+        /// <summary>
+        /// 복권 티켓 뱃지 갱신. 순서·아이콘 규칙은 상품 셀과 공유한다
+        /// (<see cref="Nekoyume.UI.Module.VoucherTicketPresenter"/>).
+        /// </summary>
+        private void UpdateVoucherTickets()
+        {
+            if (voucherObjects == null || voucherObjects.Length == 0)
+            {
+                return;
+            }
+
+            var tickets = Nekoyume.UI.Module.VoucherTicketPresenter.Sort(_data?.VoucherTicketList);
+            for (var i = 0; i < voucherObjects.Length; i++)
+            {
+                var show = i < tickets.Count;
+                voucherObjects[i].SetActive(show);
+                if (!show)
+                {
+                    continue;
+                }
+
+                var ticket = tickets[i];
+                // 마일리지와 같은 표기 — 수량만 낸다("x" 접두 없음).
+                voucherTexts[i].text = ticket.Count.ToString();
+                var sprite = Nekoyume.UI.Module.VoucherTicketPresenter.LoadIcon(ticket.TicketType, false);
+                if (sprite != null)
+                {
+                    voucherIcons[i].sprite = sprite;
+                }
+            }
         }
     }
 }

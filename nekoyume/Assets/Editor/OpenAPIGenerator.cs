@@ -896,9 +896,17 @@ namespace Nekoyume
                         if (requestBody != null)
                         {
                             var requestBodyType = "string";
-                            if (requestBody["content"]["application/json"]["schema"]["$ref"] != null)
+                            // application/json 이 아닌 requestBody 도 있다(IAP 스펙의
+                            // POST /api/admin/{r2,s3}/images 는 multipart/form-data). 전에는 이 체인을
+                            // 그대로 인덱싱해서 NullReferenceException 으로 **생성 전체가 죽었고**,
+                            // 그래서 IAP 클라이언트를 오래 재생성하지 못했다. 응답 쪽(아래 responses)은
+                            // 이미 ?[...] 로 방어하고 있어 여기만 빠져 있던 것이다.
+                            // multipart 바디는 모델링하지 않으므로 선언된 기본값 string 으로 떨군다 —
+                            // 그 엔드포인트들은 백오피스 전용이라 게임 클라이언트가 호출하지 않는다.
+                            var jsonBodySchema = requestBody["content"]?["application/json"]?["schema"];
+                            if (jsonBodySchema?["$ref"] != null)
                             {
-                                var schemaRef = requestBody["content"]["application/json"]["schema"]["$ref"].ToString();
+                                var schemaRef = jsonBodySchema["$ref"].ToString();
                                 var parts = schemaRef.Split('/');
                                 requestBodyType = parts[parts.Length - 1];
                             }

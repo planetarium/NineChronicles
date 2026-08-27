@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
 using Nekoyume.UI.Scroller;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume.UI
 {
@@ -218,7 +219,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ProcessProduct(InAppPurchaseServiceClient.ProductSchema product, BaseItemView[] rewards, TextMeshProUGUI[] prices)
+        private void ProcessProduct(ProductSchema product, BaseItemView[] rewards, TextMeshProUGUI[] prices)
         {
             var iapStoreManager = Game.Game.instance.IAPStoreManager;
             var index = 0;

@@ -10,12 +10,13 @@ using Libplanet.Crypto;
 using Nekoyume.L10n;
 using UniRx;
 using UnityEngine;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume.ApiClient
 {
     public static class InAppPurchaseServiceExtentions
     {
-        public static string Sku(this InAppPurchaseServiceClient.ProductSchema product)
+        public static string Sku(this ProductSchema product)
         {
 #if UNITY_ANDROID
             return product.GoogleSku;
@@ -32,16 +33,16 @@ namespace Nekoyume.ApiClient
             return product.GoogleSku;
 #endif
         }
-        public static bool CheckSku(this InAppPurchaseServiceClient.ProductSchema product, string sku)
+        public static bool CheckSku(this ProductSchema product, string sku)
         {
             return product.GoogleSku == sku || product.AppleSku == sku || product.AppleSkuK == sku;
         }
-        public static string GetCode(this InAppPurchaseServiceClient.ProductSchema product)
+        public static string GetCode(this ProductSchema product)
         {
             var skuInfos = product.GoogleSku.Split("_");
             return skuInfos.Last();
         }
-        public static string GetPopupTitleText(this InAppPurchaseServiceClient.ProductSchema product)
+        public static string GetPopupTitleText(this ProductSchema product)
         {
             if (!DateTime.TryParse(product.OpenTimestamp, out var openDate))
             {
@@ -56,15 +57,15 @@ namespace Nekoyume.ApiClient
             }
             return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}_POPUP_TITLE", openDate.ToString("MM/dd"),closeDate.ToString("MM/dd"));
         }
-        public static string GetListImagePath(this InAppPurchaseServiceClient.ProductSchema product)
+        public static string GetListImagePath(this ProductSchema product)
         {
             return $"shop/images/product/list/{product.GetCode()}.png";
         }
-        public static string GetDetailImagePath(this InAppPurchaseServiceClient.ProductSchema product)
+        public static string GetDetailImagePath(this ProductSchema product)
         {
             return $"shop/images/product/detail/{product.GetCode()}.png";
         }
-        public static string GetNameText(this InAppPurchaseServiceClient.ProductSchema product)
+        public static string GetNameText(this ProductSchema product)
         {
             return L10nManager.Localize($"MOBILE_SHOP_PRODUCT_{product.GetCode()}");
         }
@@ -77,16 +78,16 @@ namespace Nekoyume.ApiClient
 
         private readonly InAppPurchaseServiceClient? _client;
 
-        private readonly InAppPurchaseServiceClient.Store _store;
+        private readonly Store _store;
 
-        private readonly InAppPurchaseServiceClient.PackageName _packageName;
+        private readonly PackageName _packageName;
 
         public ReactiveProperty<int> CurrentMileage = new(0);
 
         public bool IsInitialized { get; private set; }
         public bool IsDisposed { get; private set; }
 
-        public IAPServiceManager(string url, InAppPurchaseServiceClient.Store store)
+        public IAPServiceManager(string url, Store store)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -99,17 +100,17 @@ namespace Nekoyume.ApiClient
 
             // 플렛폼에 따라 기본적으로 사용하는 패키지 이름이 다르기 때문에 그에 맞게 설정해준다.
 #if UNITY_IOS || UNITY_ANDROID
-            if (InAppPurchaseServiceClient.PackageNameTypeConverter.InvalidEnumMapping.TryGetValue(Application.identifier, out var packageName))
+            if (PackageNameTypeConverter.InvalidEnumMapping.TryGetValue(Application.identifier, out var packageName))
             {
-                _packageName = Enum.Parse<InAppPurchaseServiceClient.PackageName>(packageName);
+                _packageName = Enum.Parse<PackageName>(packageName);
             }
             else
             {
                 Debug.LogError($"[{nameof(IAPServiceManager)}] Invalid PackageName: {Application.identifier}");
-                _packageName = InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobile;
+                _packageName = PackageName.com_planetariumlabs_ninechroniclesmobile;
             }
 #else
-            _packageName = InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobile;
+            _packageName = PackageName.com_planetariumlabs_ninechroniclesmobile;
 #endif
         }
 
@@ -156,7 +157,7 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
-            InAppPurchaseServiceClient.ProductSchema? selectedProduct = null;
+            ProductSchema? selectedProduct = null;
             foreach (var category in categoryList)
             {
                 foreach (var product in category.ProductList)
@@ -187,7 +188,7 @@ namespace Nekoyume.ApiClient
             return;
         }
 
-        public async Task<IReadOnlyList<InAppPurchaseServiceClient.CategorySchema>?> GetProductsAsync(Address agentAddr, string planetId)
+        public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr, string planetId)
         {
             if (string.IsNullOrEmpty(planetId))
             {
@@ -200,7 +201,7 @@ namespace Nekoyume.ApiClient
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
             }
-            List<InAppPurchaseServiceClient.CategorySchema> result = null;
+            List<CategorySchema> result = null;
             await _client.GetProductAsync(agentAddr.ToString(), planetId, _packageName,
             (sucess) =>
             {
@@ -214,7 +215,7 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<InAppPurchaseServiceClient.ReceiptDetailSchema?> PurchaseRequestAsync(
+        public async Task<ReceiptDetailSchema?> PurchaseRequestAsync(
             string receipt,
             string agentAddr,
             string avatarAddr,
@@ -227,9 +228,9 @@ namespace Nekoyume.ApiClient
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
             }
-            InAppPurchaseServiceClient.ReceiptDetailSchema? result = null;
+            ReceiptDetailSchema? result = null;
             await _client.PostPurchaseRequestAsync(_packageName,
-                new InAppPurchaseServiceClient.ReceiptSchema
+                new ReceiptSchema
                 {
                     AgentAddress = agentAddr,
                     AvatarAddress = avatarAddr,
@@ -256,7 +257,7 @@ namespace Nekoyume.ApiClient
         /// <param name="transactionId"></param>
         /// <param name="appleOriginalTransactionID"></param>
         /// <returns></returns>
-        public async Task<InAppPurchaseServiceClient.ReceiptDetailSchema?> PurchaseRetryAsync(
+        public async Task<ReceiptDetailSchema?> PurchaseRetryAsync(
             string receipt,
             string transactionId,
             string appleOriginalTransactionID)
@@ -267,9 +268,9 @@ namespace Nekoyume.ApiClient
                 return null;
             }
 
-            InAppPurchaseServiceClient.ReceiptDetailSchema? result = null;
+            ReceiptDetailSchema? result = null;
             await _client.PostPurchaseRetryAsync(_packageName,
-                new InAppPurchaseServiceClient.SimpleReceiptSchema
+                new SimpleReceiptSchema
                 {
                     Store = _store,
                     Data = receipt
@@ -287,7 +288,7 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<InAppPurchaseServiceClient.ReceiptDetailSchema?> PurchaseFreeAsync(
+        public async Task<ReceiptDetailSchema?> PurchaseFreeAsync(
             string agentAddr,
             string avatarAddr,
             string planetId,
@@ -299,9 +300,9 @@ namespace Nekoyume.ApiClient
                 return null;
             }
 
-            InAppPurchaseServiceClient.ReceiptDetailSchema? result = null;
+            ReceiptDetailSchema? result = null;
             await _client.PostPurchaseFreeAsync(_packageName,
-                new InAppPurchaseServiceClient.FreeReceiptSchema
+                new FreeReceiptSchema
                 {
                     Store = _store,
                     AgentAddress = agentAddr,
@@ -321,7 +322,7 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<InAppPurchaseServiceClient.ReceiptDetailSchema?> PurchaseMileageAsync(
+        public async Task<ReceiptDetailSchema?> PurchaseMileageAsync(
             string agentAddr,
             string avatarAddr,
             string planetId,
@@ -333,9 +334,9 @@ namespace Nekoyume.ApiClient
                 return null;
             }
 
-            InAppPurchaseServiceClient.ReceiptDetailSchema? result = null;
+            ReceiptDetailSchema? result = null;
             await _client.PostPurchaseMileageAsync(_packageName,
-                new InAppPurchaseServiceClient.FreeReceiptSchema
+                new FreeReceiptSchema
                 {
                     Store = _store,
                     AgentAddress = agentAddr,
@@ -355,7 +356,7 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<Dictionary<string, InAppPurchaseServiceClient.ReceiptDetailSchema?>?> PurchaseStatusAsync(
+        public async Task<Dictionary<string, ReceiptDetailSchema?>?> PurchaseStatusAsync(
             HashSet<string> uuids)
         {
             if (!IsInitialized || _client is null)
@@ -368,7 +369,9 @@ namespace Nekoyume.ApiClient
             await _client.GetPurchaseStatusAsync(string.Join("?uuid=", uuids),
                 (success) =>
                 {
-                    content = success;
+                    // on200 이 Action<object>(JsonElement)로 바뀌었다. ToString() 이 원문 JSON 을
+                    // 돌려주므로 이전 Action<string>(responseText) 과 동등하다.
+                    content = success?.ToString() ?? string.Empty;
                 },
                 (error) =>
                 {
@@ -376,7 +379,7 @@ namespace Nekoyume.ApiClient
                 });
             try
             {
-                return JsonSerializer.Deserialize<Dictionary<string, InAppPurchaseServiceClient.ReceiptDetailSchema?>>(
+                return JsonSerializer.Deserialize<Dictionary<string, ReceiptDetailSchema?>>(
                     content);
             }
             catch (Exception e)
@@ -403,7 +406,9 @@ namespace Nekoyume.ApiClient
             await _client.GetPurchaseLogAsync(planetId, agentAddr, avatarAddr, productId, orderId, data,
                 (success) =>
                 {
-                    result = success;
+                    // on200 이 Action<object>(JsonElement)로 바뀌었다. ToString() 이 원문 JSON 을
+                    // 돌려주므로 이전 Action<string>(responseText) 과 동등하다.
+                    result = success?.ToString() ?? string.Empty;
                 },
                 (error) =>
                 {
@@ -412,14 +417,14 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<InAppPurchaseServiceClient.L10NSchema?> L10NAsync()
+        public async Task<L10NSchema?> L10NAsync()
         {
             if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
             }
-            InAppPurchaseServiceClient.L10NSchema? result = null;
+            L10NSchema? result = null;
             await _client.GetL10nAsync(_packageName,
                 (success) =>
                 {
@@ -432,14 +437,14 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<InAppPurchaseServiceClient.MileageSchema> RefreshMileageAsync()
+        public async Task<MileageSchema> RefreshMileageAsync()
         {
             if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
             }
-            InAppPurchaseServiceClient.MileageSchema? result = null;
+            MileageSchema? result = null;
             var states = State.States.Instance;
             var agent = states?.AgentState?.address.ToHex();
             await _client.GetMileageAsync(agent, Game.Game.instance?.CurrentPlanetId?.ToString(),

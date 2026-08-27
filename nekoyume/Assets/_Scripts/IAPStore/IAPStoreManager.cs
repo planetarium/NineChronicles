@@ -21,6 +21,10 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 using ProductType = UnityEngine.Purchasing.ProductType;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
+// 이 파일은 UnityEngine.Purchasing.ProductType(Consumable)과 IAP 스펙의 ProductType(FREE)을
+// 둘 다 쓴다. bare 이름은 Unity 쪽에 남기고 생성 쪽만 별칭으로 구분한다.
+using IapProductType = GeneratedApiNamespace.InAppPurchaseServiceClient.ProductType;
 
 namespace Nekoyume.IAPStore
 {
@@ -32,11 +36,11 @@ namespace Nekoyume.IAPStore
         public IEnumerable<Product> IAPProducts => _controller.products.all;
         public bool IsInitialized { get; private set; }
 
-        private Dictionary<string, InAppPurchaseServiceClient.ProductSchema> _initializedProductSchema = new();
-        private IReadOnlyList<InAppPurchaseServiceClient.CategorySchema> _initializedCategorySchema;
+        private Dictionary<string, ProductSchema> _initializedProductSchema = new();
+        private IReadOnlyList<CategorySchema> _initializedCategorySchema;
 
 
-        public Dictionary<string, InAppPurchaseServiceClient.ProductSchema> SeasonPassProduct = new();
+        public Dictionary<string, ProductSchema> SeasonPassProduct = new();
 
         private async void Awake()
         {
@@ -94,7 +98,7 @@ namespace Nekoyume.IAPStore
         {
             foreach (var item in _initializedProductSchema)
             {
-                if (item.Value.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
+                if (item.Value.ProductType != IapProductType.FREE)
                 {
                     continue;
                 }
@@ -118,7 +122,7 @@ namespace Nekoyume.IAPStore
             return false;
         }
 
-        public InAppPurchaseServiceClient.ProductSchema GetProductSchema(string sku)
+        public ProductSchema GetProductSchema(string sku)
         {
             if (!_initializedProductSchema.TryGetValue(sku, out var result))
             {
@@ -306,7 +310,7 @@ namespace Nekoyume.IAPStore
         //   앞에서 메모리에만 세팅되고 그 사이에 배송이 실행되므로, 배송 후 죽으면 DB 에
         //   INIT 이 남는다. 그래서 tx 가 있으면 status 를 신뢰하지 않는다.
         //   시즌패스류는 tx_status 가 영구 NULL 이라 status == VALID 로 판정한다.
-        private static bool IsDelivered(InAppPurchaseServiceClient.ReceiptDetailSchema result)
+        private static bool IsDelivered(ReceiptDetailSchema result)
         {
             if (result == null)
             {
@@ -314,7 +318,7 @@ namespace Nekoyume.IAPStore
             }
 
             return result.TxStatus != null
-                   || result.Status == InAppPurchaseServiceClient.ReceiptStatus.VALID;
+                   || result.Status == ReceiptStatus.VALID;
         }
 
         // 체인 상태(AgentState/CurrentAvatarState/PlanetId)가 준비될 때까지 기다린 뒤
