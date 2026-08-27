@@ -335,6 +335,21 @@ namespace Nekoyume.Game
         [UsedImplicitly]
         public SynthesizeWeightSheet SynthesizeWeightSheet { get; private set; }
 
+        /// <summary>
+        /// 아이템·통화별 거래·합성 제한. 체인에 patch_table_sheet 로 올라오기 전에는 클라가
+        /// 이 CSV 를 번들에 갖고 있지 않으므로 <c>null</c> 이다.
+        /// </summary>
+        /// <remarks>
+        /// null 인 이유: 시트 로드는 <c>AddressableAssetsContainer.tableCsvAssets</c> 를 순회하며
+        /// 채워지고(<c>Game.SyncTableSheetsAsync</c>), 그 목록에 없는 시트는 프로퍼티가 설정되지
+        /// 않는다. 반대로 CSV 를 번들에 넣으면 노드에 시트가 없는 동안 해시가 반드시 불일치해
+        /// 빈 값이 내려오고, <c>Initialize</c> 가 ERROR_INITIALIZE_FAILED 로 부팅을 끊는다.
+        /// 그래서 번들 등록은 각 체인 patch 이후로 미뤄져 있다. 읽는 쪽은 null 을 확인할 것.
+        /// </remarks>
+        [UsedImplicitly]
+        [CanBeNull]
+        public RestrictionSheet RestrictionSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
