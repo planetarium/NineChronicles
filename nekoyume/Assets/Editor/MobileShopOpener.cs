@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;   // HeaderMenuStatic 은 Nekoyume.UI 가 아니라 .Module 에 있다
 using UnityEditor;
 using UnityEngine;
 
