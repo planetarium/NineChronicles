@@ -96,6 +96,13 @@ namespace Nekoyume.UI
 
         IEnumerator CoChangeItem(HashSet<(int,Grade)> resultPool)
         {
+            // 빈 풀이면 foreach 가 한 번도 yield 하지 않아 while 이 한 프레임 안에서 무한히
+            // 돈다. 등재된 결과가 하나도 없는 등급/서브타입이 있으므로 여기서 끊는다.
+            if (resultPool is null || resultPool.Count == 0)
+            {
+                yield break;
+            }
+
             while (isActiveAndEnabled)
             {
                 foreach (var poolItem in resultPool)
