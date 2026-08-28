@@ -1743,13 +1743,22 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
-                var asset = eval.Action.RegisterInfos.FirstOrDefault();
-                if (asset is not AssetInfo assetInfo)
+                // ShopSell 은 전송 직후 로컬 레이어에서 아이템을 미리 빼둔다. 거절된 등록은
+                // 그 제거를 되돌려주지 않으면 인벤토리에서 아이템이 사라진 채로 남는다.
+                foreach (var registerInfo in eval.Action.RegisterInfos)
                 {
-                    return;
+                    if (registerInfo is RegisterInfo r)
+                    {
+                        LocalLayerModifier.AddItem(
+                            r.AvatarAddress, r.TradableId, eval.BlockIndex, r.ItemCount, false);
+                    }
                 }
 
-                States.Instance.SetCurrentAvatarBalance(eval, assetInfo.Asset.Currency);
+                if (eval.Action.RegisterInfos.FirstOrDefault() is AssetInfo assetInfo)
+                {
+                    States.Instance.SetCurrentAvatarBalance(eval, assetInfo.Asset.Currency);
+                }
+
                 var shopSell = Widget.Find<ShopSell>();
                 if (shopSell.isActiveAndEnabled)
                 {

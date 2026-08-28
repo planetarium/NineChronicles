@@ -235,7 +235,7 @@ namespace Nekoyume.UI
 
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
         {
-            var tradable = true;
+            var tradable = RestrictionHelper.CanRegisterTicker(ticker);
             var grade = 1;
             var id = 0;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
@@ -246,9 +246,6 @@ namespace Nekoyume.UI
                     grade = row.Grade;
                     id = runeData.id;
                 }
-
-                var rune = Currencies.GetRune(ticker);
-                tradable = !RegisterProduct.NonTradableTickerCurrencies.Contains(rune);
             }
 
             var petSheet = Game.Game.instance.TableSheets.PetSheet;

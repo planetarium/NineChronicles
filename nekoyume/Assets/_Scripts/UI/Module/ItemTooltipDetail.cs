@@ -382,9 +382,10 @@ namespace Nekoyume.UI.Module
 
         private void UpdateTradableText(ItemBase itemBase)
         {
-            var isTradable = itemBase is ITradableItem
-                || itemBase.ItemSubType == ItemSubType.Scroll
-                || itemBase.ItemSubType == ItemSubType.Circle;
+            var isTradable = (itemBase is ITradableItem
+                    || itemBase.ItemSubType == ItemSubType.Scroll
+                    || itemBase.ItemSubType == ItemSubType.Circle)
+                && RestrictionHelper.IsItemRegistrableBySheet(itemBase.Id);
 
             tradableText.text = isTradable
                 ? L10nManager.Localize("UI_TRADABLE")

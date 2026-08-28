@@ -20,7 +20,7 @@ namespace Nekoyume
 
         public static bool IsTradable(this FungibleAssetValue value)
         {
-            return !RegisterProduct.NonTradableTickerCurrencies.Contains(value.Currency);
+            return RestrictionHelper.CanRegisterCurrency(value.Currency);
         }
     }
 }

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -265,7 +264,7 @@ namespace Nekoyume.UI
             _gradeItemCountDict.Clear();
             foreach (var item in itemList)
             {
-                if (Synthesize.InvalidMaterialItemId.Contains(item.item.Id))
+                if (!RestrictionHelper.CanUseAsSynthesizeMaterial(item.item.Id))
                 {
                     continue;
                 }
