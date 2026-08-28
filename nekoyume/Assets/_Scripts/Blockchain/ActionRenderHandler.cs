@@ -3160,10 +3160,61 @@ namespace Nekoyume.Blockchain
                 RandomObject = new LocalRandom(prepared.eval.RandomSeed),
             };
 
-            var result = SynthesizeSimulator.Simulate(inputData);
-            var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
-            synthesisResultScreen.Show(result);
+            // 결과창의 진실은 체인이 실제로 넣어준 아이템이다. 아래 재시뮬은 성공 여부 같은
+            // 연출 정보를 얻으려고 돌리는 것인데, 클라가 들고 있는 시트가 체인 것과 다르면
+            // 다른 아이템을 만들어내거나(잘못된 결과 표시) 뽑을 게 없다며 던진다(화면 잠김).
+            // 그래서 재시뮬 결과를 실제 지급물과 대조하고, 어긋나면 실제 쪽을 그린다.
+            var synthesizedItems = GetSynthesizedItems(eval);
+            List<SynthesizeResult> result = null;
+            try
+            {
+                result = SynthesizeSimulator.Simulate(inputData);
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(
+                    $"[{nameof(ResponseSynthesize)}] failed to reproduce the result locally:" +
+                    $" {e.Message}");
+            }
 
+            if (result is null || !IsSameItems(result, synthesizedItems))
+            {
+                if (result is not null)
+                {
+                    NcDebug.LogError(
+                        $"[{nameof(ResponseSynthesize)}] the reproduced result does not match what" +
+                        " the chain granted. The client's sheets differ from the chain's." +
+                        " Showing what was actually granted.");
+                }
+
+                var materialGrade = (Grade)eval.Action.MaterialGradeId;
+                result = synthesizedItems
+                    .Select(item => new SynthesizeResult
+                    {
+                        ItemBase = item,
+                        // 성공하면 한 등급 위가, 실패하면 재료와 같은 등급이 나온다.
+                        IsSuccess = item.Grade > (int)materialGrade,
+                    })
+                    .ToList();
+            }
+
+            if (result.Count > 0)
+            {
+                var synthesisResultScreen = Widget.Find<SynthesisResultScreen>();
+                synthesisResultScreen.Show(result);
+            }
+            else
+            {
+                NcDebug.LogError(
+                    $"[{nameof(ResponseSynthesize)}] no synthesized item was found in the" +
+                    " resulting inventory.");
+                OneLineSystem.Push(
+                    MailType.Workshop,
+                    L10nManager.Localize("ERROR_UNKNOWN"),
+                    NotificationCell.NotificationType.Alert);
+            }
+
+            // 결과창을 못 띄우더라도 여기까지는 반드시 와야 한다. 안 그러면 합성 화면이 잠긴다.
             var synthesis = Widget.Find<Synthesis>();
             synthesis.SynthesisModule.SetOnActionState(false);
 
@@ -3171,6 +3222,56 @@ namespace Nekoyume.Blockchain
             var headerMenu = Widget.Find<HeaderMenuStatic>();
             var apPortionUi = headerMenu.ApPotion;
             apPortionUi.UpdateApPotion();
+        }
+
+        /// <summary>
+        /// 이 액션이 아바타 인벤토리에 새로 넣은 논펀저블 아이템. 합성 산출물이 그것이다.
+        /// </summary>
+        private static List<ItemBase> GetSynthesizedItems(ActionEvaluation<Synthesize> eval)
+        {
+            try
+            {
+                var before = StateGetter.GetInventory(
+                    eval.PreviousState,
+                    eval.Action.AvatarAddress);
+                var after = StateGetter.GetInventory(
+                    eval.OutputState,
+                    eval.Action.AvatarAddress);
+                var beforeIds = before.Items
+                    .Select(item => item.item)
+                    .OfType<INonFungibleItem>()
+                    .Select(item => item.NonFungibleId)
+                    .ToHashSet();
+
+                return after.Items
+                    .Select(item => item.item)
+                    .Where(item => item is INonFungibleItem nonFungibleItem &&
+                                   !beforeIds.Contains(nonFungibleItem.NonFungibleId))
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(
+                    $"[{nameof(GetSynthesizedItems)}] failed to read the inventory: {e.Message}");
+                return new List<ItemBase>();
+            }
+        }
+
+        /// <remarks>
+        /// 아이템 시트 id 로만 비교한다. 재시뮬이 만든 인스턴스는 자기 난수로 뽑은 Guid 를
+        /// 갖고 있어 NonFungibleId 는 체인의 것과 절대 같지 않다.
+        /// </remarks>
+        private static bool IsSameItems(
+            IReadOnlyList<SynthesizeResult> simulated,
+            IReadOnlyList<ItemBase> granted)
+        {
+            if (simulated.Count != granted.Count)
+            {
+                return false;
+            }
+
+            return simulated.Select(r => r.ItemBase.Id).OrderBy(id => id)
+                .SequenceEqual(granted.Select(item => item.Id).OrderBy(id => id));
         }
 
         private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
