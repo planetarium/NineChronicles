@@ -5,6 +5,7 @@ using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using GeneratedApiNamespace.InAppPurchaseServiceClient;
 
 namespace Nekoyume.UI.Module
 {
@@ -21,7 +22,7 @@ namespace Nekoyume.UI.Module
 
         private ItemBase itemBaseForToolTip = null;
 
-        private InAppPurchaseServiceClient.FungibleAssetValueSchema fungibleAssetValue = null;
+        private FungibleAssetValueSchema fungibleAssetValue = null;
 
         public void Awake()
         {
@@ -48,7 +49,7 @@ namespace Nekoyume.UI.Module
             });
         }
 
-        public void SetFavItem(InAppPurchaseServiceClient.FungibleAssetValueSchema fav)
+        public void SetFavItem(FungibleAssetValueSchema fav)
         {
             fungibleAssetValue = fav;
             itemBaseForToolTip = null;
@@ -58,7 +59,7 @@ namespace Nekoyume.UI.Module
             RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(fungibleAssetValue.Ticker));
         }
 
-        public void SetItemBase(InAppPurchaseServiceClient.FungibleItemSchema itemBase)
+        public void SetItemBase(FungibleItemSchema itemBase)
         {
             gameObject.SetActive(true);
             try

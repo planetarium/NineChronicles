@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -201,7 +200,7 @@ namespace Nekoyume.UI.Module
             var items = _items.Where(item =>
                 (Grade)item.ItemBase.Grade == requiredItem.Grade &&
                 item.ItemBase.ItemSubType == requiredItem.ItemSubType &&
-                !Synthesize.InvalidMaterialItemId.Contains(item.ItemBase.Id) &&
+                RestrictionHelper.CanUseAsSynthesizeMaterial(item.ItemBase.Id) &&
                 item.ItemBase is INonFungibleItem).ToList();
 
             if (!items.Any())

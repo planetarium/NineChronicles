@@ -335,6 +335,22 @@ namespace Nekoyume.Game
         [UsedImplicitly]
         public SynthesizeWeightSheet SynthesizeWeightSheet { get; private set; }
 
+        /// <summary>
+        /// 아이템·통화별 거래·합성 제한.
+        /// </summary>
+        /// <remarks>
+        /// 행이 없는 것과 제한이 없는 것은 같다 — 조회 API(<c>IsItemMarketRegistrable</c> 등)가
+        /// 미등재 키에 대해 "허용"을 돌려주므로, 호출부는 비었는지 따로 보지 않고 그냥 물어도
+        /// 된다. 정책이 실제로 실려 있는지 확인하려면 <c>Values.Any()</c> 로 보면 된다.
+        ///
+        /// 체인에 patch_table_sheet 된 적이 없어도 이 프로퍼티는 채워진다 —
+        /// <c>Game.SyncTableSheetsAsync</c> 가 노드에 없는 시트는 번들 CSV 를 기본값으로 쓴다.
+        /// 그 폴백이 없으면 빈 값이 내려와 <c>Initialize</c> 가 ERROR_INITIALIZE_FAILED 로
+        /// 부팅을 끊는다.
+        /// </remarks>
+        [UsedImplicitly]
+        public RestrictionSheet RestrictionSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
