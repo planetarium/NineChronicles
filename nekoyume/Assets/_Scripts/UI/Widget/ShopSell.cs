@@ -5,12 +5,14 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Lib9c.Renderers;
 using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -155,7 +157,7 @@ namespace Nekoyume.UI
                 tooltip.Show(
                     model,
                     L10nManager.Localize("UI_SELL"),
-                    model.ItemBase is ITradableItem,
+                    RestrictionHelper.CanRegisterItem(model.ItemBase),
                     () => ShowSell(model),
                     inventory.ClearSelectedItem,
                     () => L10nManager.Localize("UI_UNTRADABLE"));
@@ -333,7 +335,8 @@ namespace Nekoyume.UI
             else
             {
                 data.TitleText.Value = model.FungibleAssetValue.GetLocalizedName();
-                data.Submittable.Value = true;
+                data.Submittable.Value =
+                    RestrictionHelper.CanRegisterCurrency(model.FungibleAssetValue.Currency);
                 data.Item.Value = new CountEditableItem(model.FungibleAssetValue,
                     1,
                     1,
@@ -391,7 +394,8 @@ namespace Nekoyume.UI
                 data.Count.Value = itemCount;
 
                 data.TitleText.Value = model.FungibleAssetValue.GetLocalizedName();
-                data.Submittable.Value = true;
+                data.Submittable.Value =
+                    RestrictionHelper.CanRegisterCurrency(model.FungibleAssetValue.Currency);
                 data.Item.Value = new CountEditableItem(model.FungibleAssetValue,
                     itemCount,
                     itemCount,
@@ -678,7 +682,8 @@ namespace Nekoyume.UI
                     }).Cast<IRegisterInfo>().ToList();
 
                 Game.Game.instance.ActionManager
-                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
+                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value)
+                    .Subscribe(NotifyRegisterProductFailed);
 
                 var removeItemIds = new List<(Guid, long, int)>();
                 foreach (var tradableItem in tradableItems)
@@ -710,7 +715,8 @@ namespace Nekoyume.UI
                 var infos = new List<IRegisterInfo> { info };
 
                 Game.Game.instance.ActionManager
-                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
+                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value)
+                    .Subscribe(NotifyRegisterProductFailed);
                 var preBalance = States.Instance.CurrentAvatarBalances[currency.Ticker];
                 States.Instance.SetCurrentAvatarBalance(preBalance - fungibleAsset);
                 inventory.UpdateFungibleAssets();
@@ -947,8 +953,37 @@ namespace Nekoyume.UI
             Find<TwoButtonSystem>().Close();
         }
 
+        /// <summary>
+        /// 등록이 체인에서 거절되면 알린다. 성공 렌더는 ActionRenderHandler 가 처리한다.
+        /// </summary>
+        /// <remarks>
+        /// 이 구독이 없으면 거절이 UI 에 전달되지 않아, 로컬 레이어에서 아이템만 사라지고
+        /// 아무 안내도 뜨지 않는 것처럼 보인다.
+        /// </remarks>
+        private static void NotifyRegisterProductFailed(
+            ActionEvaluation<RegisterProduct> eval)
+        {
+            if (eval.Exception is null)
+            {
+                return;
+            }
+
+            NcDebug.LogException(eval.Exception.InnerException ?? eval.Exception);
+            OneLineSystem.Push(
+                MailType.Auction,
+                L10nManager.Localize("ERROR_UNKNOWN"),
+                NotificationCell.NotificationType.Alert);
+        }
+
         private static bool DimmedFuncForSell(ItemBase itemBase)
         {
+            // ITradableItem 여부만으로는 시트로만 지정된 제한을 알 수 없다. 체인이 거절할 등록을
+            // 여기서 먼저 막지 않으면 아무 안내 없이 아이템만 사라지는 것처럼 보인다.
+            if (!RestrictionHelper.CanRegisterItem(itemBase))
+            {
+                return true;
+            }
+
             if (itemBase.ItemType == ItemType.Material)
             {
                 return !(itemBase is TradableMaterial);

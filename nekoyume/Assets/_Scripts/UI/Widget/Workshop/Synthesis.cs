@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -265,7 +264,7 @@ namespace Nekoyume.UI
             _gradeItemCountDict.Clear();
             foreach (var item in itemList)
             {
-                if (Synthesize.InvalidMaterialItemId.Contains(item.item.Id))
+                if (!RestrictionHelper.CanUseAsSynthesizeMaterial(item.item.Id))
                 {
                     continue;
                 }
@@ -314,18 +313,14 @@ namespace Nekoyume.UI
                 return null;
             }
 
-            var result = resultPool.Where(pair =>
-            {
-                var id = pair.Item1;
-                var weightSheet = TableSheets.Instance.SynthesizeWeightSheet;
-
-                if (!weightSheet.TryGetValue(id, out var row))
-                {
-                    return true;
-                }
-
-                return row.Weight != 0;
-            }).ToHashSet();
+            // 뽑힐 수 있는 것만 남긴다. 판정은 체인이 쓰는 함수를 그대로 부른다 - 규칙을 여기에
+            // 다시 적으면 SynthesizeWeightSheet.DefaultWeight 가 바뀔 때 또 어긋난다. 실제로
+            // 기본값이 10000 에서 0 으로 뒤집힌 뒤, 미등재 아이템을 포함하던 옛 규칙이 남아
+            // 절대 안 나오는 아이템을 결과 미리보기에 보여주고 있었다.
+            var weightSheet = TableSheets.Instance.SynthesizeWeightSheet;
+            var result = resultPool
+                .Where(pair => SynthesizeSimulator.GetWeight(pair.Item1, weightSheet) > 0)
+                .ToHashSet();
 
             return result;
         }

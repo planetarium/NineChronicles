@@ -16,6 +16,15 @@ namespace Nekoyume.Game.Avatar
         private const string DefaultPmaShader = "Spine/Skeleton Tint";
         private const string WeaponSlot = "weapon";
 
+#if UNITY_EDITOR
+        /// <summary>
+        /// Editor only: when set, every full costume renders as this id instead of the equipped
+        /// one, so a costume can be looked at without a sheet row or owning the item. Set it from
+        /// Tools > Costume > Full Costume Preview.
+        /// </summary>
+        public static int? FullCostumePreviewId;
+#endif
+
         [SerializeField]
         private Character.Character owner;
 
@@ -349,6 +358,14 @@ namespace Nekoyume.Game.Avatar
         {
             // Activate full costume mode
             _isActiveFullCostume = true;
+
+#if UNITY_EDITOR
+            if (FullCostumePreviewId is { } previewId && previewId != index)
+            {
+                NcDebug.Log($"[FullCostumePreview] {index} -> {previewId}");
+                index = previewId;
+            }
+#endif
 
             // Construct the resource key for the SkeletonDataAsset
             var key = $"{index}_SkeletonData";

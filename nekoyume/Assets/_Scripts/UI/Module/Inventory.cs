@@ -407,7 +407,7 @@ namespace Nekoyume.UI.Module
                 itemBase,
                 count,
                 levelLimited,
-                _checkTradable && !(itemBase is ITradableItem));
+                _checkTradable && !RestrictionHelper.CanRegisterItem(itemBase));
         }
 
         private void OnClickItem(InventoryItem item)
