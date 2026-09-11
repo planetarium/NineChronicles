@@ -13,6 +13,8 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet.Action.State;
 using Libplanet.KeyStore;
+using Libplanet.Types.Assets;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Model;
@@ -151,6 +153,89 @@ namespace Nekoyume.Helper
             }
 
             return currentAvatarState.level >= GetItemRequirementLevel(itemBase);
+        }
+
+        /// <summary>
+        /// 분쇄 시 얻는 크리스탈을 계산한다. 시트에 필요한 행이 없으면 <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// lib9c 의 <c>CrystalCalculator.CalculateCrystal</c> 은
+        /// <c>CrystalEquipmentGrindingSheet</c> 를 <b>두 번</b>(<c>equipment.Id</c>, 그 행의
+        /// <c>EnchantBaseId</c>) 직접 인덱싱하고, <c>Grinding.CalculateMaterialReward</c> 는
+        /// <c>MaterialItemSheet</c> 까지 인덱싱한다. 행이 없으면
+        /// <c>KeyNotFoundException</c> 이다. 온체인 액션에선 맞는 동작이지만(행 없는 장비는
+        /// 분쇄가 불가능하다) UI 가 같이 죽으면 안 된다.
+        /// <para>
+        /// 어떤 키가 필요한지를 술어로 미리 검사하지 않고 예외로 판별한다 — callee 가
+        /// 서브모듈이라 키 목록을 복제하면 그쪽이 바뀔 때 조용히 어긋난다.
+        /// </para>
+        /// 등급은 시트 패치로 먼저 늘어나고 이 시트는 기획서 시트 목록에서도 빠지기 쉬워서,
+        /// 새 등급에서 실제로 터졌다 — 등급 9 아이템을 클릭하면 정보 팝업이 <b>아예 뜨지
+        /// 않는</b> 증상으로 보고됐다(계산이 <c>base.Show()</c> 보다 먼저 돈다).
+        /// </remarks>
+        public static bool TryCalculateCrystal(
+            IEnumerable<Equipment> equipments,
+            bool enhancementFailed,
+            out FungibleAssetValue crystal)
+        {
+            var sheets = Game.Game.instance.TableSheets;
+            try
+            {
+                crystal = CrystalCalculator.CalculateCrystal(
+                    equipments,
+                    enhancementFailed,
+                    sheets.CrystalEquipmentGrindingSheet,
+                    sheets.CrystalMonsterCollectionMultiplierSheet,
+                    States.Instance.StakingLevel);
+                return true;
+            }
+            catch (KeyNotFoundException e)
+            {
+                NcDebug.LogWarning(
+                    $"분쇄 시트에 행이 없어 크리스탈 계산을 건너뜁니다: {e.Message}");
+                // default(FungibleAssetValue) 는 통화가 없어서 진짜 CRYSTAL 과
+                // 연산하는 순간 던진다. 반환값을 무시해도 안전하게 0 CRYSTAL 로 둔다.
+                crystal = 0 * CrystalCalculator.CRYSTAL;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 분쇄 보상(크리스탈 + 재료)을 함께 계산한다. 한쪽이라도 시트 행이 없으면 <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// 판별 방식과 이유는 <see cref="TryCalculateCrystal"/> 과 같다.
+        /// 재료 쪽은 <c>MaterialItemSheet</c> 키가 더 필요해서, 크리스탈만 성공하고
+        /// 재료에서 던지는 조합이 가능하다 — 그래서 한 <c>try</c> 로 묶는다.
+        /// </remarks>
+        public static bool TryCalculateGrindingReward(
+            IReadOnlyList<Equipment> equipments,
+            out FungibleAssetValue crystal,
+            out Dictionary<Model.Item.Material, int> materials)
+        {
+            var sheets = Game.Game.instance.TableSheets;
+            try
+            {
+                crystal = CrystalCalculator.CalculateCrystal(
+                    equipments,
+                    false,
+                    sheets.CrystalEquipmentGrindingSheet,
+                    sheets.CrystalMonsterCollectionMultiplierSheet,
+                    States.Instance.StakingLevel);
+                materials = Grinding.CalculateMaterialReward(
+                    equipments,
+                    sheets.CrystalEquipmentGrindingSheet,
+                    sheets.MaterialItemSheet);
+                return true;
+            }
+            catch (KeyNotFoundException e)
+            {
+                NcDebug.LogError(
+                    $"분쇄 시트에 행이 없어 보상을 계산할 수 없습니다: {e.Message}");
+                crystal = 0 * CrystalCalculator.CRYSTAL;
+                materials = new Dictionary<Model.Item.Material, int>();
+                return false;
+            }
         }
 
         public static int GetItemRequirementLevel(ItemBase itemBase)

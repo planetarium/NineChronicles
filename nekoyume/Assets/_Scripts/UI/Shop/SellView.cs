@@ -165,16 +165,15 @@ namespace Nekoyume.UI.Module
                     break;
                 case ShopSortFilter.Crystal:
                     result = itemProducts
-                        .OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
-                            ? CrystalCalculator.CalculateCrystal(
-                                    new[] { (Equipment)x.ItemBase },
-                                    false,
-                                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                                    States.Instance.StakingLevel).DivRem((BigInteger)x.Product.Price)
-                                .Quotient
-                                .MajorUnit
-                            : 0).ToList();
+                        // 분쇄 시트에 행이 없는 장비가 목록에 있으면 계산이 던져
+                        // 판매 목록 전체가 안 그려진다. 그런 장비는 0 으로 둔다.
+                        .OrderByDescending(x =>
+                            x.ItemBase is Equipment equipment &&
+                            Util.TryCalculateCrystal(new[] { equipment }, false, out var crystal)
+                                ? crystal.DivRem((BigInteger)x.Product.Price)
+                                    .Quotient
+                                    .MajorUnit
+                                : 0).ToList();
                     break;
                 case ShopSortFilter.EquipmentLevel:
                     result = itemProducts
