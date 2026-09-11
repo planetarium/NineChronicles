@@ -165,6 +165,12 @@ namespace Nekoyume.UI
             /// </summary>
             [NonSerialized] public string labelKey;
 
+            /// <summary>
+            /// 코드가 런타임에 만든 칸인가. 프리팹 칸은 디자이너가 정한 색을 그대로 두고,
+            /// 복제 칸만 코드가 색을 정한다.
+            /// </summary>
+            [NonSerialized] public bool isCloned;
+
             public override bool IsAll => option == 0;
 
             /// <summary>
@@ -318,11 +324,9 @@ namespace Nekoyume.UI
         /// 프리팹 토글을 풀로 쓰고, 등급이 더 많으면 복제하고 남으면 숨긴다.
         /// </summary>
         /// <remarks>
-        /// 등급 목록의 권위가 시트에 있으므로 칸·라벨·레이아웃은 시트 행만으로 따라온다.
-        /// 다만 <b>글자색은 아니다</b> — 셀 색은 프리팹에 셀별로 박혀 있어 복제 칸은
-        /// 템플릿(최고 등급) 색을 물려받는다. 색까지 코드로 옮기려면 <c>ColorType</c> 에
-        /// 등급 색이 먼저 늘어야 한다(<c>LocalizationExtensions.GetItemGradeColor</c> 도
-        /// 8등급까지만 매핑한다).
+        /// 등급 목록의 권위가 시트에 있으므로 칸·라벨·색·레이아웃이 시트 행만으로 따라온다.
+        /// 색은 배경 스프라이트와 같은 배색 규칙(9등급부터 1~8 색 재사용)을 따른다 —
+        /// <c>LocalizationExtensions.GetItemGradeColor</c> 참고.
         /// </remarks>
         private void BuildGradeToggles()
         {
@@ -401,6 +405,7 @@ namespace Nekoyume.UI
                     toggle = clonedToggle,
                     // 0 은 "전체" 를 뜻하므로 쓰지 않는다. 값 자체는 이제 의미가 없다.
                     option = -1,
+                    isCloned = true,
                 };
                 gradeToggles.Add(cloned);
                 pool.Add(cloned);
@@ -424,6 +429,7 @@ namespace Nekoyume.UI
                 }
 
                 ApplyLabelKey(t);
+                ApplyClonedLabelColor(t);
             }
 
             FitCells(pool, Math.Min(groups.Count, pool.Count));
@@ -457,6 +463,35 @@ namespace Nekoyume.UI
             var key = gradeToggle.labelKey;
             var localizable = !string.IsNullOrEmpty(key) && L10nManager.ContainsKey(key);
             l10nText.L10nKey = localizable ? key : null;
+        }
+
+        /// <summary>
+        /// 복제 칸의 라벨 색을 담당 등급 색으로 맞춘다.
+        /// </summary>
+        /// <remarks>
+        /// 복제본은 템플릿(최고 등급) 색을 물려받으므로 그대로 두면 새 등급 칸이 직전
+        /// 등급과 같은 색이 된다. 대표색은 <b>그룹의 최고 등급</b>이다 — 프리팹의
+        /// "Below Epic"({1,2}) 칸이 2등급 초록인 것과 같은 규칙이다.
+        /// 프리팹 칸은 건드리지 않는다. 색이 팔레트와 거의 같지만 7등급 한 칸이 b 채널만
+        /// 다르게(0.667 vs 0.529) 손수 조정돼 있어, 코드가 소유권을 가져가면 그 칸 색이
+        /// 조용히 바뀐다. 팔레트를 유일한 권위로 삼는 건 디자이너 확인이 필요한 결정이다.
+        /// 색 규칙 자체는 <c>LocalizationExtensions.GetItemGradeColor</c> 한 곳에만 둔다.
+        /// </remarks>
+        private static void ApplyClonedLabelColor(GradeToggle gradeToggle)
+        {
+            if (!gradeToggle.isCloned || gradeToggle.grades is not { Length: > 0 })
+            {
+                return;
+            }
+
+            var label = gradeToggle.toggle.GetComponentInChildren<TMP_Text>(true);
+            if (label == null)
+            {
+                return;
+            }
+
+            var grades = gradeToggle.grades;
+            label.color = LocalizationExtensions.GetItemGradeColor(grades[grades.Length - 1]);
         }
 
         /// <summary>
