@@ -14,6 +14,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
@@ -81,6 +82,9 @@ namespace Nekoyume.UI.Module
 
         public const int MaxMaterialCount = 50;
 
+        /// <summary>드롭다운 목록 높이 상한. 넘으면 스크롤로 떨어진다.</summary>
+        private const float MaxDropdownHeight = 600f;
+
         private void Awake()
         {
             foreach (var categoryToggle in categoryToggles)
@@ -104,9 +108,11 @@ namespace Nekoyume.UI.Module
                 .Subscribe(grade => _grade.Value = grade)
                 .AddTo(gameObject);
 
-            elementalFilter.AddOptions((
-                from elemental in Enum.GetNames(typeof(Elemental))
-                select L10nManager.Localize($"ELEMENTAL_TYPE_{elemental.ToUpper()}")).ToList());
+            var elementalNames = Enum.GetNames(typeof(Elemental));
+            elementalFilter.AddOptions(elementalNames
+                .Select(elemental => L10nManager.Localize($"ELEMENTAL_TYPE_{elemental.ToUpper()}"))
+                .ToList());
+            FitDropdownTemplate(elementalFilter, elementalNames.Length);
 
             elementalFilter.onValueChanged.AsObservable()
                 .Select(index => (Elemental)index)
@@ -156,6 +162,55 @@ namespace Nekoyume.UI.Module
             gradeFilter.AddOptions(_gradeOptions
                 .Select(grade => L10nManager.Localize($"UI_ITEM_GRADE_{grade}"))
                 .ToList());
+
+            FitDropdownTemplate(gradeFilter, _gradeOptions.Length);
+        }
+
+        /// <summary>
+        /// 드롭다운 목록이 항목 수에 맞게 펼쳐지도록 템플릿 높이를 넉넉히 잡는다.
+        /// </summary>
+        /// <remarks>
+        /// <c>TMP_Dropdown.Show</c> 는 목록이 템플릿보다 <b>짧을 때만</b> 줄이고
+        /// (<c>extraSpace &gt; 0</c>) 길어도 늘리지는 않는다. 그래서 항목이 템플릿을 넘으면
+        /// 마지막 칸이 잘린 채로 나온다 — 스크롤은 되지만 스크롤바가 없어 잘린 것처럼 보인다.
+        /// <para>
+        /// 이 프리팹은 항목 42, 등급 템플릿 350 이라 <b>등급 9 이전(9항목)에도 이미
+        /// 25.5px 잘려 있었다.</b> 새 등급이 기존 버그를 눈에 띄게 만든 것이지 새로 생긴
+        /// 문제가 아니다. 속성 필터(6항목/240)도 같은 이유로 9.5px 잘려 있었다.
+        /// </para>
+        /// <para>
+        /// 넉넉히 잡아 두면 TMP 가 실제 내용 높이로 <b>정확히 줄여</b> 주므로, 한 칸 여유를
+        /// 더해 모자라는 경우가 없게 한다(줄이는 건 복제본이라 템플릿 값은 그대로다).
+        /// 내용 패딩 항(<c>offsetMin.y - offsetMax.y</c>)의 부호가 프리팹에 달려 있어
+        /// 정확히 <c>itemHeight * count</c> 로 두면 모자랄 수 있다.
+        /// </para>
+        /// </remarks>
+        private static void FitDropdownTemplate(TMP_Dropdown dropdown, int optionCount)
+        {
+            if (dropdown == null || dropdown.template == null || optionCount <= 0)
+            {
+                return;
+            }
+
+            // TMP 는 템플릿의 Toggle 을 항목 기준으로 삼는다(SetupTemplate 이 거기에
+            // DropdownItem 을 붙인다). 같은 경로로 찾아야 프리팹 구조가 바뀌어도 어긋나지 않는다.
+            var itemToggle = dropdown.template.GetComponentInChildren<Toggle>(true);
+            if (itemToggle == null || itemToggle.transform is not RectTransform itemRect)
+            {
+                return;
+            }
+
+            var itemHeight = itemRect.rect.height;
+            if (itemHeight <= 0f)
+            {
+                return;
+            }
+
+            // 항목이 아주 많아지면 뒤집어도 화면을 벗어난다. 상한을 두면 그때부턴
+            // 템플릿의 ScrollRect 로 떨어진다(스크롤바가 없는 건 별개 문제).
+            var height = Mathf.Min(itemHeight * (optionCount + 1), MaxDropdownHeight);
+            var size = dropdown.template.sizeDelta;
+            dropdown.template.sizeDelta = new Vector2(size.x, height);
         }
 
         /// <summary>드롭다운 인덱스를 등급 번호로. 범위를 벗어나면 전체(0).</summary>
