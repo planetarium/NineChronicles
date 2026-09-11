@@ -8,9 +8,21 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    // System.ObservableExtensions.Subscribe 와 겹치므로 네임스페이스 안에서 import 한다
+    // (L10nTextMeshProUGUI 등 코드베이스 관례).
+    using UniRx;
+
     public struct ItemFilterOptions
     {
-        public ItemFilterPopupBase.GradeFilterOption Grade;
+        /// <summary>
+        /// 선택된 등급 번호들. 비어 있으면(또는 null) 등급 필터를 걸지 않은 것과 같다.
+        /// </summary>
+        /// <remarks>
+        /// 아이템의 <c>Grade</c> 가 이미 int 이므로 번호를 그대로 담아 비교한다.
+        /// 등급이 늘어도 이 타입은 그대로다.
+        /// </remarks>
+        public HashSet<int> Grades;
+
         public ItemFilterPopupBase.Elemental Elemental;
         public ItemFilterPopupBase.ItemType ItemType;
         public ItemFilterPopupBase.UpgradeLevel UpgradeLevel;
@@ -20,7 +32,7 @@ namespace Nekoyume.UI
         public string SearchText;
 
         public bool IsNeedFilter =>
-            Grade != ItemFilterPopupBase.GradeFilterOption.All ||
+            Grades is { Count: > 0 } ||
             Elemental != ItemFilterPopupBase.Elemental.All ||
             ItemType != ItemFilterPopupBase.ItemType.All ||
             UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
@@ -33,22 +45,20 @@ namespace Nekoyume.UI
 #region Internal Type
 
         /// <summary>
-        /// 등급 필터 옵션(UI 토글/프리팹과 분리된, 실제 필터링에 사용되는 타입)
+        /// 하위 등급을 한 토글로 묶는 상한. 이 값 이하가 "Below Epic" 한 칸에 들어간다.
         /// </summary>
-        [Flags]
-        public enum GradeFilterOption
-        {
-            All = 0,
-            BelowEpic = 1 << 0, // Normal + Rare
-            Epic = 1 << 1,
-            Unique = 1 << 2,
-            Legendary = 1 << 3,
-            Divinity = 1 << 4,
-            Mythic = 1 << 5,
-            Transcendent = 1 << 6,
-        }
+        private const int BelowEpicMaxGrade = 2; // Normal + Rare
 
         private const string BelowEpicGradeKey = "UI_GRADE_BELOW_EPIC";
+
+        /// <summary>등급 라벨 키. <c>UI_ITEM_GRADE_1</c> … 형태.</summary>
+        private const string GradeKeyFormat = "UI_ITEM_GRADE_{0}";
+
+        /// <summary>
+        /// 등급 칸 수 상한. 등급 목록의 권위가 체인 시트라 오타 한 줄(<c>grade=88</c>)이
+        /// 칸을 무한히 늘릴 수 있으므로 방어선을 둔다.
+        /// </summary>
+        private const int MaxGradeToggleCount = 16;
 
         [Flags]
         public enum Elemental
@@ -133,13 +143,54 @@ namespace Nekoyume.UI
         [Serializable]
         private class GradeToggle : ItemToggleType
         {
-            public GradeFilterOption option;
+            /// <summary>
+            /// 프리팹에 직렬화된 레거시 값. **0 이면 "전체" 토글**이라는 식별용으로만 쓴다.
+            /// </summary>
+            /// <remarks>
+            /// 구 <c>[Flags] GradeFilterOption</c> 의 비트값(0/1/2/4/…/64)이 프리팹에 그대로
+            /// 남아 있다. Unity 는 enum 을 int 로 직렬화하므로 타입만 int 로 바꾸면 기존
+            /// 프리팹이 그대로 읽힌다 — 프리팹을 수정할 필요가 없다.
+            /// 담당 등급은 <see cref="grades"/> 에 런타임 배정된다.
+            /// </remarks>
+            public int option;
 
-            public override bool IsAll => option == GradeFilterOption.All;
-            public override string GetOptionName =>
-                option == GradeFilterOption.BelowEpic
-                    ? L10nManager.Localize(BelowEpicGradeKey)
-                    : option.ToString();
+            /// <summary>
+            /// 이 토글이 담당하는 등급 번호들. 시트 기준으로 런타임에 배정된다.
+            /// "전체" 토글과 미배정 토글은 비어 있다.
+            /// </summary>
+            [NonSerialized] public int[] grades = Array.Empty<int>();
+
+            /// <summary>
+            /// 라벨 L10N 키. 그룹 정의와 함께 배정되므로 라벨 규칙이 한 곳에만 있다.
+            /// </summary>
+            [NonSerialized] public string labelKey;
+
+            public override bool IsAll => option == 0;
+
+            /// <summary>
+            /// 라벨. 셀의 <c>L10nTextMeshProUGUI</c> 에도 같은 키가 주입되므로
+            /// (<c>ApplyLabelKey</c>) 언어를 바꿔도 결과가 같다.
+            /// </summary>
+            /// <remarks>
+            /// 어떤 상태에서도 예외를 던지지 않아야 한다 — <c>BindToggleEvent</c> 가 모든
+            /// 토글에 대해 이 값을 읽으므로, 미배정 토글 하나가 <c>Awake</c> 를 중단시키면
+            /// 팝업의 버튼 배선까지 전부 건너뛰어진다.
+            /// </remarks>
+            public override string GetOptionName
+            {
+                get
+                {
+                    var key = IsAll ? string.Format(GradeKeyFormat, 0) : labelKey;
+                    if (!string.IsNullOrEmpty(key) && L10nManager.ContainsKey(key))
+                    {
+                        return L10nManager.Localize(key);
+                    }
+
+                    // 시트가 클라보다 먼저 새 등급을 들고 올 수 있다(UI_ITEM_GRADE_9 미등록).
+                    // 키가 없으면 화면에 "!UI_ITEM_GRADE_9!" 가 찍히므로 등급 번호로 떨어뜨린다.
+                    return grades is { Length: > 0 } ? grades[0].ToString() : string.Empty;
+                }
+            }
         }
 
         [Serializable]
@@ -235,11 +286,16 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            // 신규 등급이 enum에 추가되었는데 프리팹 토글이 누락된 경우(예: Transcendent),
-            // 런타임에서 최소한의 보정(토글 복제)으로 크래시를 방지합니다.
-            EnsureGradeToggles();
-            ValidateGradeTogglesOrThrow();
+            // 등급 토글은 시트의 실제 등급으로 구성한다(등급 추가 시 코드/프리팹 변경 불필요).
+            BuildGradeToggles();
             InitializeToggleGroup();
+
+            // 등급 번호로 폴백한 칸은 L10N 키가 비어 있어서 셀 자신의 구독으로는
+            // 언어 변경을 따라가지 못한다. 언어가 바뀌면 키부터 다시 평가한다
+            // (그 사이 리모트 L10N 으로 키가 도착했을 수도 있다).
+            L10nManager.OnLanguageChange
+                .Subscribe(_ => RefreshGradeLabels())
+                .AddTo(gameObject);
 
             CloseWidget = () =>
             {
@@ -258,94 +314,288 @@ namespace Nekoyume.UI
 #endregion Popup
 
         /// <summary>
-        /// grade 토글 목록이 enum 정의와 일치하는지 검증합니다.
-        /// 누락되면 자동 보정하지 않고 즉시 예외를 던져(빠르게 발견) 프리팹 수정으로 해결하도록 합니다.
+        /// 시트의 실제 등급을 기준으로 등급 토글을 구성한다.
+        /// 프리팹 토글을 풀로 쓰고, 등급이 더 많으면 복제하고 남으면 숨긴다.
         /// </summary>
-        private void ValidateGradeTogglesOrThrow()
+        /// <remarks>
+        /// 등급 목록의 권위가 시트에 있으므로 칸·라벨·레이아웃은 시트 행만으로 따라온다.
+        /// 다만 <b>글자색은 아니다</b> — 셀 색은 프리팹에 셀별로 박혀 있어 복제 칸은
+        /// 템플릿(최고 등급) 색을 물려받는다. 색까지 코드로 옮기려면 <c>ColorType</c> 에
+        /// 등급 색이 먼저 늘어야 한다(<c>LocalizationExtensions.GetItemGradeColor</c> 도
+        /// 8등급까지만 매핑한다).
+        /// </remarks>
+        private void BuildGradeToggles()
         {
             if (gradeToggles is null || gradeToggles.Count == 0)
             {
-                throw new InvalidOperationException(
-                    $"{GetType().Name}: gradeToggles is null or empty. " +
-                    "Please update the prefab to include grade toggles for all grades.");
-            }
-
-            foreach (var t in gradeToggles)
-            {
-                if (t is null || t.toggle == null)
-                {
-                    throw new InvalidOperationException(
-                        $"{GetType().Name}: gradeToggles contains a null Toggle reference. " +
-                        "Please fix the prefab toggle bindings.");
-                }
-            }
-
-            // Flags enum이지만, 현재는 power-of-two 값들만 정의되어 있으므로 정의된 값들을 모두 요구한다.
-            var definedOptions = (GradeFilterOption[])Enum.GetValues(typeof(GradeFilterOption));
-            foreach (var opt in definedOptions)
-            {
-                if (opt == GradeFilterOption.All)
-                {
-                    continue;
-                }
-
-                if (!gradeToggles.Exists(x => x.option == opt))
-                {
-                    throw new InvalidOperationException(
-                        $"{GetType().Name}: missing grade toggle for '{opt}'. " +
-                        "Please update the prefab to include this grade toggle.");
-                }
-            }
-        }
-
-        private void EnsureGradeToggles()
-        {
-            if (gradeToggles is null || gradeToggles.Count == 0)
-            {
+                NcDebug.LogError(
+                    $"{GetType().Name}: gradeToggles 가 비어 있습니다. 프리팹 바인딩을 확인하세요.");
                 return;
             }
 
-            // Template: 가장 높은 등급 토글(=보통 마지막)을 복제해 새 토글을 만든다.
-            GradeToggle template = null;
-            foreach (var t in gradeToggles)
+            var groups = BuildGradeGroups();
+            if (groups.Count == 0)
             {
-                if (t is null || t.toggle == null) continue;
-                if (t.option == GradeFilterOption.All) continue;
-                if (template == null || (int)t.option > (int)template.option) template = t;
-            }
+                // 시트가 아직 로드되지 않았다면 등급 필터를 구성할 수 없다. 비활성으로 두고
+                // 나머지 필터는 정상 동작하게 한다(예외로 팝업 전체를 죽이지 않는다).
+                NcDebug.LogWarning(
+                    $"{GetType().Name}: 시트에서 등급을 찾지 못해 등급 필터를 비활성화합니다.");
+                foreach (var t in gradeToggles)
+                {
+                    if (t?.toggle != null && !t.IsAll)
+                    {
+                        t.toggle.gameObject.SetActive(false);
+                    }
+                }
 
-            if (template == null || template.toggle == null)
-            {
                 return;
             }
 
-            var definedOptions = (GradeFilterOption[])Enum.GetValues(typeof(GradeFilterOption));
-            var createdCount = 0;
-            foreach (var opt in definedOptions)
+            // "전체" 토글(option == 0)은 등급을 담지 않으므로 풀에서 제외한다.
+            var pool = gradeToggles.FindAll(t => t is not null && t.toggle != null && !t.IsAll);
+            if (pool.Count == 0)
             {
-                if (opt == GradeFilterOption.All) continue;
-                if (gradeToggles.Exists(x => x != null && x.option == opt)) continue;
+                NcDebug.LogError(
+                    $"{GetType().Name}: 등급 토글이 하나도 없습니다. 프리팹 바인딩을 확인하세요.");
+                return;
+            }
 
-                // Clone template toggle GameObject under same parent so layout works.
+            var bound = gradeToggles.FindAll(t => t is not null && t.toggle != null).Count;
+            if (bound != gradeToggles.Count)
+            {
+                NcDebug.LogError(
+                    $"{GetType().Name}: 등급 토글 {gradeToggles.Count - bound}개가 비어 있습니다." +
+                    " 프리팹 바인딩을 확인하세요.");
+            }
+
+            // 프리팹에서 등급 셀을 늘리면 새 항목의 option 기본값이 0(= "전체")이라
+            // "전체" 토글이 둘이 된다. 등급 셀은 이제 코드가 만들므로 그럴 일이 없지만,
+            // 조용히 이상 동작하는 대신 알린다.
+            if (bound - pool.Count > 1)
+            {
+                NcDebug.LogError(
+                    $"{GetType().Name}: option == 0(\"전체\") 토글이 {bound - pool.Count}개입니다." +
+                    " 등급 셀의 option 을 0 이 아닌 값으로 두세요.");
+            }
+
+            // 등급은 오름차순으로 배정하므로 풀도 화면 순서(= 계층 순서)로 고정한다.
+            // 프리팹 리스트의 순서에 의존하면 바인딩을 재정렬하는 순간 라벨이 뒤바뀐다.
+            pool.Sort((a, b) =>
+                a.toggle.transform.GetSiblingIndex().CompareTo(b.toggle.transform.GetSiblingIndex()));
+
+            // 부족하면 마지막 토글을 같은 부모 아래로 복제한다(레이아웃 유지).
+            var template = pool[pool.Count - 1];
+            while (pool.Count < groups.Count)
+            {
                 var clonedGo = Instantiate(template.toggle.gameObject, template.toggle.transform.parent);
-                clonedGo.name = $"{template.toggle.gameObject.name}_{opt}";
                 var clonedToggle = clonedGo.GetComponent<Toggle>();
                 if (clonedToggle == null)
                 {
                     Destroy(clonedGo);
+                    break;
+                }
+
+                clonedToggle.isOn = false;
+                var cloned = new GradeToggle
+                {
+                    toggle = clonedToggle,
+                    // 0 은 "전체" 를 뜻하므로 쓰지 않는다. 값 자체는 이제 의미가 없다.
+                    option = -1,
+                };
+                gradeToggles.Add(cloned);
+                pool.Add(cloned);
+            }
+
+            // 등급 배정. 남는 토글은 숨긴다(등급이 줄어든 시트에도 안전하게 대응).
+            for (var i = 0; i < pool.Count; i++)
+            {
+                var t = pool[i];
+                if (i < groups.Count)
+                {
+                    t.grades = groups[i].grades;
+                    t.labelKey = groups[i].labelKey;
+                    t.toggle.gameObject.SetActive(true);
+                }
+                else
+                {
+                    t.grades = Array.Empty<int>();
+                    t.labelKey = null;
+                    t.toggle.gameObject.SetActive(false);
+                }
+
+                ApplyLabelKey(t);
+            }
+
+            FitCells(pool, Math.Min(groups.Count, pool.Count));
+        }
+
+        /// <summary>
+        /// 셀 라벨의 <c>L10nTextMeshProUGUI</c> 키를 배정된 등급에 맞춘다.
+        /// </summary>
+        /// <remarks>
+        /// 이 컴포넌트는 언어가 바뀌면 자기 키로 텍스트를 다시 쓴다. 복제 셀은 템플릿의
+        /// 키를 물려받으므로 그대로 두면 언어를 한 번 바꾼 순간 직전 등급 라벨로 돌아간다.
+        /// 키가 아직 없는 등급이면 키를 비워, <see cref="GradeToggle.GetOptionName"/> 이
+        /// 넣은 등급 번호가 언어 변경 후에도 유지되게 한다.
+        /// 대상은 <see cref="BindToggleEvent{T}"/> 가 텍스트를 쓰는 그 라벨 하나뿐이다 —
+        /// 셀에는 비활성 TMP 가 더 있고, 거기까지 건드리면 범위를 벗어난다.
+        /// </remarks>
+        private static void ApplyLabelKey(GradeToggle gradeToggle)
+        {
+            var label = gradeToggle.toggle.GetComponentInChildren<TMP_Text>(true);
+            if (label == null)
+            {
+                return;
+            }
+
+            var l10nText = label.GetComponent<L10nTextMeshProUGUI>();
+            if (l10nText == null)
+            {
+                return;
+            }
+
+            var key = gradeToggle.labelKey;
+            var localizable = !string.IsNullOrEmpty(key) && L10nManager.ContainsKey(key);
+            l10nText.L10nKey = localizable ? key : null;
+        }
+
+        /// <summary>
+        /// 컬럼 높이가 프리팹에 고정(350)이라 칸이 늘면 프레임 밖으로 삐져나온다.
+        /// 칸 수에 맞춰 세로 스케일을 줄여 항상 안에 들어오게 한다.
+        /// </summary>
+        /// <remarks>
+        /// <c>RectTransform</c> 높이가 아니라 <c>localScale.y</c> 를 줄인다. 컬럼의
+        /// <c>VerticalLayoutGroup</c> 은 <c>childScaleHeight</c> 가 켜져 있어 칸 크기와
+        /// 배치 간격을 모두 스케일에 곱하는데, 높이만 줄이면 칸 <b>안</b>의 배경·프레임은
+        /// 세로 중앙 앵커에 고정 높이라 그대로 남아 서로 파고든다.
+        /// 줄이는 방향으로만 손댄다 — 지금의 8칸(44 × 8 + 간격 −1 × 7 = 345)은 그대로다.
+        /// 이게 없으면 등급이 하나 늘 때마다 프리팹 레이아웃을 손봐야 한다.
+        /// 대가는 <b>세로로만</b> 눌리는 비등방 압축이다(9칸 0.90, 10칸 0.81). 라운드
+        /// 코너와 글리프가 찌그러지므로, 칸이 더 늘면 컬럼 자체를 키우는 프리팹 작업이 맞다.
+        /// 팝업이 이미 떠 있는 상태에서 부르게 되면
+        /// <c>LayoutRebuilder.MarkLayoutForRebuild(parent)</c> 가 필요하다 — 지금은
+        /// <c>Awake</c> 에서만 부르고 첫 <c>Show()</c> 의 <c>OnEnable</c> 이 리빌드를 보장한다.
+        /// </remarks>
+        private static void FitCells(List<GradeToggle> pool, int visibleCount)
+        {
+            if (visibleCount <= 0)
+            {
+                return;
+            }
+
+            if (pool[0].toggle.transform.parent is not RectTransform parent)
+            {
+                return;
+            }
+
+            // 레이아웃 그룹이 없거나 높이를 직접 정하는 설정이면 스케일로는 맞출 수 없다
+            // (칸을 다시 배치할 주체가 없어 그래픽만 줄고 위치는 그대로다).
+            var layout = parent.GetComponent<VerticalLayoutGroup>();
+            if (layout == null || layout.childControlHeight || !layout.childScaleHeight)
+            {
+                NcDebug.LogWarning(
+                    $"{nameof(ItemFilterPopupBase)}: 등급 컬럼의 레이아웃 설정으로는 칸 높이를" +
+                    " 맞출 수 없습니다. 컬럼 높이를 직접 조정해야 합니다.");
+                return;
+            }
+
+            var available = parent.rect.height
+                - layout.padding.top
+                - layout.padding.bottom;
+            var spacing = layout.spacing;
+
+            // 스케일 기준은 스케일이 적용되지 않은 rect 높이의 합이라 몇 번 불러도 결과가 같다.
+            var total = 0f;
+            for (var i = 0; i < visibleCount; i++)
+            {
+                if (pool[i].toggle.transform is RectTransform rect)
+                {
+                    total += rect.rect.height;
+                }
+            }
+
+            if (total <= 0f)
+            {
+                // 레이아웃이 아직 확정되지 않았거나 컬럼이 접혀 있다. 건드리지 않는다.
+                return;
+            }
+
+            var scale = (available - (spacing * (visibleCount - 1))) / total;
+            if (scale <= 0f || scale >= 1f)
+            {
+                return;
+            }
+
+            for (var i = 0; i < visibleCount; i++)
+            {
+                var transform = pool[i].toggle.transform;
+                var localScale = transform.localScale;
+                transform.localScale = new Vector3(localScale.x, scale, localScale.z);
+            }
+        }
+
+        /// <summary>
+        /// 시트의 distinct 등급을 토글 단위로 묶고 라벨 키를 함께 정한다.
+        /// 하위 등급(<see cref="BelowEpicMaxGrade"/> 이하)은 한 칸으로 합친다.
+        /// </summary>
+        private static List<(int[] grades, string labelKey)> BuildGradeGroups()
+        {
+            var groups = new List<(int[] grades, string labelKey)>();
+
+            var itemSheet = Game.Game.instance?.TableSheets?.ItemSheet;
+            if (itemSheet is null)
+            {
+                return groups;
+            }
+
+            var grades = new SortedSet<int>();
+            foreach (var row in itemSheet.Values)
+            {
+                // grade 0 은 초기 지급 장비(Wooden Club / Ragged Clothes)뿐이라 등급 체계 밖이다.
+                if (row.Grade > 0)
+                {
+                    grades.Add(row.Grade);
+                }
+            }
+
+            var below = new List<int>();
+            foreach (var g in grades)
+            {
+                if (g <= BelowEpicMaxGrade)
+                {
+                    below.Add(g);
+                }
+            }
+
+            if (below.Count > 0)
+            {
+                // 여러 등급을 묶은 칸은 전용 키를, 하나뿐이면 그 등급 키를 쓴다.
+                groups.Add((below.ToArray(),
+                    below.Count > 1
+                        ? BelowEpicGradeKey
+                        : string.Format(GradeKeyFormat, below[0])));
+            }
+
+            foreach (var g in grades)
+            {
+                if (g <= BelowEpicMaxGrade)
+                {
                     continue;
                 }
 
-                // Ensure it's off by default (BindToggleEvent에서 All 토글 로직이 다시 정리함).
-                clonedToggle.isOn = false;
-
-                gradeToggles.Add(new GradeToggle
+                if (groups.Count >= MaxGradeToggleCount)
                 {
-                    toggle = clonedToggle,
-                    option = opt,
-                });
-                createdCount++;
+                    NcDebug.LogWarning(
+                        $"{nameof(ItemFilterPopupBase)}: 등급 칸 상한({MaxGradeToggleCount})을" +
+                        $" 넘었습니다. 등급 {g} 이상을" +
+                        " 필터에서 제외합니다. 시트의 grade 값을 확인하세요.");
+                    break;
+                }
+
+                groups.Add((new[] { g }, string.Format(GradeKeyFormat, g)));
             }
+
+            return groups;
         }
 
         private void InitializeToggleGroup()
@@ -358,27 +608,75 @@ namespace Nekoyume.UI
             BindToggleEvent(withSkillToggles);
         }
 
+        /// <summary>
+        /// 토글 이름과 라벨 텍스트를 옵션 이름으로 맞춘다.
+        /// </summary>
+        /// <remarks>
+        /// 일부 프리팹은 UGUI <c>Text</c> 대신 TMP 를 쓴다. 복제로 만든 등급 칸은 템플릿의
+        /// 텍스트를 그대로 물려받으므로, 여기서 덮지 않으면 같은 라벨이 두 개로 보인다.
+        /// </remarks>
+        private static void ApplyOptionName(ItemToggleType item)
+        {
+            var optionName = item.GetOptionName;
+            item.toggle.name = optionName;
+
+            var uguiText = item.toggle.GetComponentInChildren<Text>(true);
+            if (uguiText != null)
+            {
+                uguiText.text = optionName;
+            }
+
+            var tmpText = item.toggle.GetComponentInChildren<TMP_Text>(true);
+            if (tmpText != null)
+            {
+                tmpText.text = optionName;
+            }
+        }
+
+        /// <summary>
+        /// 언어가 바뀐 뒤 등급 칸의 L10N 키와 라벨을 다시 적용한다.
+        /// </summary>
+        private void RefreshGradeLabels()
+        {
+            if (gradeToggles is null)
+            {
+                return;
+            }
+
+            foreach (var t in gradeToggles)
+            {
+                if (t is null || t.toggle == null)
+                {
+                    continue;
+                }
+
+                if (!t.IsAll)
+                {
+                    ApplyLabelKey(t);
+                }
+
+                ApplyOptionName(t);
+            }
+        }
+
         private void BindToggleEvent<T>(List<T> toggles) where T : ItemToggleType
         {
+            if (toggles is null)
+            {
+                NcDebug.LogError($"{GetType().Name}: 토글 리스트가 null 입니다. 프리팹 바인딩을 확인하세요.");
+                return;
+            }
+
             foreach (var item in toggles)
             {
-                var optionName = item.GetOptionName;
-                item.toggle.name = optionName;
-
-                // 일부 프리팹은 UGUI Text 대신 TMP를 사용합니다.
-                // 템플릿 토글을 복제해서 누락 등급을 자동 생성할 때(예: Transcendent),
-                // TMP 라벨을 갱신하지 않으면 텍스트가 그대로 복제되어 "Mythic이 2개"처럼 보일 수 있습니다.
-                var uguiText = item.toggle.GetComponentInChildren<Text>(true);
-                if (uguiText != null)
+                if (item is null || item.toggle == null)
                 {
-                    uguiText.text = optionName;
+                    NcDebug.LogError(
+                        $"{GetType().Name}: 토글 바인딩이 비어 있습니다. 프리팹을 확인하세요.");
+                    continue;
                 }
 
-                var tmpText = item.toggle.GetComponentInChildren<TMP_Text>(true);
-                if (tmpText != null)
-                {
-                    tmpText.text = optionName;
-                }
+                ApplyOptionName(item);
 
                 if (item.IsAll)
                 {
@@ -498,9 +796,15 @@ namespace Nekoyume.UI
 
             foreach (var gradeToggle in gradeToggles)
             {
-                if (gradeToggle.toggle.isOn && gradeToggle.option != GradeFilterOption.All)
+                if (!gradeToggle.toggle.isOn || gradeToggle.IsAll)
                 {
-                    itemFilterOptionType.Grade |= gradeToggle.option;
+                    continue;
+                }
+
+                itemFilterOptionType.Grades ??= new HashSet<int>();
+                foreach (var grade in gradeToggle.grades)
+                {
+                    itemFilterOptionType.Grades.Add(grade);
                 }
             }
 
@@ -547,13 +851,16 @@ namespace Nekoyume.UI
 
         private void SetTogglesFromFilterOption()
         {
-            if (_itemFilterOptions.Grade != GradeFilterOption.All)
+            if (_itemFilterOptions.Grades is { Count: > 0 })
             {
+                var selected = _itemFilterOptions.Grades;
                 foreach (var gradeToggle in gradeToggles)
                 {
+                    // 묶음 토글은 담당 등급이 모두 선택돼 있을 때만 켠다.
                     gradeToggle.toggle.isOn =
-                        gradeToggle.option != GradeFilterOption.All &&
-                        _itemFilterOptions.Grade.HasFlag(gradeToggle.option);
+                        !gradeToggle.IsAll &&
+                        gradeToggle.grades.Length > 0 &&
+                        Array.TrueForAll(gradeToggle.grades, selected.Contains);
                 }
             }
             else

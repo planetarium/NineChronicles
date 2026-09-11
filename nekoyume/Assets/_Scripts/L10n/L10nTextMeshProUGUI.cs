@@ -34,6 +34,31 @@ namespace Nekoyume.L10n
 
         private TextMeshProUGUI _textCache;
 
+        /// <summary>
+        /// 런타임에 키를 바꾼다. 프리팹에 박힌 키가 아니라 코드가 라벨을 정하는 셀
+        /// (예: 시트 기준으로 구성하는 등급 필터 셀)에 쓴다.
+        /// </summary>
+        /// <remarks>
+        /// 빈 값을 넣으면 언어 변경 때 <see cref="SetLanguage"/> 가 텍스트를 건드리지
+        /// 않으므로, 아직 L10N 키가 없는 라벨을 코드가 직접 채워 넣은 상태를 지킬 수 있다.
+        /// 폰트 에셋·스타일 교체는 키와 무관하게 계속 동작한다.
+        /// </remarks>
+        public string L10nKey
+        {
+            get => l10nKey;
+            set
+            {
+                l10nKey = value;
+                if (L10nManager.CurrentState == L10nManager.State.Initialized)
+                {
+                    SetLanguage();
+                }
+
+                // 초기화 전이면 Awake 가 등록한 OnInitialize 구독이 대신 적용한다.
+                // 여기서 Localize 를 부르면 `!KEY!` 가 박힌다.
+            }
+        }
+
         [SerializeField][HideInInspector]
         private bool fontMaterialIndexInitialized = false;
 
