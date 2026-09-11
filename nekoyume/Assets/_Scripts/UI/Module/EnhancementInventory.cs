@@ -22,19 +22,6 @@ namespace Nekoyume.UI.Module
 
     public class EnhancementInventory : MonoBehaviour
     {
-        private enum Grade
-        {
-            All,
-            Normal,
-            Rare,
-            Epic,
-            Unique,
-            Legend,
-            Divinity,
-            Mythic,
-            Transcendent,
-        }
-
         private enum Elemental
         {
             All,
@@ -74,7 +61,11 @@ namespace Nekoyume.UI.Module
 
         private readonly ReactiveProperty<ItemSubType> _selectedItemSubType = new(ItemSubType.Weapon);
 
-        private readonly ReactiveProperty<Grade> _grade = new(Grade.All);
+        /// <summary>선택된 등급 번호. 0 = 전체.</summary>
+        private readonly ReactiveProperty<int> _grade = new(0);
+
+        /// <summary>드롭다운 인덱스 → 등급 번호. 0번은 항상 "전체"(0).</summary>
+        private int[] _gradeOptions = { 0 };
 
         private readonly ReactiveProperty<Elemental> _elemental = new(Elemental.All);
 
@@ -106,13 +97,11 @@ namespace Nekoyume.UI.Module
                 });
             }
 
-            gradeFilter.AddOptions((
-                from grade in (Grade[])Enum.GetValues(typeof(Grade))
-                select L10nManager.Localize($"UI_ITEM_GRADE_{(int)grade}")).ToList());
+            BuildGradeFilter();
 
             gradeFilter.onValueChanged.AsObservable()
-                .Select(index => (Grade)index)
-                .Subscribe(filter => _grade.Value = filter)
+                .Select(GradeOptionToGrade)
+                .Subscribe(grade => _grade.Value = grade)
                 .AddTo(gameObject);
 
             elementalFilter.AddOptions((
@@ -127,6 +116,52 @@ namespace Nekoyume.UI.Module
             _grade.Subscribe(_ => UpdateView(true)).AddTo(gameObject);
             _elemental.Subscribe(_ => UpdateView(true)).AddTo(gameObject);
             _selectedItemSubType.Subscribe(_ => UpdateView(true)).AddTo(gameObject);
+        }
+
+        /// <summary>
+        /// 등급 드롭다운을 시트의 실제 장비 등급으로 구성한다.
+        /// </summary>
+        /// <remarks>
+        /// 예전에는 등급마다 로컬 enum 멤버를 더해야 했고, 빠뜨리면 그 등급 장비를
+        /// 걸러볼 수 없었다(등급 9 "Ultimate" 가 실제로 그렇게 빠졌다).
+        /// 등급 목록의 권위는 <c>EquipmentItemSheet</c> 이다 — 이 필터가 장비 전용이므로
+        /// 아이템 전체가 아니라 장비 등급만 본다. grade 0(초기 지급 장비)은 등급 체계 밖이다.
+        /// </remarks>
+        private void BuildGradeFilter()
+        {
+            var grades = new SortedSet<int>();
+            var sheet = Game.Game.instance?.TableSheets?.EquipmentItemSheet;
+            if (sheet is not null)
+            {
+                foreach (var row in sheet.Values)
+                {
+                    if (row.Grade > 0)
+                    {
+                        grades.Add(row.Grade);
+                    }
+                }
+            }
+            else
+            {
+                NcDebug.LogWarning(
+                    $"{nameof(EnhancementInventory)}: 시트를 읽지 못해 등급 필터를 전체만 둡니다.");
+            }
+
+            // 0번은 "전체"(UI_ITEM_GRADE_0). 나머지는 등급 번호 오름차순.
+            var options = new List<int> { 0 };
+            options.AddRange(grades);
+            _gradeOptions = options.ToArray();
+
+            gradeFilter.ClearOptions();
+            gradeFilter.AddOptions(_gradeOptions
+                .Select(grade => L10nManager.Localize($"UI_ITEM_GRADE_{grade}"))
+                .ToList());
+        }
+
+        /// <summary>드롭다운 인덱스를 등급 번호로. 범위를 벗어나면 전체(0).</summary>
+        private int GradeOptionToGrade(int index)
+        {
+            return index >= 0 && index < _gradeOptions.Length ? _gradeOptions[index] : 0;
         }
 
         public (Equipment, List<Equipment>, Dictionary<int, int>) GetSelectedModels()
@@ -358,9 +393,9 @@ namespace Nekoyume.UI.Module
                 equipments = new List<EnhancementInventoryItem>();
             }
 
-            if (_grade.Value != Grade.All)
+            if (_grade.Value > 0)
             {
-                var value = (int)_grade.Value;
+                var value = _grade.Value;
                 equipments = equipments.Where(item => item.ItemBase.Grade == value).ToList();
             }
 

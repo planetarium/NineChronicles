@@ -432,7 +432,7 @@ namespace Nekoyume.UI
                 ApplyClonedLabelColor(t);
             }
 
-            FitCells(pool, Math.Min(groups.Count, pool.Count));
+            FitCells(pool[0].toggle.transform.parent as RectTransform);
         }
 
         /// <summary>
@@ -503,22 +503,18 @@ namespace Nekoyume.UI
         /// <c>VerticalLayoutGroup</c> 은 <c>childScaleHeight</c> 가 켜져 있어 칸 크기와
         /// 배치 간격을 모두 스케일에 곱하는데, 높이만 줄이면 칸 <b>안</b>의 배경·프레임은
         /// 세로 중앙 앵커에 고정 높이라 그대로 남아 서로 파고든다.
-        /// 줄이는 방향으로만 손댄다 — 지금의 8칸(44 × 8 + 간격 −1 × 7 = 345)은 그대로다.
-        /// 이게 없으면 등급이 하나 늘 때마다 프리팹 레이아웃을 손봐야 한다.
+        /// 대상은 컬럼의 <b>활성 자식 전부</b>다 — 등급 칸만 세면 같은 컬럼에 있는
+        /// "전체" 칸을 빼먹어 높이를 과소 계산하고, 넘치는데도 무동작이 된다.
+        /// 줄이는 방향으로만 손댄다 — 8칸(44 × 8 + 간격 −1 × 7 = 345)은 그대로다.
         /// 대가는 <b>세로로만</b> 눌리는 비등방 압축이다(9칸 0.90, 10칸 0.81). 라운드
         /// 코너와 글리프가 찌그러지므로, 칸이 더 늘면 컬럼 자체를 키우는 프리팹 작업이 맞다.
         /// 팝업이 이미 떠 있는 상태에서 부르게 되면
         /// <c>LayoutRebuilder.MarkLayoutForRebuild(parent)</c> 가 필요하다 — 지금은
         /// <c>Awake</c> 에서만 부르고 첫 <c>Show()</c> 의 <c>OnEnable</c> 이 리빌드를 보장한다.
         /// </remarks>
-        private static void FitCells(List<GradeToggle> pool, int visibleCount)
+        private static void FitCells(RectTransform parent)
         {
-            if (visibleCount <= 0)
-            {
-                return;
-            }
-
-            if (pool[0].toggle.transform.parent is not RectTransform parent)
+            if (parent == null)
             {
                 return;
             }
@@ -534,38 +530,45 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var available = parent.rect.height
-                - layout.padding.top
-                - layout.padding.bottom;
-            var spacing = layout.spacing;
-
-            // 스케일 기준은 스케일이 적용되지 않은 rect 높이의 합이라 몇 번 불러도 결과가 같다.
+            // 기준은 스케일이 걸리지 않은 rect 높이라 몇 번 불러도 결과가 같다.
+            var cells = new List<RectTransform>();
             var total = 0f;
-            for (var i = 0; i < visibleCount; i++)
+            foreach (Transform child in parent)
             {
-                if (pool[i].toggle.transform is RectTransform rect)
+                // 숨긴 칸과 레이아웃이 무시하는 칸은 세지 않는다 —
+                // VerticalLayoutGroup 이 자식을 고르는 기준과 같게 맞춘다.
+                if (!child.gameObject.activeSelf || child is not RectTransform rect)
                 {
-                    total += rect.rect.height;
+                    continue;
                 }
+
+                if (child.TryGetComponent<ILayoutIgnorer>(out var ignorer) &&
+                    ignorer.ignoreLayout)
+                {
+                    continue;
+                }
+
+                cells.Add(rect);
+                total += rect.rect.height;
             }
 
-            if (total <= 0f)
+            if (cells.Count == 0 || total <= 0f)
             {
                 // 레이아웃이 아직 확정되지 않았거나 컬럼이 접혀 있다. 건드리지 않는다.
                 return;
             }
 
-            var scale = (available - (spacing * (visibleCount - 1))) / total;
+            var available = parent.rect.height - layout.padding.top - layout.padding.bottom;
+            var scale = (available - (layout.spacing * (cells.Count - 1))) / total;
             if (scale <= 0f || scale >= 1f)
             {
                 return;
             }
 
-            for (var i = 0; i < visibleCount; i++)
+            foreach (var rect in cells)
             {
-                var transform = pool[i].toggle.transform;
-                var localScale = transform.localScale;
-                transform.localScale = new Vector3(localScale.x, scale, localScale.z);
+                var localScale = rect.localScale;
+                rect.localScale = new Vector3(localScale.x, scale, localScale.z);
             }
         }
 
