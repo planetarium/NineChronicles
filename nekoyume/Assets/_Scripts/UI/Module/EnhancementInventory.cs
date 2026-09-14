@@ -187,22 +187,41 @@ namespace Nekoyume.UI.Module
         /// </remarks>
         private static void FitDropdownTemplate(TMP_Dropdown dropdown, int optionCount)
         {
-            if (dropdown == null || dropdown.template == null || optionCount <= 0)
+            if (dropdown == null || optionCount <= 0)
             {
+                return;
+            }
+
+            if (dropdown.template == null)
+            {
+                NcDebug.LogError(
+                    $"{nameof(EnhancementInventory)}: 드롭다운 템플릿이 비어 있습니다." +
+                    " 프리팹 바인딩을 확인하세요.");
                 return;
             }
 
             // TMP 는 템플릿의 Toggle 을 항목 기준으로 삼는다(SetupTemplate 이 거기에
             // DropdownItem 을 붙인다). 같은 경로로 찾아야 프리팹 구조가 바뀌어도 어긋나지 않는다.
-            var itemToggle = dropdown.template.GetComponentInChildren<Toggle>(true);
+            //
+            // 타입을 반드시 한정한다 — 이 네임스페이스(Nekoyume.UI.Module)에 순정 Toggle 을
+            // 상속한 동명 클래스가 있어서, `Toggle` 이라고만 쓰면 같은 네임스페이스 쪽이
+            // 이기고 드롭다운 항목(순정 Toggle)을 못 찾는다. 컴파일은 통과하고 런타임에
+            // 조용히 아무 일도 안 일어난다 — 실제로 이 버그로 한 번 릴리즈가 나갔다.
+            var itemToggle = dropdown.template.GetComponentInChildren<UnityEngine.UI.Toggle>(true);
             if (itemToggle == null || itemToggle.transform is not RectTransform itemRect)
             {
+                NcDebug.LogWarning(
+                    $"{nameof(EnhancementInventory)}: 드롭다운 템플릿에서 항목을 찾지 못해" +
+                    " 목록 높이를 맞추지 못했습니다.");
                 return;
             }
 
             var itemHeight = itemRect.rect.height;
             if (itemHeight <= 0f)
             {
+                NcDebug.LogWarning(
+                    $"{nameof(EnhancementInventory)}: 드롭다운 항목 높이가 0 이라" +
+                    " 목록 높이를 맞추지 못했습니다.");
                 return;
             }
 
