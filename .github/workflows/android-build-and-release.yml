@@ -7,7 +7,14 @@ on:
       - development
       - release/*
       - fast-track/*
-    tags: ["*"]
+    # 태그(메인넷)에서는 모바일을 빌드하지 않는다 — 스토어에 올라가는 바이너리는
+    # release/* 빌드가 올린 것을 콘솔에서 승격해 쓴다. 런처·스탠드얼론(build.yml)은
+    # 태그가 계속 필요하므로 그쪽은 그대로 둔다.
+    #
+    # 잡 `if` 에 남아 있는 `refs/tags/` 조건은 **데드 코드가 아니다.**
+    # workflow_dispatch 페이로드에도 ref 가 들어가므로, 태그 ref 로 수동 실행하면
+    # github.event.ref 가 refs/tags/* 가 되어 그 조건들이 태그 재빌드 경로를 살린다.
+    # 지우면 빌드는 되는데 업로드 잡만 조용히 빠진다.
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
   workflow_dispatch:
