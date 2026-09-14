@@ -222,10 +222,13 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
+    # startsWith() 는 boolean 을 돌려주는데 `== 'true'` 로 문자열과 비교하면 GitHub 가
+    # 숫자로 캐스팅해 NaN 이 되어 **항상 false** 다. 그래서 release/* 푸시에서도 환경이
+    # 빈 값이었고, internal 환경 시크릿(SLACK_TOKEN/SLACK_CHANNEL)이 붙지 않았다.
     environment: |-
       ${{ github.event.inputs.other-google-services == 'true' && 'k'
       || github.ref_name == 'main' && 'main'
-      || startsWith(github.ref_name, 'release/') == 'true' && 'internal'
+      || startsWith(github.ref_name, 'release/') && 'internal'
       || '' }}
     env:
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
