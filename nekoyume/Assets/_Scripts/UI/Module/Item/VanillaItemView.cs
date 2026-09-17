@@ -70,6 +70,7 @@ namespace Nekoyume.UI.Module
             {
                 var data = GetItemViewData(itemBase);
                 gradeImage.overrideSprite = data.GradeBackground;
+                GradeFrameHelper.ApplyGradeFrame(gradeImage, iconImage, data);
 
                 gradeHsv.range = data.GradeHsvRange;
                 gradeHsv.hue = data.GradeHsvHue;
@@ -125,6 +126,7 @@ namespace Nekoyume.UI.Module
                 gradeHsv.saturation = data.GradeHsvSaturation;
                 gradeHsv.value = data.GradeHsvValue;
                 gradeImage.overrideSprite = data.GradeBackground;
+                GradeFrameHelper.ApplyGradeFrame(gradeImage, iconImage, data);
             }
 
             iconImage.enabled = true;
@@ -141,6 +143,7 @@ namespace Nekoyume.UI.Module
         {
             gradeImage.enabled = false;
             iconImage.enabled = false;
+            GradeFrameHelper.Hide(gradeImage);
         }
 
         protected Tweener PlayTween(float delay = default)

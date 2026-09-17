@@ -39,6 +39,7 @@ namespace Nekoyume.UI.Module
 
             var data = baseItemView.GetItemViewData(model.ItemBase);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(baseItemView.GradeImage, baseItemView.ItemImage, data);
             baseItemView.GradeHsv.range = data.GradeHsvRange;
             baseItemView.GradeHsv.hue = data.GradeHsvHue;
             baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
