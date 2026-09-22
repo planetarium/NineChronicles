@@ -1,0 +1,20 @@
+# OneStroeCorp Licensing Proguard Rules:
+
+# Keep the AIDL interface
+-keep class com.onestore.extern.licensing.** { *; }
+
+# Keep the SDK public APIs
+-keep class com.onestore.extern.licensing.* { public *;}
+-keep class com.onestore.extern.licensing.*$* { public *;}
+
+-keep class com.onestore.extern.licensing.AppLicenseCheckerImpl {
+    public *;
+
+    <init>(java.lang.String);
+
+    private void initialize(android.content.Context, com.onestore.extern.licensing.LicenseCheckerListener)
+}
+
+-keep interface com.onestore.extern.licensing.LicenseCheckerListener { *; }
+-keep enum com.onestore.extern.licensing.*
+-keep enum com.onestore.extern.licensing.*$*

@@ -1,0 +1,17 @@
+# OneStroeCorp Authentication Proguard Rules:
+
+# Keep the AIDL interface
+-keep class com.gaa.extern.auth.** { *; }
+
+# Keep the SDK public APIs
+-keep class com.gaa.sdk.auth.GaaSignInClientImpl {
+    public *;
+    <init>(java.lang.String);
+    private void initialize(android.content.Context);
+}
+
+-keep class com.gaa.sdk.auth.SignInResult { *; }
+
+-keep class com.gaa.sdk.auth.OnAuthListener { *; }
+
+-keep class com.gaa.sdk.auth.AuthException { *; }

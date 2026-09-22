@@ -28,12 +28,36 @@ using IapProductType = GeneratedApiNamespace.InAppPurchaseServiceClient.ProductT
 
 namespace Nekoyume.IAPStore
 {
-    public class IAPStoreManager : MonoBehaviour, IDetailedStoreListener
+    // 원스토어 경로는 IAPStoreManager.OneStore.cs 에 분리해 뒀다. 이 파일은 Play 경로다.
+    public partial class IAPStoreManager : MonoBehaviour, IDetailedStoreListener
     {
         private IStoreController _controller;
         private IExtensionProvider _extensions;
 
-        public IEnumerable<Product> IAPProducts => _controller.products.all;
+        // UI 는 스토어 타입을 몰라야 한다 — 원스토어 경로에서는 UnityEngine.Purchasing.Product 를
+        // 만들 수 없기 때문이다(생성자가 internal). 그래서 IapProductInfo 로 감싸서 넘긴다.
+        // 구매 실행 경로(InitiatePurchase / ConfirmPendingPurchase)는 그대로 Product 를 쓴다.
+        public IEnumerable<IapProductInfo> IAPProducts =>
+#if ONESTORE
+            IsOneStoreActive
+                ? OneStoreProducts
+                :
+#endif
+            _controller is null
+                ? Enumerable.Empty<IapProductInfo>()
+                : _controller.products.all.Select(ToProductInfo);
+
+        private static IapProductInfo ToProductInfo(Product product)
+        {
+            var metadata = product.metadata;
+            return new IapProductInfo(
+                product.definition.id,
+                metadata.localizedTitle,
+                metadata.isoCurrencyCode,
+                metadata.localizedPriceString,
+                metadata.localizedPrice);
+        }
+
         public bool IsInitialized { get; private set; }
 
         private Dictionary<string, ProductSchema> _initializedProductSchema = new();
@@ -82,6 +106,16 @@ namespace Nekoyume.IAPStore
                     }
                 }
             }
+
+#if ONESTORE
+            // 원스토어 SDK 는 JNI 라 실기기에서만 돈다. 에디터에서는 아래 Unity IAP(가짜 스토어)로
+            // 떨어져야 상점 UI 작업을 계속할 수 있다.
+            if (IsOneStoreActive)
+            {
+                OneStoreAwake(_initializedProductSchema.Where(s => s.Value.Active).Select(s => s.Value.Sku()));
+                return;
+            }
+#endif
 
 #if UNITY_EDITOR || RUN_ON_MOBILE
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
@@ -185,6 +219,13 @@ namespace Nekoyume.IAPStore
             }
 
             PurchaseLog(productId, "", $"PurchaseOnClicked");
+#if ONESTORE
+            if (IsOneStoreActive)
+            {
+                OneStorePurchase(productId);
+                return;
+            }
+#endif
             _controller.InitiatePurchase(productId);
         }
 
@@ -650,6 +691,16 @@ namespace Nekoyume.IAPStore
 
                     PurchaseCountRefresh(sku);
 
+                    // 완료 팝업을 띄우기 **전에**, 애니메이션 없이 닫는다.
+                    //
+                    // 같은 프레임에 완료 팝업을 띄우면서 닫으면 닫힘 애니메이션이 끝나지 않아
+                    // Widget 의 `_isClosed` 만 true 로 남고 GameObject 는 활성 상태로 화면에 남는다.
+                    // 그 뒤로는 Close() 가 `if (_isClosed && !ignoreCloseAnimation) return;` 에서
+                    // 즉시 빠져나가 X 버튼을 눌러도 닫히지 않고, WidgetStack 에서는 이미 빠졌으므로
+                    // 레이캐스트 차단막만 남아 다른 버튼도 눌리지 않는다.
+                    Widget.Find<ShopListPopup>()?.Close(true);
+                    Widget.Find<MobileShop>()?.RefreshGrid();
+
                     if (_initializedProductSchema.TryGetValue(sku, out var product) && product.Mileage > 0)
                     {
                         popup.Show(
@@ -682,8 +733,6 @@ namespace Nekoyume.IAPStore
                         }
                     };
 
-                    Widget.Find<MobileShop>()?.RefreshGrid();
-                    Widget.Find<ShopListPopup>()?.Close();
                 }
             }
             catch (Exception exc)
@@ -724,6 +773,16 @@ namespace Nekoyume.IAPStore
                     Widget.Find<MobileShop>()?.PurchaseComplete(sku);
                     PurchaseCountRefresh(sku);
 
+                    // 완료 팝업을 띄우기 **전에**, 애니메이션 없이 닫는다.
+                    //
+                    // 같은 프레임에 완료 팝업을 띄우면서 닫으면 닫힘 애니메이션이 끝나지 않아
+                    // Widget 의 `_isClosed` 만 true 로 남고 GameObject 는 활성 상태로 화면에 남는다.
+                    // 그 뒤로는 Close() 가 `if (_isClosed && !ignoreCloseAnimation) return;` 에서
+                    // 즉시 빠져나가 X 버튼을 눌러도 닫히지 않고, WidgetStack 에서는 이미 빠졌으므로
+                    // 레이캐스트 차단막만 남아 다른 버튼도 눌리지 않는다.
+                    Widget.Find<ShopListPopup>()?.Close(true);
+                    Widget.Find<MobileShop>()?.RefreshGrid();
+
                     if(_initializedProductSchema.TryGetValue(sku, out var product) && product.Mileage > 0)
                     {
                         popup.Show(
@@ -756,8 +815,6 @@ namespace Nekoyume.IAPStore
                         }
                     };
 
-                    Widget.Find<MobileShop>()?.RefreshGrid();
-                    Widget.Find<ShopListPopup>()?.Close();
                 }
             }
             catch (Exception exc)
@@ -833,6 +890,16 @@ namespace Nekoyume.IAPStore
                             ("result", "Complete"),
                             ("transaction-id", e.purchasedProduct.transactionID));
 
+                        // 완료 팝업을 띄우기 **전에**, 애니메이션 없이 닫는다.
+                        //
+                        // 같은 프레임에 완료 팝업을 띄우면서 닫으면 닫힘 애니메이션이 끝나지 않아
+                        // Widget 의 `_isClosed` 만 true 로 남고 GameObject 는 활성 상태로 화면에 남는다.
+                        // 그 뒤로는 Close() 가 `if (_isClosed && !ignoreCloseAnimation) return;` 에서
+                        // 즉시 빠져나가 X 버튼을 눌러도 닫히지 않고, WidgetStack 에서는 이미 빠졌으므로
+                        // 레이캐스트 차단막만 남아 다른 버튼도 눌리지 않는다.
+                        Widget.Find<ShopListPopup>()?.Close(true);
+                        Widget.Find<MobileShop>()?.RefreshGrid();
+
                         if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var product) && product.Mileage > 0)
                         {
                             popup.Show(
@@ -865,8 +932,6 @@ namespace Nekoyume.IAPStore
                             }
                         };
 
-                        Widget.Find<MobileShop>()?.RefreshGrid();
-                        Widget.Find<ShopListPopup>()?.Close();
                         _controller.ConfirmPendingPurchase(e.purchasedProduct);
                         RemoveLocalTransactions(e.purchasedProduct.transactionID);
                     }

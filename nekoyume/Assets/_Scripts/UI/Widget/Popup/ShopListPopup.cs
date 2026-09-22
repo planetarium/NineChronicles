@@ -85,7 +85,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI titleText;
 
         private ProductSchema _data;
-        private UnityEngine.Purchasing.Product _puchasingData;
+        private Nekoyume.IAPStore.IapProductInfo _puchasingData;
         private bool _isInLobby;
 
         private const string LastReadingDayKey = "SHOP_LIST_POPUP_LAST_READING_DAY";
@@ -199,24 +199,35 @@ namespace Nekoyume.UI
             productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.GetDetailImagePath()}");
         }
 
-        public async UniTask Show(ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
+        public async UniTask Show(ProductSchema data, Nekoyume.IAPStore.IapProductInfo purchasingData, bool ignoreShowAnimation = false)
         {
             _data = data;
             _puchasingData = purchasingData;
+
+            // 유료 상품인데 스토어에서 가격을 못 받아온 경우가 있다 — 서버 카탈로그에는 있지만
+            // 스토어(구글/원스토어)에 미등록·미판매인 상품이다. 그대로 두면 아래 가격 표기에서
+            // NullReferenceException 이 난다. 상품 셀(IAPShopProductCellView.Refresh)이 같은 상황에서
+            // 셀을 감추는 것과 같은 판단이다.
+            if (purchasingData is null && data.ProductType == ProductType.IAP)
+            {
+                NcDebug.LogWarning(
+                    $"[ShopListPopup] no store product for sku: {data.Sku()}. skip showing.");
+                return;
+            }
 
             Find<MobileShop>().SetLoadingDataScreen(true);
 
             await DownloadTexture();
 
-            var metadata = _puchasingData?.metadata;
+            var metadata = _puchasingData;
 
             switch (_data.ProductType)
             {
                 case ProductType.IAP:
-                    NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                    NcDebug.Log($"{metadata.Title} : {metadata.CurrencyCode} {metadata.PriceString} {metadata.Price}");
                     foreach (var item in priceTexts)
                     {
-                        item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                        item.text = MobileShop.GetPrice(metadata.CurrencyCode, metadata.Price);
                     }
                     break;
                 case ProductType.FREE:
@@ -289,8 +300,8 @@ namespace Nekoyume.UI
                 discountText.text = _data.Discount.ToString();
                 foreach (var item in preDiscountPrice)
                 {
-                    var originPrice = metadata.localizedPrice * ((decimal)100 / (100 - _data.Discount));
-                    var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
+                    var originPrice = metadata.Price * ((decimal)100 / (100 - _data.Discount));
+                    var origin = MobileShop.GetPrice(metadata.CurrencyCode, originPrice);
                     item.text = origin;
                 }
 
@@ -380,7 +391,7 @@ namespace Nekoyume.UI
                 .Where(p => p.Active && p.Buyable)
                 .OrderBy(p => p.Order).First();
             var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
-                .FirstOrDefault(p => p.definition.id == product.Sku());
+                .FirstOrDefault(p => p.Id == product.Sku());
             Show(product, purchasingProduct).Forget();
         }
 

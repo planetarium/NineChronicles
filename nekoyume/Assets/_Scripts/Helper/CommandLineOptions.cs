@@ -104,6 +104,8 @@ namespace Nekoyume.Helper
 
         private string _appleMarketUrl;
 
+        private string _oneStoreMarketUrl;
+
         private string mimirServiceHost;
 
         private bool _requiredUpdate;
@@ -651,6 +653,26 @@ namespace Nekoyume.Helper
             set
             {
                 _appleMarketUrl = value;
+                Empty = false;
+            }
+        }
+
+        /// <summary>
+        /// 원스토어 상품 상세 페이지 주소. 원스토어 빌드(ONESTORE)의 업데이트 안내가 여기로 보낸다.
+        /// </summary>
+        /// <remarks>
+        /// 원스토어 연동 규격의 단축 URL <c>https://onesto.re/{PID}</c> 형태만 쓴다 — 원스토어 앱이
+        /// 없으면 웹 상세 페이지로 자동 폴백한다. <c>onestore://common/product/{PID}</c> 스킴은
+        /// 원스토어 앱이 없는 기기에서 조용히 아무 일도 하지 않으므로(<c>Util.OpenURL</c> 에 스킴
+        /// 가드가 없다) 쓰지 말 것. PID 는 원스토어에 상품을 등록해야 발급된다.
+        /// </remarks>
+        [Option("one-store-market-url", Required = false, HelpText = "one store market url")]
+        public string OneStoreMarketUrl
+        {
+            get => _oneStoreMarketUrl;
+            set
+            {
+                _oneStoreMarketUrl = value;
                 Empty = false;
             }
         }

@@ -79,7 +79,7 @@ namespace Nekoyume.UI
             ShowAsync(ignoreShowAnimation);
         }
 
-        public async void ShowAsProduct(ProductSchema product, UnityEngine.Purchasing.Product purchasingData)
+        public async void ShowAsProduct(ProductSchema product, Nekoyume.IAPStore.IapProductInfo purchasingData)
         {
             await ShowAsync();
 

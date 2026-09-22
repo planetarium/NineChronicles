@@ -1,0 +1,27 @@
+namespace OneStore.Auth
+{
+    public enum ResponseCode
+    {
+        RESULT_OK = 0,
+        RESULT_SERVICE_UNAVAILABLE = 2,
+        RESULT_DEVELOPER_ERROR = 5,
+        RESULT_ERROR = 6,
+        RESULT_FAIL = 9,
+        RESULT_NEED_LOGIN = 10,
+        RESULT_NEED_UPDATE = 11,
+
+        RESULT_INATALL_ERROR = 101,
+        RESULT_DOWNLOADING = 104,
+        RESULT_INSTALLING = 105,
+
+        RESULT_EMERGENCY_ERROR = 99999,
+
+        ERROR_SERVICE_DISCONNECTED = 1007,
+        ERROR_FEATURE_NOT_SUPPORTED = 1008,
+        ERROR_SERVICE_TIMEOUT = 1009,
+
+        SIGN_IN_FAILED = 12500,
+        SIGN_IN_CANCELED = 12501,
+        SIGN_IN_CURRENTLY_IN_PROGRESS = 12502
+    }
+}

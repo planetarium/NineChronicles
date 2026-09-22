@@ -1,0 +1,71 @@
+# OneStroeCorp Purchasing Proguard Rules:
+
+# Keep the AIDL interface
+-keep class com.gaa.extern.iap.** { *; }
+
+# Keep the SDK public APIs
+-keep class com.gaa.sdk.iap.PurchaseClientImpl {
+    public *;
+
+    <init>(java.lang.String);
+
+    private void initialize(android.content.Context, java.lang.String, com.gaa.sdk.iap.PurchasesUpdatedListener);
+ }
+
+-keep class com.gaa.sdk.iap.AcknowledgeParams { *; }
+
+-keep class com.gaa.sdk.iap.AcknowledgeParams$Builder { *; }
+
+-keep class com.gaa.sdk.iap.AcknowledgeListener { *; }
+
+-keep class com.gaa.sdk.iap.PurchaseClientStateListener { *; }
+
+-keep class com.gaa.sdk.iap.PurchaseFlowParams$Builder { *; }
+
+-keep class com.gaa.sdk.iap.PurchaseFlowParams$SubscriptionUpdateParams { *; }
+
+-keep class com.gaa.sdk.iap.PurchaseFlowParams$SubscriptionUpdateParams$Builder { *; }
+
+-keep class com.gaa.sdk.iap.IapResult { *; }
+
+-keep class com.gaa.sdk.iap.IapResultListener { *; }
+
+-keep class com.gaa.sdk.iap.ConsumeParams { *; }
+
+-keep class com.gaa.sdk.iap.ConsumeParams$Builder { *; }
+
+-keep class com.gaa.sdk.iap.ConsumeListener { *; }
+
+-keep class com.gaa.sdk.iap.PurchaseData {
+    public java.lang.String getOriginalJson();
+
+    public java.lang.String getSignature();
+}
+
+-keep class com.gaa.sdk.iap.PurchaseData$PurchasesResult { *; }
+
+-keep class com.gaa.sdk.iap.PurchasesUpdatedListener { *; }
+
+-keep class com.gaa.sdk.iap.QueryPurchasesListener { *; }
+
+-keep class com.gaa.sdk.iap.RecurringProductParams { *; }
+
+-keep class com.gaa.sdk.iap.RecurringProductParams$Builder { *; }
+
+-keep class com.gaa.sdk.iap.RecurringProductListener { *; }
+
+-keep class com.gaa.sdk.iap.ProductDetail {
+    public java.lang.String getOriginalJson();
+}
+
+-keep class com.gaa.sdk.iap.ProductDetailsParams { *; }
+
+-keep class com.gaa.sdk.iap.ProductDetailsParams$Builder { *; }
+
+-keep class com.gaa.sdk.iap.ProductDetailsListener { *; }
+
+-keep class com.gaa.sdk.iap.StoreInfoListener { *; }
+
+-keep class com.gaa.sdk.iap.SubscriptionParams { *; }
+
+-keep class com.gaa.sdk.iap.SubscriptionParams$Builder { *; }

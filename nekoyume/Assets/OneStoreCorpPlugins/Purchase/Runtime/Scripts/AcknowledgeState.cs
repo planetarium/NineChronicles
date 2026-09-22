@@ -1,0 +1,13 @@
+namespace OneStore.Purchasing
+{
+    /// <summary>
+    /// Represents acknowledge state for a ONE Store in-app purchase data.
+    /// Public documentation can be found at
+    /// https://onestore-dev.gitbook.io/dev/v/eng/tools/tools/v21/references/en-annotations/en-purchasedata.acknowledgestate
+    /// </summary>
+    public enum AcknowledgeState
+    {
+        NOT_ACKNOWLEDGED = 0,
+        ACKNOWLEDGED = 1,
+    }
+}

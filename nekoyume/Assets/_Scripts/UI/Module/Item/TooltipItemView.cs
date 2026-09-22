@@ -46,6 +46,7 @@ namespace Nekoyume.UI.Module
 
             var data = baseItemView.GetItemViewData(itemBase);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(baseItemView.GradeImage, baseItemView.ItemImage, data);
             baseItemView.GradeHsv.range = data.GradeHsvRange;
             baseItemView.GradeHsv.hue = data.GradeHsvHue;
             baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
@@ -105,6 +106,11 @@ namespace Nekoyume.UI.Module
 
                         baseItemView.ItemImage.gameObject.SetActive(false);
                         baseItemView.SpineItemImage.gameObject.SetActive(true);
+
+                        // 스파인 노드가 ItemImage 보다 뒤 형제라, 기준을 그쪽으로 옮기지 않으면
+                        // 테두리가 코스튬 아트에 덮인다.
+                        GradeFrameHelper.ApplyGradeFrame(
+                            baseItemView.GradeImage, baseItemView.SpineItemImage, data);
                     }
                 }
             }
@@ -135,6 +141,7 @@ namespace Nekoyume.UI.Module
 
             var data = baseItemView.GetItemViewData(row.Grade);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(baseItemView.GradeImage, baseItemView.ItemImage, data);
             baseItemView.GradeHsv.range = data.GradeHsvRange;
             baseItemView.GradeHsv.hue = data.GradeHsvHue;
             baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;

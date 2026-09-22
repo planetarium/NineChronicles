@@ -237,12 +237,12 @@ namespace Nekoyume.UI
             }
 
 #if UNITY_ANDROID || UNITY_IOS
-            var purchasingData = iapStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == product.Sku());
+            var purchasingData = iapStoreManager.IAPProducts.FirstOrDefault(p => p.Id == product.Sku());
             if (purchasingData != null)
             {
                 foreach (var item in prices)
                 {
-                    item.text = MobileShop.GetPrice(purchasingData.metadata.isoCurrencyCode, purchasingData.metadata.localizedPrice);
+                    item.text = MobileShop.GetPrice(purchasingData.CurrencyCode, purchasingData.Price);
                 }
             }
 #else

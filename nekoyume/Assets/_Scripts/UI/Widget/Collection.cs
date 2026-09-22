@@ -816,40 +816,21 @@ namespace Nekoyume.UI
 
         private bool ApplyGradeFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Grade == ItemFilterPopupBase.GradeFilterOption.All)
+            var grades = itemFilterOptions.Grades;
+            if (grades is null || grades.Count == 0)
             {
                 return true;
             }
 
             foreach (var material in model.Materials)
             {
-                // 실제 등급 값(1..8)을 기준으로 필터 옵션을 판정한다.
-                var grade = (Nekoyume.Model.EnumType.Grade)material.Grade;
-                var option = GradeToFilterOption(grade);
-                if (option != ItemFilterPopupBase.GradeFilterOption.All &&
-                    itemFilterOptions.Grade.HasFlag(option))
+                if (grades.Contains(material.Grade))
                 {
                     return true;
                 }
             }
 
             return false;
-        }
-
-        private static ItemFilterPopupBase.GradeFilterOption GradeToFilterOption(Nekoyume.Model.EnumType.Grade grade)
-        {
-            return grade switch
-            {
-                Nekoyume.Model.EnumType.Grade.Normal => ItemFilterPopupBase.GradeFilterOption.BelowEpic,
-                Nekoyume.Model.EnumType.Grade.Rare => ItemFilterPopupBase.GradeFilterOption.BelowEpic,
-                Nekoyume.Model.EnumType.Grade.Epic => ItemFilterPopupBase.GradeFilterOption.Epic,
-                Nekoyume.Model.EnumType.Grade.Unique => ItemFilterPopupBase.GradeFilterOption.Unique,
-                Nekoyume.Model.EnumType.Grade.Legendary => ItemFilterPopupBase.GradeFilterOption.Legendary,
-                Nekoyume.Model.EnumType.Grade.Divinity => ItemFilterPopupBase.GradeFilterOption.Divinity,
-                Nekoyume.Model.EnumType.Grade.Mythic => ItemFilterPopupBase.GradeFilterOption.Mythic,
-                Nekoyume.Model.EnumType.Grade.Transcendent => ItemFilterPopupBase.GradeFilterOption.Transcendent,
-                _ => ItemFilterPopupBase.GradeFilterOption.All,
-            };
         }
 
         private bool ApplyElementalFilterOption(CollectionModel model)

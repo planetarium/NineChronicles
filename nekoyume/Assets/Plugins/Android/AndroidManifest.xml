@@ -31,7 +31,26 @@
     </activity>
     <!--This was added by the AnalyticsFixPropertyRemover. If you want to prevent the generation of this, have "AnalyticsFixPropertyRemover" included in a comment-->
     <!-- <property tools:node="removeAll" /> -->
+    <!-- ONE Store IAP 테스트 전용 옵션. **상용 빌드에 들어가면 안 되므로 기본은 주석이다.**
+         onestore_00: 대한민국(기본) / onestore_01: 싱가포르, 대만
+         onestore_02: 미국(Digital Turbine) / onestore_03: ONE Billing Lab(샌드박스)
+
+         로컬에서 샌드박스로 확인할 때만 아래 줄의 주석을 풀고, 끝나면 되돌린다.
+         CI 는 android-build-and-release.yml 의 onestore-dev-option 입력으로 켠다
+         (아래 줄을 통째로 찾아 바꾸므로 형태를 바꾸지 말 것). -->
+    <!-- <meta-data android:name="onestore:dev_option" android:value="onestore_03" /> -->
   </application>
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <!-- ONE Store IAP: Android 11+ 패키지 가시성 제한 대응. 없으면 원스토어 결제 서비스를 찾지 못해
+       연결 자체가 실패합니다(증상이 매니페스트 문제로 보이지 않습니다). 삭제하지 마세요. -->
+  <queries>
+    <intent>
+      <action android:name="com.onestore.ipc.iap.IapService.ACTION" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="onestore" />
+    </intent>
+  </queries>
 </manifest>

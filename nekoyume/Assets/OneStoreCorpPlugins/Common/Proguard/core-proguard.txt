@@ -1,0 +1,28 @@
+# OneStroeCorp Core Proguard Rules:
+
+# Keep the SDK public APIs
+-keep class com.gaa.sdk.base.AppInstaller { *; }
+
+-keep class com.gaa.sdk.base.AsyncExecutor { *; }
+
+-keep class com.gaa.sdk.base.ConnectionInfo {
+    public *;
+    protected <methods>;
+    <init>(android.content.Context);
+}
+
+-keep class com.gaa.sdk.base.ConnectionInfo$StoreServiceInfo { *; }
+
+-keep class com.gaa.sdk.base.GlobalStoreSDKMessages { *; }
+
+-keep class com.gaa.sdk.base.InternalException { *; }
+
+-keep class com.gaa.sdk.base.Logger { *; }
+
+-keep class com.gaa.sdk.base.ResultListener { *; }
+
+-keep class com.gaa.sdk.base.Utils { *; }
+
+-keep class com.gaa.sdk.base.StoreEnvironment ( 
+    public *;
+ )

@@ -11,6 +11,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-app-unity:12.9.0' // Assets/Firebase/Editor/AppDependencies.xml:22
     implementation 'com.google.firebase:firebase-common:21.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
     implementation 'com.google.signin:google-signin-support:1.0.4' // Assets/GoogleSignIn/Editor/GoogleSignInSupportDependencies.xml:9
+    implementation 'com.onestorecorp.sdk:sdk-iap:21.04.00' // Assets/OneStoreCorpPlugins/Purchase/Editor/PurchaseDependencies.xml:3
+    implementation 'com.onestorecorp.sdk:sdk-licensing:2.2.1' // Assets/OneStoreCorpPlugins/AppLicenseChecker/Editor/AppLicenseCheckerDependencies.xml:3
 // Android Resolver Dependencies End
 **DEPS**}
 

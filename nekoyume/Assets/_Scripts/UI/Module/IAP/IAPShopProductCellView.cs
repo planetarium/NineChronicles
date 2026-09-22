@@ -83,7 +83,7 @@ namespace Nekoyume.UI.Module
 
         private RectTransform _rect;
         private ProductSchema _data;
-        private UnityEngine.Purchasing.Product _purchasingData;
+        private Nekoyume.IAPStore.IapProductInfo _purchasingData;
 
         private void Awake()
         {
@@ -160,7 +160,7 @@ namespace Nekoyume.UI.Module
 
         private void Refresh()
         {
-            _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku());
+            _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.Id == _data.Sku());
             if (_purchasingData == null && _data.ProductType == ProductType.IAP)
             {
                 gameObject.SetActive(false);
@@ -241,19 +241,19 @@ namespace Nekoyume.UI.Module
             switch (_data.ProductType)
             {
                 case ProductType.IAP:
-                    var metadata = _purchasingData?.metadata;
-                    NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                    var metadata = _purchasingData;
+                    NcDebug.Log($"{metadata.Title} : {metadata.CurrencyCode} {metadata.PriceString} {metadata.Price}");
                     foreach (var item in price)
                     {
-                        item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                        item.text = MobileShop.GetPrice(metadata.CurrencyCode, metadata.Price);
                     }
                     if (isDiscount)
                     {
                         discount.text = $"{_data.Discount}%";
                         foreach (var item in preDiscountPrice)
                         {
-                            var originPrice = metadata.localizedPrice * ((decimal)100 / (100 - _data.Discount));
-                            var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
+                            var originPrice = metadata.Price * ((decimal)100 / (100 - _data.Discount));
+                            var origin = MobileShop.GetPrice(metadata.CurrencyCode, originPrice);
                             item.text = origin;
                         }
 
