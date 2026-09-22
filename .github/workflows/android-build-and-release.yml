@@ -7,7 +7,14 @@ on:
       - development
       - release/*
       - fast-track/*
-    tags: ["*"]
+    # 태그(메인넷)에서는 모바일을 빌드하지 않는다 — 스토어에 올라가는 바이너리는
+    # release/* 빌드가 올린 것을 콘솔에서 승격해 쓴다. 런처·스탠드얼론(build.yml)은
+    # 태그가 계속 필요하므로 그쪽은 그대로 둔다.
+    #
+    # 잡 `if` 에 남아 있는 `refs/tags/` 조건은 **데드 코드가 아니다.**
+    # workflow_dispatch 페이로드에도 ref 가 들어가므로, 태그 ref 로 수동 실행하면
+    # github.event.ref 가 refs/tags/* 가 되어 그 조건들이 태그 재빌드 경로를 살린다.
+    # 지우면 빌드는 되는데 업로드 잡만 조용히 빠진다.
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
   workflow_dispatch:
@@ -222,10 +229,13 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
+    # startsWith() 는 boolean 을 돌려주는데 `== 'true'` 로 문자열과 비교하면 GitHub 가
+    # 숫자로 캐스팅해 NaN 이 되어 **항상 false** 다. 그래서 release/* 푸시에서도 환경이
+    # 빈 값이었고, internal 환경 시크릿(SLACK_TOKEN/SLACK_CHANNEL)이 붙지 않았다.
     environment: |-
       ${{ github.event.inputs.other-google-services == 'true' && 'k'
       || github.ref_name == 'main' && 'main'
-      || startsWith(github.ref_name, 'release/') == 'true' && 'internal'
+      || startsWith(github.ref_name, 'release/') && 'internal'
       || '' }}
     env:
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -378,6 +388,109 @@ jobs:
           path: /tmp/packages
           retention-days: 7
           if-no-files-found: error
+
+      # `.apks` 는 bundletool 아카이브라 그대로는 설치가 안 된다. `--mode=universal` 이
+      # 넣어 준 universal.apk 를 꺼내 QA 가 바로 받을 수 있는 이름으로 바꾼다.
+      #
+      # 아티팩트 업로드 **뒤에** 둔다. 이 편의 기능이 실패해도 릴리즈 산출물은 이미 남아 있어야 한다.
+      - name: Extract universal APK
+        id: apk
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/onestore
+          ver=$(awk '/^  bundleVersion:/{print $2; exit}' nekoyume/ProjectSettings/ProjectSettings.asset | tr -d '\r')
+          [ -n "$ver" ] || ver=unknown
+          name="NineChronicles-onestore-${ver}-${{ github.run_id }}.apk"
+          # 읽기만 sudo 로 하고 쓰기는 runner 소유로 한다 — sudo 로 만든 파일의 모드에 기대지 않는다.
+          sudo unzip -p /tmp/player/Android/result.apks universal.apk > "/tmp/onestore/${name}"
+          size=$(stat -c%s "/tmp/onestore/${name}")
+          [ "$size" -gt 0 ] || { echo "universal.apk 추출 실패"; exit 1; }
+          echo "path=/tmp/onestore/${name}" >> "$GITHUB_OUTPUT"
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "size=${size}" >> "$GITHUB_OUTPUT"
+          echo "원스토어 APK: ${name} ($((size / 1024 / 1024))MB)"
+
+      # 슬랙 쪽 문제(토큰 스코프·채널 권한)로 릴리즈 빌드가 깨지면 안 된다.
+      - name: Upload ONE Store APK to Slack
+        if: steps.apk.outcome == 'success'
+        continue-on-error: true
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          APK_PATH: ${{ steps.apk.outputs.path }}
+          APK_NAME: ${{ steps.apk.outputs.name }}
+          APK_SIZE: ${{ steps.apk.outputs.size }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # secrets 컨텍스트는 스텝 `if` 에서 못 쓴다. 여기서 확인한다.
+          if [ -z "${SLACK_TOKEN}" ] || [ -z "${SLACK_CHANNEL}" ]; then
+            echo "SLACK_TOKEN/SLACK_CHANNEL 이 없어 업로드를 건너뛴다."
+            exit 0
+          fi
+
+          # chat.postMessage 는 채널 이름도 ID 도 받고, **응답의 .channel 은 항상 ID** 다.
+          # files.completeUploadExternal 이 ID 만 받으므로 여기서 얻는다(추가 스코프 불필요).
+          post_text() {
+            local res
+            res=$(curl -sS -X POST https://slack.com/api/chat.postMessage \
+              -H "Authorization: Bearer ${SLACK_TOKEN}" \
+              -H 'Content-Type: application/json; charset=utf-8' \
+              --data "$(jq -nc --arg c "$SLACK_CHANNEL" --arg t "$1" '{channel:$c, text:$t}')")
+            if ! echo "$res" | jq -e '.ok' > /dev/null; then
+              echo "chat.postMessage 실패: $res" >&2
+              return 1
+            fi
+            echo "$res" | jq -r '.channel'
+          }
+
+          # 토큰이 뭘 할 수 있는지 로그에 남긴다. 파일 업로드엔 files:write 가 필요한데,
+          # 이 토큰은 지금까지 chat:write 로만 검증돼 있었다. 스코프는 응답 헤더로 온다.
+          scopes=$(curl -sS -D - -o /dev/null -H "Authorization: Bearer ${SLACK_TOKEN}" \
+            https://slack.com/api/auth.test | tr -d '\r' | awk -F': ' '/^[Xx]-[Oo][Aa]uth-[Ss]copes:/{print $2}')
+          echo "슬랙 토큰 스코프: ${scopes:-확인 불가}"
+
+          mb=$((APK_SIZE / 1024 / 1024))
+
+          # 슬랙 파일 한도는 1GB 다. 넘으면 올리지 않고 아티팩트 링크만 알린다.
+          if [ "$APK_SIZE" -gt $((1024 * 1024 * 1024)) ]; then
+            echo "APK 가 슬랙 한도(1GB)를 넘어 파일 업로드를 건너뛴다."
+            post_text "[Player] Prepared 'ONE Store' apk (${APK_NAME}, ${mb}MB) — 슬랙 한도 초과라 아티팩트로 받으세요: ${RUN_URL}" > /dev/null
+            exit 0
+          fi
+
+          channel_id=$(post_text "[Player] Prepared 'ONE Store' apk - ${APK_NAME} (${mb}MB)")
+          echo "슬랙 채널 ID: ${channel_id}"
+
+          # 업로드가 안 되면 조용히 끝내지 않는다 — QA 는 슬랙만 보고 기다린다.
+          fallback() {
+            echo "$1" >&2
+            post_text "[Player] 'ONE Store' apk 슬랙 업로드 실패 — 아티팩트로 받으세요: ${RUN_URL}" > /dev/null || true
+            exit 0
+          }
+
+          # files.upload 은 폐기됐다. 외부 업로드 3단계를 쓴다.
+          up=$(curl -sS -X POST https://slack.com/api/files.getUploadURLExternal \
+            -H "Authorization: Bearer ${SLACK_TOKEN}" \
+            --data-urlencode "filename=${APK_NAME}" \
+            --data-urlencode "length=${APK_SIZE}")
+          echo "$up" | jq -e '.ok' > /dev/null || fallback "getUploadURLExternal 실패: $up"
+
+          curl -sS --fail -X POST "$(echo "$up" | jq -r '.upload_url')" \
+            -F "file=@${APK_PATH}" > /dev/null || fallback "업로드 전송 실패"
+
+          res=$(curl -sS -X POST https://slack.com/api/files.completeUploadExternal \
+            -H "Authorization: Bearer ${SLACK_TOKEN}" \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            --data "$(jq -nc \
+              --arg id "$(echo "$up" | jq -r '.file_id')" \
+              --arg t "$APK_NAME" \
+              --arg c "$channel_id" \
+              '{files:[{id:$id, title:$t}], channel_id:$c}')")
+          echo "$res" | jq -e '.ok' > /dev/null || fallback "completeUploadExternal 실패: $res"
+          echo "슬랙 업로드 완료: ${APK_NAME}"
 
   extract:
     if: >-

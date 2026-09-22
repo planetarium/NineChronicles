@@ -197,6 +197,9 @@ namespace Nekoyume
 
         public void ClearItem()
         {
+            // 오버레이는 별도 오브젝트라 스프라이트만 바꿔서는 안 사라진다.
+            // 모든 Set 경로가 여기를 거치므로 한 번 끄고 시작한다(Apply 가 다시 켠다).
+            GradeFrameHelper.Hide(GradeImage);
             Container.SetActive(true);
             EmptyObject.SetActive(false);
             EnoughObject.SetActive(false);

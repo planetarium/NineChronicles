@@ -288,7 +288,9 @@ namespace Nekoyume.UI
 
                     if (_subrecipeIds != null && _subrecipeIds.Any())
                     {
-                        var isNormalRecipe = resultItem.Grade < 5 || resultItem.Grade == 8;
+                        // 등급 8 이상은 레전더리(서브레시피 3개) 변형이 없다.
+                        // `== 8` 로 두면 새 등급이 빈 레전더리 탭으로 떨어진다.
+                        var isNormalRecipe = resultItem.Grade < 5 || resultItem.Grade >= 8;
                         normalRecipeTabGroup.toggleGroup.gameObject.SetActive(isNormalRecipe);
                         legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(!isNormalRecipe);
 

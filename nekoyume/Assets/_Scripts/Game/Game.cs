@@ -1679,7 +1679,25 @@ namespace Nekoyume.Game
         {
             // ReSharper disable once JoinDeclarationAndInitializer
             var updateUrl = string.Empty;
-#if RUN_ON_MOBILE && UNITY_ANDROID
+#if RUN_ON_MOBILE && UNITY_ANDROID && ONESTORE
+            // 원스토어 빌드는 구글 플레이가 아니라 원스토어 상세 페이지로 보내야 한다.
+            // CLO 는 (환경, IsKoreanBuild) 두 축으로만 갈리고, 원스토어 빌드는 글로벌과 같은
+            // 패키지명이라 IsKoreanBuild == false → 플레이 글로벌 빌드와 같은 CLO 를 읽는다.
+            // 그래서 CLO 를 나누는 게 아니라 이 심볼로 분기한다.
+            //
+            // 값이 없어도 구글 플레이로 폴백하지 않는다. 원스토어 설치본과 플레이 배포본의 서명이
+            // 다르면 덮어쓰기 설치가 실패하고, 사용자에게 남는 길은 삭제 후 재설치 =
+            // 로컬 키스토어 소실이다. 이 팝업이 키 백업 버튼을 함께 띄우는 것과 같은 위험이라,
+            // 아무 곳으로도 안 보내는 쪽이 낫다.
+            updateUrl = _commandLineOptions?.OneStoreMarketUrl;
+            if (string.IsNullOrEmpty(updateUrl))
+            {
+                NcDebug.LogError(
+                    "[Game] 원스토어 빌드인데 CLO 의 oneStoreMarketUrl 이 비어 있습니다." +
+                    " 업데이트 안내가 아무 곳으로도 가지 못합니다." +
+                    " clo-mainnet / clo-internal / clo-default 세 파일 모두에 채워야 합니다.");
+            }
+#elif RUN_ON_MOBILE && UNITY_ANDROID
             updateUrl = _commandLineOptions?.GoogleMarketUrl;
 #elif RUN_ON_MOBILE && UNITY_IOS
             updateUrl = _commandLineOptions?.AppleMarketUrl;

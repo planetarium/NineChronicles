@@ -187,13 +187,17 @@ namespace Nekoyume.UI.Module
                         statCount += count;
                     }
 
-                    var crystal = CrystalCalculator.CalculateCrystal(
-                        new[] { equipment },
-                        false,
-                        TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                        TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                        States.Instance.StakingLevel).MajorUnit;
-                    descriptionArea.crystalText.text = L10nManager.Localize("UI_CRYSTAL_VALUE", crystal.ToCurrencyNotation());
+                    // 분쇄 시트에 행이 없으면 계산이 던지고, 이 호출은 base.Show() 보다
+                    // 먼저 돌기 때문에 팝업이 아예 안 뜬다. 줄만 숨기고 나머지는 보여준다.
+                    if (Util.TryCalculateCrystal(new[] { equipment }, false, out var crystalValue))
+                    {
+                        var crystal = crystalValue.MajorUnit;
+                        descriptionArea.crystalText.text = L10nManager.Localize("UI_CRYSTAL_VALUE", crystal.ToCurrencyNotation());
+                    }
+                    else
+                    {
+                        descriptionArea.crystalGameObject.SetActive(false);
+                    }
 
                     break;
                 }

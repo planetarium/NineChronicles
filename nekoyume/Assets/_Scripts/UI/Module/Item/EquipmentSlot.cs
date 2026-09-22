@@ -248,6 +248,7 @@ namespace Nekoyume.UI.Module
             gradeImage.enabled = true;
             var gradeData = itemViewData.GetItemViewData(itemBase.Grade);
             gradeImage.overrideSprite = gradeData.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(gradeImage, itemImage, gradeData);
             gradeHsv.range = gradeData.GradeHsvRange;
             gradeHsv.hue = gradeData.GradeHsvHue;
             gradeHsv.saturation = gradeData.GradeHsvSaturation;
@@ -360,6 +361,7 @@ namespace Nekoyume.UI.Module
 
             itemImage.enabled = false;
             gradeImage.enabled = false;
+            GradeFrameHelper.Hide(gradeImage);
             enhancementText.enabled = false;
             enhancementImage.gameObject.SetActive(false);
             optionTagBg.gameObject.SetActive(false);

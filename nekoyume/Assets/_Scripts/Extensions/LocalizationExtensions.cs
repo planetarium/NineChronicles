@@ -689,6 +689,12 @@ namespace Nekoyume
             return GetItemGradeColor(item.Grade);
         }
 
+        /// <remarks>
+        /// 9등급 이상은 <b>1~8 색을 순서대로 재사용</b>한다 — 배경 스프라이트의 배색 규칙
+        /// (<c>item_bg_{N+8} = item_bg_{N} + 테두리</c>)과 같은 주기다. 등급이 늘어도 색을
+        /// 새로 만들 필요가 없고, 티어는 배경 테두리가 알린다.
+        /// 팔레트에 등급 색을 새로 추가하면 그때 분기를 늘리면 된다.
+        /// </remarks>
         public static Color GetItemGradeColor(int grade)
         {
             return grade switch
@@ -701,6 +707,8 @@ namespace Nekoyume
                 6 => Palette.GetColor(EnumType.ColorType.TextGrade05),
                 7 => Palette.GetColor(EnumType.ColorType.TextGrade06),
                 8 => Palette.GetColor(EnumType.ColorType.TextGrade07),
+                > 8 => GetItemGradeColor(((grade - 1) % 8) + 1),
+                // grade 0 은 초기 지급 장비(Wooden Club / Ragged Clothes)라 등급 체계 밖이다.
                 _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }

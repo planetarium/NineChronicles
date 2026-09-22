@@ -265,18 +265,15 @@ namespace Nekoyume.UI.Module
             var equipmentsForGrind = _selectedItemsForGrind
                 .Select(inventoryItem => (Equipment)inventoryItem.ItemBase).ToList();
 
-            var crystalReward = CrystalCalculator.CalculateCrystal(
-                equipmentsForGrind,
-                false,
-                TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                States.Instance.StakingLevel);
+            // 분쇄 시트에 행이 없는 장비가 섞이면 보상 계산이 던져 패널 전체가 죽는다.
+            // 그런 장비는 애초에 분쇄가 불가능하므로(액션도 실패한다) 보상을 0 으로 둔다.
+            // 실패하면 크리스탈 0 + 재료 없음으로 돌아온다.
+            Util.TryCalculateGrindingReward(
+                equipmentsForGrind, out var crystalReward, out var materialReward);
+
             _cachedGrindingRewardCrystal = crystalReward;
             var favRewards = new[] { crystalReward };
-            var itemRewards = Grinding.CalculateMaterialReward(
-                    equipmentsForGrind,
-                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                    TableSheets.Instance.MaterialItemSheet)
+            var itemRewards = materialReward
                 .OrderBy(pair => pair.Key.GetMaterialPriority())
                 .ThenByDescending(pair => pair.Key.Grade)
                 .ThenBy(pair => pair.Key.Id)

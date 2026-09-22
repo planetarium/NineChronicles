@@ -114,8 +114,11 @@ namespace Nekoyume.UI
                 TableSheets.Instance.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
 
+            // 등급 8 이상은 레전더리(서브레시피 3개) 변형이 없다 — 아우라·그리모어는 전
+            // 등급에서 서브레시피가 1개뿐이다. `== 8` 로 두면 새 등급이 레전더리 탭으로
+            // 잘못 분류돼 빈 탭이 뜬다.
             if (_recipeRow.GetResultEquipmentItemRow().Grade < 5 ||
-                _recipeRow.GetResultEquipmentItemRow().Grade == 8)
+                _recipeRow.GetResultEquipmentItemRow().Grade >= 8)
             {
                 normalRecipeTabGroup.gameObject.SetActive(true);
                 legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
