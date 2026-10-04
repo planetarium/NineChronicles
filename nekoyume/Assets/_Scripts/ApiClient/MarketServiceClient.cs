@@ -33,6 +33,29 @@ namespace Nekoyume.ApiClient
             NcDebug.Log($"[{nameof(MarketServiceClient)}] initialized host: {url}");
         }
 
+        private async Task<string> GetMarketResponseAsync(string url)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+            // Capture active identity per request, not on the shared HttpClient.
+            var states = Game.Game.instance?.States;
+            var agentAddress = states?.AgentState?.address;
+            var avatarAddress = states?.CurrentAvatarState?.address;
+            if (agentAddress.HasValue)
+            {
+                request.Headers.Add("X-Agent-Address", agentAddress.Value.ToString());
+            }
+
+            if (avatarAddress.HasValue)
+            {
+                request.Headers.Add("X-Avatar-Address", avatarAddress.Value.ToString());
+            }
+
+            using var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
         public async Task<(List<ItemProductResponseModel>, int)> GetBuyProducts(
             ItemSubType itemSubType,
             int offset,
@@ -52,7 +75,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -84,7 +107,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -107,7 +130,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -133,7 +156,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -165,7 +188,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
