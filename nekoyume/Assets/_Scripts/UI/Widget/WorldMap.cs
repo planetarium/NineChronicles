@@ -624,7 +624,8 @@ namespace Nekoyume.UI
                 var canTryThisWorld =
                     unlockRowConsistent &&
                     IsStageClearedForUi(worldInformation, unlockRow?.StageId ?? int.MaxValue);
-                var worldIsUnlocked = IsWorldUnlockedForUi(worldInformation, buttonWorldId, canTryThisWorld);
+                // var worldIsUnlocked = IsWorldUnlockedForUi(worldInformation, buttonWorldId, canTryThisWorld);
+                var worldIsUnlocked = true;
                 var openedLegacy = IsWorldOpenedInLegacyForUi(worldButton.Id);
 
                 UpdateNotificationInfo();
