@@ -48,24 +48,35 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossBattleRewardSheet.Row row)
         {
-            var materials = new List<(int itemId, int quantity)>();
-            if (row.Circle > 0)
-            {
-                materials.Add((600402, row.Circle));
-            }
-
-            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
+            SetBoosted(
+                BoostScheduleFrontHelper.FindActiveNow(BoostScheduleSheet.Targets.WorldBossBattleReward, row.BossId),
+                row.RuneMin, row.RuneMax, row.Crystal, row.Circle);
         }
 
         public void Set(WorldBossKillRewardSheet.Row row)
         {
+            SetBoosted(
+                BoostScheduleFrontHelper.FindActiveNow(BoostScheduleSheet.Targets.WorldBossKillReward, row.BossId),
+                row.RuneMin, row.RuneMax, row.Crystal, row.Circle);
+        }
+
+        /// <summary>
+        /// 이벤트 중이면 액션과 같은 규칙(<c>WorldBossHelper.ApplyRewardBoost</c>, 뽑은 양에 적용)으로 키운 양을 보여준다.
+        /// 룬은 뽑은 총량을 룬별로 나눈 뒤 각각 내림하므로 실제 합은 범위 끝값보다 조금 작을 수 있다.
+        /// </summary>
+        private void SetBoosted(BoostScheduleSheet.Row boost, int runeMin, int runeMax, int crystal, int circle)
+        {
+            circle = WorldBossHelper.ApplyRewardBoost(boost, circle);
             var materials = new List<(int itemId, int quantity)>();
-            if (row.Circle > 0)
+            if (circle > 0)
             {
-                materials.Add((600402, row.Circle));
+                materials.Add((600402, circle));
             }
 
-            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
+            SetRewardItem(
+                (WorldBossHelper.ApplyRewardBoost(boost, runeMin), WorldBossHelper.ApplyRewardBoost(boost, runeMax)),
+                WorldBossHelper.ApplyRewardBoost(boost, crystal),
+                materials);
         }
 
         public void Set(WorldBossContributionRewardSheet.Row row)
