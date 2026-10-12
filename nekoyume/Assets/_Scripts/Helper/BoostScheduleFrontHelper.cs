@@ -19,5 +19,16 @@ namespace Nekoyume.Helper
 
             return game.TableSheets.BoostScheduleSheet.FindActive(target, targetId, game.Agent.BlockIndex);
         }
+
+        /// <summary>
+        /// 망치 1개가 지금 블록에서 주는 exp. 액션(<c>ItemEnhancement</c>)과 같은 계산이다 — 원본을 쓰면 이벤트 중
+        /// 목표 레벨·NCG 비용을 낮게 보여, 표시된 비용만큼만 NCG 를 가진 아바타의 강화가 실패하고 최대 레벨에
+        /// 필요한 망치 수도 많게 잡힌다.
+        /// </summary>
+        public static long GetHammerExp(EnhancementCostSheetV3 enhancementCostSheet, int hammerId) =>
+            Nekoyume.Action.ItemEnhancement.GetHammerExp(
+                enhancementCostSheet,
+                hammerId,
+                FindActiveNow(BoostScheduleSheet.Targets.EnhancementHammerExp, hammerId));
     }
 }
