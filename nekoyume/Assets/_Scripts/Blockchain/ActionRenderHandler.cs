@@ -2495,7 +2495,7 @@ namespace Nekoyume.Blockchain
         private void ResponseHackAndSlashSweepAsync(
             ActionEvaluation<HackAndSlashSweep> eval)
         {
-            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
@@ -2524,7 +2524,7 @@ namespace Nekoyume.Blockchain
         private void ResponseEventDungeonBattleSweepAsync(
             ActionEvaluation<Action.EventDungeonBattleSweep> eval)
         {
-            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
