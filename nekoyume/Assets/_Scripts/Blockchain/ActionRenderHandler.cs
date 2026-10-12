@@ -541,15 +541,18 @@ namespace Nekoyume.Blockchain
                                eval.Action.TableName == nameof(BoostScheduleSheet))
                 .ObserveOnMainThread()
                 .Subscribe(eval => ReplaceBoostScheduleSheet(
-                    PatchTableSheetCompressed.DecompressCsv(eval.Action.CompressedTableCsv)))
+                    () => PatchTableSheetCompressed.DecompressCsv(eval.Action.CompressedTableCsv)))
                 .AddTo(_disposables);
         }
 
-        private static void ReplaceBoostScheduleSheet(string csv)
+        private static void ReplaceBoostScheduleSheet(string csv) => ReplaceBoostScheduleSheet(() => csv);
+
+        /// <param name="getCsv">압축 해제도 여기서 예외를 잡도록 지연 평가한다 — 구독 안에서 던지면 스트림이 끊겨 이후 패치를 못 받는다.</param>
+        private static void ReplaceBoostScheduleSheet(Func<string> getCsv)
         {
             try
             {
-                TableSheets.Instance.ReplaceBoostScheduleSheet(csv);
+                TableSheets.Instance.ReplaceBoostScheduleSheet(getCsv());
                 NcDebug.Log("[BoostSchedule] BoostScheduleSheet replaced by a patch.");
             }
             catch (Exception e)
