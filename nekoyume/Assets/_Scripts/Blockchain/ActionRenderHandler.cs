@@ -153,6 +153,7 @@ namespace Nekoyume.Blockchain
 
             RewardGold();
             GameConfig();
+            BoostSchedule();
             CreateAvatar();
             TransferAsset();
             TransferAssets();
@@ -518,6 +519,43 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(UpdateGameConfigState)
                 .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// 세션 중 BoostScheduleSheet 가 patch 되면 클라 시트를 갈아끼운다. 클라는 소환 팝업·전투 보상·
+        /// 비용 표시를 이 시트로 다시 계산하므로, 부팅 때 읽은 것만 쓰면 이벤트가 켜진 뒤 재시작 전까지
+        /// 실제 지급과 다른 값을 보여준다. 백오피스는 압축판(<see cref="PatchTableSheetCompressed"/>)으로
+        /// 패치하므로 둘 다 본다.
+        /// </summary>
+        private void BoostSchedule()
+        {
+            _actionRenderer.EveryRender<PatchTableSheet>()
+                .Where(eval => eval.Exception is null &&
+                               eval.Action.TableName == nameof(BoostScheduleSheet))
+                .ObserveOnMainThread()
+                .Subscribe(eval => ReplaceBoostScheduleSheet(eval.Action.TableCsv))
+                .AddTo(_disposables);
+            _actionRenderer.EveryRender<PatchTableSheetCompressed>()
+                .Where(eval => eval.Exception is null &&
+                               eval.Action.TableName == nameof(BoostScheduleSheet))
+                .ObserveOnMainThread()
+                .Subscribe(eval => ReplaceBoostScheduleSheet(
+                    PatchTableSheetCompressed.DecompressCsv(eval.Action.CompressedTableCsv)))
+                .AddTo(_disposables);
+        }
+
+        private static void ReplaceBoostScheduleSheet(string csv)
+        {
+            try
+            {
+                TableSheets.Instance.ReplaceBoostScheduleSheet(csv);
+                NcDebug.Log("[BoostSchedule] BoostScheduleSheet replaced by a patch.");
+            }
+            catch (Exception e)
+            {
+                // 체인이 이미 받아들인 CSV 라 실패할 일은 없지만, 표시용 갱신 때문에 렌더 스트림을 끊지는 않는다.
+                NcDebug.LogError($"[BoostSchedule] failed to replace BoostScheduleSheet: {e}");
+            }
         }
 
         private void RedeemCode()
