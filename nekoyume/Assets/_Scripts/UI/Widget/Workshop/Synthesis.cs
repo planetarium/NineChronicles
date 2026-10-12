@@ -250,7 +250,14 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var requiredItemCount = row.RequiredCountDict[_currentItemSubType].RequiredCount;
+                // 이벤트 중엔 필요 재료 수가 BoostScheduleSheet 로 바뀐다. 액션은 재료 수가 "조정된" 개수의
+                // 배수여야 받으므로, 원래 개수로 고르게 하면 행이 켜진 동안 합성이 전부 실패한다.
+                var requiredItemCount = SynthesizeSimulator.GetRequiredCount(
+                    row.RequiredCountDict[_currentItemSubType].RequiredCount,
+                    TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                        BoostScheduleSheet.Targets.SynthesizeRequiredCount,
+                        (int)grade,
+                        Game.Game.instance.Agent.BlockIndex));
                 var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
             }

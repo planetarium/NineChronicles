@@ -18,6 +18,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
@@ -3221,6 +3222,11 @@ namespace Nekoyume.Blockchain
                 EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
                 SkillSheet = sheets.SkillSheet,
                 RandomObject = new LocalRandom(prepared.eval.RandomSeed),
+                // 액션과 같은 블록의 같은 행 — 필요 재료 수가 바뀌면 결과 개수도 바뀐다.
+                RequiredCountBoost = sheets.BoostScheduleSheet?.FindActive(
+                    BoostScheduleSheet.Targets.SynthesizeRequiredCount,
+                    eval.Action.MaterialGradeId,
+                    eval.BlockIndex),
             };
 
             // 결과창의 진실은 체인이 실제로 넣어준 아이템이다. 아래 재시뮬은 성공 여부 같은
