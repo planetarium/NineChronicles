@@ -351,6 +351,29 @@ namespace Nekoyume.Game
         [UsedImplicitly]
         public RestrictionSheet RestrictionSheet { get; private set; }
 
+        /// <summary>
+        /// 기간 한정 보상·비용 배율(블록 구간). 액션이 같은 시트로 소환 보장·합성 재료·룬 강화 비용·
+        /// 월드보스·어드벤처보스·스테이지 보상을 조정하므로, 클라가 결과를 다시 계산하는 곳(소환 팝업,
+        /// 전투 보상, 비용 표시)은 <c>FindActive(target, id, blockIndex)</c> 로 찾은 행을 넘겨야 한다.
+        /// </summary>
+        /// <remarks>
+        /// 체인에 patch 된 적이 없으면 번들의 빈 시트(헤더만)가 들어가 아무 행도 매칭되지 않는다.
+        /// 세션 중 patch 되면 <c>ActionRenderHandler</c> 가 <see cref="ReplaceBoostScheduleSheet"/> 로 갈아끼운다.
+        /// </remarks>
+        [UsedImplicitly]
+        public BoostScheduleSheet BoostScheduleSheet { get; private set; }
+
+        /// <summary>
+        /// 세션 중 patch 된 BoostScheduleSheet 로 교체한다. 부팅 때만 읽으면 이벤트 행이 재시작 전까지
+        /// 클라 계산에 빠져, 지급과 다른 결과·비용을 보여준다.
+        /// </summary>
+        public void ReplaceBoostScheduleSheet(string csv)
+        {
+            var sheet = new BoostScheduleSheet();
+            sheet.Set(csv);
+            BoostScheduleSheet = sheet;
+        }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

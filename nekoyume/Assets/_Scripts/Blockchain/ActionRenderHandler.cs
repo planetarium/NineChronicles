@@ -18,6 +18,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
@@ -153,6 +154,7 @@ namespace Nekoyume.Blockchain
 
             RewardGold();
             GameConfig();
+            BoostSchedule();
             CreateAvatar();
             TransferAsset();
             TransferAssets();
@@ -518,6 +520,46 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(UpdateGameConfigState)
                 .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// 세션 중 BoostScheduleSheet 가 patch 되면 클라 시트를 갈아끼운다. 클라는 소환 팝업·전투 보상·
+        /// 비용 표시를 이 시트로 다시 계산하므로, 부팅 때 읽은 것만 쓰면 이벤트가 켜진 뒤 재시작 전까지
+        /// 실제 지급과 다른 값을 보여준다. 백오피스는 압축판(<see cref="PatchTableSheetCompressed"/>)으로
+        /// 패치하므로 둘 다 본다.
+        /// </summary>
+        private void BoostSchedule()
+        {
+            _actionRenderer.EveryRender<PatchTableSheet>()
+                .Where(eval => eval.Exception is null &&
+                               eval.Action.TableName == nameof(BoostScheduleSheet))
+                .ObserveOnMainThread()
+                .Subscribe(eval => ReplaceBoostScheduleSheet(eval.Action.TableCsv))
+                .AddTo(_disposables);
+            _actionRenderer.EveryRender<PatchTableSheetCompressed>()
+                .Where(eval => eval.Exception is null &&
+                               eval.Action.TableName == nameof(BoostScheduleSheet))
+                .ObserveOnMainThread()
+                .Subscribe(eval => ReplaceBoostScheduleSheet(
+                    () => PatchTableSheetCompressed.DecompressCsv(eval.Action.CompressedTableCsv)))
+                .AddTo(_disposables);
+        }
+
+        private static void ReplaceBoostScheduleSheet(string csv) => ReplaceBoostScheduleSheet(() => csv);
+
+        /// <param name="getCsv">압축 해제도 여기서 예외를 잡도록 지연 평가한다 — 구독 안에서 던지면 스트림이 끊겨 이후 패치를 못 받는다.</param>
+        private static void ReplaceBoostScheduleSheet(Func<string> getCsv)
+        {
+            try
+            {
+                TableSheets.Instance.ReplaceBoostScheduleSheet(getCsv());
+                NcDebug.Log("[BoostSchedule] BoostScheduleSheet replaced by a patch.");
+            }
+            catch (Exception e)
+            {
+                // 체인이 이미 받아들인 CSV 라 실패할 일은 없지만, 표시용 갱신 때문에 렌더 스트림을 끊지는 않는다.
+                NcDebug.LogError($"[BoostSchedule] failed to replace BoostScheduleSheet: {e}");
+            }
         }
 
         private void RedeemCode()
@@ -2456,7 +2498,7 @@ namespace Nekoyume.Blockchain
         private void ResponseHackAndSlashSweepAsync(
             ActionEvaluation<HackAndSlashSweep> eval)
         {
-            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
@@ -2485,7 +2527,7 @@ namespace Nekoyume.Blockchain
         private void ResponseEventDungeonBattleSweepAsync(
             ActionEvaluation<Action.EventDungeonBattleSweep> eval)
         {
-            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
@@ -3183,6 +3225,11 @@ namespace Nekoyume.Blockchain
                 EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
                 SkillSheet = sheets.SkillSheet,
                 RandomObject = new LocalRandom(prepared.eval.RandomSeed),
+                // 액션과 같은 블록의 같은 행 — 필요 재료 수가 바뀌면 결과 개수도 바뀐다.
+                RequiredCountBoost = sheets.BoostScheduleSheet?.FindActive(
+                    BoostScheduleSheet.Targets.SynthesizeRequiredCount,
+                    eval.Action.MaterialGradeId,
+                    eval.BlockIndex),
             };
 
             // 결과창의 진실은 체인이 실제로 넣어준 아이템이다. 아래 재시뮬은 성공 여부 같은
@@ -3917,7 +3964,12 @@ namespace Nekoyume.Blockchain
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
                 TableSheets.Instance.BuffLimitSheet,
                 TableSheets.Instance.BuffLinkSheet,
-                shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage
+                shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage,
+                // 액션과 같은 행 — 전투 보상 수량이 바뀐다(뽑기는 그대로라 전투 재생은 어긋나지 않는다).
+                battleRewardBoost: TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                    BoostScheduleSheet.Targets.WorldBossBattleReward,
+                    row.BossId,
+                    eval.BlockIndex)
             );
             simulator.Simulate();
             Widget.Find<LobbyMenu>().Close();
@@ -3944,7 +3996,10 @@ namespace Nekoyume.Blockchain
                     var bossRow =
                         Game.Game.instance.TableSheets.WorldBossCharacterSheet[row.BossId];
                     var rank = WorldBossHelper.CalculateRank(bossRow, preRaiderState.HighScore);
-
+                    var killRewardBoost = TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                        BoostScheduleSheet.Targets.WorldBossKillReward,
+                        row.BossId,
+                        eval.BlockIndex);
 
                     foreach (var level in filtered)
                     {
@@ -3955,7 +4010,8 @@ namespace Nekoyume.Blockchain
                             Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
                             Game.Game.instance.TableSheets.RuneSheet,
                             Game.Game.instance.TableSheets.MaterialItemSheet,
-                            random
+                            random,
+                            killRewardBoost
                         );
 
                         killRewards.Assets.AddRange(rewards.assets);
@@ -3997,7 +4053,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
-            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
         }
 
         private (ActionEvaluation<ClaimWorldBossReward>, AvatarState) PrepareClaimWorldBossReward(
@@ -5129,10 +5185,15 @@ namespace Nekoyume.Blockchain
                         return;
                     }
 
+                    // 액션과 같은 층·블록의 행으로 수량을 키운다(뽑기 뒤 수량만 바뀐다).
+                    var firstClearBoost = tableSheets.BoostScheduleSheet?.FindActive(
+                        BoostScheduleSheet.Targets.AdventureBossFirstClearReward, fl, eval.BlockIndex);
                     foreach (var reward in firstReward.Rewards)
                     {
-                        firstRewardList.Add(new AdventureBossSheet.RewardAmountData(
-                            reward.ItemType, reward.ItemId, reward.Amount));
+                        firstRewardList.Add(AdventureBossHelper.ApplyRewardBoost(
+                            new AdventureBossSheet.RewardAmountData(
+                                reward.ItemType, reward.ItemId, reward.Amount),
+                            firstClearBoost));
                     }
 
                     selector.Clear();
@@ -5144,11 +5205,13 @@ namespace Nekoyume.Blockchain
                     }
 
                     var selected = selector.Select(1).First();
-                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
-                        selected.ItemType,
-                        selected.ItemId,
-                        random.Next(selected.Min, selected.Max + 1))
-                    );
+                    rewardList.Add(AdventureBossHelper.ApplyRewardBoost(
+                        new AdventureBossSheet.RewardAmountData(
+                            selected.ItemType,
+                            selected.ItemId,
+                            random.Next(selected.Min, selected.Max + 1)),
+                        tableSheets.BoostScheduleSheet?.FindActive(
+                            BoostScheduleSheet.Targets.AdventureBossFloorReward, fl, eval.BlockIndex)));
                 }
                 else
                 {
@@ -5326,11 +5389,13 @@ namespace Nekoyume.Blockchain
                     }
 
                     var selected = selector.Select(1).First();
-                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
-                        selected.ItemType,
-                        selected.ItemId,
-                        random.Next(selected.Min, selected.Max + 1)
-                    ));
+                    rewardList.Add(AdventureBossHelper.ApplyRewardBoost(
+                        new AdventureBossSheet.RewardAmountData(
+                            selected.ItemType,
+                            selected.ItemId,
+                            random.Next(selected.Min, selected.Max + 1)),
+                        tableSheets.BoostScheduleSheet?.FindActive(
+                            BoostScheduleSheet.Targets.AdventureBossFloorReward, fl, eval.BlockIndex)));
                 }
 
                 var log = simulator.Log;

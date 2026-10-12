@@ -454,7 +454,12 @@ namespace Nekoyume.UI
         private void ShowLackMaterialPopup(Unit _)
         {
             var paymentPopup = Find<PaymentPopup>();
-            var runeCost = _selectedRuneItem.CostRow.Cost[_selectedRuneItem.Level];
+            // 다음 강화 한 번의 비용(체인이 과금하는 값 = BoostScheduleSheet 할인 반영). 예전엔 구간 목록을
+            // 레벨로 인덱싱(Cost[Level])해 구간 행이 시작되는 고레벨에서 엉뚱한 행을 집었다.
+            if (!_selectedRuneItem.CostRow.TryGetBoostedCost(_selectedRuneItem.Level + 1, out var runeCost))
+            {
+                return; // 다음 레벨 비용이 없다 = 최대 레벨. 부족 팝업을 띄울 일이 없다.
+            }
 
             if (!_selectedRuneItem.EnoughRuneStone)
             {

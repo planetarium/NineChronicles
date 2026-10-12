@@ -259,7 +259,7 @@ namespace Nekoyume.UI
             var summonRow = Game.Game.instance.TableSheets.RuneSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateRune(summonRow, summonCount, random);
+            var resultList = SimulateRune(summonRow, summonCount, random, eval.BlockIndex);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
@@ -274,7 +274,7 @@ namespace Nekoyume.UI
             var summonRow = Game.Game.instance.TableSheets.CostumeSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateCostume(summonRow, summonCount, random);
+            var resultList = SimulateCostume(summonRow, summonCount, random, eval.BlockIndex);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
@@ -293,7 +293,8 @@ namespace Nekoyume.UI
                     tableSheets.EquipmentItemSubRecipeSheetV2,
                     tableSheets.EquipmentItemOptionSheet,
                     tableSheets.SkillSheet,
-                    summonRow, summonCount, random, blockIndex)
+                    summonRow, summonCount, random, blockIndex,
+                    SummonFrontHelper.FindGuaranteeBoost(summonRow, blockIndex))
                 .Select(tuple => tuple.Item2)
                 .OrderBy(row => row.Grade)
                 .ToList();
@@ -302,7 +303,8 @@ namespace Nekoyume.UI
         private static List<Costume> SimulateCostume(
             SummonSheet.Row summonRow,
             int summonCount,
-            IRandom random)
+            IRandom random,
+            long blockIndex)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
@@ -311,7 +313,8 @@ namespace Nekoyume.UI
                     tableSheets.CostumeItemSheet,
                     summonRow,
                     summonCount,
-                    random)
+                    random,
+                    SummonFrontHelper.FindGuaranteeBoost(summonRow, blockIndex))
                 .OrderBy(row => row.Grade)
                 .ToList();
         }
@@ -319,11 +322,13 @@ namespace Nekoyume.UI
         private static List<FungibleAssetValue> SimulateRune(
             SummonSheet.Row summonRow,
             int summonCount,
-            IRandom random)
+            IRandom random,
+            long blockIndex)
         {
             const int unit = RuneSummon.RuneQuantity;
             var simulateResult = RuneSummon.SimulateSummon(
-                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet);
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet,
+                SummonFrontHelper.FindGuaranteeBoost(summonRow, blockIndex));
 
             var result = new List<FungibleAssetValue>();
             foreach (var pair in simulateResult)

@@ -8,6 +8,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 
@@ -46,6 +47,11 @@ namespace Nekoyume
             var model = new BattleResultPopup.Model();
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var stageRow = sheets.StageSheet[eval.Action.StageId];
+            // 액션과 같은 스테이지·블록의 행. 뽑은 뒤 수량만 바꾸므로 전투 재생은 어긋나지 않고 보상 표시만 맞춘다.
+            var itemRewardBoost = sheets.BoostScheduleSheet?.FindActive(
+                BoostScheduleSheet.Targets.StageItemReward, eval.Action.StageId, eval.BlockIndex);
+            var favRewardBoost = sheets.BoostScheduleSheet?.FindActive(
+                BoostScheduleSheet.Targets.StageFavReward, eval.Action.StageId, eval.BlockIndex);
             for (var i = 0; i < eval.Action.TotalPlayCount; i++)
             {
                 var prevAvatarState = (AvatarState)avatarState.Clone();
@@ -66,12 +72,14 @@ namespace Nekoyume
                     sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet),
+                    StageSimulator.GetWaveRewards(
+                        random, stageRow, sheets.MaterialItemSheet, itemRewardBoost: itemRewardBoost),
                     collectionState.GetEffects(sheets.CollectionSheet),
                     sheets.BuffLimitSheet,
                     sheets.BuffLinkSheet,
                     true,
-                    shatterStrikeMaxDamage);
+                    shatterStrikeMaxDamage,
+                    favRewardBoost);
                 simulator.Simulate();
                 if (simulator.Log.IsClear)
                 {
