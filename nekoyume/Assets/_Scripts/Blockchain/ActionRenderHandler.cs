@@ -3961,7 +3961,12 @@ namespace Nekoyume.Blockchain
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
                 TableSheets.Instance.BuffLimitSheet,
                 TableSheets.Instance.BuffLinkSheet,
-                shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage
+                shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage,
+                // 액션과 같은 행 — 전투 보상 수량이 바뀐다(뽑기는 그대로라 전투 재생은 어긋나지 않는다).
+                battleRewardBoost: TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                    BoostScheduleSheet.Targets.WorldBossBattleReward,
+                    row.BossId,
+                    eval.BlockIndex)
             );
             simulator.Simulate();
             Widget.Find<LobbyMenu>().Close();
@@ -3988,7 +3993,10 @@ namespace Nekoyume.Blockchain
                     var bossRow =
                         Game.Game.instance.TableSheets.WorldBossCharacterSheet[row.BossId];
                     var rank = WorldBossHelper.CalculateRank(bossRow, preRaiderState.HighScore);
-
+                    var killRewardBoost = TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                        BoostScheduleSheet.Targets.WorldBossKillReward,
+                        row.BossId,
+                        eval.BlockIndex);
 
                     foreach (var level in filtered)
                     {
@@ -3999,7 +4007,8 @@ namespace Nekoyume.Blockchain
                             Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
                             Game.Game.instance.TableSheets.RuneSheet,
                             Game.Game.instance.TableSheets.MaterialItemSheet,
-                            random
+                            random,
+                            killRewardBoost
                         );
 
                         killRewards.Assets.AddRange(rewards.assets);
@@ -4041,7 +4050,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
-            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
         }
 
         private (ActionEvaluation<ClaimWorldBossReward>, AvatarState) PrepareClaimWorldBossReward(
