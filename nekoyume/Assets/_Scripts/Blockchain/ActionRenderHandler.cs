@@ -5182,10 +5182,15 @@ namespace Nekoyume.Blockchain
                         return;
                     }
 
+                    // 액션과 같은 층·블록의 행으로 수량을 키운다(뽑기 뒤 수량만 바뀐다).
+                    var firstClearBoost = tableSheets.BoostScheduleSheet?.FindActive(
+                        BoostScheduleSheet.Targets.AdventureBossFirstClearReward, fl, eval.BlockIndex);
                     foreach (var reward in firstReward.Rewards)
                     {
-                        firstRewardList.Add(new AdventureBossSheet.RewardAmountData(
-                            reward.ItemType, reward.ItemId, reward.Amount));
+                        firstRewardList.Add(AdventureBossHelper.ApplyRewardBoost(
+                            new AdventureBossSheet.RewardAmountData(
+                                reward.ItemType, reward.ItemId, reward.Amount),
+                            firstClearBoost));
                     }
 
                     selector.Clear();
@@ -5197,11 +5202,13 @@ namespace Nekoyume.Blockchain
                     }
 
                     var selected = selector.Select(1).First();
-                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
-                        selected.ItemType,
-                        selected.ItemId,
-                        random.Next(selected.Min, selected.Max + 1))
-                    );
+                    rewardList.Add(AdventureBossHelper.ApplyRewardBoost(
+                        new AdventureBossSheet.RewardAmountData(
+                            selected.ItemType,
+                            selected.ItemId,
+                            random.Next(selected.Min, selected.Max + 1)),
+                        tableSheets.BoostScheduleSheet?.FindActive(
+                            BoostScheduleSheet.Targets.AdventureBossFloorReward, fl, eval.BlockIndex)));
                 }
                 else
                 {
@@ -5379,11 +5386,13 @@ namespace Nekoyume.Blockchain
                     }
 
                     var selected = selector.Select(1).First();
-                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
-                        selected.ItemType,
-                        selected.ItemId,
-                        random.Next(selected.Min, selected.Max + 1)
-                    ));
+                    rewardList.Add(AdventureBossHelper.ApplyRewardBoost(
+                        new AdventureBossSheet.RewardAmountData(
+                            selected.ItemType,
+                            selected.ItemId,
+                            random.Next(selected.Min, selected.Max + 1)),
+                        tableSheets.BoostScheduleSheet?.FindActive(
+                            BoostScheduleSheet.Targets.AdventureBossFloorReward, fl, eval.BlockIndex)));
                 }
 
                 var log = simulator.Log;
