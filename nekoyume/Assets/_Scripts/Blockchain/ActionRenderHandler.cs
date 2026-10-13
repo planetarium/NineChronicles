@@ -1854,7 +1854,8 @@ namespace Nekoyume.Blockchain
             }
 
             // 프리셋은 메인 스레드가 읽고 쓰므로 여기서 고친다.
-            if (inventory is not null && chainSlots is not null)
+            if (inventory is not null && chainSlots is not null &&
+                avatarAddress.Equals(States.Instance.CurrentAvatarState?.address))
             {
                 RestoreRemovedSlotItems(inventory, chainSlots, removedSlotItemIds);
             }
@@ -1923,23 +1924,26 @@ namespace Nekoyume.Blockchain
                     }
 
                     if (chain.Equipments.Contains(itemId) && !current.Equipments.Contains(itemId) &&
-                        HasFreeSlot(inventory, current.Equipments, item.ItemSubType))
+                        HasFreeSlot(current.Equipments, item.ItemSubType))
                     {
                         current.Equipments.Add(itemId);
                     }
 
                     if (chain.Costumes.Contains(itemId) && !current.Costumes.Contains(itemId) &&
-                        HasFreeSlot(inventory, current.Costumes, item.ItemSubType))
+                        HasFreeSlot(current.Costumes, item.ItemSubType))
                     {
                         current.Costumes.Add(itemId);
                     }
                 }
             }
 
-            static bool HasFreeSlot(Model.Item.Inventory inventory, List<Guid> slotIds, ItemSubType subType)
+            // 지금 끼운 아이템은 실패 뒤에 얻은 것일 수도 있어 지금 아바타 인벤토리로 부위를 판별한다.
+            static bool HasFreeSlot(List<Guid> slotIds, ItemSubType subType)
             {
+                var currentInventory = States.Instance.CurrentAvatarState.inventory;
                 var occupied = slotIds.Count(id =>
-                    inventory.TryGetNonFungibleItem(id, out INonFungibleItem other) && other.ItemSubType == subType);
+                    currentInventory.TryGetNonFungibleItem(id, out INonFungibleItem other) &&
+                    other.ItemSubType == subType);
                 return occupied < (subType == ItemSubType.Ring ? 2 : 1);
             }
         }

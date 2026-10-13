@@ -70,9 +70,10 @@ namespace Nekoyume.Blockchain
         /// </summary>
         public static void RequestBoostScheduleSheetRefresh()
         {
-            _boostScheduleSheetRefreshRequired = true;
-            // 재조회가 끝날 때까지 결과 재현은 지금 시트 대신 액션 직전 상태의 시트를 읽는다.
+            // 재조회가 끝날 때까지 결과 재현은 지금 시트 대신 액션 직전 상태의 시트를 읽는다. 세대를 먼저 올려야
+            // 그 사이 시작한 재조회가 이 요청까지 확인한 것으로 지우지 않는다.
             Game.Game.instance?.TableSheets?.MarkBoostScheduleSheetUnverified();
+            _boostScheduleSheetRefreshRequired = true;
         }
 
         public void Stop()
