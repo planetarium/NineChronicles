@@ -61,6 +61,13 @@ namespace Nekoyume.Blockchain
 
         private readonly List<IDisposable> _disposables = new();
 
+        /// <summary>
+        /// 장비 강화를 보낼 때 로컬 레이어에서 미리 뺀 NCG(액션 id → 양). 액션에는 비용이 실리지 않으므로, 실패 렌더가
+        /// 같은 양을 되돌리려면 여기서 찾아야 한다. 렌더(성공·실패)에서 꺼낸다.
+        /// </summary>
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, BigInteger>
+            _pendingItemEnhancementCosts = new();
+
         public static ActionManager Instance => Game.Game.instance.ActionManager;
 
         private List<Tuple<ActionBase, System.Action<TxId>>> _cachedPostProcessedActions = new();
@@ -837,6 +844,7 @@ namespace Nekoyume.Blockchain
                 slotIndex = slotIndex,
                 hammers = hammers
             };
+            _pendingItemEnhancementCosts[action.Id] = costNCG;
             ProcessAction(action);
             States.Instance.RemoveCurrentItemSlotStates(materialEquipmentGuids);
 
@@ -847,6 +855,12 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
+
+        /// <summary>
+        /// <see cref="ItemEnhancement"/> 를 보낼 때 로컬에서 미리 뺀 NCG 를 꺼낸다(한 번만).
+        /// </summary>
+        public bool TryTakeItemEnhancementCost(Guid actionId, out BigInteger cost) =>
+            _pendingItemEnhancementCosts.TryRemove(actionId, out cost);
 
         public IObservable<ActionEvaluation<RankingBattle>> RankingBattle(
             Address enemyAddress,

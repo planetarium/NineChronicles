@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.State;
@@ -23,6 +24,87 @@ namespace Nekoyume.Helper
 
                 return _worldBossData;
             }
+        }
+
+        /// <summary>
+        /// 보상 룬 범위(뽑는 총량 <paramref name="runeMin"/>~<paramref name="runeMax"/>)에 부스트를 액션과 같은 규칙으로
+        /// 적용한 범위. 액션(<c>WorldBossHelper.CalculateReward</c>)은 뽑은 룬을 종류별로 나눈 뒤 종류마다
+        /// <c>ApplyRewardBoost</c> 를 적용한다 — ADD 는 뽑힌 종류 수만큼 더해지므로 총량에 한 번만 더하면 실제보다
+        /// 적게(음수면 많게) 보인다.
+        /// </summary>
+        /// <param name="boost">걸린 부스트 행. 없으면 그대로.</param>
+        /// <param name="runeMin">뽑는 총량의 최소.</param>
+        /// <param name="runeMax">뽑는 총량의 최대.</param>
+        /// <param name="bossId">보스 id. 이 보스·등급의 <see cref="RuneWeightSheet"/> 행에서 룬 종류 수를 센다.</param>
+        /// <param name="rank">보상 등급.</param>
+        /// <returns>
+        /// 지급될 수 있는 룬 합의 (최소, 최대). MUL 은 종류별로 내림하므로 실제 합이 끝값보다 조금 작을 수 있다.
+        /// </returns>
+        public static (int min, int max) ApplyRuneRewardBoost(
+            BoostScheduleSheet.Row boost,
+            int runeMin,
+            int runeMax,
+            int bossId,
+            int rank)
+        {
+            if (boost is null || boost.Op != BoostScheduleSheet.Operation.Add)
+            {
+                return (WorldBossHelper.ApplyRewardBoost(boost, runeMin), WorldBossHelper.ApplyRewardBoost(boost, runeMax));
+            }
+
+            // 총 N 개가 k 종류(1 ≤ k ≤ min(종류 수, N))로 나뉘면 합은 Σ max(0, c_i + v) 이다. v ≥ 0 이면 k 가 클수록
+            // 크고(N + k·v), v < 0 이면 k 가 클수록 작다(최소 max(0, N + k·v)). 양 끝을 둘 다 보고 고른다.
+            var kinds = GetRuneKindCount(bossId, rank);
+            var lower = Math.Min(
+                AddPerKind(runeMin, 1, boost.Value),
+                AddPerKind(runeMin, Math.Min(kinds, runeMin), boost.Value));
+            var upper = Math.Max(
+                AddPerKind(runeMax, 1, boost.Value),
+                AddPerKind(runeMax, Math.Min(kinds, runeMax), boost.Value));
+            return (lower, upper);
+        }
+
+        /// <summary>
+        /// 고정 총량 <paramref name="rune"/> 에 부스트를 적용한 값(등급 보상처럼 범위가 아닌 곳). ADD 는 이 보스·등급의 룬이
+        /// 모두 뽑혔다고 보고 종류 수만큼 더한다 — 등급 보상은 뽑는 수가 커서 거의 항상 모든 종류가 나온다.
+        /// </summary>
+        public static int ApplyRuneRewardBoost(BoostScheduleSheet.Row boost, int rune, int bossId, int rank)
+        {
+            if (boost is null || boost.Op != BoostScheduleSheet.Operation.Add)
+            {
+                return WorldBossHelper.ApplyRewardBoost(boost, rune);
+            }
+
+            return AddPerKind(rune, Math.Min(GetRuneKindCount(bossId, rank), rune), boost.Value);
+        }
+
+        /// <summary>이 보스·등급에서 뽑힐 수 있는 룬 종류 수(가중치 0 은 뽑히지 않는다). 행이 없으면 1.</summary>
+        private static int GetRuneKindCount(int bossId, int rank)
+        {
+            var row = Game.Game.instance?.TableSheets?.RuneWeightSheet?.Values
+                .FirstOrDefault(r => r.BossId == bossId && r.Rank == rank);
+            var count = row?.RuneInfos?.Where(info => info.Weight > 0).Select(info => info.RuneId).Distinct().Count() ?? 0;
+            return Math.Max(count, 1);
+        }
+
+        /// <summary>
+        /// 총 <paramref name="total"/> 개가 <paramref name="kinds"/> 종류로 나뉘어 종류마다 <paramref name="value"/> 를 더할 때의
+        /// 합(위 범위의 끝값). 액션처럼 0 미만은 0, int 범위로 자른다.
+        /// </summary>
+        private static int AddPerKind(int total, int kinds, decimal value)
+        {
+            if (total <= 0)
+            {
+                return total;
+            }
+
+            var result = decimal.Floor(total + kinds * value);
+            if (result <= 0m)
+            {
+                return 0;
+            }
+
+            return result >= int.MaxValue ? int.MaxValue : (int)result;
         }
 
         public static bool TryGetGrade(WorldBossGrade grade, bool isSmall, out GameObject prefab)

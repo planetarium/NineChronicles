@@ -2189,3 +2189,6 @@ UI_NCU_SERVER_ABSTRACT,Abstract,Abstract,Abstract,Abstract,Abstract,Abstract,Abs
 UI_NCU_BADGE_LINKED,Linked,연동됨,Linked,Linked,Linked,Linked,Linked,Linked,Linked,Linked,Linked,Linked
 UI_NCU_BADGE_UNLINKED,Not linked,미연동,Not linked,Not linked,Not linked,Not linked,Not linked,Not linked,Not linked,Not linked,Not linked,Not linked
 UI_NCU_BADGE_QUERYING,Connecting,조회 중,Connecting,Connecting,Connecting,Connecting,Connecting,Connecting,Connecting,Connecting,Connecting,Connecting
+UI_BOOST_SCHEDULE_BOUNDARY,An event is about to start or end. Please try again in a moment.,이벤트가 곧 시작되거나 끝납니다. 잠시 후 다시 시도해 주세요.,,イベントがまもなく開始または終了します。しばらくしてからもう一度お試しください。,,,,,,,,
+UI_BOOST_SCHEDULE_CHANGED,Costs or required amounts have changed due to an event. Please check the updated values and try again.,이벤트로 비용 또는 필요 수량이 바뀌었습니다. 바뀐 값을 확인한 뒤 다시 시도해 주세요.,,イベントによりコストまたは必要数量が変更されました。変更後の値を確認してから再度お試しください。,,,,,,,,
+UI_ACTION_FAILED_RETRY,The request failed. Please check and try again.,요청이 실패했습니다. 확인한 뒤 다시 시도해 주세요.,,リクエストに失敗しました。確認してから再度お試しください。,,,,,,,,
