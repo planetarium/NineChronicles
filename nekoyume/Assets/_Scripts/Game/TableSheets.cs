@@ -384,6 +384,21 @@ namespace Nekoyume.Game
         /// </summary>
         private bool _boostScheduleSheetUnverified;
 
+        /// <summary>확인 요청 세대. 진행 중이던 재조회가 그 뒤에 들어온 요청까지 확인한 것으로 지우지 않게 한다.</summary>
+        private long _boostScheduleSheetVerifyGeneration;
+
+        /// <summary>지금 확인 요청 세대. 재조회를 시작할 때 읽어 두었다가 <see cref="MarkBoostScheduleSheetVerified"/> 에 넘긴다.</summary>
+        public long BoostScheduleSheetVerifyGeneration
+        {
+            get
+            {
+                lock (_boostScheduleSheetLock)
+                {
+                    return _boostScheduleSheetVerifyGeneration;
+                }
+            }
+        }
+
         /// <summary>
         /// 부팅 때 읽은 시트의 기준점을 기록한다. <paramref name="blockIndex"/> 는 그 값을 읽은 tip(이하) 이다.
         /// </summary>
@@ -453,15 +468,23 @@ namespace Nekoyume.Game
             lock (_boostScheduleSheetLock)
             {
                 _boostScheduleSheetUnverified = true;
+                _boostScheduleSheetVerifyGeneration++;
             }
         }
 
-        /// <summary>노드 재조회로 지금 시트를 확인했다.</summary>
-        public void MarkBoostScheduleSheetVerified()
+        /// <summary>
+        /// 노드 재조회로 지금 시트를 확인했다. 재조회를 시작한 뒤 새 확인 요청(예: 재접속)이 들어왔으면 그 요청은 아직
+        /// 확인되지 않았으므로 그대로 둔다.
+        /// </summary>
+        /// <param name="generation">재조회를 시작할 때 읽은 <see cref="BoostScheduleSheetVerifyGeneration"/>.</param>
+        public void MarkBoostScheduleSheetVerified(long generation)
         {
             lock (_boostScheduleSheetLock)
             {
-                _boostScheduleSheetUnverified = false;
+                if (generation == _boostScheduleSheetVerifyGeneration)
+                {
+                    _boostScheduleSheetUnverified = false;
+                }
             }
         }
 

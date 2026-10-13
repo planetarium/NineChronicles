@@ -83,7 +83,7 @@ namespace Nekoyume.Helper
         {
             var row = Game.Game.instance?.TableSheets?.RuneWeightSheet?.Values
                 .FirstOrDefault(r => r.BossId == bossId && r.Rank == rank);
-            var count = row?.RuneInfos?.Count(info => info.Weight > 0) ?? 0;
+            var count = row?.RuneInfos?.Where(info => info.Weight > 0).Select(info => info.RuneId).Distinct().Count() ?? 0;
             return Math.Max(count, 1);
         }
 

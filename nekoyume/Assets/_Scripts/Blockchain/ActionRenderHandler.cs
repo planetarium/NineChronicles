@@ -1765,6 +1765,15 @@ namespace Nekoyume.Blockchain
             combinationSlotsPopup.ClearSlot(eval.Action.slotIndex);
             NcDebug.LogWarning($"[{nameof(ItemEnhancement)}] failed: {eval.Exception?.InnerException}");
 
+            // 미리 뺀 NCG 는 에이전트 단위 레이어라 아바타를 바꿨어도 되돌려야 한다 — 아바타 확인과 무관하게 처리한다.
+            UniTask.RunOnThreadPool(() =>
+            {
+                if (ActionManager.Instance.TryTakeItemEnhancementCost(eval.Action.Id, out var cost) && cost > 0)
+                {
+                    LocalLayerModifier.ModifyAgentGold(eval, eval.Signer, cost);
+                }
+            }).Forget();
+
             var restoredIds = eval.Action.materialIds.Prepend(eval.Action.itemId).ToList();
             RestoreAfterFailureAsync(
                 eval,
@@ -1780,12 +1789,6 @@ namespace Nekoyume.Blockchain
                             eval.Action.avatarAddress,
                             new AvatarInventoryItemEquippedModifier(itemId, false));
                     }
-
-                    if (ActionManager.Instance.TryTakeItemEnhancementCost(eval.Action.Id, out var cost) &&
-                        cost > 0)
-                    {
-                        LocalLayerModifier.ModifyAgentGold(eval, eval.Signer, cost);
-                    }
                 },
                 notify: true).Forget();
         }
@@ -1798,7 +1801,7 @@ namespace Nekoyume.Blockchain
         /// <param name="avatarAddress">액션의 아바타.</param>
         /// <param name="hiddenItemIds">보낼 때 인벤토리에서 숨긴 아이템.</param>
         /// <param name="removedSlotItemIds">보낼 때 지금 프리셋(<c>CurrentItemSlotStates</c>)에서 뺀 아이템.</param>
-        /// <param name="restoreExtra">스레드풀에서 함께 되돌릴 것(장착 표시, 재화 등).</param>
+        /// <param name="restoreExtra">스레드풀에서 함께 되돌릴 것(장착 표시, AP 스톤 등 아바타 단위).</param>
         /// <param name="notify">다 되돌린 뒤 실패 알림을 띄울지. 보낸 쪽이 이미 띄우면 false.</param>
         private async UniTaskVoid RestoreAfterFailureAsync<T>(
             ActionEvaluation<T> eval,
@@ -1813,10 +1816,12 @@ namespace Nekoyume.Blockchain
                 return; // 로컬 레이어는 지금 아바타 것만 있다. 아바타를 바꾸면 체인에서 새로 읽는다.
             }
 
+            Model.Item.Inventory inventory = null;
+            List<(BattleType battleType, ItemSlotState chain)> chainSlots = null;
             try
             {
                 await UniTask.SwitchToThreadPool();
-                var inventory = StateGetter.GetInventory(eval.OutputState, avatarAddress);
+                inventory = StateGetter.GetInventory(eval.OutputState, avatarAddress);
                 foreach (var itemId in hiddenItemIds)
                 {
                     if (!inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem item))
@@ -1836,8 +1841,8 @@ namespace Nekoyume.Blockchain
                 }
 
                 restoreExtra?.Invoke();
+                chainSlots = GetChainItemSlotStates(eval, avatarAddress, removedSlotItemIds);
                 await UpdateCurrentAvatarStateAsync(eval);
-                RestoreRemovedSlotItems(eval, avatarAddress, removedSlotItemIds);
             }
             catch (Exception e)
             {
@@ -1846,6 +1851,12 @@ namespace Nekoyume.Blockchain
             finally
             {
                 await UniTask.SwitchToMainThread();
+            }
+
+            // 프리셋은 메인 스레드가 읽고 쓰므로 여기서 고친다.
+            if (inventory is not null && chainSlots is not null)
+            {
+                RestoreRemovedSlotItems(inventory, chainSlots, removedSlotItemIds);
             }
 
             if (!notify)
@@ -1860,42 +1871,76 @@ namespace Nekoyume.Blockchain
         }
 
         /// <summary>
-        /// 보낼 때 지금 프리셋에서 뺀 아이템을, 체인의 프리셋에 그대로 있으면 되돌린다.
+        /// 되돌릴 아이템이 들어 있는 체인 프리셋들. 블로킹 조회라 스레드풀에서 부른다.
         /// </summary>
-        private static void RestoreRemovedSlotItems<T>(
+        private static List<(BattleType battleType, ItemSlotState chain)> GetChainItemSlotStates<T>(
             ActionEvaluation<T> eval,
             Address avatarAddress,
             IReadOnlyCollection<Guid> itemIds) where T : ActionBase
         {
+            var result = new List<(BattleType, ItemSlotState)>();
             if (itemIds.Count == 0)
             {
-                return;
+                return result;
             }
 
-            foreach (var (battleType, current) in States.Instance.CurrentItemSlotStates.ToArray())
+            foreach (var battleType in States.Instance.CurrentItemSlotStates.Keys.ToArray())
             {
-                ItemSlotState chain;
                 try
                 {
-                    chain = StateGetter.GetItemSlotState(eval.OutputState, avatarAddress, battleType);
+                    result.Add((battleType, StateGetter.GetItemSlotState(eval.OutputState, avatarAddress, battleType)));
                 }
                 catch (StateNullException)
                 {
-                    continue; // 저장한 적 없는 프리셋.
+                    // 저장한 적 없는 프리셋.
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 보낼 때 지금 프리셋에서 뺀 아이템을, 체인의 프리셋에 그대로 있고 그 사이 같은 부위를 다른 아이템으로 채우지
+        /// 않았으면 되돌린다(같은 부위가 겹치면 다음 전투 tx 가 실패할 수 있다). 메인 스레드에서 부른다.
+        /// </summary>
+        private static void RestoreRemovedSlotItems(
+            Model.Item.Inventory inventory,
+            List<(BattleType battleType, ItemSlotState chain)> chainSlots,
+            IReadOnlyCollection<Guid> itemIds)
+        {
+            foreach (var (battleType, chain) in chainSlots)
+            {
+                if (!States.Instance.CurrentItemSlotStates.TryGetValue(battleType, out var current))
+                {
+                    continue;
                 }
 
                 foreach (var itemId in itemIds)
                 {
-                    if (chain.Equipments.Contains(itemId) && !current.Equipments.Contains(itemId))
+                    if (!inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem item))
+                    {
+                        continue;
+                    }
+
+                    if (chain.Equipments.Contains(itemId) && !current.Equipments.Contains(itemId) &&
+                        HasFreeSlot(inventory, current.Equipments, item.ItemSubType))
                     {
                         current.Equipments.Add(itemId);
                     }
 
-                    if (chain.Costumes.Contains(itemId) && !current.Costumes.Contains(itemId))
+                    if (chain.Costumes.Contains(itemId) && !current.Costumes.Contains(itemId) &&
+                        HasFreeSlot(inventory, current.Costumes, item.ItemSubType))
                     {
                         current.Costumes.Add(itemId);
                     }
                 }
+            }
+
+            static bool HasFreeSlot(Model.Item.Inventory inventory, List<Guid> slotIds, ItemSubType subType)
+            {
+                var occupied = slotIds.Count(id =>
+                    inventory.TryGetNonFungibleItem(id, out INonFungibleItem other) && other.ItemSubType == subType);
+                return occupied < (subType == ItemSubType.Ring ? 2 : 1);
             }
         }
 
