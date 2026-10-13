@@ -60,13 +60,23 @@ namespace Nekoyume.Helper
         /// <remarks>
         /// 그룹 id 만으로는 시트를 구분할 수 없어(target 이 시트별) 행이 어느 소환 시트의 것인지로 target 을 고른다.
         /// </remarks>
-        public static BoostScheduleSheet.Row FindGuaranteeBoost(SummonSheet.Row row, long blockIndex)
+        public static BoostScheduleSheet.Row FindGuaranteeBoost(SummonSheet.Row row, long blockIndex) =>
+            FindGuaranteeBoost(row, blockIndex, Game.Game.instance.TableSheets.BoostScheduleSheet);
+
+        /// <param name="row">소환 행.</param>
+        /// <param name="blockIndex">찾을 블록.</param>
+        /// <param name="boostScheduleSheet">
+        /// 찾을 시트. 결과 재현은 액션이 실제로 본 시트(<c>BoostScheduleFrontHelper.GetSheetForAction</c>)를 넘긴다.
+        /// </param>
+        public static BoostScheduleSheet.Row FindGuaranteeBoost(
+            SummonSheet.Row row,
+            long blockIndex,
+            BoostScheduleSheet boostScheduleSheet)
         {
-            var tableSheets = Game.Game.instance.TableSheets;
-            var target = GetGuaranteeBoostTarget(tableSheets, row);
+            var target = GetGuaranteeBoostTarget(Game.Game.instance.TableSheets, row);
             return target is null
                 ? null
-                : tableSheets.BoostScheduleSheet?.FindActive(target, row.GroupId, blockIndex);
+                : boostScheduleSheet?.FindActive(target, row.GroupId, blockIndex);
         }
 
         private static string GetGuaranteeBoostTarget(TableSheets tableSheets, SummonSheet.Row row)

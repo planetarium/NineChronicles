@@ -220,7 +220,11 @@ namespace Nekoyume.UI
         /// <param name="blockIndex">
         /// 소탕이 처리된 블록. 스테이지 아이템 보상 부스트는 그 블록 기준이라 같은 블록으로 찾아야 실제 지급과 같다.
         /// </param>
-        public void OnActionRender(IRandom rand, long blockIndex)
+        /// <param name="boostScheduleSheet">
+        /// 소탕 액션이 실제로 본 BoostScheduleSheet(<c>BoostScheduleFrontHelper.GetSheetForAction</c>). 패치 블록에서는
+        /// 지금 클라 시트와 다를 수 있다. 이벤트 던전 소탕은 쓰지 않으므로 null 이어도 된다.
+        /// </param>
+        public void OnActionRender(IRandom rand, long blockIndex, BoostScheduleSheet boostScheduleSheet)
         {
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             List<ItemBase> rewards;
@@ -231,7 +235,7 @@ namespace Nekoyume.UI
             if (_stageRow is not null)
             {
                 // Regular stage sweep
-                var itemRewardBoost = Game.Game.instance.TableSheets.BoostScheduleSheet?.FindActive(
+                var itemRewardBoost = boostScheduleSheet?.FindActive(
                     BoostScheduleSheet.Targets.StageItemReward, _stageRow.Id, blockIndex);
                 rewards = Action.HackAndSlashSweep.GetRewardItems(rand,
                     _apPlayCount + _apStonePlayCount, _stageRow, materialSheet, itemRewardBoost, extraCounts);

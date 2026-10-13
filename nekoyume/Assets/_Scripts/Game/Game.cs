@@ -779,6 +779,8 @@ namespace Nekoyume.Game
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
                 asset => asset.name);
+            // 아래 해시·시트를 읽는 tip(이하). BoostScheduleSheet 는 이 블록 다음부터의 액션만 이 값을 봤다고 본다.
+            var sheetsBlockIndex = Agent.BlockIndex;
             var hashDict = await Agent.GetSheetsHash(map.Keys);
             var sheetsToDownload = new HashSet<Address>();
             var differentSheetNames = new List<string>();
@@ -852,11 +854,14 @@ namespace Nekoyume.Game
                     csvDict[pair.Key] = pair.Value;
                 }
 
-                // 버킷은 체인보다 늦을 수 있다(patch 직후, 신규 시트). 여기 온 시트는 노드
-                // 해시가 있었으므로 노드에는 반드시 있으니, 버킷이 못 준 것은 노드에서 받는다.
+                // 버킷은 체인보다 늦을 수 있다(patch 직후, 신규 시트, upload-r2/purge 를 빠뜨린 경우).
+                // 여기 온 시트는 노드 해시가 있었으므로 노드에는 반드시 있으니, 버킷이 못 줬거나
+                // 준 값이 노드 해시와 다른(= 낡은 사본) 것은 노드에서 받는다. 낡은 사본을 그대로 쓰면
+                // 세션 내내 체인과 다른 시트로 계산한다 — 이미 지난 패치라 렌더로 갱신되지도 않는다.
                 var missingFromBucket = differentSheetNames
                     .Where(name => !csvDict.TryGetValue(name, out var csv) ||
-                                   string.IsNullOrEmpty(csv))
+                                   string.IsNullOrEmpty(csv) ||
+                                   !MatchesNodeHash(name, csv))
                     .ToList();
                 if (missingFromBucket.Count > 0)
                 {
@@ -898,8 +903,36 @@ namespace Nekoyume.Game
             }
 
             TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
+            if (csvDict.TryGetValue(nameof(BoostScheduleSheet), out var boostScheduleCsv))
+            {
+                TableSheets.SetBoostScheduleSheetOrigin(boostScheduleCsv, sheetsBlockIndex);
+            }
+
+            // 해시를 읽은 뒤 이 대입까지 사이에 렌더된 BoostScheduleSheet 패치는 갈아끼울 시트가 없어 놓친다.
+            // 다음 블록 렌더에서 노드 값으로 한 번 더 맞춘다.
+            BlockRenderHandler.RequestBoostScheduleSheetRefresh();
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
+
+            bool MatchesNodeHash(string sheetName, string csv)
+            {
+                if (!hashDict.TryGetValue(Addresses.TableSheet.Derive(sheetName), out var nodeHash) ||
+                    nodeHash is null)
+                {
+                    return true; // 비교할 해시가 없으면 받은 값을 쓴다(기존 동작).
+                }
+
+                var bucketHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(NormalizeText(csv)));
+                if (bucketHash.SequenceEqual(nodeHash))
+                {
+                    return true;
+                }
+
+                NcDebug.LogWarning(
+                    $"[SheetHash] {sheetName} - bucket copy differs from the node" +
+                    $" (bucket: {ByteUtil.Hex(bucketHash)}, node: {ByteUtil.Hex(nodeHash)}).");
+                return false;
+            }
         }
 
         private async UniTask InitializeStakeStateAsync()

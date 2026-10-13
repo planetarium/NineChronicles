@@ -528,32 +528,46 @@ namespace Nekoyume.Blockchain
         /// 실제 지급과 다른 값을 보여준다. 백오피스는 압축판(<see cref="PatchTableSheetCompressed"/>)으로
         /// 패치하므로 둘 다 본다.
         /// </summary>
+        /// <remarks>
+        /// 메인 스레드로 넘기지 않고 렌더를 받은 자리에서 바로 갈아끼운다. 그래야 "이 블록에서 시트가 바뀌었다"는
+        /// 기록이 같은 블록에서 패치 뒤에 실행된 tx 의 렌더보다 항상 먼저 남고, 결과 재현이
+        /// <see cref="BoostScheduleFrontHelper.GetSheetForAction"/> 으로 그 tx 가 본 시트를 고를 수 있다.
+        /// 렌더를 놓친 패치는 <see cref="BlockRenderHandler"/> 가 재접속·부팅 뒤 노드에서 다시 받는다.
+        /// </remarks>
         private void BoostSchedule()
         {
             _actionRenderer.EveryRender<PatchTableSheet>()
                 .Where(eval => eval.Exception is null &&
                                eval.Action.TableName == nameof(BoostScheduleSheet))
-                .ObserveOnMainThread()
-                .Subscribe(eval => ReplaceBoostScheduleSheet(eval.Action.TableCsv))
+                .Subscribe(eval => ReplaceBoostScheduleSheet(() => eval.Action.TableCsv, eval.BlockIndex))
                 .AddTo(_disposables);
             _actionRenderer.EveryRender<PatchTableSheetCompressed>()
                 .Where(eval => eval.Exception is null &&
                                eval.Action.TableName == nameof(BoostScheduleSheet))
-                .ObserveOnMainThread()
                 .Subscribe(eval => ReplaceBoostScheduleSheet(
-                    () => PatchTableSheetCompressed.DecompressCsv(eval.Action.CompressedTableCsv)))
+                    () => PatchTableSheetCompressed.DecompressCsv(eval.Action.CompressedTableCsv),
+                    eval.BlockIndex))
                 .AddTo(_disposables);
         }
 
-        private static void ReplaceBoostScheduleSheet(string csv) => ReplaceBoostScheduleSheet(() => csv);
-
         /// <param name="getCsv">압축 해제도 여기서 예외를 잡도록 지연 평가한다 — 구독 안에서 던지면 스트림이 끊겨 이후 패치를 못 받는다.</param>
-        private static void ReplaceBoostScheduleSheet(Func<string> getCsv)
+        /// <param name="blockIndex">패치 tx 가 들어간 블록.</param>
+        private static void ReplaceBoostScheduleSheet(Func<string> getCsv, long blockIndex)
         {
             try
             {
-                TableSheets.Instance.ReplaceBoostScheduleSheet(getCsv());
-                NcDebug.Log("[BoostSchedule] BoostScheduleSheet replaced by a patch.");
+                var tableSheets = TableSheets.Instance;
+                if (tableSheets is null)
+                {
+                    // 부팅 중(시트 대입 전)이다. 대입 직후 노드에서 다시 받으므로 여기서는 버린다.
+                    NcDebug.LogWarning("[BoostSchedule] a patch was rendered before TableSheets was ready.");
+                    return;
+                }
+
+                if (tableSheets.ReplaceBoostScheduleSheet(getCsv(), blockIndex))
+                {
+                    NcDebug.Log($"[BoostSchedule] BoostScheduleSheet replaced by a patch at {blockIndex}.");
+                }
             }
             catch (Exception e)
             {
@@ -1740,7 +1754,11 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<Summon>().OnActionRender(eval); });
+                return BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState);
+            }).ToObservable().ObserveOnMainThread().Subscribe(boostScheduleSheet =>
+            {
+                Widget.Find<Summon>().OnActionRender(eval, boostScheduleSheet);
+            });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
@@ -1750,7 +1768,8 @@ namespace Nekoyume.Blockchain
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+                return BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState);
+            }).ToObservable().ObserveOnMainThread().Subscribe(boostScheduleSheet =>
             {
                 var action = eval.Action;
                 var tableSheets = Game.Game.instance.TableSheets;
@@ -1758,7 +1777,7 @@ namespace Nekoyume.Blockchain
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval, boostScheduleSheet);
             });
         }
 
@@ -1769,7 +1788,8 @@ namespace Nekoyume.Blockchain
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+                return BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState);
+            }).ToObservable().ObserveOnMainThread().Subscribe(boostScheduleSheet =>
             {
                 var action = eval.Action;
                 var tableSheets = Game.Game.instance.TableSheets;
@@ -1777,7 +1797,7 @@ namespace Nekoyume.Blockchain
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval, boostScheduleSheet);
             });
         }
 
@@ -2363,6 +2383,7 @@ namespace Nekoyume.Blockchain
                     States.Instance.CollectionState,
                     skillsOnWaveStart,
                     tableSheets,
+                    BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState),
                     States.Instance.GameConfigState.ShatterStrikeMaxDamage,
                     out var sim,
                     out var tempAvatar);
@@ -2474,8 +2495,8 @@ namespace Nekoyume.Blockchain
                 .Forget();
         }
 
-        private ActionEvaluation<HackAndSlashSweep> PrepareHackAndSlashSweepAsync(
-            ActionEvaluation<HackAndSlashSweep> eval)
+        private (ActionEvaluation<HackAndSlashSweep> eval, BoostScheduleSheet boostScheduleSheet)
+            PrepareHackAndSlashSweepAsync(ActionEvaluation<HackAndSlashSweep> eval)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = StateGetter.GetAvatarState(eval.OutputState, avatarAddress);
@@ -2492,13 +2513,15 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
             var actionPoint = GetActionPoint(eval, avatarAddress);
             ReactiveAvatarState.UpdateActionPoint(actionPoint);
-            return eval;
+            return (eval, BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState));
         }
 
         private void ResponseHackAndSlashSweepAsync(
-            ActionEvaluation<HackAndSlashSweep> eval)
+            (ActionEvaluation<HackAndSlashSweep> eval, BoostScheduleSheet boostScheduleSheet) prepared)
         {
-            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
+            var eval = prepared.eval;
+            Widget.Find<SweepResultPopup>().OnActionRender(
+                new LocalRandom(eval.RandomSeed), eval.BlockIndex, prepared.boostScheduleSheet);
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
@@ -2527,7 +2550,8 @@ namespace Nekoyume.Blockchain
         private void ResponseEventDungeonBattleSweepAsync(
             ActionEvaluation<Action.EventDungeonBattleSweep> eval)
         {
-            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
+            // 이벤트 던전 소탕 보상에는 BoostScheduleSheet 가 걸리지 않는다.
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed), eval.BlockIndex, null);
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
@@ -3162,7 +3186,7 @@ namespace Nekoyume.Blockchain
         /// <see cref="ResponseSynthesize"/> 는 메인 스레드에서 돈다.
         /// </remarks>
         private (ActionEvaluation<Synthesize> eval, List<INonFungibleItem> equipmentList,
-            List<ItemBase> synthesizedItems)
+            List<ItemBase> synthesizedItems, BoostScheduleSheet boostScheduleSheet)
             PrepareSynthesize(ActionEvaluation<Synthesize> eval)
         {
             if (eval.Action.ChargeAp)
@@ -3183,6 +3207,7 @@ namespace Nekoyume.Blockchain
                 .Select(item => item.NonFungibleId)
                 .ToHashSet();
             var synthesizedItems = GetSynthesizedItems(eval, previousItemIds);
+            var boostScheduleSheet = BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState);
 
             var itemList = new List<INonFungibleItem>();
             foreach (var itemId in eval.Action.MaterialIds)
@@ -3195,18 +3220,18 @@ namespace Nekoyume.Blockchain
                         MailType.Workshop,
                         L10nManager.Localize("ERROR_UNKNOWN"),
                         NotificationCell.NotificationType.Alert);
-                    return (eval, new List<INonFungibleItem>(), synthesizedItems);
+                    return (eval, new List<INonFungibleItem>(), synthesizedItems, boostScheduleSheet);
                 }
 
                 itemList.Add(item);
             }
 
-            return (eval, itemList, synthesizedItems);
+            return (eval, itemList, synthesizedItems, boostScheduleSheet);
         }
 
         private void ResponseSynthesize(
             (ActionEvaluation<Synthesize> eval, List<INonFungibleItem> materialItemList,
-                List<ItemBase> synthesizedItems) prepared)
+                List<ItemBase> synthesizedItems, BoostScheduleSheet boostScheduleSheet) prepared)
         {
             var sheets = TableSheets.Instance;
             var eval = prepared.eval;
@@ -3225,8 +3250,8 @@ namespace Nekoyume.Blockchain
                 EquipmentItemOptionSheet = sheets.EquipmentItemOptionSheet,
                 SkillSheet = sheets.SkillSheet,
                 RandomObject = new LocalRandom(prepared.eval.RandomSeed),
-                // 액션과 같은 블록의 같은 행 — 필요 재료 수가 바뀌면 결과 개수도 바뀐다.
-                RequiredCountBoost = sheets.BoostScheduleSheet?.FindActive(
+                // 액션이 본 시트·블록의 같은 행 — 필요 재료 수가 바뀌면 결과 개수도 바뀐다.
+                RequiredCountBoost = prepared.boostScheduleSheet?.FindActive(
                     BoostScheduleSheet.Targets.SynthesizeRequiredCount,
                     eval.Action.MaterialGradeId,
                     eval.BlockIndex),
@@ -3869,11 +3894,12 @@ namespace Nekoyume.Blockchain
             return (myDigest, enemyDigest);
         }
 
-        private ActionEvaluation<Raid> PrepareRaid(ActionEvaluation<Raid> eval)
+        private (ActionEvaluation<Raid> eval, BoostScheduleSheet boostScheduleSheet)
+            PrepareRaid(ActionEvaluation<Raid> eval)
         {
             if (eval.Exception is not null)
             {
-                return eval;
+                return (eval, null);
             }
 
             if (eval.Action.PayNcg)
@@ -3887,11 +3913,13 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneStoneBalance(eval);
 
-            return eval;
+            // 전투 보상·처치 보상을 같은 시트로 재현한다 — 이 액션이 실제로 본 시트를 await 전에 한 번 확정한다.
+            return (eval, BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState));
         }
 
-        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
+        private async void ResponseRaidAsync((ActionEvaluation<Raid> eval, BoostScheduleSheet boostScheduleSheet) prepared)
         {
+            var (eval, boostScheduleSheet) = prepared;
             if (eval.Exception is not null)
             {
                 Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
@@ -3965,8 +3993,8 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.BuffLimitSheet,
                 TableSheets.Instance.BuffLinkSheet,
                 shatterStrikeMaxDamage: States.Instance.GameConfigState.ShatterStrikeMaxDamage,
-                // 액션과 같은 행 — 전투 보상 수량이 바뀐다(뽑기는 그대로라 전투 재생은 어긋나지 않는다).
-                battleRewardBoost: TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                // 액션이 본 시트의 같은 행 — 전투 보상 수량이 바뀐다(뽑기는 그대로라 전투 재생은 어긋나지 않는다).
+                battleRewardBoost: boostScheduleSheet?.FindActive(
                     BoostScheduleSheet.Targets.WorldBossBattleReward,
                     row.BossId,
                     eval.BlockIndex)
@@ -3996,7 +4024,7 @@ namespace Nekoyume.Blockchain
                     var bossRow =
                         Game.Game.instance.TableSheets.WorldBossCharacterSheet[row.BossId];
                     var rank = WorldBossHelper.CalculateRank(bossRow, preRaiderState.HighScore);
-                    var killRewardBoost = TableSheets.Instance.BoostScheduleSheet?.FindActive(
+                    var killRewardBoost = boostScheduleSheet?.FindActive(
                         BoostScheduleSheet.Targets.WorldBossKillReward,
                         row.BossId,
                         eval.BlockIndex);
@@ -4038,22 +4066,24 @@ namespace Nekoyume.Blockchain
             Game.Game.instance.RaidStage.Play(raidStartData);
         }
 
-        private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(
-            ActionEvaluation<ClaimRaidReward> eval)
+        private static (ActionEvaluation<ClaimRaidReward> eval, BoostScheduleSheet boostScheduleSheet)
+            PrepareClaimRaidReward(ActionEvaluation<ClaimRaidReward> eval)
         {
             UpdateCurrentAvatarRuneStoneBalance(eval);
             UpdateCrystalBalance(eval);
             UpdateCurrentAvatarInventory(eval);
 
-            return eval;
+            return (eval, BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState));
         }
 
         private static void ResponseClaimRaidReward(
-            ActionEvaluation<ClaimRaidReward> eval)
+            (ActionEvaluation<ClaimRaidReward> eval, BoostScheduleSheet boostScheduleSheet) prepared)
         {
+            var eval = prepared.eval;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
-            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed), eval.BlockIndex);
+            Widget.Find<WorldBossRewardScreen>().Show(
+                new LocalRandom(eval.RandomSeed), eval.BlockIndex, prepared.boostScheduleSheet);
         }
 
         private (ActionEvaluation<ClaimWorldBossReward>, AvatarState) PrepareClaimWorldBossReward(
@@ -5025,11 +5055,12 @@ namespace Nekoyume.Blockchain
             int firstFloor,
             int maxFloor,
             int lastFloor,
-            int prevTotalScore) PrepareExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
+            int prevTotalScore,
+            BoostScheduleSheet boostScheduleSheet) PrepareExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
-                return (eval, 1, 5, 1, 0);
+                return (eval, 1, 5, 1, 0, null);
             }
 
             var firstFloor = 1;
@@ -5050,16 +5081,18 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarRuneStoneBalance(eval);
             UpdateCurrentAvatarInventory(eval);
 
-            return (eval, firstFloor, maxFloor, lastFloor, prevTotalScore);
+            return (eval, firstFloor, maxFloor, lastFloor, prevTotalScore,
+                BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState));
         }
 
         private void ResponseExploreAdventureBossAsync((ActionEvaluation<ExploreAdventureBoss> eval,
             int firstFloor,
             int maxFloor,
             int lastFloor,
-            int prevTotalScore) prepared)
+            int prevTotalScore,
+            BoostScheduleSheet boostScheduleSheet) prepared)
         {
-            var (eval, firstFloor, maxFloor, lastFloor, prevTotalScore) = prepared;
+            var (eval, firstFloor, maxFloor, lastFloor, prevTotalScore, boostScheduleSheet) = prepared;
 
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
@@ -5186,7 +5219,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     // 액션과 같은 층·블록의 행으로 수량을 키운다(뽑기 뒤 수량만 바뀐다).
-                    var firstClearBoost = tableSheets.BoostScheduleSheet?.FindActive(
+                    var firstClearBoost = boostScheduleSheet?.FindActive(
                         BoostScheduleSheet.Targets.AdventureBossFirstClearReward, fl, eval.BlockIndex);
                     foreach (var reward in firstReward.Rewards)
                     {
@@ -5210,7 +5243,7 @@ namespace Nekoyume.Blockchain
                             selected.ItemType,
                             selected.ItemId,
                             random.Next(selected.Min, selected.Max + 1)),
-                        tableSheets.BoostScheduleSheet?.FindActive(
+                        boostScheduleSheet?.FindActive(
                             BoostScheduleSheet.Targets.AdventureBossFloorReward, fl, eval.BlockIndex)));
                 }
                 else
@@ -5281,7 +5314,7 @@ namespace Nekoyume.Blockchain
             {
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
-                    return eval;
+                    return null; // 메인 스레드 쪽이 같은 조건으로 그리지 않고 끝낸다.
                 }
 
                 var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
@@ -5317,8 +5350,9 @@ namespace Nekoyume.Blockchain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => NcDebug.LogException(e));
                         });
-                return eval;
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+                // 층 보상을 이 액션이 실제로 본 시트로 재현한다.
+                return BoostScheduleFrontHelper.GetSheetForAction(eval.BlockIndex, eval.PreviousState);
+            }).ToObservable().ObserveOnMainThread().Subscribe(boostScheduleSheet =>
             {
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
@@ -5394,7 +5428,7 @@ namespace Nekoyume.Blockchain
                             selected.ItemType,
                             selected.ItemId,
                             random.Next(selected.Min, selected.Max + 1)),
-                        tableSheets.BoostScheduleSheet?.FindActive(
+                        boostScheduleSheet?.FindActive(
                             BoostScheduleSheet.Targets.AdventureBossFloorReward, fl, eval.BlockIndex)));
                 }
 
