@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Exceptions;
 using Action = Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -813,6 +814,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneEnhancement)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<RuneEnhancement>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionRuneEnhancement)
+                .AddTo(_disposables);
         }
 
         private void UnlockRuneSlot()
@@ -1598,6 +1607,9 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<ItemEnhancement> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
             PrepareItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
         {
+            // 성공하면 미리 뺀 NCG 는 아래 ModifyAgentGold(result.gold) 가 맞춘다. 실패용 기록만 치운다.
+            ActionManager.Instance.TryTakeItemEnhancementCost(eval.Action.Id, out _);
+
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
@@ -1742,10 +1754,149 @@ namespace Nekoyume.Blockchain
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
+        /// <summary>
+        /// 장비 강화 실패(예: 망치 부스트가 시작된 블록에 들어가 목표 레벨·NCG 비용이 커져 잔고 부족). 보낼 때
+        /// 로컬 레이어로 숨긴 강화 장비·재료 장비와 미리 뺀 NCG, 해제한 장착 표시·프리셋을 되돌린다 — 체인에는
+        /// 그대로 있는데 클라에서만 사라져, 유저는 장비가 증발한 것으로 알았다.
+        /// </summary>
         private void ExceptionItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
         {
             var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
             combinationSlotsPopup.ClearSlot(eval.Action.slotIndex);
+            NcDebug.LogWarning($"[{nameof(ItemEnhancement)}] failed: {eval.Exception?.InnerException}");
+
+            var restoredIds = eval.Action.materialIds.Prepend(eval.Action.itemId).ToList();
+            RestoreAfterFailureAsync(
+                eval,
+                eval.Action.avatarAddress,
+                restoredIds,
+                eval.Action.materialIds,
+                () =>
+                {
+                    // 장착 표시 해제(SetItemEquip false) 레이어를 걷어 체인의 장착 상태로 돌린다.
+                    foreach (var itemId in restoredIds)
+                    {
+                        LocalLayer.Instance.Remove(
+                            eval.Action.avatarAddress,
+                            new AvatarInventoryItemEquippedModifier(itemId, false));
+                    }
+
+                    if (ActionManager.Instance.TryTakeItemEnhancementCost(eval.Action.Id, out var cost) &&
+                        cost > 0)
+                    {
+                        LocalLayerModifier.ModifyAgentGold(eval, eval.Signer, cost);
+                    }
+                },
+                notify: true).Forget();
+        }
+
+        /// <summary>
+        /// 보낼 때 클라에서 미리 숨긴 아이템을 실패 렌더에서 되살린다. 액션이 실패하면 체인 상태는 그대로라
+        /// (<c>OutputState</c> = 실행 전 상태), 숨김 레이어만 걷고 아바타·프리셋을 다시 읽으면 원래대로 보인다.
+        /// </summary>
+        /// <param name="eval">실패한 액션.</param>
+        /// <param name="avatarAddress">액션의 아바타.</param>
+        /// <param name="hiddenItemIds">보낼 때 인벤토리에서 숨긴 아이템.</param>
+        /// <param name="removedSlotItemIds">보낼 때 지금 프리셋(<c>CurrentItemSlotStates</c>)에서 뺀 아이템.</param>
+        /// <param name="restoreExtra">스레드풀에서 함께 되돌릴 것(장착 표시, 재화 등).</param>
+        /// <param name="notify">다 되돌린 뒤 실패 알림을 띄울지. 보낸 쪽이 이미 띄우면 false.</param>
+        private async UniTaskVoid RestoreAfterFailureAsync<T>(
+            ActionEvaluation<T> eval,
+            Address avatarAddress,
+            IReadOnlyCollection<Guid> hiddenItemIds,
+            IReadOnlyCollection<Guid> removedSlotItemIds,
+            System.Action restoreExtra,
+            bool notify) where T : ActionBase
+        {
+            if (!avatarAddress.Equals(States.Instance.CurrentAvatarState?.address))
+            {
+                return; // 로컬 레이어는 지금 아바타 것만 있다. 아바타를 바꾸면 체인에서 새로 읽는다.
+            }
+
+            try
+            {
+                await UniTask.SwitchToThreadPool();
+                var inventory = StateGetter.GetInventory(eval.OutputState, avatarAddress);
+                foreach (var itemId in hiddenItemIds)
+                {
+                    if (!inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem item))
+                    {
+                        continue;
+                    }
+
+                    // ActionManager 가 숨길 때와 같은 키로 걷는다: 아우라·그리모어는 NonFungible, 나머지는 tradable.
+                    if (item is Equipment { ItemSubType: ItemSubType.Aura or ItemSubType.Grimoire })
+                    {
+                        LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemId, false);
+                    }
+                    else
+                    {
+                        LocalLayerModifier.AddItem(avatarAddress, itemId, item.RequiredBlockIndex, 1, false);
+                    }
+                }
+
+                restoreExtra?.Invoke();
+                await UpdateCurrentAvatarStateAsync(eval);
+                RestoreRemovedSlotItems(eval, avatarAddress, removedSlotItemIds);
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogException(e);
+            }
+            finally
+            {
+                await UniTask.SwitchToMainThread();
+            }
+
+            if (!notify)
+            {
+                return;
+            }
+
+            NotificationSystem.Push(
+                MailType.Workshop,
+                L10nManager.Localize("UI_ACTION_FAILED_RETRY"),
+                NotificationCell.NotificationType.Alert);
+        }
+
+        /// <summary>
+        /// 보낼 때 지금 프리셋에서 뺀 아이템을, 체인의 프리셋에 그대로 있으면 되돌린다.
+        /// </summary>
+        private static void RestoreRemovedSlotItems<T>(
+            ActionEvaluation<T> eval,
+            Address avatarAddress,
+            IReadOnlyCollection<Guid> itemIds) where T : ActionBase
+        {
+            if (itemIds.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var (battleType, current) in States.Instance.CurrentItemSlotStates.ToArray())
+            {
+                ItemSlotState chain;
+                try
+                {
+                    chain = StateGetter.GetItemSlotState(eval.OutputState, avatarAddress, battleType);
+                }
+                catch (StateNullException)
+                {
+                    continue; // 저장한 적 없는 프리셋.
+                }
+
+                foreach (var itemId in itemIds)
+                {
+                    if (chain.Equipments.Contains(itemId) && !current.Equipments.Contains(itemId))
+                    {
+                        current.Equipments.Add(itemId);
+                    }
+
+                    if (chain.Costumes.Contains(itemId) && !current.Costumes.Contains(itemId))
+                    {
+                        current.Costumes.Add(itemId);
+                    }
+                }
+            }
         }
 
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
@@ -3375,10 +3526,23 @@ namespace Nekoyume.Blockchain
                 .SequenceEqual(granted.Select(item => item.Id).OrderBy(id => id));
         }
 
+        /// <summary>
+        /// 합성 실패(예: 이벤트 경계를 넘어 필요 개수가 바뀜). 보낼 때 숨긴 재료와 AP 스톤, 프리셋에서 뺀 재료를
+        /// 되살린다 — 체인에는 그대로 있는데 클라에서만 사라진 채 남았다. 실패 알림은 보낸 쪽(SynthesisModule)이 띄운다.
+        /// </summary>
         private void ExceptionSynthesize(ActionEvaluation<Synthesize> eval)
         {
             var synthesis = Widget.Find<Synthesis>();
             synthesis.SynthesisModule.SetOnActionState(false);
+
+            var avatarAddress = eval.Action.AvatarAddress;
+            RestoreAfterFailureAsync(
+                eval,
+                avatarAddress,
+                eval.Action.MaterialIds,
+                eval.Action.MaterialIds,
+                eval.Action.ChargeAp ? () => ChargeAp(avatarAddress) : null,
+                notify: false).Forget();
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -4209,6 +4373,20 @@ namespace Nekoyume.Blockchain
                 new LocalRandom(prepared.eval.RandomSeed),
                 prepared.runeStone,
                 Util.GetCpChanged(prepared.previousState, States.Instance.AllRuneState));
+        }
+
+        /// <summary>
+        /// 룬 강화 실패(예: 할인이 끝난 블록에 들어가 정가 비용을 못 냄). 보낼 때 건 '처리중' 오버레이가 성공 렌더에서만
+        /// 풀려, 실패하면 룬 강화 화면이 세션 내내 잠겼다. 체인은 아무것도 차감하지 않았으니 화면만 되돌린다.
+        /// </summary>
+        private void ExceptionRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        {
+            NcDebug.LogWarning($"[{nameof(RuneEnhancement)}] failed: {eval.Exception?.InnerException}");
+            Widget.Find<Rune>().OnActionFailed();
+            NotificationSystem.Push(
+                MailType.Workshop,
+                L10nManager.Localize("UI_ACTION_FAILED_RETRY"),
+                NotificationCell.NotificationType.Alert);
         }
 
         private ActionEvaluation<UnlockRuneSlot> PreResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)

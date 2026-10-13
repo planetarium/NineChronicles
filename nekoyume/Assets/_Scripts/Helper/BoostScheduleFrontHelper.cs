@@ -14,15 +14,25 @@ namespace Nekoyume.Helper
     /// 보상 미리보기(보상 정보·준비 화면)용 BoostScheduleSheet 조회와, 결과 재현·세션 중 갱신에 쓸 시트 확보.
     /// </summary>
     /// <remarks>
-    /// 미리보기는 "지금 행동하면 받을 양"을 보여주려고 현재 블록으로 찾는다. 결과 재현은 액션 블록(<c>eval.BlockIndex</c>)과
+    /// 미리보기는 "지금 행동하면 받을 양"을 보여주려고 다음 블록(<see cref="NextBlockIndex"/>)으로 찾는다 — 지금 보낸
+    /// tx 는 빨라야 다음 블록에 들어간다. 결과 재현은 액션 블록(<c>eval.BlockIndex</c>)과
     /// <see cref="GetSheetForAction"/> 이 돌려준 시트로 찾는다.
     /// </remarks>
     public static class BoostScheduleFrontHelper
     {
+        /// <summary>
+        /// 지금 보낸 tx 가 포함될 수 있다고 보는 블록 수(다음 블록부터). 보내기 직전 확인은 이 구간 안에서 행이
+        /// 켜지거나 꺼지는지 본다 — 경계 직전에 보내면 포함되는 블록에 따라 비용·필요 수량이 달라 실패한다.
+        /// </summary>
+        public const int InclusionLookaheadBlocks = 3;
+
         public static Libplanet.Crypto.Address SheetAddress =>
             Addresses.TableSheet.Derive(nameof(BoostScheduleSheet));
 
-        /// <summary>지금 블록에 이 target·id 로 걸린 행. 없으면 null.</summary>
+        /// <summary>지금 보낸 tx 가 들어갈 수 있는 가장 이른 블록(tip + 1). 에이전트가 없으면 0.</summary>
+        public static long NextBlockIndex => (Game.Game.instance?.Agent?.BlockIndex ?? -1) + 1;
+
+        /// <summary>다음 블록에 이 target·id 로 걸린 행. 없으면 null.</summary>
         public static BoostScheduleSheet.Row FindActiveNow(string target, int targetId)
         {
             var game = Game.Game.instance;
@@ -31,11 +41,36 @@ namespace Nekoyume.Helper
                 return null;
             }
 
-            return game.TableSheets.BoostScheduleSheet.FindActive(target, targetId, game.Agent.BlockIndex);
+            return game.TableSheets.BoostScheduleSheet.FindActive(target, targetId, NextBlockIndex);
         }
 
         /// <summary>
-        /// 망치 1개가 지금 블록에서 주는 exp. 액션(<c>ItemEnhancement</c>)과 같은 계산이다 — 원본을 쓰면 이벤트 중
+        /// 다음 블록부터 <see cref="InclusionLookaheadBlocks"/> 블록 안에서 이 target·id 에 걸리는 행이 바뀌는지
+        /// (이벤트가 시작되거나 끝나는지). 그렇다면 지금 보낸 tx 는 포함되는 블록에 따라 다른 값으로 처리된다.
+        /// </summary>
+        public static bool IsBoundaryAhead(string target, int targetId)
+        {
+            var sheet = Game.Game.instance?.TableSheets?.BoostScheduleSheet;
+            if (sheet is null)
+            {
+                return false;
+            }
+
+            var next = NextBlockIndex;
+            var first = sheet.FindActive(target, targetId, next);
+            for (var offset = 1; offset < InclusionLookaheadBlocks; offset++)
+            {
+                if (!ReferenceEquals(first, sheet.FindActive(target, targetId, next + offset)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 망치 1개가 다음 블록에서 주는 exp. 액션(<c>ItemEnhancement</c>)과 같은 계산이다 — 원본을 쓰면 이벤트 중
         /// 목표 레벨·NCG 비용을 낮게 보여, 표시된 비용만큼만 NCG 를 가진 아바타의 강화가 실패하고 최대 레벨에
         /// 필요한 망치 수도 많게 잡힌다.
         /// </summary>
