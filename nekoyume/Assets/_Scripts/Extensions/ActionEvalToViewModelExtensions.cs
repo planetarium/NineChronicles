@@ -26,6 +26,10 @@ namespace Nekoyume
         /// <param name="collectionState"></param>
         /// <param name="skillsOnWaveStart"></param>
         /// <param name="sheets"></param>
+        /// <param name="boostScheduleSheet">
+        /// 액션이 실제로 본 BoostScheduleSheet(<see cref="Helper.BoostScheduleFrontHelper.GetSheetForAction"/>).
+        /// 패치 블록에서는 <paramref name="sheets"/> 의 지금 시트와 다를 수 있다.
+        /// </param>
         /// <param name="outSimulator">First simulator or first winning simulator.</param>
         /// <param name="outAvatarForRendering">The pre-simulate state of the first winning avatar.
         /// If it is not null, <see cref="outSimulator"></see> must be first winning simulator.</param>
@@ -38,6 +42,7 @@ namespace Nekoyume
             CollectionState collectionState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
+            BoostScheduleSheet boostScheduleSheet,
             long shatterStrikeMaxDamage,
             out StageSimulator outSimulator,
             out AvatarState outAvatarForRendering)
@@ -48,9 +53,9 @@ namespace Nekoyume
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var stageRow = sheets.StageSheet[eval.Action.StageId];
             // 액션과 같은 스테이지·블록의 행. 뽑은 뒤 수량만 바꾸므로 전투 재생은 어긋나지 않고 보상 표시만 맞춘다.
-            var itemRewardBoost = sheets.BoostScheduleSheet?.FindActive(
+            var itemRewardBoost = boostScheduleSheet?.FindActive(
                 BoostScheduleSheet.Targets.StageItemReward, eval.Action.StageId, eval.BlockIndex);
-            var favRewardBoost = sheets.BoostScheduleSheet?.FindActive(
+            var favRewardBoost = boostScheduleSheet?.FindActive(
                 BoostScheduleSheet.Targets.StageFavReward, eval.Action.StageId, eval.BlockIndex);
             for (var i = 0; i < eval.Action.TotalPlayCount; i++)
             {

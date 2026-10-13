@@ -50,21 +50,29 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             SetBoosted(
                 BoostScheduleFrontHelper.FindActiveNow(BoostScheduleSheet.Targets.WorldBossBattleReward, row.BossId),
-                row.RuneMin, row.RuneMax, row.Crystal, row.Circle);
+                row.BossId, row.Rank, row.RuneMin, row.RuneMax, row.Crystal, row.Circle);
         }
 
         public void Set(WorldBossKillRewardSheet.Row row)
         {
             SetBoosted(
                 BoostScheduleFrontHelper.FindActiveNow(BoostScheduleSheet.Targets.WorldBossKillReward, row.BossId),
-                row.RuneMin, row.RuneMax, row.Crystal, row.Circle);
+                row.BossId, row.Rank, row.RuneMin, row.RuneMax, row.Crystal, row.Circle);
         }
 
         /// <summary>
         /// 이벤트 중이면 액션과 같은 규칙(<c>WorldBossHelper.ApplyRewardBoost</c>, 뽑은 양에 적용)으로 키운 양을 보여준다.
-        /// 룬은 뽑은 총량을 룬별로 나눈 뒤 각각 내림하므로 실제 합은 범위 끝값보다 조금 작을 수 있다.
+        /// 룬은 뽑은 총량을 룬 종류별로 나눈 뒤 종류마다 적용한다 — MUL 은 각각 내림해 실제 합이 범위 끝값보다 조금 작을 수
+        /// 있고, ADD 는 뽑힌 종류 수만큼 더해져 실제 합이 크다(<see cref="WorldBossFrontHelper.ApplyRuneRewardBoost(BoostScheduleSheet.Row,int,int,int,int)"/>).
         /// </summary>
-        private void SetBoosted(BoostScheduleSheet.Row boost, int runeMin, int runeMax, int crystal, int circle)
+        private void SetBoosted(
+            BoostScheduleSheet.Row boost,
+            int bossId,
+            int rank,
+            int runeMin,
+            int runeMax,
+            int crystal,
+            int circle)
         {
             circle = WorldBossHelper.ApplyRewardBoost(boost, circle);
             var materials = new List<(int itemId, int quantity)>();
@@ -74,7 +82,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             SetRewardItem(
-                (WorldBossHelper.ApplyRewardBoost(boost, runeMin), WorldBossHelper.ApplyRewardBoost(boost, runeMax)),
+                WorldBossFrontHelper.ApplyRuneRewardBoost(boost, runeMin, runeMax, bossId, rank),
                 WorldBossHelper.ApplyRewardBoost(boost, crystal),
                 materials);
         }

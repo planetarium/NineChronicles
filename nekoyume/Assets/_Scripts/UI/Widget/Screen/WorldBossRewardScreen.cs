@@ -71,11 +71,15 @@ namespace Nekoyume.UI
         /// ClaimRaidReward 가 처리된 블록. 등급 보상 부스트는 청구 블록 기준이라 같은 블록으로 찾아야
         /// 실제 지급과 같은 수량을 그린다.
         /// </param>
-        public void Show(IRandom random, long blockIndex)
+        /// <param name="boostScheduleSheet">
+        /// ClaimRaidReward 가 실제로 본 BoostScheduleSheet(<c>BoostScheduleFrontHelper.GetSheetForAction</c>).
+        /// 패치 블록에서는 지금 클라 시트와 다를 수 있다.
+        /// </param>
+        public void Show(IRandom random, long blockIndex, BoostScheduleSheet boostScheduleSheet)
         {
             base.Show();
             titleText.text = L10nManager.Localize("UI_BOSS_BATTLE_GRADE_REWARDS");
-            UpdateRewardItems(GetRewards(random, blockIndex));
+            UpdateRewardItems(GetRewards(random, blockIndex, boostScheduleSheet));
             Find<WorldBossDetail>().GotRewards();
 
             graphicAlphaTweener.Play();
@@ -130,9 +134,9 @@ namespace Nekoyume.UI
             Close();
         }
 
-        private WorldBossRewards GetRewards(IRandom random, long blockIndex)
+        private WorldBossRewards GetRewards(IRandom random, long blockIndex, BoostScheduleSheet boostScheduleSheet)
         {
-            var rankRewardBoost = Game.Game.instance.TableSheets.BoostScheduleSheet?.FindActive(
+            var rankRewardBoost = boostScheduleSheet?.FindActive(
                 BoostScheduleSheet.Targets.WorldBossRankReward,
                 _cachedBossId,
                 blockIndex);

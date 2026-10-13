@@ -894,10 +894,10 @@ namespace Nekoyume
                     guarantee = (int) row.GuaranteeCount11!;
                 }
             }
-            // 지금 블록에 걸린 보장 부스트를 반영한다 — 액션도 같은 행으로 보장 개수를 정한다.
+            // 지금 소환하면 들어갈 블록(다음 블록)에 걸린 보장 부스트를 반영한다 — 액션도 같은 행으로 보장 개수를 정한다.
             if (guarantee > 0)
             {
-                var boost = SummonFrontHelper.FindGuaranteeBoost(row, Game.Game.instance.Agent.BlockIndex);
+                var boost = SummonFrontHelper.FindGuaranteeBoost(row, BoostScheduleFrontHelper.NextBlockIndex);
                 if (boost is not null)
                 {
                     guarantee = SummonHelper.ApplyGuaranteeBoost(boost, guarantee, summonCount);
