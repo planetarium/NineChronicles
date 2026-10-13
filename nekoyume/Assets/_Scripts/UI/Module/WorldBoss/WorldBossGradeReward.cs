@@ -129,7 +129,8 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var score = WorldBossFrontHelper.GetScoreInRank(i + 1, bossRow);
                 items[i].Set(
                     score,
-                    WorldBossHelper.ApplyRewardBoost(boost, rows[i].Rune),
+                    // 룬은 뽑힌 종류마다 적용된다 — ADD 면 종류 수만큼 더해진다(액션과 같은 규칙).
+                    WorldBossFrontHelper.ApplyRuneRewardBoost(boost, rows[i].Rune, bossRow.BossId, rows[i].Rank),
                     WorldBossHelper.ApplyRewardBoost(boost, rows[i].Crystal),
                     WorldBossHelper.ApplyRewardBoost(boost, rows[i].Circle));
 
