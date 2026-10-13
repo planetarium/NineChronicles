@@ -379,6 +379,12 @@ namespace Nekoyume.Game
         private long _boostScheduleSheetChangedAt;
 
         /// <summary>
+        /// 패치 렌더를 놓쳤을 수 있는 구간(부팅·재접속 직후)이라 노드 재조회로 확인하기 전인지. 이 동안은 지금 시트를
+        /// 믿지 않고 결과 재현이 모두 액션 직전 상태에서 시트를 읽게 한다.
+        /// </summary>
+        private bool _boostScheduleSheetUnverified;
+
+        /// <summary>
         /// 부팅 때 읽은 시트의 기준점을 기록한다. <paramref name="blockIndex"/> 는 그 값을 읽은 tip(이하) 이다.
         /// </summary>
         public void SetBoostScheduleSheetOrigin(string csv, long blockIndex)
@@ -396,7 +402,8 @@ namespace Nekoyume.Game
         /// </summary>
         /// <param name="csv">체인에 들어간 CSV.</param>
         /// <param name="blockIndex">
-        /// 그 값이 체인에 있는 블록: 패치 렌더면 패치 tx 의 블록, 노드 재조회면 조회한 상태의 블록.
+        /// 그 값을 본 마지막 블록: 패치 렌더면 패치 tx 의 블록, 노드 재조회면 조회한 상태(tip 의 StateRootHash = tip 직전
+        /// 블록까지 실행한 결과)의 블록, 즉 tip - 1.
         /// </param>
         /// <returns>
         /// 교체했는지. 지금 시트보다 오래된 정보(재조회를 시작한 뒤 패치 렌더가 먼저 반영된 경우)이거나 내용이
@@ -433,8 +440,28 @@ namespace Nekoyume.Game
         {
             lock (_boostScheduleSheetLock)
             {
-                changedAt = _boostScheduleSheetChangedAt;
+                changedAt = _boostScheduleSheetUnverified ? long.MaxValue : _boostScheduleSheetChangedAt;
                 return BoostScheduleSheet;
+            }
+        }
+
+        /// <summary>
+        /// 노드 재조회로 지금 시트를 확인할 때까지 결과 재현이 지금 시트를 쓰지 않게 한다(부팅·재접속 직후).
+        /// </summary>
+        public void MarkBoostScheduleSheetUnverified()
+        {
+            lock (_boostScheduleSheetLock)
+            {
+                _boostScheduleSheetUnverified = true;
+            }
+        }
+
+        /// <summary>노드 재조회로 지금 시트를 확인했다.</summary>
+        public void MarkBoostScheduleSheetVerified()
+        {
+            lock (_boostScheduleSheetLock)
+            {
+                _boostScheduleSheetUnverified = false;
             }
         }
 

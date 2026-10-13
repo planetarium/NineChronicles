@@ -109,6 +109,13 @@ namespace Nekoyume.Helper
                 return current;
             }
 
+            if (PlayerLoopHelper.IsMainThread)
+            {
+                // 아래 조회는 블로킹이라 메인 스레드에서 부르면 멈춘다. 잘못된 호출이므로 지금 시트로 버틴다.
+                NcDebug.LogWarning($"[BoostSchedule] {nameof(GetSheetForAction)} called on the main thread.");
+                return current;
+            }
+
             try
             {
                 var value = StateGetter.GetState(previousState, ReservedAddresses.LegacyAccount, SheetAddress);
@@ -145,8 +152,10 @@ namespace Nekoyume.Helper
                 return false;
             }
 
-            // 조회할 상태와 그 블록을 함께 잡는다 — 조회 중 tip 이 바뀌어도 둘이 어긋나지 않게.
-            var blockIndex = agent.BlockIndex;
+            // 조회할 상태와 그 블록을 함께 잡는다 — 조회 중 tip 이 바뀌어도 둘이 어긋나지 않게. tip 의
+            // StateRootHash 는 tip 블록의 tx 를 실행하기 전(= tip - 1 까지) 상태라 tip - 1 로 기록한다. tip 으로 기록하면
+            // tip 블록에서 방금 렌더로 적용한 패치를 그 전 값으로 되돌린다.
+            var blockIndex = agent.BlockIndex - 1;
             var stateRootHash = agent.BlockTipStateRootHash;
             try
             {
@@ -154,6 +163,7 @@ namespace Nekoyume.Helper
                 if (value is not Text text)
                 {
                     // 체인에 시트가 없다 = 패치된 적이 없다. 부팅 때 쓴 번들 시트가 그 상태와 같다.
+                    tableSheets.MarkBoostScheduleSheetVerified();
                     return true;
                 }
 
@@ -162,6 +172,7 @@ namespace Nekoyume.Helper
                     NcDebug.Log($"[BoostSchedule] BoostScheduleSheet refreshed from the node at {blockIndex}.");
                 }
 
+                tableSheets.MarkBoostScheduleSheetVerified();
                 return true;
             }
             catch (Exception e)

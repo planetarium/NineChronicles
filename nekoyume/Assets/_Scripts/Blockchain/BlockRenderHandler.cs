@@ -71,6 +71,8 @@ namespace Nekoyume.Blockchain
         public static void RequestBoostScheduleSheetRefresh()
         {
             _boostScheduleSheetRefreshRequired = true;
+            // 재조회가 끝날 때까지 결과 재현은 지금 시트 대신 액션 직전 상태의 시트를 읽는다.
+            Game.Game.instance?.TableSheets?.MarkBoostScheduleSheetUnverified();
         }
 
         public void Stop()

@@ -866,7 +866,7 @@ namespace Nekoyume.Game
                 if (missingFromBucket.Count > 0)
                 {
                     NcDebug.LogWarning(
-                        $"[SheetHash] bucket has no data for {missingFromBucket.Count} sheet(s):" +
+                        $"[SheetHash] bucket has no data or a stale copy for {missingFromBucket.Count} sheet(s):" +
                         $" {string.Join(", ", missingFromBucket)}. Falling back to the node.");
                     var addressToName = missingFromBucket.ToDictionary(
                         name => Addresses.TableSheet.Derive(name),
@@ -902,14 +902,18 @@ namespace Nekoyume.Game
                 }
             }
 
-            TableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
+            // 공개(대입) 전에 기준점을 기록한다 — 대입 뒤에 기록하면 그 사이 렌더된 패치를 이전 값으로 되돌릴 수 있다.
+            var tableSheets = await TableSheets.MakeTableSheetsAsync(csvDict);
             if (csvDict.TryGetValue(nameof(BoostScheduleSheet), out var boostScheduleCsv))
             {
-                TableSheets.SetBoostScheduleSheetOrigin(boostScheduleCsv, sheetsBlockIndex);
+                // tip 의 StateRootHash 는 tip - 1 까지 실행한 상태다.
+                tableSheets.SetBoostScheduleSheetOrigin(boostScheduleCsv, sheetsBlockIndex - 1);
             }
 
             // 해시를 읽은 뒤 이 대입까지 사이에 렌더된 BoostScheduleSheet 패치는 갈아끼울 시트가 없어 놓친다.
-            // 다음 블록 렌더에서 노드 값으로 한 번 더 맞춘다.
+            // 다음 블록 렌더에서 노드 값으로 한 번 더 맞추고, 그때까지 결과 재현은 액션 직전 상태의 시트를 읽는다.
+            tableSheets.MarkBoostScheduleSheetUnverified();
+            TableSheets = tableSheets;
             BlockRenderHandler.RequestBoostScheduleSheetRefresh();
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
