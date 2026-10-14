@@ -121,10 +121,18 @@ namespace Nekoyume.UI.Module.WorldBoss
             int latestRewardRank,
             int currentRank)
         {
+            // 등급 보상은 청구 블록 기준으로 커진다 — 지금 청구하면 받을 양을 보여준다.
+            var boost = BoostScheduleFrontHelper.FindActiveNow(
+                BoostScheduleSheet.Targets.WorldBossRankReward, bossRow.BossId);
             for (var i = 0; i < items.Count; i++)
             {
                 var score = WorldBossFrontHelper.GetScoreInRank(i + 1, bossRow);
-                items[i].Set(score, rows[i].Rune, rows[i].Crystal, rows[i].Circle);
+                items[i].Set(
+                    score,
+                    // 룬은 뽑힌 종류마다 적용된다 — ADD 면 종류 수만큼 더해진다(액션과 같은 규칙).
+                    WorldBossFrontHelper.ApplyRuneRewardBoost(boost, rows[i].Rune, bossRow.BossId, rows[i].Rank),
+                    WorldBossHelper.ApplyRewardBoost(boost, rows[i].Crystal),
+                    WorldBossHelper.ApplyRewardBoost(boost, rows[i].Circle));
 
                 if (i + 1 <= latestRewardRank)
                 {

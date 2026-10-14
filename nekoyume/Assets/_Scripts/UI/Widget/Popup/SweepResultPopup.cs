@@ -216,16 +216,29 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void OnActionRender(IRandom rand)
+        /// <param name="rand">소탕 액션의 random seed 로 만든 것.</param>
+        /// <param name="blockIndex">
+        /// 소탕이 처리된 블록. 스테이지 아이템 보상 부스트는 그 블록 기준이라 같은 블록으로 찾아야 실제 지급과 같다.
+        /// </param>
+        /// <param name="boostScheduleSheet">
+        /// 소탕 액션이 실제로 본 BoostScheduleSheet(<c>BoostScheduleFrontHelper.GetSheetForAction</c>). 패치 블록에서는
+        /// 지금 클라 시트와 다를 수 있다. 이벤트 던전 소탕은 쓰지 않으므로 null 이어도 된다.
+        /// </param>
+        public void OnActionRender(IRandom rand, long blockIndex, BoostScheduleSheet boostScheduleSheet)
         {
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             List<ItemBase> rewards;
+            // 부스트가 더한 수량(아이템 id → 개수). 대량 소탕에 배율이 붙으면 단위 객체가 수십만 개가 되므로
+            // 객체를 만들지 않고 개수로 받아 묶음에 더한다(액션도 같은 방식으로 지급한다).
+            var extraCounts = new Dictionary<int, int>();
 
             if (_stageRow is not null)
             {
                 // Regular stage sweep
+                var itemRewardBoost = boostScheduleSheet?.FindActive(
+                    BoostScheduleSheet.Targets.StageItemReward, _stageRow.Id, blockIndex);
                 rewards = Action.HackAndSlashSweep.GetRewardItems(rand,
-                    _apPlayCount + _apStonePlayCount, _stageRow, materialSheet);
+                    _apPlayCount + _apStonePlayCount, _stageRow, materialSheet, itemRewardBoost, extraCounts);
             }
             else
             {
@@ -257,6 +270,18 @@ namespace Nekoyume.UI
             foreach (var item in items)
             {
                 item.gameObject.SetActive(false);
+            }
+
+            foreach (var (itemId, extra) in extraCounts)
+            {
+                var key = bundle.Keys.FirstOrDefault(item => item.Id == itemId);
+                if (key is null)
+                {
+                    key = ItemFactory.CreateMaterial(materialSheet, itemId);
+                    bundle.Add(key, 0);
+                }
+
+                bundle[key] += extra;
             }
 
             var index = 0;

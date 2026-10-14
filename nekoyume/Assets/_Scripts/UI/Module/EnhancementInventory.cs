@@ -428,6 +428,11 @@ namespace Nekoyume.UI.Module
                 count => SetMaterialItemCount(item, count));
         }
 
+        /// <summary>
+        /// 고른 상태 그대로 화면(목표 레벨·비용)을 다시 계산한다. 보내기 직전 비용이 바뀐 걸 알았을 때 쓴다.
+        /// </summary>
+        public void Refresh() => UpdateView();
+
         private void UpdateView(bool jumpToFirst = false)
         {
             var models = GetModels();
