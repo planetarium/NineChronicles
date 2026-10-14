@@ -420,6 +420,12 @@ namespace Nekoyume.Game.Avatar
                 index -= 10000;
             }
 
+            // Ultimate (G9) armor reuses the Valkyrie (G7) skin like Transcendent (G8), per EquipmentItemSheet spine_resource_path.
+            if (index >= 10290000 && index <= 10294000)
+            {
+                index -= 20000;
+            }
+
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
             if (skinTone > 0)
