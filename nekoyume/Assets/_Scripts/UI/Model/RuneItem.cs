@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Model
 
             CostRow = costRow;
 
-            if (IsMaxLevel || !CostRow.TryGetCost(Level + 1, out var cost))
+            if (IsMaxLevel || !CostRow.TryGetBoostedCost(Level + 1, out var cost))
             {
                 EnoughRuneStone = false;
                 EnoughCrystal = false;

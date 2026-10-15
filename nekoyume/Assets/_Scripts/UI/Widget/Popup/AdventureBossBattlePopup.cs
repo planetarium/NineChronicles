@@ -5,9 +5,12 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Collections.Generic;
     using Cysharp.Threading.Tasks;
     using ActionExtensions;
+    using Helper;
     using L10n;
+    using Nekoyume.TableData;
     using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
     using UniRx;
@@ -195,13 +198,14 @@ namespace Nekoyume.UI
                     && row.Floor > currentFloor
                     && row.Floor <= maxFloor);
 
+            // 이벤트 중이면 층마다 액션과 같은 규칙(AdventureBossHelper.ApplyRewardBoost)으로 키운 양을 합친다.
             var challengeFloorFirstRewardDatas = tableSheets.AdventureBossFloorFirstRewardSheet.Values
                 .Join(challengeFloorRows,
                     rewardRow => rewardRow.FloorId,
                     floorRow => floorRow.Id,
                     (rewardRow, floorRow) => new
                     {
-                        rewardRow.Rewards
+                        Rewards = BoostFirstClearRewards(rewardRow.Rewards, floorRow.Floor)
                     })
                 .SelectMany(rewardRow => rewardRow.Rewards)
                 .GroupBy(r => r.ItemId)
@@ -212,7 +216,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             var challengeFloorRandomRewardDatas = challengeFloorRows
-                .SelectMany(row => row.Rewards)
+                .SelectMany(BoostedFloorRewardMaxes)
                 .GroupBy(r => r.ItemId)
                 .Select(g => new AdventureBossSheet.RewardAmountData(
                     g.First().ItemType,
@@ -223,7 +227,7 @@ namespace Nekoyume.UI
             var breakthroughFloorRandomRewardDatas = tableSheets.AdventureBossFloorSheet.Values
                 .Where(row => row.AdventureBossId == bossRow.Id
                     && row.Floor <= currentFloor)
-                .SelectMany(row => row.Rewards)
+                .SelectMany(BoostedFloorRewardMaxes)
                 .GroupBy(r => r.ItemId)
                 .Select(g => new AdventureBossSheet.RewardAmountData(
                     g.First().ItemType,
@@ -271,6 +275,28 @@ namespace Nekoyume.UI
             }
 
             base.Show(ignoreShowAnimation);
+        }
+
+        private static IEnumerable<AdventureBossSheet.RewardAmountData> BoostFirstClearRewards(
+            IEnumerable<AdventureBossSheet.RewardAmountData> rewards, int floor)
+        {
+            var boost = BoostScheduleFrontHelper.FindActiveNow(
+                BoostScheduleSheet.Targets.AdventureBossFirstClearReward, floor);
+            return rewards.Select(reward => AdventureBossHelper.ApplyRewardBoost(reward, boost));
+        }
+
+        /// <summary>층 보상의 최대 수량(미리보기는 최대치를 보여준다)에 이 층의 부스트를 적용한다.</summary>
+        private static IEnumerable<(string ItemType, int ItemId, int Max)> BoostedFloorRewardMaxes(
+            AdventureBossFloorSheet.Row row)
+        {
+            var boost = BoostScheduleFrontHelper.FindActiveNow(
+                BoostScheduleSheet.Targets.AdventureBossFloorReward, row.Floor);
+            return row.Rewards.Select(reward => (
+                reward.ItemType,
+                reward.ItemId,
+                AdventureBossHelper.ApplyRewardBoost(
+                    new AdventureBossSheet.RewardAmountData(reward.ItemType, reward.ItemId, reward.Max),
+                    boost).Amount));
         }
     }
 }

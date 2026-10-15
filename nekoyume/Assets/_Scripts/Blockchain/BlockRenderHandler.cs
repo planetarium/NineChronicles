@@ -32,6 +32,13 @@ namespace Nekoyume.Blockchain
         private static bool _balanceUpdateRequired = true;
         private static bool _avatarUpdateRequired = true;
 
+        /// <summary>
+        /// 다음 블록 렌더에서 BoostScheduleSheet 를 노드 값으로 다시 맞춘다. 패치 렌더를 놓칠 수 있는 구간(부팅 중,
+        /// RPC 재접속 사이)이 끝날 때 켠다. 처음엔 켜 둔다.
+        /// </summary>
+        private static bool _boostScheduleSheetRefreshRequired = true;
+        private static bool _boostScheduleSheetRefreshing;
+
         private BlockRenderHandler()
         {
         }
@@ -52,13 +59,44 @@ namespace Nekoyume.Blockchain
                 {
                     _balanceUpdateRequired = true;
                     _avatarUpdateRequired = true;
+                    RequestBoostScheduleSheetRefresh();
                 }).AddTo(_disposables);
             }
+        }
+
+        /// <summary>
+        /// 다음 블록 렌더에서 BoostScheduleSheet 를 노드에서 다시 받게 한다. 패치 렌더를 놓쳤을 수 있는 구간이
+        /// 끝났을 때(재접속, TableSheets 대입) 부른다.
+        /// </summary>
+        public static void RequestBoostScheduleSheetRefresh()
+        {
+            // 재조회가 끝날 때까지 결과 재현은 지금 시트 대신 액션 직전 상태의 시트를 읽는다. 세대를 먼저 올려야
+            // 그 사이 시작한 재조회가 이 요청까지 확인한 것으로 지우지 않는다.
+            Game.Game.instance?.TableSheets?.MarkBoostScheduleSheetUnverified();
+            _boostScheduleSheetRefreshRequired = true;
         }
 
         public void Stop()
         {
             _disposables.DisposeAllAndClear();
+        }
+
+        private static async UniTaskVoid RefreshBoostScheduleSheetAsync()
+        {
+            _boostScheduleSheetRefreshing = true;
+            // 조회 중에 다시 요청되면(재접속이 겹침) 그 요청은 남겨 다음 블록에 한 번 더 받는다.
+            _boostScheduleSheetRefreshRequired = false;
+            try
+            {
+                if (!await BoostScheduleFrontHelper.RefreshFromNodeAsync())
+                {
+                    _boostScheduleSheetRefreshRequired = true; // 실패하면 다음 블록에 다시 시도한다.
+                }
+            }
+            finally
+            {
+                _boostScheduleSheetRefreshing = false;
+            }
         }
 
         private static async UniTaskVoid UpdateWhenEveryBlockRenderBeginningAsync()
@@ -67,6 +105,13 @@ namespace Nekoyume.Blockchain
             if (agent is null)
             {
                 return;
+            }
+
+            if (_boostScheduleSheetRefreshRequired &&
+                !_boostScheduleSheetRefreshing &&
+                Game.Game.instance.TableSheets is not null)
+            {
+                RefreshBoostScheduleSheetAsync().Forget();
             }
 
             var agentState = States.Instance.AgentState;

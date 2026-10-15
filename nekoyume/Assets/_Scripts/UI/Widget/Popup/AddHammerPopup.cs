@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -167,7 +168,7 @@ namespace Nekoyume.UI
                 if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id) && 
                     inventoryItem.ItemBase.Id != ignoreItem.Id)
                 {
-                    var hammerExp = enhancementCostSheet.GetHammerExp(
+                    var hammerExp = BoostScheduleFrontHelper.GetHammerExp(enhancementCostSheet,
                         inventoryItem.ItemBase.Id);
                     return hammerExp * inventoryItem.SelectedMaterialCount.Value;
                 }
@@ -196,7 +197,7 @@ namespace Nekoyume.UI
                     row.Grade == baseEquipment.Grade).ToList();
 
             // Get Target Exp
-            var materialsExp = enhancementCostSheet.GetHammerExp(
+            var materialsExp = BoostScheduleFrontHelper.GetHammerExp(enhancementCostSheet,
                 _hammerItem.ItemBase.Value.Id);
             var targetExp = _baseExp + materialsExp * count;
 
