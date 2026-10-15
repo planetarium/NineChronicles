@@ -44,7 +44,7 @@ namespace NekoyumeEditor
         private const float LayoutWidth = 300f;
         private const float LayoutHeight = 180f;
 
-        private int _titleId = 49900058;
+        private int _titleId = 49900064;
         private int _compareId = 49900057;
         private string _previewText;
         private Vector2 _scroll;
