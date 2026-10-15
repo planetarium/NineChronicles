@@ -305,6 +305,11 @@ namespace Nekoyume.UI
 
             var clone = ResourcesHelper.GetCharacterTitle(title.Id, title.Grade,
                 title.GetLocalizedNonColoredName(false));
+            if (clone == null)
+            {
+                return;
+            }
+
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 

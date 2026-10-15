@@ -358,6 +358,11 @@ namespace Nekoyume.Game.Character
 
             var clone = ResourcesHelper.GetCharacterTitle(costume.Id, costume.Grade,
                 costume.GetLocalizedNonColoredName(false));
+            if (clone == null)
+            {
+                return;
+            }
+
             _cachedCharacterTitle = Instantiate(clone, _hudContainer.transform);
             _cachedCharacterTitle.name = costume.Id.ToString();
             _cachedCharacterTitle.transform.SetAsFirstSibling();
