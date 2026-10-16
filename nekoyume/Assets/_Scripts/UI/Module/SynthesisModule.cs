@@ -263,6 +263,11 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            if (!Widget.Find<Synthesis>().CheckRequiredCountBeforeSend(grade, itemSubType, itemBaseList.Count))
+            {
+                return;
+            }
+
             var loadingScreen = Widget.Find<SynthesizeLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SetCloseAction(null);

@@ -15,6 +15,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -233,7 +234,9 @@ namespace Nekoyume.UI
         }
 
 #region copy from old Summon.cs
-        public void OnActionRender(ActionEvaluation<AuraSummon> eval)
+        // boostScheduleSheet: 소환 액션이 실제로 본 BoostScheduleSheet(BoostScheduleFrontHelper.GetSheetForAction).
+        // 패치 블록에서는 지금 클라 시트와 달라, 지금 시트로 보장 개수를 찾으면 지급과 다른 결과를 그린다.
+        public void OnActionRender(ActionEvaluation<AuraSummon> eval, BoostScheduleSheet boostScheduleSheet)
         {
             LoadingHelper.Summon.Value = null;
             if (isActiveAndEnabled)
@@ -244,11 +247,11 @@ namespace Nekoyume.UI
             var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
+            var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex, boostScheduleSheet);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
-        public void OnActionRender(ActionEvaluation<RuneSummon> eval)
+        public void OnActionRender(ActionEvaluation<RuneSummon> eval, BoostScheduleSheet boostScheduleSheet)
         {
             LoadingHelper.Summon.Value = null;
             if (isActiveAndEnabled)
@@ -259,11 +262,11 @@ namespace Nekoyume.UI
             var summonRow = Game.Game.instance.TableSheets.RuneSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateRune(summonRow, summonCount, random);
+            var resultList = SimulateRune(summonRow, summonCount, random, eval.BlockIndex, boostScheduleSheet);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
-        public void OnActionRender(ActionEvaluation<CostumeSummon> eval)
+        public void OnActionRender(ActionEvaluation<CostumeSummon> eval, BoostScheduleSheet boostScheduleSheet)
         {
             LoadingHelper.Summon.Value = null;
             if (isActiveAndEnabled)
@@ -274,7 +277,7 @@ namespace Nekoyume.UI
             var summonRow = Game.Game.instance.TableSheets.CostumeSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateCostume(summonRow, summonCount, random);
+            var resultList = SimulateCostume(summonRow, summonCount, random, eval.BlockIndex, boostScheduleSheet);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
@@ -282,7 +285,8 @@ namespace Nekoyume.UI
             SummonSheet.Row summonRow,
             int summonCount,
             IRandom random,
-            long blockIndex)
+            long blockIndex,
+            BoostScheduleSheet boostScheduleSheet)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
@@ -293,7 +297,8 @@ namespace Nekoyume.UI
                     tableSheets.EquipmentItemSubRecipeSheetV2,
                     tableSheets.EquipmentItemOptionSheet,
                     tableSheets.SkillSheet,
-                    summonRow, summonCount, random, blockIndex)
+                    summonRow, summonCount, random, blockIndex,
+                    SummonFrontHelper.FindGuaranteeBoost(summonRow, blockIndex, boostScheduleSheet))
                 .Select(tuple => tuple.Item2)
                 .OrderBy(row => row.Grade)
                 .ToList();
@@ -302,7 +307,9 @@ namespace Nekoyume.UI
         private static List<Costume> SimulateCostume(
             SummonSheet.Row summonRow,
             int summonCount,
-            IRandom random)
+            IRandom random,
+            long blockIndex,
+            BoostScheduleSheet boostScheduleSheet)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
@@ -311,7 +318,8 @@ namespace Nekoyume.UI
                     tableSheets.CostumeItemSheet,
                     summonRow,
                     summonCount,
-                    random)
+                    random,
+                    SummonFrontHelper.FindGuaranteeBoost(summonRow, blockIndex, boostScheduleSheet))
                 .OrderBy(row => row.Grade)
                 .ToList();
         }
@@ -319,11 +327,14 @@ namespace Nekoyume.UI
         private static List<FungibleAssetValue> SimulateRune(
             SummonSheet.Row summonRow,
             int summonCount,
-            IRandom random)
+            IRandom random,
+            long blockIndex,
+            BoostScheduleSheet boostScheduleSheet)
         {
             const int unit = RuneSummon.RuneQuantity;
             var simulateResult = RuneSummon.SimulateSummon(
-                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet);
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random, Game.Game.instance.TableSheets.RuneListSheet,
+                SummonFrontHelper.FindGuaranteeBoost(summonRow, blockIndex, boostScheduleSheet));
 
             var result = new List<FungibleAssetValue>();
             foreach (var pair in simulateResult)

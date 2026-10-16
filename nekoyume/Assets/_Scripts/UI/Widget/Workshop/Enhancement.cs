@@ -219,6 +219,11 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (!CheckCostBeforeSend(baseItem, materialItems, hammers))
+            {
+                return;
+            }
+
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
             {
                 Find<PaymentPopup>().ShowLackPaymentNCG(_costNcg.ToString());
@@ -226,6 +231,65 @@ namespace Nekoyume.UI
             }
 
             EnhancementAction(baseItem, materialItems, hammers);
+        }
+
+        /// <summary>
+        /// 보내기 직전 확인. 화면의 목표 레벨·NCG 비용은 그린 블록 기준이라, 그 뒤 망치 exp 부스트가 시작·종료되면
+        /// 체인은 다른 레벨·비용으로 처리한다(커진 비용을 못 내면 실패). 지금 보내면 들어갈 블록(다음 블록) 기준으로
+        /// 비용을 다시 재서 다르면, 또는 들어갈 수 있는 블록 사이에 부스트 경계가 있으면 보내지 않고 다시 그린다.
+        /// </summary>
+        /// <returns>그대로 보내도 되는지.</returns>
+        private bool CheckCostBeforeSend(
+            Equipment baseItem,
+            List<Equipment> materialItems,
+            Dictionary<int, int> hammers)
+        {
+            string messageKey = null;
+            if (hammers.Keys.Any(hammerId => BoostScheduleFrontHelper.IsBoundaryAhead(
+                    BoostScheduleSheet.Targets.EnhancementHammerExp, hammerId)))
+            {
+                messageKey = "UI_BOOST_SCHEDULE_BOUNDARY";
+            }
+            else if (GetCostNcg(baseItem, materialItems, hammers) != _costNcg)
+            {
+                messageKey = "UI_BOOST_SCHEDULE_CHANGED";
+            }
+
+            if (messageKey is null)
+            {
+                return true;
+            }
+
+            NotificationSystem.Push(MailType.System, L10nManager.Localize(messageKey),
+                NotificationCell.NotificationType.Alert);
+            enhancementInventory.Refresh();
+            return false;
+        }
+
+        /// <summary>
+        /// 이 선택으로 강화할 때 드는 NCG(다음 블록 기준). <see cref="UpdateInformation"/> 과 같은 계산이다.
+        /// </summary>
+        private static BigInteger GetCostNcg(
+            Equipment baseItem,
+            List<Equipment> materialItems,
+            Dictionary<int, int> hammers)
+        {
+            var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
+            var baseItemCostRows = enhancementCostSheet.Values
+                .Where(row => row.ItemSubType == baseItem.ItemSubType &&
+                    row.Grade == baseItem.Grade).ToList();
+            var baseItemCostRow =
+                baseItemCostRows.FirstOrDefault(row => row.Level == baseItem.level) ??
+                new EnhancementCostSheetV3.Row();
+            var targetExp = baseItem.GetRealExp(equipmentItemSheet, enhancementCostSheet) +
+                materialItems.Sum(equipment => equipment.GetRealExp(equipmentItemSheet, enhancementCostSheet)) +
+                hammers.Sum(pair =>
+                    BoostScheduleFrontHelper.GetHammerExp(enhancementCostSheet, pair.Key) * pair.Value);
+            var targetRow = baseItemCostRows
+                .OrderByDescending(r => r.Exp)
+                .FirstOrDefault(row => row.Exp <= targetExp) ?? baseItemCostRow;
+            return targetRow.Cost - baseItemCostRow.Cost;
         }
 
         //Used for migrating and showing equipment before update
@@ -253,7 +317,7 @@ namespace Nekoyume.UI
             var materialItemsExp = materialItems.Sum(equipment =>
                 equipment.GetRealExp(equipmentItemSheet, enhancementCostSheet));
             var hammersExp = hammers.Sum(pair =>
-                enhancementCostSheet.GetHammerExp(pair.Key) * pair.Value);
+                BoostScheduleFrontHelper.GetHammerExp(enhancementCostSheet, pair.Key) * pair.Value);
             var targetExp = baseModelExp + materialItemsExp + hammersExp;
 
             int requiredBlockIndex;
@@ -440,7 +504,7 @@ namespace Nekoyume.UI
                 {
                     if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
                     {
-                        var hammerExp = enhancementCostSheet.GetHammerExp(
+                        var hammerExp = BoostScheduleFrontHelper.GetHammerExp(enhancementCostSheet,
                             inventoryItem.ItemBase.Id);
                         return hammerExp * inventoryItem.SelectedMaterialCount.Value;
                     }

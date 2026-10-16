@@ -137,6 +137,7 @@ namespace Nekoyume.UI
         private RuneItem _selectedRuneItem;
         private decimal _runeLevelBonus;
         private int _maxTryCount = 1;
+        private const int MaxTryCountLimit = 30;
         private int _currentRuneId = RuneFrontHelper.DefaultRuneId;
 
         private static readonly ReactiveProperty<int> TryCount = new();
@@ -296,6 +297,11 @@ namespace Nekoyume.UI
 
         private void Enhancement()
         {
+            if (!CheckTryCountBeforeSend())
+            {
+                return;
+            }
+
             var runeId = _selectedRuneItem.Row.Id;
             Animator.Play(HashToMaterialUse);
             ActionManager.Instance.RuneEnhancement(runeId, TryCount.Value);
@@ -305,6 +311,68 @@ namespace Nekoyume.UI
                 var quote = L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING");
                 Find<RuneCombineResultScreen>().Show(runeIcon, quote);
             }
+        }
+
+        /// <summary>
+        /// 보내기 직전 확인. 슬라이더 최대 횟수는 화면을 그린 블록 기준이라, 그 뒤 할인 구간이 끝났거나 곧 끝나면
+        /// 정가로 과금되어 고른 횟수만큼 낼 수 없고 체인에서 실패한다. tx 가 들어갈 수 있는 블록들(다음 블록부터
+        /// <see cref="BoostScheduleFrontHelper.InclusionLookaheadBlocks"/> 개) 모두에서 낼 수 있는 횟수인지 다시 잰다.
+        /// </summary>
+        /// <returns>그대로 보내도 되는지. 아니면 알림을 띄우고 화면을 다음 블록 기준으로 다시 그린다.</returns>
+        private bool CheckTryCountBeforeSend()
+        {
+            var item = _selectedRuneItem;
+            if (item?.CostRow is null)
+            {
+                return true; // 판단할 수 없으면 액션에 맡긴다.
+            }
+
+            var balance = (
+                States.Instance.GoldBalanceState.Gold,
+                States.Instance.CrystalBalance,
+                item.RuneStone);
+            var next = BoostScheduleFrontHelper.NextBlockIndex;
+            var maxAtNext = item.CostRow.GetMaxTryCount(item.Level, balance, MaxTryCountLimit, next);
+            var maxInWindow = maxAtNext;
+            for (var offset = 1; offset < BoostScheduleFrontHelper.InclusionLookaheadBlocks; offset++)
+            {
+                maxInWindow = Math.Min(
+                    maxInWindow,
+                    item.CostRow.GetMaxTryCount(item.Level, balance, MaxTryCountLimit, next + offset));
+            }
+
+            if (TryCount.Value <= maxInWindow)
+            {
+                return true;
+            }
+
+            // 다음 블록에서도 못 내면 비용이 이미 바뀐 것이고, 다음 블록엔 되지만 그 뒤에 안 되면 경계 직전이다.
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize(TryCount.Value > maxAtNext
+                    ? "UI_BOOST_SCHEDULE_CHANGED"
+                    : "UI_BOOST_SCHEDULE_BOUNDARY"),
+                NotificationCell.NotificationType.Alert);
+            Set(item);
+            TryCount.SetValueAndForceNotify(Math.Clamp(TryCount.Value, 1, Math.Max(_maxTryCount, 1)));
+            return false;
+        }
+
+        /// <summary>
+        /// 룬 강화가 실패로 렌더됐을 때(<c>ActionRenderHandler.ExceptionRuneEnhancement</c>). 보낼 때 건 '처리중'
+        /// 오버레이를 걷고, 잔고·비용을 지금 블록 기준으로 다시 그린다. 체인은 아무것도 차감하지 않았다.
+        /// </summary>
+        public void OnActionFailed()
+        {
+            LoadingHelper.RuneEnhancement.Value = false;
+            if (!IsActive() || _selectedRuneItem is null)
+            {
+                return;
+            }
+
+            SetInventory();
+            Set(_selectedRuneItem);
+            TryCount.SetValueAndForceNotify(Math.Clamp(TryCount.Value, 1, Math.Max(_maxTryCount, 1)));
         }
 
         private void Set(RuneItem item)
@@ -433,7 +501,7 @@ namespace Nekoyume.UI
             _maxTryCount = item.CostRow.GetMaxTryCount(item.Level, (
                 States.Instance.GoldBalanceState.Gold,
                 States.Instance.CrystalBalance,
-                item.RuneStone), 30);
+                item.RuneStone), MaxTryCountLimit);
 
             var sliderMaxValue = _maxTryCount > 0 ? _maxTryCount : 1;
             tryCountSlider.slider.Set(
@@ -454,7 +522,12 @@ namespace Nekoyume.UI
         private void ShowLackMaterialPopup(Unit _)
         {
             var paymentPopup = Find<PaymentPopup>();
-            var runeCost = _selectedRuneItem.CostRow.Cost[_selectedRuneItem.Level];
+            // 다음 강화 한 번의 비용(체인이 과금하는 값 = BoostScheduleSheet 할인 반영). 예전엔 구간 목록을
+            // 레벨로 인덱싱(Cost[Level])해 구간 행이 시작되는 고레벨에서 엉뚱한 행을 집었다.
+            if (!_selectedRuneItem.CostRow.TryGetBoostedCost(_selectedRuneItem.Level + 1, out var runeCost))
+            {
+                return; // 다음 레벨 비용이 없다 = 최대 레벨. 부족 팝업을 띄울 일이 없다.
+            }
 
             if (!_selectedRuneItem.EnoughRuneStone)
             {

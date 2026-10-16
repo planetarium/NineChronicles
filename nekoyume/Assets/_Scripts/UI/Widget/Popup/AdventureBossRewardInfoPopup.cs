@@ -7,6 +7,7 @@ namespace Nekoyume.UI
     using Helper;
     using L10n;
     using Nekoyume.Model.AdventureBoss;
+    using Nekoyume.TableData;
     using System.Linq;
     using TMPro;
     using UniRx;
@@ -116,7 +117,14 @@ namespace Nekoyume.UI
                     (rewardRow, floorRow) => new
                     {
                         floorRow.Floor,
-                        rewardRow.Rewards
+                        // 이벤트 중이면 지금 첫 클리어할 때 받을 양(액션과 같은 규칙)으로 보여준다.
+                        Rewards = rewardRow.Rewards
+                            .Select(reward => AdventureBossHelper.ApplyRewardBoost(
+                                reward,
+                                BoostScheduleFrontHelper.FindActiveNow(
+                                    BoostScheduleSheet.Targets.AdventureBossFirstClearReward,
+                                    floorRow.Floor)))
+                            .ToList()
                     }).OrderByDescending(row => row.Floor).ToList();
 
                 for (var i = 0; i < floorRewardCells.Length; i++)

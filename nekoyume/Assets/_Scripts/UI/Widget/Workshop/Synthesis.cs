@@ -250,7 +250,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var requiredItemCount = row.RequiredCountDict[_currentItemSubType].RequiredCount;
+                var requiredItemCount = GetBoostedRequiredCount(
+                    grade,
+                    row.RequiredCountDict[_currentItemSubType].RequiredCount);
                 var model = new SynthesizeModel(grade, CurrentItemSubType, inventoryItemCount, requiredItemCount);
                 _gradeItems.Add(model);
             }
@@ -406,6 +408,59 @@ namespace Nekoyume.UI
             }
 
             return data.SucceedRate;
+        }
+
+        /// <summary>
+        /// 지금 보내면 들어갈 블록(다음 블록) 기준 필요 재료 수. 이벤트 중엔 BoostScheduleSheet 로 바뀌고, 액션은
+        /// 재료 수가 "조정된" 개수의 배수여야 받으므로 원래 개수로 고르게 하면 행이 켜진 동안 합성이 전부 실패한다.
+        /// </summary>
+        private static int GetBoostedRequiredCount(Grade grade, int requiredCount) =>
+            SynthesizeSimulator.GetRequiredCount(
+                requiredCount,
+                BoostScheduleFrontHelper.FindActiveNow(
+                    BoostScheduleSheet.Targets.SynthesizeRequiredCount,
+                    (int)grade));
+
+        /// <summary>
+        /// 보내기 직전 확인. 패널을 연 사이 이벤트 경계(start/end_block)를 넘었거나 세션 중 시트가 패치되면
+        /// 고른 개수가 액션이 요구하는 배수가 아니게 된다 — 그러면 보내지 않고 패널을 다음 블록 기준으로
+        /// 다시 계산한다. 보내면 합성이 실패한다 — 체인 상태는 롤백되지만, 보낼 때 클라에서 숨긴 재료·AP 스톤은
+        /// 실패 렌더(<c>ActionRenderHandler.ExceptionSynthesize</c>)가 따로 되살려야 한다.
+        /// </summary>
+        /// <returns>그대로 보내도 되는지.</returns>
+        public bool CheckRequiredCountBeforeSend(Grade grade, ItemSubType itemSubType, int materialCount)
+        {
+            var row = TableSheets.Instance.SynthesizeSheet.Values.FirstOrDefault(r => r.GradeId == (int)grade);
+            if (row is null || !row.RequiredCountDict.TryGetValue(itemSubType, out var data))
+            {
+                return true; // 판단할 수 없으면 액션에 맡긴다(기존 동작).
+            }
+
+            // tx 는 다음 블록 이후 어딘가에 들어간다. 그 사이에 이벤트가 켜지거나 꺼지면 들어간 블록에 따라 필요 개수가
+            // 달라(예: 13 → 6) 어느 쪽으로 골라도 실패할 수 있다 — 경계를 지난 뒤 다시 고르게 한다.
+            if (BoostScheduleFrontHelper.IsBoundaryAhead(
+                    BoostScheduleSheet.Targets.SynthesizeRequiredCount, (int)grade))
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BOOST_SCHEDULE_BOUNDARY"),
+                    NotificationCell.NotificationType.Alert);
+                UpdateGradeItems();
+                return false;
+            }
+
+            var required = GetBoostedRequiredCount(grade, data.RequiredCount);
+            if (required > 0 && materialCount % required == 0)
+            {
+                return true;
+            }
+
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_SYNTHESIZE_COUNT_CHECK", required),
+                NotificationCell.NotificationType.Alert);
+            UpdateGradeItems();
+            return false;
         }
 
         public static void NotificationMaxSynthesisCount(int requiredItemCount)

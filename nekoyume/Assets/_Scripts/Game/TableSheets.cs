@@ -351,6 +351,147 @@ namespace Nekoyume.Game
         [UsedImplicitly]
         public RestrictionSheet RestrictionSheet { get; private set; }
 
+        /// <summary>
+        /// 기간 한정 보상·비용 배율(블록 구간). 액션이 같은 시트로 소환 보장·합성 재료·룬 강화 비용·
+        /// 월드보스·어드벤처보스·스테이지 보상을 조정하므로, 클라가 결과를 다시 계산하는 곳(소환 팝업,
+        /// 전투 보상, 비용 표시)은 <c>FindActive(target, id, blockIndex)</c> 로 찾은 행을 넘겨야 한다.
+        /// </summary>
+        /// <remarks>
+        /// 체인에 patch 된 적이 없으면 번들의 빈 시트(헤더만)가 들어가 아무 행도 매칭되지 않는다.
+        /// 세션 중 patch 되면 <c>ActionRenderHandler</c> 가, 재접속·부팅 직후에는 <c>BlockRenderHandler</c> 가 노드에서
+        /// 다시 받아 <see cref="ReplaceBoostScheduleSheet"/> 로 갈아끼운다. 액션 결과를 재현할 때는 이 속성 대신
+        /// 액션이 실제로 본 시트(<c>BoostScheduleFrontHelper.GetSheetForAction</c>)를 써야 한다 — 패치 블록에서는
+        /// 둘이 다르다.
+        /// </remarks>
+        [UsedImplicitly]
+        public BoostScheduleSheet BoostScheduleSheet { get; private set; }
+
+        private readonly object _boostScheduleSheetLock = new();
+
+        /// <summary>지금 <see cref="BoostScheduleSheet"/> 의 원문(줄바꿈·앞뒤 공백 정리). 노드에서 다시 받은 값이 바뀌었는지 본다.</summary>
+        private string _boostScheduleSheetCsv;
+
+        /// <summary>
+        /// 지금 <see cref="BoostScheduleSheet"/> 가 들어온 블록. 이 블록 "다음" 블록부터의 액션만 이 시트를 봤다고
+        /// 확신할 수 있다 — 이 블록 이하의 액션은 (같은 블록에서 패치보다 먼저 실행됐거나 그 전 블록이라) 이전 시트를
+        /// 봤을 수 있다. <see cref="GetBoostScheduleSheet"/> 참고.
+        /// </summary>
+        private long _boostScheduleSheetChangedAt;
+
+        /// <summary>
+        /// 패치 렌더를 놓쳤을 수 있는 구간(부팅·재접속 직후)이라 노드 재조회로 확인하기 전인지. 이 동안은 지금 시트를
+        /// 믿지 않고 결과 재현이 모두 액션 직전 상태에서 시트를 읽게 한다.
+        /// </summary>
+        private bool _boostScheduleSheetUnverified;
+
+        /// <summary>확인 요청 세대. 진행 중이던 재조회가 그 뒤에 들어온 요청까지 확인한 것으로 지우지 않게 한다.</summary>
+        private long _boostScheduleSheetVerifyGeneration;
+
+        /// <summary>지금 확인 요청 세대. 재조회를 시작할 때 읽어 두었다가 <see cref="MarkBoostScheduleSheetVerified"/> 에 넘긴다.</summary>
+        public long BoostScheduleSheetVerifyGeneration
+        {
+            get
+            {
+                lock (_boostScheduleSheetLock)
+                {
+                    return _boostScheduleSheetVerifyGeneration;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 부팅 때 읽은 시트의 기준점을 기록한다. <paramref name="blockIndex"/> 는 그 값을 읽은 tip(이하) 이다.
+        /// </summary>
+        public void SetBoostScheduleSheetOrigin(string csv, long blockIndex)
+        {
+            lock (_boostScheduleSheetLock)
+            {
+                _boostScheduleSheetCsv = NormalizeBoostScheduleCsv(csv);
+                _boostScheduleSheetChangedAt = blockIndex;
+            }
+        }
+
+        /// <summary>
+        /// BoostScheduleSheet 를 <paramref name="blockIndex"/> 블록의 체인 값으로 교체한다. 부팅 때만 읽으면 이벤트
+        /// 행이 재시작 전까지 클라 계산에 빠져, 지급과 다른 결과·비용을 보여준다.
+        /// </summary>
+        /// <param name="csv">체인에 들어간 CSV.</param>
+        /// <param name="blockIndex">
+        /// 그 값을 본 마지막 블록: 패치 렌더면 패치 tx 의 블록, 노드 재조회면 조회한 상태(tip 의 StateRootHash = tip 직전
+        /// 블록까지 실행한 결과)의 블록, 즉 tip - 1.
+        /// </param>
+        /// <returns>
+        /// 교체했는지. 지금 시트보다 오래된 정보(재조회를 시작한 뒤 패치 렌더가 먼저 반영된 경우)이거나 내용이
+        /// 같으면 교체하지 않는다.
+        /// </returns>
+        public bool ReplaceBoostScheduleSheet(string csv, long blockIndex)
+        {
+            var normalized = NormalizeBoostScheduleCsv(csv);
+            lock (_boostScheduleSheetLock)
+            {
+                if (blockIndex < _boostScheduleSheetChangedAt ||
+                    string.Equals(normalized, _boostScheduleSheetCsv, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                var sheet = new BoostScheduleSheet();
+                sheet.Set(csv);
+                BoostScheduleSheet = sheet;
+                _boostScheduleSheetCsv = normalized;
+                _boostScheduleSheetChangedAt = blockIndex;
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 지금 시트와, 그 시트가 들어온 블록을 함께 읽는다(교체와 원자적으로).
+        /// </summary>
+        /// <param name="changedAt">
+        /// 이 블록 이하의 액션은 이전 시트를 봤을 수 있다. 그런 액션의 결과를 재현할 때는 액션 직전 상태에서
+        /// 시트를 다시 읽어야 한다(<c>BoostScheduleFrontHelper.GetSheetForAction</c>).
+        /// </param>
+        public BoostScheduleSheet GetBoostScheduleSheet(out long changedAt)
+        {
+            lock (_boostScheduleSheetLock)
+            {
+                changedAt = _boostScheduleSheetUnverified ? long.MaxValue : _boostScheduleSheetChangedAt;
+                return BoostScheduleSheet;
+            }
+        }
+
+        /// <summary>
+        /// 노드 재조회로 지금 시트를 확인할 때까지 결과 재현이 지금 시트를 쓰지 않게 한다(부팅·재접속 직후).
+        /// </summary>
+        public void MarkBoostScheduleSheetUnverified()
+        {
+            lock (_boostScheduleSheetLock)
+            {
+                _boostScheduleSheetUnverified = true;
+                _boostScheduleSheetVerifyGeneration++;
+            }
+        }
+
+        /// <summary>
+        /// 노드 재조회로 지금 시트를 확인했다. 재조회를 시작한 뒤 새 확인 요청(예: 재접속)이 들어왔으면 그 요청은 아직
+        /// 확인되지 않았으므로 그대로 둔다.
+        /// </summary>
+        /// <param name="generation">재조회를 시작할 때 읽은 <see cref="BoostScheduleSheetVerifyGeneration"/>.</param>
+        public void MarkBoostScheduleSheetVerified(long generation)
+        {
+            lock (_boostScheduleSheetLock)
+            {
+                if (generation == _boostScheduleSheetVerifyGeneration)
+                {
+                    _boostScheduleSheetUnverified = false;
+                }
+            }
+        }
+
+        /// <summary>노드가 시트 해시를 낼 때와 같은 정규화(<c>Game.NormalizeText</c>).</summary>
+        private static string NormalizeBoostScheduleCsv(string csv) =>
+            csv?.Replace("\r\n", "\n").Trim() ?? string.Empty;
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
