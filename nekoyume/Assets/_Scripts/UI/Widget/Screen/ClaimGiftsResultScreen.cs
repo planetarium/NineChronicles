@@ -96,7 +96,10 @@ namespace Nekoyume.UI
                     costume.Id,
                     costume.Grade,
                     costume.GetLocalizedNonColoredName(false));
-                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+                if (clone != null)
+                {
+                    _cachedCharacterTitle = Instantiate(clone, titleSocket);
+                }
             }
 
             var costumes = new List<Costume> { costume, };

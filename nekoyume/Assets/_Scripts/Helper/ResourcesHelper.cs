@@ -42,8 +42,9 @@ namespace Nekoyume.Helper
             }
 
             var data = so.title.FirstOrDefault(x => x.Grade == grade);
-            if (data == null)
+            if (data?.Title == null)
             {
+                NcDebug.LogWarning($"[ResourcesHelper] No character title prefab for item {itemId} (grade {grade}).");
                 return null;
             }
 
