@@ -275,7 +275,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            submitButton.Interactable = isSubmittable;
+            submitButton.Interactable = true;
         }
 
         private void UpdateStageInfoSubmitButtonForEventDungeon(int eventDungeonStageId)
