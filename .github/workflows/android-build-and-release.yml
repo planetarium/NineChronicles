@@ -77,7 +77,7 @@ jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
     # 원스토어만 뽑는 수동 실행이면 구글 빌드는 건너뛴다.
-    if: github.event.inputs.onestore != 'true'
+    if: ${{ (github.event.inputs.onestore != 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     runs-on:
       group: linux-8cores
     defaults:

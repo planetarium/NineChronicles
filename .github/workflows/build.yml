@@ -29,6 +29,7 @@ env:
 
 jobs:
   build:
+    if: ${{ !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     name: Build for ${{ matrix.targetPlatform }}
     runs-on:
       group: linux-8cores
@@ -110,7 +111,7 @@ jobs:
           if-no-files-found: error
 
   extract:
-    if: (startsWith(github.ref, 'refs/heads/release/')
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/')) && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
       || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
@@ -153,7 +154,7 @@ jobs:
           fi
 
   release:
-    if: (startsWith(github.ref, 'refs/heads/release/')
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/')) && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
       || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
@@ -203,7 +204,7 @@ jobs:
 
 
   update-latest-metadata:
-    if: (startsWith(github.ref, 'refs/heads/release/')
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/')) && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
       || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
