@@ -214,10 +214,7 @@ jobs:
     name: Build for ${{ matrix.targetPlatform }} (ONE Store)
     # 릴리즈 브랜치·태그에서는 구글 빌드와 함께 자동으로 뽑고,
     # 그 밖에는 onestore 를 켠 수동 실행에서만 뽑는다.
-    if: >-
-      startsWith(github.ref, 'refs/heads/release/')
-      || startsWith(github.event.ref, 'refs/tags/')
-      || github.event.inputs.onestore == 'true'
+    if: ${{ (startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/') || github.event.inputs.onestore == 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     runs-on:
       group: linux-8cores
     defaults:
@@ -493,9 +490,7 @@ jobs:
           echo "슬랙 업로드 완료: ${APK_NAME}"
 
   extract:
-    if: >-
-      (startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/'))
-      && github.event.inputs.onestore != 'true'
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')) && github.event.inputs.onestore != 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -514,9 +509,7 @@ jobs:
           fi
 
   release-to-google-play:
-    if: >-
-      (startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/'))
-      && github.event.inputs.onestore != 'true'
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')) && github.event.inputs.onestore != 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     name: Release to the Google Play Store
     runs-on: ubuntu-latest
     needs: ["extract"]
