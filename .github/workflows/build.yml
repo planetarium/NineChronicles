@@ -29,6 +29,7 @@ env:
 
 jobs:
   build:
+    if: ${{ !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     name: Build for ${{ matrix.targetPlatform }}
     runs-on:
       group: linux-8cores
@@ -110,10 +111,7 @@ jobs:
           if-no-files-found: error
 
   extract:
-    if: (startsWith(github.ref, 'refs/heads/release/')
-      || github.ref == 'refs/heads/preview'
-      || startsWith(github.event.ref, 'refs/tags/')
-      )
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || github.ref == 'refs/heads/preview' || startsWith(github.event.ref, 'refs/tags/') )) && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -153,10 +151,7 @@ jobs:
           fi
 
   release:
-    if: (startsWith(github.ref, 'refs/heads/release/')
-      || github.ref == 'refs/heads/preview'
-      || startsWith(github.event.ref, 'refs/tags/')
-      )
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || github.ref == 'refs/heads/preview' || startsWith(github.event.ref, 'refs/tags/') )) && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -203,10 +198,7 @@ jobs:
 
 
   update-latest-metadata:
-    if: (startsWith(github.ref, 'refs/heads/release/')
-      || github.ref == 'refs/heads/preview'
-      || startsWith(github.event.ref, 'refs/tags/')
-      )
+    if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || github.ref == 'refs/heads/preview' || startsWith(github.event.ref, 'refs/tags/') )) && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     runs-on: ubuntu-24.04
     needs: [ extract, release ]
     environment:
