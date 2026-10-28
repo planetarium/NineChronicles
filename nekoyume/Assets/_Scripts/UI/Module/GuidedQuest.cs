@@ -255,6 +255,11 @@ namespace Nekoyume.UI.Module
                     StartCoroutine(CoUpdateCraftEventItemQuest());
                 })
                 .AddTo(_disposablesAtShow);
+            // 하드월드 구간이 열리거나 닫히면 월드 퀘스트 안내를 다시 고른다.
+            WorldOpenFront.Changed
+                .Where(_ => isActiveAndEnabled && _state.Value == ViewState.Shown)
+                .Subscribe(_ => StartCoroutine(CoUpdateList(null)))
+                .AddTo(_disposablesAtShow);
             // ~Subscribe
         }
 

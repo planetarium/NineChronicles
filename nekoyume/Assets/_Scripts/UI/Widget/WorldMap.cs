@@ -661,6 +661,7 @@ namespace Nekoyume.UI
                 if (IsWorldGatedForUi(buttonWorldId))
                 {
                     // 눌렀을 때 아직 열리지 않았다고 알리려고 interactable 로 둔다.
+                    worldButton.HasNotification.Value = false;
                     worldButton.Lock(true);
                 }
                 else if (worldIsUnlocked)

@@ -915,6 +915,8 @@ namespace Nekoyume.Game
             tableSheets.MarkBoostScheduleSheetUnverified();
             TableSheets = tableSheets;
             BlockRenderHandler.RequestBoostScheduleSheetRefresh();
+            // 플래닛·세션이 바뀌었을 수 있다. 이전 개방 판정은 버리고 다음 블록에 다시 읽는다.
+            WorldOpenFront.Reset();
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
 

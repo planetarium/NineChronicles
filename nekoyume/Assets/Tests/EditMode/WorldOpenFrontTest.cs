@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
@@ -49,6 +51,64 @@ namespace Tests.EditMode
             var state = WorldOpenFront.CreateState(null, null);
             Assert.IsNull(state.GetAccountState(Addresses.WorldOpen).GetState(WorldOpenModule.OpenKey(1)));
             Assert.IsNull(state.GetAccountState(Addresses.GlobalCounter).GetState(new Address()));
+        }
+
+        [Test]
+        public void FetchFailure_KeepsLastResult()
+        {
+            var cache = new WorldOpenCache();
+            var worldSheet = MakeWorldSheet(11, 501, 550);
+            var opened = WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,100,0\n"), null);
+            Assert.IsTrue(cache.FetchAsync(200, () => Task.FromResult(opened), worldSheet).Result);
+            Assert.AreEqual(550, cache.GetOpenedStageEnd(worldSheet[11]));
+
+            Assert.IsFalse(cache.FetchAsync(
+                210,
+                () => Task.FromException<IWorldState>(new InvalidOperationException()),
+                worldSheet).Result);
+            Assert.AreEqual(550, cache.GetOpenedStageEnd(worldSheet[11]));
+            Assert.AreEqual(200, cache.FetchedTipIndex);
+            Assert.AreSame(opened, cache.State);
+        }
+
+        [Test]
+        public void NeverFetched_LocksGatedStages()
+        {
+            var cache = new WorldOpenCache();
+            var worldSheet = MakeWorldSheet(11, 501, 550);
+            Assert.AreEqual(520, cache.GetOpenedStageEnd(worldSheet[11]));
+            Assert.AreEqual(520, WorldOpenFront.GetUngatedStageEnd(worldSheet[11]));
+        }
+
+        [Test]
+        public void Evaluate_LaterBlock_OpensByFallbackWithoutRefetch()
+        {
+            var cache = new WorldOpenCache();
+            var worldSheet = MakeWorldSheet(11, 501, 550);
+            var state = WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,1000,0\n"), null);
+            var fetchCount = 0;
+            cache.FetchAsync(
+                990,
+                () =>
+                {
+                    fetchCount++;
+                    return Task.FromResult(state);
+                },
+                worldSheet).Wait();
+            Assert.AreEqual(520, cache.GetOpenedStageEnd(worldSheet[11])); // 991
+
+            cache.Evaluate(999, worldSheet);
+            Assert.AreEqual(520, cache.GetOpenedStageEnd(worldSheet[11]));
+            cache.Evaluate(1000, worldSheet);
+            Assert.AreEqual(550, cache.GetOpenedStageEnd(worldSheet[11]));
+            Assert.AreEqual(1, fetchCount);
+        }
+
+        private static WorldSheet MakeWorldSheet(int id, int begin, int end)
+        {
+            var sheet = new WorldSheet();
+            sheet.Set($"id,name,stage_begin,stage_end\n{id},w,{begin},{end}\n");
+            return sheet;
         }
 
         private static WorldSheet.Row World(int id, int begin, int end)
