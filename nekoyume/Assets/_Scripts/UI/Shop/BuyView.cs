@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
+using Nekoyume.Multiplanetary;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using Vector3 = UnityEngine.Vector3;
@@ -55,8 +58,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button resetButton;
 
-        [SerializeField]
-        private Button historyButton;
+        [SerializeField, FormerlySerializedAs("historyButton")]
+        private Button customFiltersButton;
 
         [SerializeField]
         private Button showCartButton;
@@ -77,6 +80,7 @@ namespace Nekoyume.UI.Module
         private GameObject loading;
 
         private int _loadingCount;
+        private bool _openingFilters;
 
         private static readonly Dictionary<ShopSortFilter, bool> SortFilterAscending = new()
         {
@@ -149,11 +153,7 @@ namespace Nekoyume.UI.Module
             _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x => x.Id));
             _petIds.AddRange(tableSheets.PetSheet.Values.Select(x => x.Id));
 
-            historyButton.onClick.AddListener(() =>
-            {
-                Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                    "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-            });
+            customFiltersButton.onClick.AddListener(OpenCustomFilters);
 
             showCartButton.onClick.AddListener(() => { _mode.SetValueAndForceNotify(BuyMode.Multiple); });
 
@@ -188,6 +188,73 @@ namespace Nekoyume.UI.Module
 
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
+        }
+
+        private static string SelectedChain()
+        {
+            var planet = Game.Game.instance?.CurrentPlanetId;
+            if (planet == PlanetId.Odin) return "odin";
+            if (planet == PlanetId.Heimdall) return "heimdall";
+            return null; // Thor, internal networks, and unselected planets cannot authenticate.
+        }
+
+        private static MarketFilterLoginClient.Identity CurrentFilterIdentity()
+        {
+            var game = Game.Game.instance;
+            var key = game?.Agent?.PrivateKey; // unlocked in-game signer; never serialized or exported
+            var agent = game?.States?.AgentState;
+            var avatar = game?.States?.CurrentAvatarState;
+            var chain = SelectedChain();
+            if (key == null || agent == null || avatar == null || chain == null ||
+                game.Agent.Address != agent.address) return null;
+            return new MarketFilterLoginClient.Identity(chain,
+                agent.address.ToString(), avatar.address.ToString(), key.PublicKey.ToHex(true));
+        }
+
+        private bool FiltersAvailable() =>
+            ApiClients.Instance?.MarketServiceClient?.SupportsSignedMarketFiltersForChain(SelectedChain()) == true;
+
+        private async void OpenCustomFilters()
+        {
+            if (_openingFilters) return;
+            _openingFilters = true;
+            customFiltersButton.interactable = false;
+            try
+            {
+                if (!FiltersAvailable()) throw new InvalidOperationException();
+                var identity = CurrentFilterIdentity();
+                if (identity == null) throw new InvalidOperationException();
+                // No request ever uses the configured market URL. The helper pins the auth origin.
+                using (var login = new MarketFilterLoginClient())
+                {
+                    var key = Game.Game.instance.Agent.PrivateKey;
+                    var url = await login.LoginAsync(identity, CurrentFilterIdentity, bytes => key.Sign(bytes));
+                    if (!this || !isActiveAndEnabled || !FiltersAvailable() ||
+                        !identity.SameAs(CurrentFilterIdentity()))
+                        throw new InvalidOperationException();
+                    Application.OpenURL(url);
+                }
+            }
+            catch (Exception)
+            {
+                // Neither server bodies nor exceptions (which may contain HTTP data) are logged.
+                try
+                {
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_MARKET_FILTER_LOGIN_UNAVAILABLE"),
+                        NotificationCell.NotificationType.Alert);
+                }
+                catch (Exception) { /* Scene may have closed while the request was pending. */ }
+            }
+            finally
+            {
+                _openingFilters = false;
+                try
+                {
+                    if (customFiltersButton) customFiltersButton.interactable = FiltersAvailable();
+                }
+                catch (Exception) { /* Widget may have been destroyed. */ }
+            }
         }
 
         protected override void InitInteractiveUI()
@@ -562,6 +629,8 @@ namespace Nekoyume.UI.Module
 
         protected override void UpdateView()
         {
+            customFiltersButton.gameObject.SetActive(FiltersAvailable());
+            customFiltersButton.interactable = !_openingFilters && FiltersAvailable();
             base.UpdateView();
 
             var expiredItems = _selectedItems.Where(x => x.Expired.Value).ToList();
