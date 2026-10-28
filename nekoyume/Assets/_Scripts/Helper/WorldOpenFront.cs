@@ -134,7 +134,10 @@ namespace Nekoyume.Helper
         {
             var game = Game.Game.instance;
             ResetIfAgentChanged(game?.Agent);
-            Cache.Evaluate(tipIndex + 1, game?.TableSheets?.WorldSheet);
+            if (Cache.State is not null && !Cache.Evaluate(tipIndex + 1, game?.TableSheets?.WorldSheet))
+            {
+                _refreshRequired = true; // 읽어 둔 상태로 판정하지 못했다. 다시 읽어 본다.
+            }
 
             if (_refreshing)
             {
@@ -323,6 +326,12 @@ namespace Nekoyume.Helper
         /// <summary><see cref="Clear"/> 마다 올린다. 그 전에 시작한 조회 결과는 버린다.</summary>
         private int _generation;
 
+        /// <summary>실패 로그를 다시 남기기까지의 블록 수.</summary>
+        public const int FailureLogIntervalBlocks = 100;
+
+        /// <summary>마지막으로 실패 로그를 남긴 블록. 성공하면 null.</summary>
+        private long? _lastFailureLoggedTipIndex;
+
         /// <summary>마지막으로 읽은 상태. 한 번도 못 읽었으면 null.</summary>
         public IWorldState State { get; private set; }
 
@@ -339,8 +348,8 @@ namespace Nekoyume.Helper
                 : WorldOpenFront.GetUngatedStageEnd(worldRow);
 
         /// <summary>
-        /// <paramref name="fetch"/> 로 상태를 읽어 <c>tipIndex + 1</c> 에서 판정한다. 실패하면 마지막으로 읽은 상태와
-        /// 판정을 그대로 둔다.
+        /// <paramref name="fetch"/> 로 상태를 읽어 <c>tipIndex + 1</c> 에서 판정한다. 읽기나 판정에 실패하면 마지막으로 읽은
+        /// 상태와 판정을 그대로 둔다.
         /// </summary>
         /// <returns>읽어서 반영했는지.</returns>
         public async Task<bool> FetchAsync(long tipIndex, Func<Task<IWorldState>> fetch, WorldSheet worldSheet)
@@ -353,7 +362,7 @@ namespace Nekoyume.Helper
             }
             catch (Exception e)
             {
-                NcDebug.LogWarning($"[WorldOpen] failed to read world open state; keeping the last one. {e}");
+                LogFailure(tipIndex, "read", e);
                 return false;
             }
 
@@ -362,34 +371,29 @@ namespace Nekoyume.Helper
                 return false; // 조회 중에 비워졌다(플래닛 전환 등).
             }
 
+            if (!TryCompute(state, tipIndex + 1, worldSheet, out var ends))
+            {
+                return false; // 새 상태로 판정하지 못했다. 이전 상태를 그대로 쓴다.
+            }
+
             State = state;
             FetchedTipIndex = tipIndex;
-            Evaluate(tipIndex + 1, worldSheet);
+            _lastFailureLoggedTipIndex = null;
+            Apply(ends);
             return true;
         }
 
         /// <summary>읽어 둔 상태로 <paramref name="blockIndex"/> 에서 다시 판정한다. 노드는 조회하지 않는다.</summary>
-        public void Evaluate(long blockIndex, WorldSheet worldSheet)
+        /// <returns>판정했는지. 읽은 상태가 없거나 판정에 실패하면 false(이전 판정 유지).</returns>
+        public bool Evaluate(long blockIndex, WorldSheet worldSheet)
         {
-            if (State is null || worldSheet is null)
+            if (State is null || !TryCompute(State, blockIndex, worldSheet, out var ends))
             {
-                return;
-            }
-
-            Dictionary<int, int> ends;
-            try
-            {
-                ends = worldSheet.OrderedList.ToDictionary(
-                    row => row.Id,
-                    row => WorldOpenGate.GetOpenedStageEnd(State, row, blockIndex));
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogWarning($"[WorldOpen] failed to evaluate world open state at {blockIndex}. {e}");
-                return;
+                return false;
             }
 
             Apply(ends);
+            return true;
         }
 
         /// <summary>읽은 상태와 판정을 비운다. 게이트 구간은 다시 읽을 때까지 잠긴다.</summary>
@@ -398,7 +402,50 @@ namespace Nekoyume.Helper
             _generation++;
             State = null;
             FetchedTipIndex = long.MinValue;
+            _lastFailureLoggedTipIndex = null;
             Apply(null);
+        }
+
+        private bool TryCompute(
+            IWorldState state,
+            long blockIndex,
+            WorldSheet worldSheet,
+            out Dictionary<int, int> ends)
+        {
+            ends = null;
+            if (worldSheet is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                ends = worldSheet.OrderedList.ToDictionary(
+                    row => row.Id,
+                    row => WorldOpenGate.GetOpenedStageEnd(state, row, blockIndex));
+                return true;
+            }
+            catch (Exception e)
+            {
+                LogFailure(blockIndex, "evaluate", e);
+                ends = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 실패 로그. 노드가 계속 응답하지 않으면 매 블록 실패하므로, 성공 뒤 첫 실패와 그 뒤
+        /// <see cref="FailureLogIntervalBlocks"/> 마다만 남긴다.
+        /// </summary>
+        private void LogFailure(long blockIndex, string what, Exception e)
+        {
+            if (_lastFailureLoggedTipIndex is { } last && blockIndex - last < FailureLogIntervalBlocks)
+            {
+                return;
+            }
+
+            _lastFailureLoggedTipIndex = blockIndex;
+            NcDebug.LogWarning($"[WorldOpen] failed to {what} world open state at {blockIndex}; keeping the last one. {e}");
         }
 
         private void Apply(Dictionary<int, int> ends)

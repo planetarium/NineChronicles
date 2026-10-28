@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action.State;
@@ -10,6 +11,8 @@ using Nekoyume.Helper;
 using Nekoyume.Module;
 using Nekoyume.TableData;
 using NUnit.Framework;
+using UniRx;
+using UnityEngine.TestTools;
 
 namespace Tests.EditMode
 {
@@ -102,6 +105,84 @@ namespace Tests.EditMode
             cache.Evaluate(1000, worldSheet);
             Assert.AreEqual(550, cache.GetOpenedStageEnd(worldSheet[11]));
             Assert.AreEqual(1, fetchCount);
+        }
+
+        [Test]
+        public void Clear_DuringFetch_DiscardsResult()
+        {
+            var previousContext = SynchronizationContext.Current;
+            // 이어지는 코드가 SetResult 안에서 바로 돌게 한다(에디터 컨텍스트로 넘기면 아래 Result 에서 멈춘다).
+            SynchronizationContext.SetSynchronizationContext(null);
+            try
+            {
+                var cache = new WorldOpenCache();
+                var worldSheet = MakeWorldSheet(11, 501, 550);
+                var pending = new TaskCompletionSource<IWorldState>();
+                var fetch = cache.FetchAsync(200, () => pending.Task, worldSheet);
+                cache.Clear();
+                pending.SetResult(WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,100,0\n"), null));
+
+                Assert.IsFalse(fetch.Result);
+                Assert.IsNull(cache.State);
+                Assert.AreEqual(520, cache.GetOpenedStageEnd(worldSheet[11]));
+            }
+            finally
+            {
+                SynchronizationContext.SetSynchronizationContext(previousContext);
+            }
+        }
+
+        [Test]
+        public void EvaluateFailure_KeepsPreviousState()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            var cache = new WorldOpenCache();
+            var worldSheet = MakeWorldSheet(11, 501, 550);
+            var opened = WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,100,0\n"), null);
+            Assert.IsTrue(cache.FetchAsync(200, () => Task.FromResult(opened), worldSheet).Result);
+
+            // 시트 값이 Text 가 아니면 게이트가 시트를 읽다 예외를 낸다.
+            var broken = WorldOpenFront.CreateState((Integer)1, null);
+            Assert.IsFalse(cache.FetchAsync(210, () => Task.FromResult(broken), worldSheet).Result);
+            Assert.AreSame(opened, cache.State);
+            Assert.AreEqual(200, cache.FetchedTipIndex);
+            Assert.AreEqual(550, cache.GetOpenedStageEnd(worldSheet[11]));
+        }
+
+        [Test]
+        public void ThrowingSubscriber_DoesNotStopLaterSubscribers()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            var cache = new WorldOpenCache();
+            var worldSheet = MakeWorldSheet(11, 501, 550);
+            var later = 0;
+            using var first = UniRx.ObservableExtensions.Subscribe(cache.Changed, _ => throw new InvalidOperationException());
+            using var second = UniRx.ObservableExtensions.Subscribe(cache.Changed, _ => later++);
+
+            var opened = WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,100,0\n"), null);
+            Assert.IsTrue(cache.FetchAsync(200, () => Task.FromResult(opened), worldSheet).Result);
+            Assert.AreEqual(1, later);
+            Assert.AreEqual(550, cache.GetOpenedStageEnd(worldSheet[11]));
+        }
+
+        [Test]
+        public void Changed_FiresOnlyWhenResultChanges()
+        {
+            var cache = new WorldOpenCache();
+            var worldSheet = MakeWorldSheet(11, 501, 550);
+            var count = 0;
+            using var subscription = UniRx.ObservableExtensions.Subscribe(cache.Changed, _ => count++);
+
+            var state = WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,1000,0\n"), null);
+            cache.FetchAsync(990, () => Task.FromResult(state), worldSheet).Wait();
+            Assert.AreEqual(1, count); // 처음 판정
+            cache.Evaluate(995, worldSheet);
+            cache.FetchAsync(995, () => Task.FromResult(state), worldSheet).Wait();
+            Assert.AreEqual(1, count); // 결과 그대로
+            cache.Evaluate(1000, worldSheet);
+            Assert.AreEqual(2, count); // fallback 으로 열림
+            cache.Evaluate(1001, worldSheet);
+            Assert.AreEqual(2, count);
         }
 
         private static WorldSheet MakeWorldSheet(int id, int begin, int end)
