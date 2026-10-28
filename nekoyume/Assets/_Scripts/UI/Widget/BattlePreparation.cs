@@ -191,6 +191,16 @@ namespace Nekoyume.UI
                     }
                 });
 
+            // 잠긴 시작 버튼을 누르면 이유를 알린다.
+            startButton.OnClickDisabledSubject
+                .Where(_ => !IsStageOpenForWorldOpen())
+                .ThrottleFirst(TimeSpan.FromSeconds(1f))
+                .Subscribe(_ => NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_WORLD_OPEN_LOCKED"),
+                    NotificationCell.NotificationType.Information))
+                .AddTo(gameObject);
+
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
                 .Subscribe(_ => ShowBoosterPopup());
@@ -246,7 +256,7 @@ namespace Nekoyume.UI
                     : "Repeat"
             };
             startButton.gameObject.SetActive(true);
-            startButton.Interactable = true;
+            UpdateStartButtonForWorldOpen();
             coverToBlockClick.SetActive(false);
 
             switch (_stageType)
@@ -270,6 +280,10 @@ namespace Nekoyume.UI
             }
 
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+            // 확정·열림은 남의 액션·블록 경과로 일어난다. 준비 화면이 열려 있는 동안에도 다시 판정한다.
+            WorldOpenFront.Changed
+                .Subscribe(_ => UpdateStartButtonForWorldOpen())
+                .AddTo(_disposables);
             if (information.TryGetCellByIndex(0, out var firstCell))
             {
                 Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
@@ -450,6 +464,15 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 {
+                    if (!IsStageOpenForWorldOpen())
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_WORLD_OPEN_LOCKED"),
+                            NotificationCell.NotificationType.Information);
+                        return;
+                    }
+
                     StartCoroutine(CoBattleStart(_stageType, CostType.ActionPoint));
                     break;
                 }
@@ -754,6 +777,16 @@ namespace Nekoyume.UI
             var elementalTypes = GetElementalTypes();
             return equipments.All(x =>
                 elementalTypes.Contains(x.ElementalType));
+        }
+
+        /// <summary>하드월드 진행 개방 게이트. 아직 열리지 않은 스테이지면 false.</summary>
+        private bool IsStageOpenForWorldOpen() =>
+            _stageType != StageType.HackAndSlash || WorldOpenFront.IsStageOpen(_worldId, _stageId);
+
+        /// <summary>아직 열리지 않은 스테이지면 시작 버튼을 잠근다(누르면 이유를 알린다).</summary>
+        private void UpdateStartButtonForWorldOpen()
+        {
+            startButton.Interactable = IsStageOpenForWorldOpen();
         }
 
         private void UpdateStartButton()

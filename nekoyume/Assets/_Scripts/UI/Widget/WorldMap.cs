@@ -184,6 +184,15 @@ namespace Nekoyume.UI
                 worldButton.OnClickSubject
                     .Subscribe(button =>
                     {
+                        if (IsWorldGatedForUi(button.Id))
+                        {
+                            NotificationSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_WORLD_OPEN_LOCKED"),
+                                NotificationCell.NotificationType.Information);
+                            return;
+                        }
+
                         if (button.IsUnlockable)
                         {
                             if (!ShowManyWorldUnlockPopup(SharedViewModel.WorldInformation))
@@ -226,9 +235,25 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Information);
                 }
             });
+
+            // 확정·열림은 남의 액션·블록 경과로 일어난다. 열려 있는 동안 바뀌면 월드 버튼을 다시 그린다.
+            WorldOpenFront.Changed
+                .Where(_ => IsActive())
+                .Subscribe(_ => SetWorldInformation(SharedViewModel.WorldInformation))
+                .AddTo(gameObject);
         }
 
 #endregion
+
+        /// <summary>
+        /// 하드월드 진행 개방 게이트가 이 월드의 첫 스테이지부터 막는지. 막히면 해금 여부(<see cref="IsWorldUnlockedForUi"/>)와
+        /// 무관하게 잠근다 — 앞 월드를 깨면 <c>ClearStage</c> 가 월드를 unlock 해도 체인은 진입을 거부한다.
+        /// </summary>
+        private static bool IsWorldGatedForUi(int worldId)
+        {
+            return TableSheets.Instance.WorldSheet.TryGetValue(worldId, out var worldRow, false) &&
+                !WorldOpenFront.IsStageOpen(worldId, worldRow.StageBegin);
+        }
 
         private bool IsStageClearedForUi(WorldInformation worldInformation, int stageId)
         {
@@ -498,6 +523,7 @@ namespace Nekoyume.UI
         public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
             UpdateAssets();
+            WorldOpenFront.RefreshAsync().Forget();
 
             HasNotification = false;
             SetWorldInformation(worldInformation);
@@ -632,7 +658,13 @@ namespace Nekoyume.UI
                 var isIncludedInQuest = StageIdToNotify >= worldButton.StageBegin &&
                     StageIdToNotify <= worldButton.StageEnd;
 
-                if (worldIsUnlocked)
+                if (IsWorldGatedForUi(buttonWorldId))
+                {
+                    // 눌렀을 때 아직 열리지 않았다고 알리려고 interactable 로 둔다.
+                    worldButton.HasNotification.Value = false;
+                    worldButton.Lock(true);
+                }
+                else if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
                     var crystalLock = SharedViewModel.UnlockedWorldIds != null && !openedLegacy;
@@ -680,8 +712,16 @@ namespace Nekoyume.UI
                 });
             }
 
+            // 하드월드 진행 개방: 다음 스테이지가 아직 열리지 않았으면 열린 마지막 스테이지를 고른다.
+            var stageId = world.GetNextStageId();
+            var openedStageEnd = WorldOpenFront.GetOpenedStageEnd(world.Id);
+            if (stageId > openedStageEnd && openedStageEnd >= world.StageBegin)
+            {
+                stageId = openedStageEnd;
+            }
+
             Push();
-            ShowWorld(world.Id, world.GetNextStageId(), false);
+            ShowWorld(world.Id, stageId, false);
         }
 
         private void ShowWorld(
@@ -783,6 +823,12 @@ namespace Nekoyume.UI
                 }
             }
 
+            // 아직 열리지 않은 스테이지로 안내하지 않는다.
+            if (questStageId > 0 && !WorldOpenFront.IsStageOpen(questStageId))
+            {
+                questStageId = -1;
+            }
+
             StageIdToNotify = questStageId;
             HasNotification = questStageId > 0;
         }
@@ -881,6 +927,7 @@ namespace Nekoyume.UI
                 .Where(IsWorldIdInCurrentMode)
                 .Where(worldId => !worldInformation.IsWorldUnlocked(worldId))
                 .Where(worldId => !IsWorldOpenedInLegacyForUi(worldId))
+                .Where(worldId => !IsWorldGatedForUi(worldId))
                 .OrderBy(i => i)
                 .ToList();
 

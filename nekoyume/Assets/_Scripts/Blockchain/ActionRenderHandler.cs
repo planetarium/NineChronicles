@@ -156,6 +156,7 @@ namespace Nekoyume.Blockchain
             RewardGold();
             GameConfig();
             BoostSchedule();
+            WorldOpen();
             CreateAvatar();
             TransferAsset();
             TransferAssets();
@@ -576,6 +577,25 @@ namespace Nekoyume.Blockchain
                 NcDebug.LogError($"[BoostSchedule] failed to replace BoostScheduleSheet: {e}");
             }
         }
+
+        /// <summary>
+        /// 개방 시트가 패치되면 게이트 판정을 다시 읽는다. 기준치를 낮춘 패치는 그 블록에서 바로 개방을 확정하므로
+        /// 조건 시트도 본다. 패치 블록의 tip 상태 루트는 아직 패치 전이라 tip 이 그 블록을 넘은 뒤에 읽는다.
+        /// </summary>
+        private void WorldOpen()
+        {
+            _actionRenderer.EveryRender<PatchTableSheet>()
+                .Where(eval => eval.Exception is null && IsWorldOpenTable(eval.Action.TableName))
+                .Subscribe(eval => WorldOpenFront.RequestRefreshAfter(eval.BlockIndex))
+                .AddTo(_disposables);
+            _actionRenderer.EveryRender<PatchTableSheetCompressed>()
+                .Where(eval => eval.Exception is null && IsWorldOpenTable(eval.Action.TableName))
+                .Subscribe(eval => WorldOpenFront.RequestRefreshAfter(eval.BlockIndex))
+                .AddTo(_disposables);
+        }
+
+        private static bool IsWorldOpenTable(string tableName) =>
+            tableName == nameof(WorldOpenSheet) || tableName == nameof(WorldOpenConditionSheet);
 
         private void RedeemCode()
         {
