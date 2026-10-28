@@ -246,7 +246,9 @@ namespace Nekoyume.UI
                     : "Repeat"
             };
             startButton.gameObject.SetActive(true);
-            startButton.Interactable = true;
+            // 하드월드 진행 개방: 아직 열리지 않은 스테이지는 시작할 수 없다.
+            startButton.Interactable = _stageType != StageType.HackAndSlash ||
+                WorldOpenFront.IsStageOpen(_worldId, _stageId);
             coverToBlockClick.SetActive(false);
 
             switch (_stageType)
@@ -450,6 +452,15 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 {
+                    if (!WorldOpenFront.IsStageOpen(_worldId, _stageId))
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_WORLD_OPEN_LOCKED"),
+                            NotificationCell.NotificationType.Information);
+                        return;
+                    }
+
                     StartCoroutine(CoBattleStart(_stageType, CostType.ActionPoint));
                     break;
                 }

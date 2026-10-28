@@ -733,6 +733,13 @@ namespace Nekoyume.UI
                     return;
                 }
 
+                // 하드월드 진행 개방: 아직 열리지 않은 스테이지는 반복·소탕할 수 없다.
+                if (!WorldOpenFront.IsStageOpen(_worldId, _stageRow.Id))
+                {
+                    startButton.Interactable = false;
+                    return;
+                }
+
                 if (_useSweep && TryGetRequiredCP(_stageRow.Id, out var row))
                 {
                     if (_cp.Value < row.RequiredCP)

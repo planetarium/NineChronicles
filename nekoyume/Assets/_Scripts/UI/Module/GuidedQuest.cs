@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -612,9 +613,10 @@ namespace Nekoyume.UI.Module
             }
 
             var targetStageId = targetQuest.Goal;
-            return !TableSheets.Instance.WorldSheet.TryGetByStageId(targetStageId, out _)
-                ? null
-                : targetQuest;
+            return !TableSheets.Instance.WorldSheet.TryGetByStageId(targetStageId, out _) ||
+                !WorldOpenFront.IsStageOpen(targetStageId)
+                    ? null
+                    : targetQuest;
         }
 
         /// <summary>
@@ -657,6 +659,12 @@ namespace Nekoyume.UI.Module
                 if (!worldSheet.TryGetByStageId(goal, out _))
                 {
                     continue;
+                }
+
+                // 아직 열리지 않은 구간이다. 뒤 월드도 열리지 않았으므로 안내하지 않는다.
+                if (!WorldOpenFront.IsStageOpen(hardRow.Id, goal))
+                {
+                    return null;
                 }
 
                 // NOTE: Make fake world quest (same pattern as GetTargetEventDungeonQuest).
