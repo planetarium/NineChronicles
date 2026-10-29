@@ -648,11 +648,12 @@ namespace Nekoyume.UI
         }
 
         // ClearedFloor 는 층 행 번호라 시즌 대역이 1 이 아니면 화면 층과 다르다.
-        private static int GetClearedFloorNumber(InfiniteTowerInfo infiniteTowerInfo)
+        private int GetClearedFloorNumber(InfiniteTowerInfo infiniteTowerInfo)
         {
             return InfiniteTowerFloorHelper.GetClearedFloorNumber(
                 Game.Game.instance.TableSheets?.InfiniteTowerFloorSheet,
-                infiniteTowerInfo.ClearedFloor);
+                GetCurrentScheduleInfo(),
+                infiniteTowerInfo);
         }
     }
 }

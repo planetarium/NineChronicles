@@ -139,7 +139,7 @@ namespace Nekoyume.UI
                 ? L10nManager.Localize(
                     "UI_INFINITETOWER_FLOOR_NUMBER",
                     InfiniteTowerFloorHelper.GetFloorNumber(
-                        TableSheets.Instance?.InfiniteTowerFloorSheet, model.FloorId))
+                        TableSheets.Instance.InfiniteTowerFloorSheet, model.FloorId))
                 : model.FloorName;
 
             // Buttons
