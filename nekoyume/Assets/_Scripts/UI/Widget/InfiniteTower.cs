@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Libplanet.Crypto;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.InfiniteTower;
 using Nekoyume.Model.Mail;
@@ -202,8 +203,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _currentFloorData = tableSheets.InfiniteTowerFloorSheet.Values
-                .FirstOrDefault(f => f.Floor == _currentFloor);
+            _currentFloorData = InfiniteTowerFloorHelper.FindFloorRow(
+                tableSheets.InfiniteTowerFloorSheet, scheduleInfo, _currentFloor);
 
             if (_currentFloorData == null)
             {
@@ -336,8 +337,8 @@ namespace Nekoyume.UI
 
                 // 해당 층의 데이터 조회
                 var tableSheets = Game.Game.instance.TableSheets;
-                var floorData = tableSheets?.InfiniteTowerFloorSheet?.Values
-                    .FirstOrDefault(f => f.Floor == floorNumber);
+                var floorData = InfiniteTowerFloorHelper.FindFloorRow(
+                    tableSheets?.InfiniteTowerFloorSheet, scheduleInfo, floorNumber);
 
                 floorView.SetState(floorState, floorNumber, floorData);
             }
@@ -429,7 +430,7 @@ namespace Nekoyume.UI
                     : InfiniteTowerFloorView.FloorState.Locked;
             }
 
-            var clearedFloor = infiniteTowerInfo.ClearedFloor;
+            var clearedFloor = GetClearedFloorNumber(infiniteTowerInfo);
 
             if (floorNumber <= clearedFloor)
             {
@@ -642,8 +643,16 @@ namespace Nekoyume.UI
             }
 
             // 클리어한 층이 있으면 다음 층, 없으면 1층부터 시작
-            var currentFloor = infiniteTowerInfo.ClearedFloor + 1;
+            var currentFloor = GetClearedFloorNumber(infiniteTowerInfo) + 1;
             return currentFloor;
+        }
+
+        // ClearedFloor 는 층 행 번호라 시즌 대역이 1 이 아니면 화면 층과 다르다.
+        private static int GetClearedFloorNumber(InfiniteTowerInfo infiniteTowerInfo)
+        {
+            return InfiniteTowerFloorHelper.GetClearedFloorNumber(
+                Game.Game.instance.TableSheets?.InfiniteTowerFloorSheet,
+                infiniteTowerInfo.ClearedFloor);
         }
     }
 }
