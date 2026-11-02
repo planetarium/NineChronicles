@@ -8,18 +8,18 @@ using UnityEngine;
 namespace NekoyumeEditor
 {
     /// <summary>
-    /// G9(울티밋) 장비 리소스를 아이템 없이 확인하는 창.
+    /// 울티밋(G9~G19) 장비 리소스를 아이템 없이 확인하는 창.
     /// </summary>
     /// <remarks>
     /// 두 가지를 본다.
     /// <list type="number">
     /// <item>
     /// 리소스 점검(플레이 불필요): 아이템 아이콘·프로필 초상화·무기 스파인 텍스처·재료 아이콘을
-    /// G8 과 나란히 그린다. 파일이 없으면 인게임에서는 예외 없이 기본 아이콘으로 바뀌므로 여기서 빨갛게 표시한다.
-    /// 무기 텍스처에는 임포터 피벗(= 캐릭터가 쥐는 점)을 십자로 그려 G8 과 손잡이 위치를 비교한다.
+    /// 비교 등급과 나란히 그린다. 파일이 없으면 인게임에서는 예외 없이 기본 아이콘으로 바뀌므로 여기서 빨갛게 표시한다.
+    /// 무기 텍스처에는 임포터 피벗(= 캐릭터가 쥐는 점)을 십자로 그려 비교 등급과 손잡이 위치를 비교한다.
     /// </item>
     /// <item>
-    /// 로비 장착(플레이 모드): 로비 캐릭터에 G9/G8 무기·갑옷을 바로 입힌다. 실제 장착 경로
+    /// 로비 장착(플레이 모드): 로비 캐릭터에 보는 등급/비교 등급 무기·갑옷을 바로 입힌다. 실제 장착 경로
     /// (<c>AvatarSpineController.UpdateBody</c>/<c>UpdateWeapon</c>)를 그대로 태우므로 갑옷 스킨 매핑과
     /// 무기 쥔 위치를 인게임과 같은 모습으로 확인할 수 있다. 장비를 다시 바꾸면 원래 외형으로 돌아간다.
     /// 풀 코스튬을 입고 있으면 실행하지 않는다 — 해제 후 귀·머리·꼬리 파츠와 HUD·충돌 영역 갱신은
@@ -29,7 +29,7 @@ namespace NekoyumeEditor
     /// </remarks>
     public class UltimateEquipmentPreviewWindow : EditorWindow
     {
-        private const string Title = "G9 울티밋 미리보기";
+        private const string Title = "울티밋 등급 미리보기";
         private const string ItemIconDir = "Assets/Resources/UI/Icons/Item/";
         private const string ProfileIconDir = "Assets/Resources/UI/Icons/Profile/";
         private const string WeaponTextureDir = "Assets/Resources/Character/PlayerSpineTexture/Weapon/";
@@ -37,15 +37,16 @@ namespace NekoyumeEditor
         private static readonly string[] Elements = { "Normal", "Fire", "Water", "Land", "Wind" };
         private static readonly string[] Parts = { "무기", "갑옷", "벨트", "목걸이", "반지" };
 
-        // 강화 재료(단단한 검·옷·벨트·목걸이·반지)는 3{등급}3{부위}02, G9 신규 토큰은 800130.
-        private static readonly int[] G9Materials = { 393002, 393102, 393202, 393302, 393402, 800130 };
-        private static readonly int[] G8Materials = { 383002, 383102, 383202, 383302, 383402, 800129 };
+        private const int MinGrade = 8;
+        private const int MaxGrade = 19;
 
         private const float IconSize = 58f;
         private const float WeaponWidth = 277f;
         private const float WeaponHeight = 121f;
 
-        private bool _showG8 = true;
+        private int _grade = 10;
+        private int _compareGrade = 9;
+        private bool _showCompare = true;
         private Vector2 _scroll;
 
         private void OnEnable() => EditorApplication.playModeStateChanged += OnPlayModeChanged;
@@ -54,9 +55,43 @@ namespace NekoyumeEditor
 
         private void OnPlayModeChanged(PlayModeStateChange _) => Repaint();
 
-        // 장비 id 는 10{부위}{등급}{속성}000 — 부위 1~5 = 무기·갑옷·벨트·목걸이·반지.
+        // 장비 id 는 G9 이하 10{부위}{등급}{속성}000, G10 부터 13{부위}{등급-10}{속성}000
+        // (재호님 ultimate_grade_resource_ids_G9-G19). 부위 1~5 = 무기·갑옷·벨트·목걸이·반지.
         private static int EquipmentId(int part, int grade, int element) =>
-            10000000 + part * 100000 + grade * 10000 + element * 1000;
+            grade <= 9
+                ? 10000000 + part * 100000 + grade * 10000 + element * 1000
+                : 13000000 + part * 100000 + (grade - 10) * 10000 + element * 1000;
+
+        // 강화 재료(단단한 검·옷·벨트·목걸이·반지)는 G9 이하 3{등급}3{부위-1}02, G10 부터 4{등급-10}3{부위-1}02.
+        // 등급 토큰은 G8 800129, G9 800130 뿐이다.
+        private static int[] Materials(int grade)
+        {
+            var ids = new System.Collections.Generic.List<int>();
+            for (var part = 0; part < Parts.Length; part++)
+            {
+                ids.Add(grade <= 9
+                    ? 300002 + grade * 10000 + 3000 + part * 100
+                    : 400002 + (grade - 10) * 10000 + 3000 + part * 100);
+            }
+
+            if (grade == 8 || grade == 9)
+            {
+                ids.Add(800121 + grade);
+            }
+
+            return ids.ToArray();
+        }
+
+        private static string[] GradeOptions()
+        {
+            var options = new string[MaxGrade - MinGrade + 1];
+            for (var g = MinGrade; g <= MaxGrade; g++)
+            {
+                options[g - MinGrade] = $"G{g}";
+            }
+
+            return options;
+        }
 
         [MenuItem("Tools/Item/" + Title)]
         private static void Open() => GetWindow<UltimateEquipmentPreviewWindow>(Title);
@@ -65,7 +100,17 @@ namespace NekoyumeEditor
         {
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
 
-            _showG8 = EditorGUILayout.ToggleLeft("G8 과 나란히 보기", _showG8);
+            var options = GradeOptions();
+            _grade = EditorGUILayout.Popup("보는 등급", _grade - MinGrade, options) + MinGrade;
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                _showCompare = EditorGUILayout.ToggleLeft("비교 등급과 나란히 보기", _showCompare, GUILayout.Width(180f));
+                using (new EditorGUI.DisabledScope(!_showCompare))
+                {
+                    _compareGrade = EditorGUILayout.Popup(_compareGrade - MinGrade, options) + MinGrade;
+                }
+            }
+
             EditorGUILayout.Space();
 
             DrawItemIcons();
@@ -86,8 +131,8 @@ namespace NekoyumeEditor
                 GUILayout.Label(GUIContent.none, GUILayout.Width(56f));
                 foreach (var part in Parts)
                 {
-                    var label = _showG8 ? $"{part} (G8 | G9)" : part;
-                    GUILayout.Label(label, header, GUILayout.Width(_showG8 ? IconSize * 2 + 8f : IconSize + 4f));
+                    var label = _showCompare ? $"{part} (G{_compareGrade} | G{_grade})" : part;
+                    GUILayout.Label(label, header, GUILayout.Width(_showCompare ? IconSize * 2 + 8f : IconSize + 4f));
                 }
             }
 
@@ -98,12 +143,12 @@ namespace NekoyumeEditor
                     GUILayout.Label(Elements[e], GUILayout.Width(56f));
                     for (var part = 1; part <= Parts.Length; part++)
                     {
-                        if (_showG8)
+                        if (_showCompare)
                         {
-                            DrawTexture(ItemIconDir, EquipmentId(part, 8, e), IconSize, IconSize);
+                            DrawTexture(ItemIconDir, EquipmentId(part, _compareGrade, e), IconSize, IconSize);
                         }
 
-                        DrawTexture(ItemIconDir, EquipmentId(part, 9, e), IconSize, IconSize);
+                        DrawTexture(ItemIconDir, EquipmentId(part, _grade, e), IconSize, IconSize);
                         GUILayout.Space(4f);
                     }
                 }
@@ -114,20 +159,20 @@ namespace NekoyumeEditor
 
         private void DrawMaterials()
         {
-            EditorGUILayout.LabelField("재료 아이콘 (강화 재료 5종 + 800130)", EditorStyles.boldLabel);
-            if (_showG8)
+            EditorGUILayout.LabelField("재료 아이콘 (강화 재료 5종 + 등급 토큰)", EditorStyles.boldLabel);
+            if (_showCompare)
             {
-                DrawRow("G8", ItemIconDir, G8Materials);
+                DrawRow($"G{_compareGrade}", ItemIconDir, Materials(_compareGrade));
             }
 
-            DrawRow("G9", ItemIconDir, G9Materials);
+            DrawRow($"G{_grade}", ItemIconDir, Materials(_grade));
             EditorGUILayout.Space();
         }
 
         private void DrawProfiles()
         {
             EditorGUILayout.LabelField("갑옷 프로필 초상화 (UI/Icons/Profile)", EditorStyles.boldLabel);
-            for (var grade = _showG8 ? 8 : 9; grade <= 9; grade++)
+            foreach (var grade in _showCompare ? new[] { _compareGrade, _grade } : new[] { _grade })
             {
                 var ids = new int[Elements.Length];
                 for (var e = 0; e < Elements.Length; e++)
@@ -149,12 +194,12 @@ namespace NekoyumeEditor
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.Label(Elements[e], GUILayout.Width(56f));
-                    if (_showG8)
+                    if (_showCompare)
                     {
-                        DrawWeapon(EquipmentId(1, 8, e));
+                        DrawWeapon(EquipmentId(1, _compareGrade, e));
                     }
 
-                    DrawWeapon(EquipmentId(1, 9, e));
+                    DrawWeapon(EquipmentId(1, _grade, e));
                 }
             }
 
@@ -176,14 +221,14 @@ namespace NekoyumeEditor
                     using (new EditorGUILayout.HorizontalScope())
                     {
                         GUILayout.Label(Elements[e], GUILayout.Width(56f));
-                        if (GUILayout.Button("G9 무기+갑옷", GUILayout.Width(110f)))
+                        if (GUILayout.Button($"G{_grade} 무기+갑옷", GUILayout.Width(120f)))
                         {
-                            Equip(EquipmentId(1, 9, e), EquipmentId(2, 9, e));
+                            Equip(EquipmentId(1, _grade, e), EquipmentId(2, _grade, e), _grade);
                         }
 
-                        if (GUILayout.Button("G8 무기+갑옷 (비교)", GUILayout.Width(140f)))
+                        if (GUILayout.Button($"G{_compareGrade} 무기+갑옷 (비교)", GUILayout.Width(150f)))
                         {
-                            Equip(EquipmentId(1, 8, e), EquipmentId(2, 8, e));
+                            Equip(EquipmentId(1, _compareGrade, e), EquipmentId(2, _compareGrade, e), _compareGrade);
                         }
                     }
                 }
@@ -245,7 +290,7 @@ namespace NekoyumeEditor
             EditorGUI.DrawRect(new Rect(x - 1f, y - 8f, 2f, 16f), Color.red);
         }
 
-        private static void Equip(int weaponId, int armorId)
+        private static void Equip(int weaponId, int armorId, int grade)
         {
             var character = Nekoyume.Game.Game.instance?.Lobby?.Character;
             if (character == null)
@@ -277,7 +322,6 @@ namespace NekoyumeEditor
             controller.UpdateWeapon(weaponId, weaponVfx);
 
             // 보조 아우라는 장착 장비의 최고 등급으로 고른다 — 미리보기 무기·갑옷 등급을 쓴다.
-            var grade = weaponId / 10000 % 10;
             controller.UpdateSecondaryAura(ResourcesHelper.GetSecondaryAuraPrefab(grade));
 
             Debug.Log(
