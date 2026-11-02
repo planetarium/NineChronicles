@@ -426,6 +426,12 @@ namespace Nekoyume.Game.Avatar
                 index -= 20000;
             }
 
+            // Ultimate G10~G19 armor (13 2 {grade-10} {element} 000) also reuses the Valkyrie skin of the same element.
+            if (index >= 13200000 && index <= 13294000)
+            {
+                index = 10270000 + index / 1000 % 10 * 1000;
+            }
+
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
             if (skinTone > 0)
