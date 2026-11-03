@@ -24,6 +24,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using LruCacheNet;
 using MessagePack;
+using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
@@ -1572,12 +1573,20 @@ namespace Nekoyume.Game
         {
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
+            // StandardResolver drops DynamicGenericResolver under IL2CPP, so non-generic IDictionary (Exception.Data,
+            // carried by every failed action evaluation) has no formatter there. Register it explicitly.
             StaticCompositeResolver.Instance.Register(
-                MagicOnion.Resolvers.MagicOnionResolver.Instance,
-                NineChroniclesResolver.Instance,
-                GeneratedResolver.Instance,
-                StandardResolver.Instance
-            );
+                new IMessagePackFormatter[]
+                {
+                    NonGenericInterfaceDictionaryFormatter.Instance,
+                },
+                new IFormatterResolver[]
+                {
+                    MagicOnion.Resolvers.MagicOnionResolver.Instance,
+                    NineChroniclesResolver.Instance,
+                    GeneratedResolver.Instance,
+                    StandardResolver.Instance,
+                });
             var resolver = StaticCompositeResolver.Instance;
 #else
             var resolver = CompositeResolver.Create(
