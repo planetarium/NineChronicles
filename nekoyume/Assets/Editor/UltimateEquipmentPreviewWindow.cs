@@ -171,9 +171,9 @@ namespace NekoyumeEditor
         private static Texture2D _customFrame;
 
         // 인벤토리 칸과 같은 겹: 등급 배경(62) → 아이콘(58) → 장식 테두리(62). VanillaItemView 프리팹 크기 기준.
-        // UI_ItemViewData 에 등급 항목이 있으면 그 배경·테두리를 쓰고, 없으면(G10 이상) 배색 규칙
-        // "9등급부터 1~8등급 색을 다시 쓴다" 대로 item_bg_{(등급-1)%8+1} 에 G9 테두리를 얹어 시험으로 보여 준다.
-        // 배경의 HSV 보정(UIHsvModifier)은 그리지 않는다 — G9 는 보정값이 0 이다.
+        // UI_ItemViewData 에 등급 항목이 있으면 그 테두리를 쓰고, 없으면 금테만 남긴 시험 테두리를 쓴다.
+        // 배경의 HSV 보정(UIHsvModifier)은 그리지 않으므로, G9 이상은 배색 규칙
+        // "9등급부터 1~8등급 색을 다시 쓴다" 대로 같은 색으로 미리 칠해 둔 item_bg_{(등급-1)%8+1} 로 대신 그린다.
         private void DrawSlots()
         {
             EditorGUILayout.LabelField("인벤토리 칸 (등급 배경 + 아이콘 + 테두리)", EditorStyles.boldLabel);
@@ -188,10 +188,10 @@ namespace NekoyumeEditor
             foreach (var grade in _showCompare ? new[] { _compareGrade, _grade } : new[] { _grade })
             {
                 var (background, frame, isRule) = SlotSprites(data, grade);
-                // G10 이상은 테두리를 잘라 낸 배경(item_bg_*_Inner)에 색 보정(HSV)을 걸어 그린다.
+                // G9 이상은 테두리를 잘라 낸 배경(item_bg_*_Inner)에 색 보정(HSV)을 걸어 그린다.
                 // 이 창은 색 보정을 그리지 않으므로, 같은 색으로 미리 칠해 둔 item_bg_{(등급-1)%8+1} 의
                 // 테두리를 잘라 대신 그린다. 그 위에 등급 테두리가 배경 가장자리를 덮는다.
-                var trimRim = grade >= 10;
+                var trimRim = grade >= 9;
                 if (_useCustomFrame && grade >= 9)
                 {
                     frame = CustomFrame(_customFramePath);
@@ -243,7 +243,7 @@ namespace NekoyumeEditor
 
             EditorGUILayout.HelpBox(
                 "(규칙) = UI_ItemViewData 에 등급 항목이 없거나 테두리 파일로 시험 중이라 배색 규칙대로 그린 모습입니다. " +
-                "G10 이상 배경은 색 보정 대신 같은 색 item_bg 파일로 그립니다.",
+                "G9 이상 배경은 색 보정 대신 같은 색 item_bg 파일로 그립니다.",
                 MessageType.None);
             EditorGUILayout.Space();
         }
