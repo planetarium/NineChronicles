@@ -33,6 +33,54 @@ namespace Nekoyume.ApiClient
             NcDebug.Log($"[{nameof(MarketServiceClient)}] initialized host: {url}");
         }
 
+        // Market reads may use other hosts, but authentication is only offered for
+        // these exact official provider paths. Authentication itself uses a pinned origin.
+        public bool SupportsSignedMarketFilters =>
+            SupportsSignedMarketFiltersForChain("odin") ||
+            SupportsSignedMarketFiltersForChain("heimdall");
+
+        public bool SupportsSignedMarketFiltersForChain(string chain)
+        {
+            var path = chain == "odin" ? "/marketProviderOdin" :
+                chain == "heimdall" ? "/marketProviderHeimdall" : null;
+            if (path == null || !Uri.TryCreate(_url, UriKind.Absolute, out var uri) ||
+                uri.Scheme != Uri.UriSchemeHttps || !uri.IsDefaultPort ||
+                uri.UserInfo.Length != 0 || _url.IndexOfAny(new[] { '?', '#' }) >= 0 ||
+                !(uri.Host.Equals("api.9capi.com", StringComparison.OrdinalIgnoreCase) ||
+                  uri.Host.Equals("b.9capi.com", StringComparison.OrdinalIgnoreCase)))
+                return false;
+
+            // Compare the original path too: Uri normalizes /cc/../ and escaped
+            // segments; neither should authorize an unrelated configured endpoint.
+            var authorityEnd = _url.IndexOf('/', _url.IndexOf("://", StringComparison.Ordinal) + 3);
+            var rawPath = authorityEnd < 0 ? "" : _url.Substring(authorityEnd);
+            return (rawPath == path || rawPath == path + "/") &&
+                   (uri.AbsolutePath == path || uri.AbsolutePath == path + "/");
+        }
+
+        private async Task<string> GetMarketResponseAsync(string url)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+            // Capture active identity per request, not on the shared HttpClient.
+            var states = Game.Game.instance?.States;
+            var agentAddress = states?.AgentState?.address;
+            var avatarAddress = states?.CurrentAvatarState?.address;
+            if (agentAddress.HasValue)
+            {
+                request.Headers.Add("X-Agent-Address", agentAddress.Value.ToString());
+            }
+
+            if (avatarAddress.HasValue)
+            {
+                request.Headers.Add("X-Avatar-Address", avatarAddress.Value.ToString());
+            }
+
+            using var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
         public async Task<(List<ItemProductResponseModel>, int)> GetBuyProducts(
             ItemSubType itemSubType,
             int offset,
@@ -52,7 +100,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -84,7 +132,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -107,7 +155,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -133,7 +181,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
@@ -165,7 +213,7 @@ namespace Nekoyume.ApiClient
             string json;
             try
             {
-                json = await _client.GetStringAsync(url);
+                json = await GetMarketResponseAsync(url);
             }
             catch (Exception e)
             {
