@@ -64,7 +64,7 @@ namespace Nekoyume.UI.Module
             // 오브젝트가 과도하게 많을경우 hsv를 사용하지않고 image만사용하는 케이스에 사용하기위해 분기 추가.
             if(gradeHsv == null)
             {
-                gradeImage.sprite = SpriteHelper.GetItemBackground(itemBase.Grade);
+                GradeFrameHelper.ApplyItemGradeBackground(gradeImage, iconImage, itemBase.Grade);
             }
             else
             {
@@ -116,6 +116,7 @@ namespace Nekoyume.UI.Module
             if (gradeHsv == null)
             {
                 gradeImage.sprite = SpriteHelper.GetItemBackground(grade);
+                GradeFrameHelper.Hide(gradeImage);
             }
             else
             {

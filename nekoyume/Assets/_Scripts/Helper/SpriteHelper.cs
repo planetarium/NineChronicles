@@ -27,6 +27,7 @@ namespace Nekoyume.Helper
 
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_1";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
+        private const string ItemInnerBackgroundPathFormat = "UI/Textures/item_bg_inner_{0}";
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
@@ -134,6 +135,16 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(ItemBackgroundPathFormat, grade)) ??
                 Resources.Load<Sprite>(ItemBackgroundDefaultPath);
+        }
+
+        /// <summary>
+        /// 9등급 이상 아이템 배경. 9등급부터 1~8등급 색을 다시 쓰고((등급-1)%8+1),
+        /// 바깥 테두리를 투명하게 비운 판이라 그 위에 등급 금테를 덮어 쓴다.
+        /// </summary>
+        public static Sprite GetItemInnerBackground(int grade)
+        {
+            return Resources.Load<Sprite>(string.Format(ItemInnerBackgroundPathFormat, (grade - 1) % 8 + 1)) ??
+                GetItemBackground(grade);
         }
 
         public static Sprite GetBuffIcon(string iconResource)
