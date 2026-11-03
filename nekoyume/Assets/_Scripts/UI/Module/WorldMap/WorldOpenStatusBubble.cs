@@ -75,9 +75,16 @@ namespace Nekoyume.UI.Module
         }
 
 #if UNITY_EDITOR
+        // OnValidate 안에서 RectTransform 을 바꾸면 경고가 나고 프리팹 덮어쓰기가 생긴다. 다음 편집기 틱으로 미룬다.
         private void OnValidate()
         {
-            ApplyTail();
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (this != null)
+                {
+                    ApplyTail();
+                }
+            };
         }
 #endif
 
@@ -88,21 +95,39 @@ namespace Nekoyume.UI.Module
         private void ApplyTail()
         {
             // 기준점: 꼬리 아래면 버튼 위쪽 가운데에 말풍선 아래 가운데, 꼬리 위면 버튼 아래쪽 가운데에 말풍선 위 가운데.
+            // 값이 같으면 쓰지 않는다 — 편집기에서 프리팹 인스턴스에 덮어쓰기가 괜히 생기지 않게.
             var rect = (RectTransform)transform;
-            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, tailUp ? 0f : 1f);
-            rect.pivot = new Vector2(0.5f, tailUp ? 1f : 0f);
+            var anchor = new Vector2(0.5f, tailUp ? 0f : 1f);
+            if (rect.anchorMin != anchor || rect.anchorMax != anchor)
+            {
+                rect.anchorMin = rect.anchorMax = anchor;
+            }
+
+            var pivot = new Vector2(0.5f, tailUp ? 1f : 0f);
+            if (rect.pivot != pivot)
+            {
+                rect.pivot = pivot;
+            }
 
             if (background != null)
             {
                 var scale = background.rectTransform.localScale;
-                scale.y = tailUp ? -Mathf.Abs(scale.y) : Mathf.Abs(scale.y);
-                background.rectTransform.localScale = scale;
+                var y = tailUp ? -Mathf.Abs(scale.y) : Mathf.Abs(scale.y);
+                if (!Mathf.Approximately(scale.y, y))
+                {
+                    background.rectTransform.localScale = new Vector3(scale.x, y, scale.z);
+                }
             }
 
             if (body != null)
             {
-                body.anchorMin = new Vector2(body.anchorMin.x, tailUp ? 0.04f : 0.21f);
-                body.anchorMax = new Vector2(body.anchorMax.x, tailUp ? 0.79f : 0.96f);
+                var min = new Vector2(body.anchorMin.x, tailUp ? 0.04f : 0.21f);
+                var max = new Vector2(body.anchorMax.x, tailUp ? 0.79f : 0.96f);
+                if (body.anchorMin != min || body.anchorMax != max)
+                {
+                    body.anchorMin = min;
+                    body.anchorMax = max;
+                }
             }
         }
 
