@@ -5,6 +5,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -135,7 +136,10 @@ namespace Nekoyume.UI
             var isClear = _model.IsClear;
 
             floorText.text = string.IsNullOrEmpty(model.FloorName)
-                ? L10nManager.Localize("UI_INFINITETOWER_FLOOR_NUMBER", model.FloorId)
+                ? L10nManager.Localize(
+                    "UI_INFINITETOWER_FLOOR_NUMBER",
+                    InfiniteTowerFloorHelper.GetFloorNumber(
+                        TableSheets.Instance.InfiniteTowerFloorSheet, model.FloorId))
                 : model.FloorName;
 
             // Buttons

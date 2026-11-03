@@ -608,7 +608,8 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    _infiniteTowerFloorCount = log.stageId;
+                    _infiniteTowerFloorCount = InfiniteTowerFloorHelper.GetFloorNumber(
+                        TableSheets.Instance.InfiniteTowerFloorSheet, log.stageId);
                     zone = GetCurrentInfiniteTowerBackgroundKey();
                     bgmName = stageRow.BGM;
 
@@ -653,7 +654,8 @@ namespace Nekoyume.Game.Battle
             }
             else if (StageType == StageType.InfiniteTower)
             {
-                title.Show(StageType, stageId);
+                title.Show(StageType, InfiniteTowerFloorHelper.GetFloorNumber(
+                    TableSheets.Instance.InfiniteTowerFloorSheet, stageId));
             }
             else
             {
