@@ -57,6 +57,10 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool IsClear;
             public bool IsEndStage;
+
+            /// <summary>다음 스테이지가 하드월드 진행 개방으로 아직 열리지 않았는지.</summary>
+            public bool IsNextStageLocked;
+
             public int LastClearedStageIdBeforeResponse;
 
             /// <summary>
@@ -427,6 +431,7 @@ namespace Nekoyume.UI
                     ActionPointNotEnough = model.ActionPointNotEnough,
                     IsClear = model.IsClear,
                     IsEndStage = model.IsEndStage,
+                    IsNextStageLocked = model.IsNextStageLocked,
                     LastClearedStageIdBeforeResponse = model.LastClearedStageIdBeforeResponse,
                     ClearedCountForEachWaves = ModelForMultiHackAndSlash.ClearedCountForEachWaves
                 };
@@ -651,7 +656,8 @@ namespace Nekoyume.UI
                 stagePreparationButton.interactable = canExit && !SharedModel.IsClear;
             }
 
-            if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
+            if (!SharedModel.IsEndStage && !SharedModel.IsNextStageLocked && isActionPointEnough &&
+                SharedModel.IsClear)
             {
                 nextButton.gameObject.SetActive(true);
                 nextButton.interactable = true;

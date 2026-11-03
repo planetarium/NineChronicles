@@ -613,7 +613,8 @@ namespace Nekoyume.Helper
                         return stageRow.Id.ToEventDungeonStageNumber() <= 1;
                     }
 
-                    return stageRow.Id <= lastClearedStageId + 1;
+                    return stageRow.Id <= lastClearedStageId + 1 &&
+                        WorldOpenFront.IsStageOpen(stageRow.Id);
                 })
                 .ToList();
 
@@ -868,7 +869,8 @@ namespace Nekoyume.Helper
                     )
                     {
                         return stageId <= world.StageClearedId + 1
-                            && sharedViewModel.UnlockedWorldIds.Contains(world.Id);
+                            && sharedViewModel.UnlockedWorldIds.Contains(world.Id)
+                            && WorldOpenFront.IsStageOpen(world.Id, stageId);
                     }
 
                     return false;

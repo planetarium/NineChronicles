@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                     {
                         pendantItemIcon.sprite = SpriteHelper.GetItemIcon(id);
                     }
-                    itemBackground.sprite = SpriteHelper.GetItemBackground((int)poolItem.Item2);
+                    GradeFrameHelper.ApplyItemGradeBackground(itemBackground, pendantItemIcon, (int)poolItem.Item2);
                     var isCancelled = await UniTask.Delay(TimeSpan.FromSeconds(itemIconAnimInterval), cancellationToken: cts.Token).SuppressCancellationThrow();
                     if (isCancelled)
                     {

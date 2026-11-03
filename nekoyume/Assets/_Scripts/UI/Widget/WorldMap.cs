@@ -184,6 +184,15 @@ namespace Nekoyume.UI
                 worldButton.OnClickSubject
                     .Subscribe(button =>
                     {
+                        if (IsWorldGatedForUi(button.Id))
+                        {
+                            NotificationSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_WORLD_OPEN_LOCKED"),
+                                NotificationCell.NotificationType.Information);
+                            return;
+                        }
+
                         if (button.IsUnlockable)
                         {
                             if (!ShowManyWorldUnlockPopup(SharedViewModel.WorldInformation))
@@ -226,9 +235,137 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Information);
                 }
             });
+
+            // 확정·열림은 남의 액션·블록 경과로 일어난다. 열려 있는 동안 바뀌면 월드 버튼을 다시 그린다.
+            WorldOpenFront.Changed
+                .Where(_ => IsActive())
+                .Subscribe(_ => SetWorldInformation(SharedViewModel.WorldInformation))
+                .AddTo(gameObject);
+
+            // 조건 진행도·남은 기간은 열린 끝이 그대로여도 블록마다 바뀐다. 말풍선만 다시 그린다.
+            WorldOpenFront.Evaluated
+                .Where(_ => IsActive() && SharedViewModel?.WorldInformation is not null)
+                .Subscribe(_ => UpdateOpenStatusBubbles())
+                .AddTo(gameObject);
         }
 
 #endregion
+
+        /// <summary>
+        /// 하드월드 진행 개방 게이트가 이 월드의 첫 스테이지부터 막는지. 막히면 해금 여부(<see cref="IsWorldUnlockedForUi"/>)와
+        /// 무관하게 잠근다 — 앞 월드를 깨면 <c>ClearStage</c> 가 월드를 unlock 해도 체인은 진입을 거부한다.
+        /// </summary>
+        private static bool IsWorldGatedForUi(int worldId)
+        {
+            return TableSheets.Instance.WorldSheet.TryGetValue(worldId, out var worldRow, false) &&
+                !WorldOpenFront.IsStageOpen(worldId, worldRow.StageBegin);
+        }
+
+        /// <summary>
+        /// 하드월드를 해금(UnlockWorld)한 뒤 "새 지역 개방" 안내를 띄운다. 진행 개방 대상(게이트 스테이지 이상)이 아니면
+        /// 띄우지 않는다 — 기존 월드 해금에는 없던 안내다.
+        /// </summary>
+        /// <returns>띄웠는지.</returns>
+        public static bool TryShowWorldOpenedPopup(int worldId)
+        {
+            if (!TableSheets.Instance.WorldSheet.TryGetValue(worldId, out var worldRow, false) ||
+                worldRow.StageBegin < GameConfig.ProgressGatedStageBegin)
+            {
+                return false;
+            }
+
+            ShowWorldOpenedPopup(worldId);
+            return true;
+        }
+
+        /// <summary>"새 지역 개방" 안내. 편집기 미리보기도 이것을 부른다.</summary>
+        public static void ShowWorldOpenedPopup(int worldId)
+        {
+            Find<OneButtonSystem>().Show(
+                L10nManager.Localize("UI_WORLD_OPEN_UNLOCKED", L10nManager.LocalizeWorldName(worldId)),
+                L10nManager.Localize("UI_OK"),
+                null);
+        }
+
+        /// <summary>
+        /// 개방 대기 중이라 숨긴 하드 월드 버튼. 앞 지역이 열리면 다시 보인다. 모드를 바꾸면 버튼을 새로 묶으므로
+        /// (<see cref="BindWorldButtonsForMode"/>) 그때 비운다.
+        /// </summary>
+        private readonly HashSet<WorldButton> _openGateHiddenButtons = new();
+
+        /// <summary>
+        /// 하드 모드에서 다음에 열릴 지역 하나에만 개방 조건 말풍선을 띄우고, 그 뒤의 잠긴 지역은 숨긴다.
+        /// 체인에서 열렸지만 아직 해금(UnlockWorld)하지 않은 지역에는 "눌러서 열기" 말풍선을 띄운다.
+        /// 블록마다 불리므로 숨김은 바뀐 버튼만 건드린다 — 껐다 켜면 버튼 애니메이션이 처음부터 다시 돈다.
+        /// </summary>
+        private void UpdateOpenStatusBubbles()
+        {
+#if UNITY_EDITOR
+            if (WorldOpenStatusBubble.PreviewActive)
+            {
+                return;
+            }
+#endif
+
+            var buttons = _worldButtons
+                .Where(button => button.IsShown || _openGateHiddenButtons.Contains(button))
+                .OrderBy(button => button.Id)
+                .ToList();
+            var hide = new HashSet<WorldButton>();
+            if (_currentMode == WorldMapMode.Hard)
+            {
+                WorldButton next = null;
+                foreach (var button in buttons)
+                {
+                    if (next is not null)
+                    {
+                        button.HideOpenStatus();
+                        if (IsWorldGatedForUi(button.Id))
+                        {
+                            hide.Add(button);
+                        }
+
+                        continue;
+                    }
+
+                    var status = WorldOpenFront.GetNextOpenStatus(button.Id);
+                    if (button.IsUnlockable && button.StageBegin >= GameConfig.ProgressGatedStageBegin)
+                    {
+                        // 열렸지만 아직 해금 전. 이 월드에 더 열릴 구간이 남았으면 여기가 다음 지역이다.
+                        button.ShowOpenStatusTapToOpen();
+                        if (status is not null)
+                        {
+                            next = button;
+                        }
+
+                        continue;
+                    }
+
+                    button.ShowOpenStatus(status);
+                    if (status is not null)
+                    {
+                        next = button;
+                    }
+                }
+            }
+            else
+            {
+                buttons.ForEach(button => button.HideOpenStatus());
+            }
+
+            foreach (var button in _openGateHiddenButtons.Where(button => !hide.Contains(button)))
+            {
+                button.Show();
+            }
+
+            foreach (var button in hide.Where(button => button.IsShown))
+            {
+                button.Hide();
+            }
+
+            _openGateHiddenButtons.Clear();
+            _openGateHiddenButtons.UnionWith(hide);
+        }
 
         private bool IsStageClearedForUi(WorldInformation worldInformation, int stageId)
         {
@@ -409,6 +546,7 @@ namespace Nekoyume.UI
 
         private void BindWorldButtonsForMode(WorldMapMode mode)
         {
+            _openGateHiddenButtons.Clear();
             for (var i = 0; i < _worldButtons.Length; i++)
             {
                 var worldButton = _worldButtons[i];
@@ -498,6 +636,7 @@ namespace Nekoyume.UI
         public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
             UpdateAssets();
+            WorldOpenFront.RefreshAsync().Forget();
 
             HasNotification = false;
             SetWorldInformation(worldInformation);
@@ -609,7 +748,8 @@ namespace Nekoyume.UI
 
             foreach (var worldButton in _worldButtons)
             {
-                if (!worldButton.IsShown)
+                // 개방 대기로 숨긴 버튼도 상태는 갱신한다 — 지도를 닫아 둔 사이 열리면 다시 보일 때 예전 잠금이 남는다.
+                if (!worldButton.IsShown && !_openGateHiddenButtons.Contains(worldButton))
                 {
                     continue;
                 }
@@ -632,7 +772,13 @@ namespace Nekoyume.UI
                 var isIncludedInQuest = StageIdToNotify >= worldButton.StageBegin &&
                     StageIdToNotify <= worldButton.StageEnd;
 
-                if (worldIsUnlocked)
+                if (IsWorldGatedForUi(buttonWorldId))
+                {
+                    // 눌렀을 때 아직 열리지 않았다고 알리려고 interactable 로 둔다.
+                    worldButton.HasNotification.Value = false;
+                    worldButton.Lock(true);
+                }
+                else if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
                     var crystalLock = SharedViewModel.UnlockedWorldIds != null && !openedLegacy;
@@ -645,6 +791,8 @@ namespace Nekoyume.UI
 
                 SetWorldOpenCostTextColor(States.Instance.CrystalBalance);
             }
+
+            UpdateOpenStatusBubbles();
 
             if (!worldInformation.TryGetFirstWorld(out _))
             {
@@ -680,8 +828,16 @@ namespace Nekoyume.UI
                 });
             }
 
+            // 하드월드 진행 개방: 다음 스테이지가 아직 열리지 않았으면 열린 마지막 스테이지를 고른다.
+            var stageId = world.GetNextStageId();
+            var openedStageEnd = WorldOpenFront.GetOpenedStageEnd(world.Id);
+            if (stageId > openedStageEnd && openedStageEnd >= world.StageBegin)
+            {
+                stageId = openedStageEnd;
+            }
+
             Push();
-            ShowWorld(world.Id, world.GetNextStageId(), false);
+            ShowWorld(world.Id, stageId, false);
         }
 
         private void ShowWorld(
@@ -783,6 +939,12 @@ namespace Nekoyume.UI
                 }
             }
 
+            // 아직 열리지 않은 스테이지로 안내하지 않는다.
+            if (questStageId > 0 && !WorldOpenFront.IsStageOpen(questStageId))
+            {
+                questStageId = -1;
+            }
+
             StageIdToNotify = questStageId;
             HasNotification = questStageId > 0;
         }
@@ -881,6 +1043,7 @@ namespace Nekoyume.UI
                 .Where(IsWorldIdInCurrentMode)
                 .Where(worldId => !worldInformation.IsWorldUnlocked(worldId))
                 .Where(worldId => !IsWorldOpenedInLegacyForUi(worldId))
+                .Where(worldId => !IsWorldGatedForUi(worldId))
                 .OrderBy(i => i)
                 .ToList();
 

@@ -24,6 +24,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using LruCacheNet;
 using MessagePack;
+using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
@@ -915,6 +916,8 @@ namespace Nekoyume.Game
             tableSheets.MarkBoostScheduleSheetUnverified();
             TableSheets = tableSheets;
             BlockRenderHandler.RequestBoostScheduleSheetRefresh();
+            // 플래닛·세션이 바뀌었을 수 있다. 이전 개방 판정은 버리고 다음 블록에 다시 읽는다.
+            WorldOpenFront.Reset();
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
 
@@ -1570,12 +1573,20 @@ namespace Nekoyume.Game
         {
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
+            // StandardResolver drops DynamicGenericResolver under IL2CPP, so non-generic IDictionary (Exception.Data,
+            // carried by every failed action evaluation) has no formatter there. Register it explicitly.
             StaticCompositeResolver.Instance.Register(
-                MagicOnion.Resolvers.MagicOnionResolver.Instance,
-                NineChroniclesResolver.Instance,
-                GeneratedResolver.Instance,
-                StandardResolver.Instance
-            );
+                new IMessagePackFormatter[]
+                {
+                    NonGenericInterfaceDictionaryFormatter.Instance,
+                },
+                new IFormatterResolver[]
+                {
+                    MagicOnion.Resolvers.MagicOnionResolver.Instance,
+                    NineChroniclesResolver.Instance,
+                    GeneratedResolver.Instance,
+                    StandardResolver.Instance,
+                });
             var resolver = StaticCompositeResolver.Instance;
 #else
             var resolver = CompositeResolver.Create(

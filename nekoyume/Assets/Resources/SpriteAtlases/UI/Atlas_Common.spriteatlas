@@ -243,6 +243,7 @@ SpriteAtlas:
     - 7a908ca694d5f46c2ace7a2539050b43: 21300000
     - 322f62b6b876cb64ba83be8202d1f8cb: 21300000
     - 92f297b6639fe43dfa13151ae0b44e54: 21300000
+    - bcb7e7b6a0574f0da66394a75d83651b: 21300000
     - b7a679b621db3e54ab228582eee11b93: 21300000
     - dc38b4c6f210e4b7b975ca319ff7ad1d: 21300000
     - 246367d6aa9d90448bc371fcabd0b795: 21300000
@@ -309,6 +310,7 @@ SpriteAtlas:
     - 62c7e1f85f30c8140b07a5ee353c84af: 21300000
     - 40408409483377f44b5858b5c6e0221e: 21300000
     - 149516097e93cf24c892072063bcf0a5: 21300000
+    - 60695b090cff4e369ed19c3ad5c137f1: 21300000
     - b550fb09379c14e9da9213f5e65aff49: 21300000
     - d0303f095dc0040ef926d7b4c0481588: 21300000
     - 2f68c0192eac9c94ebb875aa76601003: 21300000
@@ -696,6 +698,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7a908ca694d5f46c2ace7a2539050b43, type: 3}
   - {fileID: 21300000, guid: 322f62b6b876cb64ba83be8202d1f8cb, type: 3}
   - {fileID: 21300000, guid: 92f297b6639fe43dfa13151ae0b44e54, type: 3}
+  - {fileID: 21300000, guid: bcb7e7b6a0574f0da66394a75d83651b, type: 3}
   - {fileID: 21300000, guid: b7a679b621db3e54ab228582eee11b93, type: 3}
   - {fileID: 21300000, guid: dc38b4c6f210e4b7b975ca319ff7ad1d, type: 3}
   - {fileID: 21300000, guid: 246367d6aa9d90448bc371fcabd0b795, type: 3}
@@ -762,6 +765,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 62c7e1f85f30c8140b07a5ee353c84af, type: 3}
   - {fileID: 21300000, guid: 40408409483377f44b5858b5c6e0221e, type: 3}
   - {fileID: 21300000, guid: 149516097e93cf24c892072063bcf0a5, type: 3}
+  - {fileID: 21300000, guid: 60695b090cff4e369ed19c3ad5c137f1, type: 3}
   - {fileID: 21300000, guid: b550fb09379c14e9da9213f5e65aff49, type: 3}
   - {fileID: 21300000, guid: d0303f095dc0040ef926d7b4c0481588, type: 3}
   - {fileID: 21300000, guid: 2f68c0192eac9c94ebb875aa76601003, type: 3}
@@ -1148,6 +1152,7 @@ SpriteAtlas:
   - UI_main_icon_Rune
   - UI_hpbar_01_bg
   - icon_Food_01_black
+  - item_bg_Color_Inner
   - UI_combo_01
   - icon_notice_06_black
   - Button_Tab_bg_Normal_04
@@ -1214,6 +1219,7 @@ SpriteAtlas:
   - Icon_Lock
   - UI_NewMenu_Text_Bg_2
   - button_page_02_reverse
+  - item_bg_Normal_Inner
   - UI_Btn_bg_04
   - Rank_bg_06
   - Icon_Random
