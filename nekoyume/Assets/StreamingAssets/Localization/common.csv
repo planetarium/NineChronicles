@@ -2193,3 +2193,22 @@ UI_BOOST_SCHEDULE_BOUNDARY,An event is about to start or end. Please try again i
 UI_BOOST_SCHEDULE_CHANGED,Costs or required amounts have changed due to an event. Please check the updated values and try again.,이벤트로 비용 또는 필요 수량이 바뀌었습니다. 바뀐 값을 확인한 뒤 다시 시도해 주세요.,,イベントによりコストまたは必要数量が変更されました。変更後の値を確認してから再度お試しください。,,,,,,,,
 UI_ACTION_FAILED_RETRY,The request failed. Please check and try again.,요청이 실패했습니다. 확인한 뒤 다시 시도해 주세요.,,リクエストに失敗しました。確認してから再度お試しください。,,,,,,,,
 UI_WORLD_OPEN_LOCKED,This area has not opened yet.,아직 열리지 않은 구간입니다.,This area has not opened yet.,まだ開放されていない区間です。,This area has not opened yet.,This area has not opened yet.,This area has not opened yet.,This area has not opened yet.,This area has not opened yet.,This area has not opened yet.,This area has not opened yet.,This area has not opened yet.
+UI_WORLD_OPEN_CONDITION_TITLE,Stage {0}-{1} opening,스테이지 {0}~{1} 개방 조건,Stage {0}-{1} opening,ステージ{0}~{1} 開放条件,Stage {0}-{1} opening,Stage {0}-{1} opening,Stage {0}-{1} opening,Stage {0}-{1} opening,Stage {0}-{1} opening,Stage {0}-{1} opening,Stage {0}-{1} opening,Stage {0}-{1} opening
+UI_WORLD_OPEN_FIRST_CLEAR,First clears,첫 클리어 인원,First clears,初クリア人数,First clears,First clears,First clears,First clears,First clears,First clears,First clears,First clears
+UI_WORLD_OPEN_PERIOD,Period,기간,Period,期間,Period,Period,Period,Period,Period,Period,Period,Period
+UI_WORLD_OPEN_DONE,Done,달성,Done,達成,Done,Done,Done,Done,Done,Done,Done,Done
+UI_WORLD_OPEN_REMAINING,{0} blocks (~{1}),{0}블록 (약 {1}),{0} blocks (~{1}),{0}ブロック (約{1}),{0} blocks (~{1}),{0} blocks (~{1}),{0} blocks (~{1}),{0} blocks (~{1}),{0} blocks (~{1}),{0} blocks (~{1}),{0} blocks (~{1}),{0} blocks (~{1})
+UI_WORLD_OPEN_TAP,Tap to open,눌러서 열기,Tap to open,タップして開放,Tap to open,Tap to open,Tap to open,Tap to open,Tap to open,Tap to open,Tap to open,Tap to open
+UI_WORLD_OPEN_UNLOCKED,"A new region has opened: {0}
+You can now play the {0} stages.","새 지역이 열렸습니다: {0}
+이제 {0} 스테이지를 플레이할 수 있어요.","A new region has opened: {0}
+You can now play the {0} stages.","新しい地域が開放されました: {0}
+{0}のステージをプレイできます。","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages.","A new region has opened: {0}
+You can now play the {0} stages."

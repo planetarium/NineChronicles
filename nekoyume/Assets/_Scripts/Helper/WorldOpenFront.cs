@@ -44,6 +44,8 @@ namespace Nekoyume.Helper
 
         public static Address SheetAddress => Addresses.GetSheetAddress<WorldOpenSheet>();
 
+        public static Address ConditionSheetAddress => Addresses.GetSheetAddress<WorldOpenConditionSheet>();
+
         private static readonly WorldOpenCache Cache = new();
 
         /// <summary>캐시를 채운 에이전트. 바뀌면(플래닛 전환 등) 캐시를 비운다.</summary>
@@ -57,6 +59,16 @@ namespace Nekoyume.Helper
 
         /// <summary>어느 월드의 열린 끝이 바뀌면 메인 스레드에서 알린다. 구독자 예외는 다른 구독자에게 번지지 않는다.</summary>
         public static IObservable<Unit> Changed => Cache.Changed;
+
+        /// <summary>
+        /// 판정할 때마다(블록마다) 메인 스레드에서 알린다. 열린 끝이 그대로여도 조건 진행도·남은 블록은 바뀐다.
+        /// </summary>
+        public static IObservable<Unit> Evaluated => Cache.Evaluated;
+
+        /// <summary>
+        /// 이 월드에서 아직 열리지 않은 첫 개방 구간의 진행 상황. 그런 구간이 없거나 아직 못 읽었으면 null.
+        /// </summary>
+        public static WorldOpenStatus GetNextOpenStatus(int worldId) => Cache.GetNextOpenStatus(worldId);
 
         /// <summary>
         /// 이 월드에서 지금 들어갈 수 있는 마지막 스테이지(아바타 진행과 무관한 전체 기준). 전부 잠겼으면
@@ -208,9 +220,13 @@ namespace Nekoyume.Helper
         /// </summary>
         /// <param name="sheetValue">레거시 계정의 <see cref="WorldOpenSheet"/> 값. 없으면 null.</param>
         /// <param name="confirmedBlocks"><see cref="Addresses.WorldOpen"/> 계정의 키 → 값. 없으면 null.</param>
+        /// <param name="conditionSheetValue">레거시 계정의 <see cref="WorldOpenConditionSheet"/> 값. 없으면 null.</param>
+        /// <param name="counters"><see cref="Addresses.GlobalCounter"/> 계정의 키 → 값. 없으면 null.</param>
         public static IWorldState CreateState(
             IValue sheetValue,
-            IReadOnlyDictionary<Address, IValue> confirmedBlocks)
+            IReadOnlyDictionary<Address, IValue> confirmedBlocks,
+            IValue conditionSheetValue = null,
+            IReadOnlyDictionary<Address, IValue> counters = null)
         {
             var legacy = new Dictionary<Address, IValue>();
             if (sheetValue is not null)
@@ -218,10 +234,16 @@ namespace Nekoyume.Helper
                 legacy[SheetAddress] = sheetValue;
             }
 
+            if (conditionSheetValue is not null)
+            {
+                legacy[ConditionSheetAddress] = conditionSheetValue;
+            }
+
             return new SnapshotWorldState(new Dictionary<Address, IReadOnlyDictionary<Address, IValue>>
             {
                 [ReservedAddresses.LegacyAccount] = legacy,
                 [Addresses.WorldOpen] = confirmedBlocks ?? new Dictionary<Address, IValue>(),
+                [Addresses.GlobalCounter] = counters ?? new Dictionary<Address, IValue>(),
             });
         }
 
@@ -256,8 +278,22 @@ namespace Nekoyume.Helper
                 stateRootHash,
                 ReservedAddresses.LegacyAccount,
                 SheetAddress);
+            IValue conditionSheetValue = null;
+            try
+            {
+                conditionSheetValue = await agent.GetStateAsync(
+                    stateRootHash,
+                    ReservedAddresses.LegacyAccount,
+                    ConditionSheetAddress);
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogWarning($"[WorldOpen] failed to read {nameof(WorldOpenConditionSheet)}. {e}");
+            }
+
             var confirmedBlocks = new Dictionary<Address, IValue>();
-            var state = CreateState(sheetValue, confirmedBlocks);
+            var counters = new Dictionary<Address, IValue>();
+            var state = CreateState(sheetValue, confirmedBlocks, conditionSheetValue, counters);
             if (state.TryGetPatchedSheet<WorldOpenSheet>(out var openSheet) && openSheet.Count > 0)
             {
                 var keys = openSheet.Keys.Select(WorldOpenModule.OpenKey).ToList();
@@ -266,6 +302,29 @@ namespace Nekoyume.Helper
                 {
                     confirmedBlocks[pair.Key] = pair.Value;
                 }
+            }
+
+            // 말풍선의 조건 진행도(N / M)용. 게이트 판정은 카운터를 읽지 않으므로, 실패해도 게이트 갱신은 막지 않는다.
+            try
+            {
+                if (state.TryGetPatchedSheet<WorldOpenConditionSheet>(out var conditionSheet) && conditionSheet.Count > 0)
+                {
+                    var keys = conditionSheet.Values
+                        .Where(row => row.IsValid)
+                        .Select(row => row.CounterId)
+                        .Distinct()
+                        .Select(GlobalCounterModule.CounterKey)
+                        .ToList();
+                    var values = await agent.GetStateBulkAsync(stateRootHash, Addresses.GlobalCounter, keys);
+                    foreach (var pair in values)
+                    {
+                        counters[pair.Key] = pair.Value;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogWarning($"[WorldOpen] failed to read open counters; the bubble shows no progress. {e}");
             }
 
             return state;
@@ -320,6 +379,11 @@ namespace Nekoyume.Helper
     {
         private readonly Subject<Unit> _changed = new();
 
+        private readonly Subject<Unit> _evaluated = new();
+
+        /// <summary>월드 id → 아직 열리지 않은 첫 개방 구간의 진행 상황. 그런 구간이 없는 월드는 빠진다.</summary>
+        private Dictionary<int, WorldOpenStatus> _statuses;
+
         /// <summary>월드 id → 들어갈 수 있는 마지막 스테이지. null 이면 한 번도 못 읽었다.</summary>
         private Dictionary<int, int> _openedStageEnds;
 
@@ -340,6 +404,13 @@ namespace Nekoyume.Helper
 
         /// <summary>어느 월드의 열린 끝이 바뀌면 알린다. 구독자 예외는 로그만 남기고 삼킨다.</summary>
         public IObservable<Unit> Changed => new GuardedObservable(_changed);
+
+        /// <summary>판정할 때마다 알린다. 구독자 예외는 로그만 남기고 삼킨다.</summary>
+        public IObservable<Unit> Evaluated => new GuardedObservable(_evaluated);
+
+        /// <summary>이 월드의 다음 개방 구간 진행 상황. 없거나 아직 판정하지 못했으면 null.</summary>
+        public WorldOpenStatus GetNextOpenStatus(int worldId) =>
+            _statuses is not null && _statuses.TryGetValue(worldId, out var status) ? status : null;
 
         /// <summary>이 월드의 열린 끝. 아직 계산하지 못했으면 시트 없음과 같게 판정한다.</summary>
         public int GetOpenedStageEnd(WorldSheet.Row worldRow) =>
@@ -371,7 +442,7 @@ namespace Nekoyume.Helper
                 return false; // 조회 중에 비워졌다(플래닛 전환 등).
             }
 
-            if (!TryCompute(state, tipIndex + 1, worldSheet, out var ends))
+            if (!TryCompute(state, tipIndex + 1, worldSheet, out var ends, out var statuses))
             {
                 return false; // 새 상태로 판정하지 못했다. 이전 상태를 그대로 쓴다.
             }
@@ -379,7 +450,7 @@ namespace Nekoyume.Helper
             State = state;
             FetchedTipIndex = tipIndex;
             _lastFailureLoggedTipIndex = null;
-            Apply(ends);
+            Apply(ends, statuses);
             return true;
         }
 
@@ -387,12 +458,12 @@ namespace Nekoyume.Helper
         /// <returns>판정했는지. 읽은 상태가 없거나 판정에 실패하면 false(이전 판정 유지).</returns>
         public bool Evaluate(long blockIndex, WorldSheet worldSheet)
         {
-            if (State is null || !TryCompute(State, blockIndex, worldSheet, out var ends))
+            if (State is null || !TryCompute(State, blockIndex, worldSheet, out var ends, out var statuses))
             {
                 return false;
             }
 
-            Apply(ends);
+            Apply(ends, statuses);
             return true;
         }
 
@@ -403,16 +474,18 @@ namespace Nekoyume.Helper
             State = null;
             FetchedTipIndex = long.MinValue;
             _lastFailureLoggedTipIndex = null;
-            Apply(null);
+            Apply(null, null);
         }
 
         private bool TryCompute(
             IWorldState state,
             long blockIndex,
             WorldSheet worldSheet,
-            out Dictionary<int, int> ends)
+            out Dictionary<int, int> ends,
+            out Dictionary<int, WorldOpenStatus> statuses)
         {
             ends = null;
+            statuses = null;
             if (worldSheet is null)
             {
                 return false;
@@ -423,12 +496,32 @@ namespace Nekoyume.Helper
                 ends = worldSheet.OrderedList.ToDictionary(
                     row => row.Id,
                     row => WorldOpenGate.GetOpenedStageEnd(state, row, blockIndex));
+                statuses = new Dictionary<int, WorldOpenStatus>();
+                try
+                {
+                    foreach (var row in worldSheet.OrderedList)
+                    {
+                        var status = WorldOpenStatus.Compute(state, row, ends[row.Id], blockIndex);
+                        if (status is not null)
+                        {
+                            statuses[row.Id] = status;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    // 말풍선용 값이다. 조건 시트가 깨져도 게이트 판정(ends)은 그대로 쓴다.
+                    LogFailure(blockIndex, "evaluate open status", e);
+                    statuses.Clear();
+                }
+
                 return true;
             }
             catch (Exception e)
             {
                 LogFailure(blockIndex, "evaluate", e);
                 ends = null;
+                statuses = null;
                 return false;
             }
         }
@@ -448,10 +541,21 @@ namespace Nekoyume.Helper
             NcDebug.LogWarning($"[WorldOpen] failed to {what} world open state at {blockIndex}; keeping the last one. {e}");
         }
 
-        private void Apply(Dictionary<int, int> ends)
+        private void Apply(Dictionary<int, int> ends, Dictionary<int, WorldOpenStatus> statuses)
         {
+            // 두 값을 모두 바꾼 뒤에 알린다 — 구독자가 새 진행 상황과 예전 열린 끝을 섞어 보지 않게.
+            _statuses = statuses;
             var previous = _openedStageEnds;
             _openedStageEnds = ends;
+            try
+            {
+                _evaluated.OnNext(Unit.Default);
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[WorldOpen] a {nameof(WorldOpenFront.Evaluated)} subscriber threw: {e}");
+            }
+
             var changed = previous is null || ends is null
                 ? !ReferenceEquals(previous, ends)
                 : previous.Count != ends.Count ||
@@ -494,5 +598,120 @@ namespace Nekoyume.Helper
                     }
                 });
         }
+    }
+
+    /// <summary>
+    /// 한 월드에서 아직 열리지 않은 첫 개방 구간(<see cref="WorldOpenSheet"/> 행)의 진행 상황. 월드맵 말풍선이 그린다.
+    /// </summary>
+    /// <remarks>
+    /// 개방 행은 조건을 못 채워도 최대 대기일(<see cref="WorldOpenSheet.Row.FallbackBlockIndex"/>)에 열린다. 조건이 확정되면
+    /// 최소 날짜·유예를 반영해 그보다 일찍 열린다. 그래서 "기간"은 늘 <see cref="OpenBlockIndex"/> 까지 남은 블록이다.
+    /// </remarks>
+    public sealed class WorldOpenStatus
+    {
+        public int WorldId { get; private set; }
+
+        public int OpenId { get; private set; }
+
+        /// <summary>이 개방으로 열리는 첫 스테이지(지금 열린 끝 + 1).</summary>
+        public int StageBegin { get; private set; }
+
+        public int StageEnd { get; private set; }
+
+        /// <summary>조건이 확정됐는지.</summary>
+        public bool ConditionMet { get; private set; }
+
+        /// <summary>
+        /// 보여 줄 조건의 현재 값. 조건 묶음 중 가장 많이 채운 묶음에서, 그 안에서 가장 덜 채운 조건(병목)을 고른다.
+        /// </summary>
+        public long Current { get; private set; }
+
+        /// <summary>보여 줄 조건의 기준치. 조건이 없는 개방(최대 대기일에만 열림)이면 0.</summary>
+        public long Target { get; private set; }
+
+        /// <summary>지금 상태로 열리는 블록. 조건 확정 전에는 최대 대기일, 확정 뒤에는 최소 날짜·유예를 반영한 블록.</summary>
+        public long OpenBlockIndex { get; private set; }
+
+        /// <summary>판정한 블록에서 <see cref="OpenBlockIndex"/> 까지 남은 블록. 0 이상.</summary>
+        public long RemainingBlocks { get; private set; }
+
+        /// <summary>
+        /// <paramref name="openedStageEnd"/> 다음 구간을 여는 첫 개방 행의 진행 상황. 그런 행이 없으면(다 열렸거나 개방 행이
+        /// 없으면) null.
+        /// </summary>
+        public static WorldOpenStatus Compute(
+            IWorldState state,
+            WorldSheet.Row worldRow,
+            int openedStageEnd,
+            long blockIndex)
+        {
+            if (!state.TryGetPatchedSheet<WorldOpenSheet>(out var sheet))
+            {
+                return null;
+            }
+
+            var open = sheet.ByWorld(worldRow.Id)
+                .Where(row => row.IsValid && row.StageEnd > openedStageEnd)
+                .OrderBy(row => row.StageEnd)
+                .FirstOrDefault();
+            if (open is null || !state.TryGetAppliedBlock(sheet, open, out var openBlock))
+            {
+                return null;
+            }
+
+            var status = new WorldOpenStatus
+            {
+                WorldId = worldRow.Id,
+                OpenId = open.Id,
+                StageBegin = Math.Max(worldRow.StageBegin, openedStageEnd + 1),
+                StageEnd = Math.Min(worldRow.StageEnd, open.StageEnd),
+                ConditionMet = state.TryGetConfirmedBlock(open.Id, out _),
+                OpenBlockIndex = openBlock,
+                RemainingBlocks = Math.Max(0, openBlock - blockIndex),
+            };
+
+            if (state.TryGetPatchedSheet<WorldOpenConditionSheet>(out var conditions))
+            {
+                var bottlenecks = conditions.GroupsOf(open.Id)
+                    .Where(group => group.Count > 0)
+                    .Select(group => group
+                        .Select(c => (current: state.GetCounter(c.CounterId), target: c.Threshold))
+                        .OrderBy(c => Ratio(c.current, c.target))
+                        .First());
+                foreach (var (current, target) in bottlenecks)
+                {
+                    if (status.Target == 0 || Ratio(current, target) > Ratio(status.Current, status.Target))
+                    {
+                        status.Current = current;
+                        status.Target = target;
+                    }
+                }
+            }
+
+            return status;
+        }
+
+        /// <summary>편집기 미리보기용. 체인 상태 없이 말풍선을 그려 볼 때 쓴다.</summary>
+        public static WorldOpenStatus CreateForPreview(
+            int worldId,
+            int stageBegin,
+            int stageEnd,
+            bool conditionMet,
+            long current,
+            long target,
+            long remainingBlocks) =>
+            new()
+            {
+                WorldId = worldId,
+                StageBegin = stageBegin,
+                StageEnd = stageEnd,
+                ConditionMet = conditionMet,
+                Current = current,
+                Target = target,
+                RemainingBlocks = remainingBlocks,
+            };
+
+        private static double Ratio(long current, long target) =>
+            target <= 0 ? 1d : Math.Min(1d, (double)current / target);
     }
 }

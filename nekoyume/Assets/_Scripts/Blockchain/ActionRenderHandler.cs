@@ -3675,6 +3675,15 @@ namespace Nekoyume.Blockchain
             worldMap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
 
+            // 하드월드 진행 개방으로 열린 지역이면 "새 지역 개방" 안내(한 번에 여럿이면 마지막 하나).
+            foreach (var worldId in eval.Action.WorldIds.OrderByDescending(id => id))
+            {
+                if (WorldMap.TryShowWorldOpenedPopup(worldId))
+                {
+                    break;
+                }
+            }
+
             UniTask.RunOnThreadPool(async () => { await UpdateAgentStateAsync(eval); }).Forget();
         }
 

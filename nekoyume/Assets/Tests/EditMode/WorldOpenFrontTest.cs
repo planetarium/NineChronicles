@@ -185,6 +185,78 @@ namespace Tests.EditMode
             Assert.AreEqual(2, count);
         }
 
+        private const string ConditionHeader = "open_id,condition_group,counter_id,threshold\n";
+
+        [Test]
+        public void Status_BeforeConfirm_CountsDownToFallback()
+        {
+            var state = WorldOpenFront.CreateState(
+                (Text)(Header + "1,11,535,,200,1000,30\n2,11,550,1,0,2000,30\n"),
+                null,
+                (Text)(ConditionHeader + "1,1,7,100\n"),
+                new Dictionary<Address, IValue> { [GlobalCounterModule.CounterKey(7)] = (Integer)42 });
+
+            var status = WorldOpenStatus.Compute(state, World11, 520, 400);
+
+            Assert.AreEqual(1, status.OpenId);
+            Assert.AreEqual(521, status.StageBegin);
+            Assert.AreEqual(535, status.StageEnd);
+            Assert.IsFalse(status.ConditionMet);
+            Assert.AreEqual(42, status.Current);
+            Assert.AreEqual(100, status.Target);
+            Assert.AreEqual(1000, status.OpenBlockIndex);
+            Assert.AreEqual(600, status.RemainingBlocks);
+        }
+
+        [Test]
+        public void Status_AfterConfirm_CountsDownToDelayOrMin()
+        {
+            var confirmed = new Dictionary<Address, IValue> { [WorldOpenModule.OpenKey(1)] = (Integer)100 };
+            var state = WorldOpenFront.CreateState(
+                (Text)(Header + "1,11,550,,200,1000,30\n"),
+                confirmed,
+                (Text)(ConditionHeader + "1,1,7,100\n"),
+                new Dictionary<Address, IValue> { [GlobalCounterModule.CounterKey(7)] = (Integer)100 });
+
+            // 확정 100 + 유예 30 = 130 이지만 최소 날짜 200 이 늦다.
+            var status = WorldOpenStatus.Compute(state, World11, 520, 150);
+            Assert.IsTrue(status.ConditionMet);
+            Assert.AreEqual(200, status.OpenBlockIndex);
+            Assert.AreEqual(50, status.RemainingBlocks);
+        }
+
+        [Test]
+        public void Status_PicksBestGroupsBottleneck()
+        {
+            // 묶음 1: 80/100, 10/100 → 병목 10/100. 묶음 2: 30/50 → 30/50 이 더 많이 채웠다.
+            var state = WorldOpenFront.CreateState(
+                (Text)(Header + "1,11,550,,0,1000,0\n"),
+                null,
+                (Text)(ConditionHeader + "1,1,7,100\n1,1,8,100\n1,2,9,50\n"),
+                new Dictionary<Address, IValue>
+                {
+                    [GlobalCounterModule.CounterKey(7)] = (Integer)80,
+                    [GlobalCounterModule.CounterKey(8)] = (Integer)10,
+                    [GlobalCounterModule.CounterKey(9)] = (Integer)30,
+                });
+
+            var status = WorldOpenStatus.Compute(state, World11, 520, 0);
+            Assert.AreEqual(30, status.Current);
+            Assert.AreEqual(50, status.Target);
+        }
+
+        [Test]
+        public void Status_NoConditionsOrAllOpened()
+        {
+            var state = WorldOpenFront.CreateState((Text)(Header + "1,11,550,,0,1000,0\n"), null);
+            var status = WorldOpenStatus.Compute(state, World11, 520, 0);
+            Assert.AreEqual(0, status.Target);
+            Assert.AreEqual(1000, status.RemainingBlocks);
+
+            Assert.IsNull(WorldOpenStatus.Compute(state, World11, 550, 1000));
+            Assert.IsNull(WorldOpenStatus.Compute(WorldOpenFront.CreateState(null, null), World11, 520, 0));
+        }
+
         private static WorldSheet MakeWorldSheet(int id, int begin, int end)
         {
             var sheet = new WorldSheet();
