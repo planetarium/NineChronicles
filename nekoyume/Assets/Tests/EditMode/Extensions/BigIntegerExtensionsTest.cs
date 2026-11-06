@@ -3,6 +3,8 @@ using NUnit.Framework;
 
 namespace Tests.EditMode.Extensions
 {
+    // N2 표기의 소수점·자릿수 구분자가 지역 설정을 따르므로 고정한다.
+    [SetCulture("en-US")]
     public class BigIntegerExtensionsTest
     {
         [TestCase(999L, "999")]
