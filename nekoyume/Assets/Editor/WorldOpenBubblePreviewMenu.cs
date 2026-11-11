@@ -31,6 +31,10 @@ namespace NekoyumeEditor
         private static void Waiting() =>
             Apply(button => button.ShowOpenStatus(Status(button, false, 742, 1000, 172_800)));
 
+        [MenuItem(MenuRoot + "기준 도달, 확정 대기")]
+        private static void Pending() =>
+            Apply(button => button.ShowOpenStatus(Status(button, false, 1000, 1000, 172_800)));
+
         [MenuItem(MenuRoot + "조건 달성, 열림 대기")]
         private static void ConditionMet() =>
             Apply(button => button.ShowOpenStatus(Status(button, true, 1000, 1000, 25_920)));
@@ -65,6 +69,7 @@ namespace NekoyumeEditor
         }
 
         [MenuItem(MenuRoot + "대기 (742 ／ 1,000)", true)]
+        [MenuItem(MenuRoot + "기준 도달, 확정 대기", true)]
         [MenuItem(MenuRoot + "조건 달성, 열림 대기", true)]
         [MenuItem(MenuRoot + "눌러서 열기", true)]
         [MenuItem(MenuRoot + "새 지역 개방 팝업", true)]
