@@ -511,8 +511,7 @@ jobs:
   release-to-google-play:
     if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')) && github.event.inputs.onestore != 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     name: Release to the Google Play Store
-    # ubuntu-latest 가 26.04 로 바뀌면서 setup-ruby 가 2.7.2 를 못 깐다. 루비를 올리기 전까지 24.04 로 고정한다.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     needs: ["extract"]
     environment:
       name: ${{ needs.extract.outputs.network }}
@@ -540,7 +539,7 @@ jobs:
       - name: Set up Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: '3.3'
           bundler-cache: true
       - name: Upload to Google Play Internal
         uses: maierj/fastlane-action@v3.0.0
