@@ -511,7 +511,8 @@ jobs:
   release-to-google-play:
     if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')) && github.event.inputs.onestore != 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
     name: Release to the Google Play Store
-    runs-on: ubuntu-latest
+    # ubuntu-latest 가 26.04 로 바뀌면서 setup-ruby 가 2.7.2 를 못 깐다. 루비를 올리기 전까지 24.04 로 고정한다.
+    runs-on: ubuntu-24.04
     needs: ["extract"]
     environment:
       name: ${{ needs.extract.outputs.network }}
