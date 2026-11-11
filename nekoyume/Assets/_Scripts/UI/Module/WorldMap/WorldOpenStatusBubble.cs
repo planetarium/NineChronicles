@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Module
     /// </summary>
     /// <remarks>
     /// 개방 행은 조건을 못 채워도 최대 대기일에 열리고, 조건이 확정되면 그보다 일찍 열린다. 그래서 기간 줄은 늘
-    /// <see cref="WorldOpenStatus.OpenBlockIndex"/> 까지 남은 블록이고, 이름으로 둘을 구분한다("최대 대기" / "개방 확정").
+    /// <see cref="WorldOpenStatus.OpenBlockIndex"/> 까지 남은 블록이고, 이름으로 구분한다("최대 대기" / "확정 대기" / "개방 확정").
     /// 체인에서 열린 뒤 아바타가 아직 해금하지 않았으면 두 줄 모두 달성으로 두고 제목 자리에 "눌러서 열기"를 띄운다 — 말풍선은 월드 버튼의 자식이라 누르면 버튼의
     /// 기존 해금(UnlockWorld) 흐름을 탄다.
     /// 프리팹은 <c>Tools/WorldMap/개방 조건 말풍선 붙이기</c> 메뉴가 WorldButton 에 붙인다.
@@ -150,13 +150,15 @@ namespace Nekoyume.UI.Module
 
             // 조건 없는 개방(최대 대기일에만 열림)은 조건 줄을 뺀다.
             var hasCondition = status.Target > 0;
+            // 기준치에 닿았어도 체인 확정은 다음 개방 시트 패치 때 된다. 그 사이는 "확정 대기"로, 남은 기간은 아직 최대 대기일 기준이다.
+            var pending = hasCondition && !status.ConditionMet && status.Current >= status.Target;
             conditionRow.SetActive(hasCondition);
             if (hasCondition)
             {
                 conditionLabelText.text = L10nManager.Localize("UI_WORLD_OPEN_FIRST_CLEAR");
                 SetValue(
                     conditionValueText,
-                    status.ConditionMet,
+                    status.ConditionMet || pending,
                     $"{status.Current:N0} / {status.Target:N0}");
             }
 
@@ -164,6 +166,7 @@ namespace Nekoyume.UI.Module
             periodLabelText.text = L10nManager.Localize(
                 !hasCondition ? "UI_WORLD_OPEN_PERIOD"
                 : status.ConditionMet ? "UI_WORLD_OPEN_PERIOD_CONFIRMED"
+                : pending ? "UI_WORLD_OPEN_PERIOD_PENDING"
                 : "UI_WORLD_OPEN_PERIOD_FALLBACK");
             SetValue(
                 periodValueText,
