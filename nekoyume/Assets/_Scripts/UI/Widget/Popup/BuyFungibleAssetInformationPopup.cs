@@ -6,6 +6,7 @@ using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
@@ -90,6 +91,7 @@ namespace Nekoyume.UI
         {
             var data = itemViewDataScriptableObject.GetItemViewData(grade);
             gradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(gradeImage, fungibleAssetImage, data);
             gradeHsv.range = data.GradeHsvRange;
             gradeHsv.hue = data.GradeHsvHue;
             gradeHsv.saturation = data.GradeHsvSaturation;
