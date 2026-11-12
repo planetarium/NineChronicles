@@ -89,6 +89,7 @@ namespace Nekoyume.UI.Module
 
             var itemViewData = itemViewDataObject.GetItemViewData(petRow.Grade);
             gradeBg.overrideSprite = itemViewData.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(gradeBg, petIconImage, itemViewData);
             gradeBgHsv.range = itemViewData.GradeHsvRange;
             gradeBgHsv.hue = itemViewData.GradeHsvHue;
             gradeBgHsv.value = itemViewData.GradeHsvValue;

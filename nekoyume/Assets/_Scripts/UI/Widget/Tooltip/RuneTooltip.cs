@@ -288,6 +288,7 @@ namespace Nekoyume.UI
         {
             var data = itemViewDataScriptableObject.GetItemViewData(row.Grade);
             gradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(gradeImage, runeImage, data);
             gradeHsv.range = data.GradeHsvRange;
             gradeHsv.hue = data.GradeHsvHue;
             gradeHsv.saturation = data.GradeHsvSaturation;
