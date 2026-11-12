@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveProperty<List<int>> UnlockableRecipes = new();
 
-        public int UnlockableRecipesOpenCost { get; private set; }
+        public long UnlockableRecipesOpenCost { get; private set; }
         public ItemSubType DisplayingItemSubtype { get; set; }
 
         public readonly List<int> UnlockingRecipes = new();
@@ -194,7 +194,7 @@ namespace Nekoyume.UI.Model
 
             var unlockableRecipes = new List<int>();
             var balance = States.Instance.CrystalBalance.MajorUnit;
-            var totalCost = 0;
+            var totalCost = 0L;
             foreach (var availableRecipe in availableRecipes)
             {
                 // should contain at least one recipe.
