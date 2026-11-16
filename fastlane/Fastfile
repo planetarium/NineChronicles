@@ -25,6 +25,65 @@ platform :ios do
       )
     end
   
+    desc "Submit an existing TestFlight build for App Store review (no binary upload, manual release)"
+    lane :submit do
+      require 'base64'
+      require 'json'
+      require 'tmpdir'
+      api_key = app_store_connect_api_key(
+        key_id: ENV['ASC_KEY_ID'],
+        issuer_id: ENV['ASC_ISSUER_ID'],
+        key_content: ENV['ASC_KEY_CONTENT'],
+      )
+      version = ENV.fetch('SUBMIT_APP_VERSION')
+      # Release notes keys (shared with play_submit.py) -> App Store locales.
+      locales = { 'en' => 'en-US', 'ja' => 'ja', 'vi' => 'vi', 'ko' => 'ko' }
+      notes = JSON.parse(Base64.decode64(ENV.fetch('RELEASE_NOTES_B64')))
+      UI.user_error!("release notes keys must be a non-empty subset of #{locales.keys}") if notes.empty? || !(notes.keys - locales.keys).empty?
+      notes.each { |k, v| UI.user_error!("release notes [#{k}] must be 1..4000 chars") if v.strip.empty? || v.length > 4000 }
+
+      # latest_testflight_build_number falls back to 1 when the version has no build, so query directly.
+      app = Spaceship::ConnectAPI::App.find(ENV['IOS_APP_ID'])
+      UI.user_error!("app #{ENV['IOS_APP_ID']} not found") if app.nil?
+      builds = Spaceship::ConnectAPI.get_builds(
+        filter: { app: app.id, 'preReleaseVersion.version' => version, 'preReleaseVersion.platform' => 'IOS', 'processingState' => 'VALID', 'expired' => 'false' },
+        sort: '-uploadedDate',
+        limit: 1
+      )
+      UI.user_error!("#{ENV['IOS_APP_ID']} #{version}: no processed, unexpired TestFlight build") if builds.empty?
+      build = builds.first.version
+      UI.message("#{ENV['IOS_APP_ID']} #{version}: latest valid TestFlight build #{build}")
+
+      # deliver creates missing localizations; only allow locales the app already has.
+      current = app.get_edit_app_store_version(platform: 'IOS') || app.get_live_app_store_version(platform: 'IOS')
+      have = current ? current.get_app_store_version_localizations.map(&:locale) : []
+      missing = notes.keys.map { |k| locales[k] } - have
+      UI.user_error!("locales not on the App Store listing: #{missing} (has #{have})") unless missing.empty?
+      next if ENV['SUBMIT_DRY_RUN'] == 'true'
+
+      deliver(
+        api_key: api_key,
+        app_identifier: ENV['IOS_APP_ID'],
+        app_version: version,
+        build_number: build.to_s,
+        # Empty metadata dir: only the release notes below are written.
+        metadata_path: Dir.mktmpdir,
+        release_notes: notes.map { |k, v| [locales[k], v] }.to_h,
+        skip_binary_upload: true,
+        skip_screenshots: true,
+        skip_app_version_update: false,
+        submit_for_review: true,
+        # Never publish on approval; a person releases after the mainnet deploy.
+        automatic_release: false,
+        force: true,
+        run_precheck_before_submit: false,
+        precheck_include_in_app_purchases: false,
+        submission_information: {
+          export_compliance_uses_encryption: false,
+        }
+      )
+    end
+
     desc "Submit a new Beta Build to Apple TestFlight"
     lane :beta do
       api_key = app_store_connect_api_key(
