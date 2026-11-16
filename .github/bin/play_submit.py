@@ -72,8 +72,9 @@ def main():
             call("POST", f"/edits/{edit}:validate")
             print(f"dry-run ok: {a.package} {a.version_code} would go to production review")
             return
+        # The API default (CANCEL_IN_REVIEW_AND_SUBMIT) would cancel other changes already in review.
         # A 400 mentioning changesNotSentForReview means Play wants this sent from the console.
-        call("POST", f"/edits/{edit}:commit")
+        call("POST", f"/edits/{edit}:commit", params={"changesInReviewBehavior": "ERROR_IF_IN_REVIEW"})
         committed = True
         print(f"submitted: {a.package} {a.version_code} sent to production review")
     finally:
