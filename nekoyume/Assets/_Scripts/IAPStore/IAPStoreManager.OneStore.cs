@@ -227,7 +227,7 @@ namespace Nekoyume.IAPStore
                         $"[OneStore] not delivered. productId={purchase.ProductId} " +
                         $"status={result?.Status.ToString() ?? "null"}");
                     Analyzer.Instance.Track(
-                        "Unity/Shop/IAP/PurchaseResult",
+                        "Unity/Shop/IAP/PurchaseFailed",
                         ("product-id", purchase.ProductId),
                         ("result", "NotDelivered"),
                         ("status", result?.Status.ToString() ?? "null"));
@@ -343,7 +343,7 @@ namespace Nekoyume.IAPStore
             NcDebug.LogError($"[OneStore] purchase failed. code={code} {message}");
             PurchaseLog(_oneStoreLastRequestedProductId ?? "unknown", string.Empty, $"PurchaseFailed[{reason}]");
             Analyzer.Instance.Track(
-                "Unity/Shop/IAP/PurchaseResult",
+                "Unity/Shop/IAP/PurchaseFailed",
                 ("product-id", _oneStoreLastRequestedProductId ?? "unknown"),
                 ("result", reason.ToString()),
                 ("message", message));

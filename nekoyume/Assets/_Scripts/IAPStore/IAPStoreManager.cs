@@ -636,8 +636,10 @@ namespace Nekoyume.IAPStore
             NcDebug.LogError(
                 $"[PurchaseFail] reason: {detail}, Product: {i?.metadata?.localizedTitle ?? productId}");
             PurchaseLog(productId, i?.transactionID ?? string.Empty, $"PurchaseFailed[{detail}]");
+            // 실패는 PurchaseResult 와 다른 이름으로 보낸다. PurchaseResult 는 배송 완료(Complete)만
+            //   남겨, 이벤트 수를 그대로 세는 결제 지표에 실패 건이 섞이지 않게 한다.
             Analyzer.Instance.Track(
-                "Unity/Shop/IAP/PurchaseResult",
+                "Unity/Shop/IAP/PurchaseFailed",
                 ("product-id", productId),
                 ("result", reason.ToString()),
                 ("message", detail));
@@ -868,7 +870,7 @@ namespace Nekoyume.IAPStore
                     NcDebug.LogError(
                         $"[OnPurchaseRequestAsync] Not delivered (status: {result?.Status.ToString() ?? "null"}) tx: {e.purchasedProduct.transactionID}");
                     Analyzer.Instance.Track(
-                        "Unity/Shop/IAP/PurchaseResult",
+                        "Unity/Shop/IAP/PurchaseFailed",
                         ("product-id", e.purchasedProduct.definition.id),
                         ("result", "NotDelivered"),
                         ("status", result?.Status.ToString() ?? "null"));
