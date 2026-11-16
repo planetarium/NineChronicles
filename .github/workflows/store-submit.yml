@@ -1,0 +1,119 @@
+name: Store Submit
+
+# 이미 올라간 빌드(플레이 internal·TestFlight)를 스토어 심사에 제출한다. 바이너리는 다시 올리지 않는다.
+# 승인돼도 자동으로 출시되지 않는다: iOS 는 automatic_release=false, 플레이는 콘솔의 관리형 게시가 켜져 있어야 한다.
+# release/<version> 을 ref 로 실행한다(안드로이드 versionCode 를 그 브랜치의 ProjectSettings 에서 읽는다).
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "m (Nine Chronicles M) | k (나인크로니클 K)"
+        required: true
+        type: choice
+        options: [m, k]
+      platform:
+        description: "android | ios | both"
+        required: true
+        type: choice
+        options: [both, android, ios]
+      version:
+        description: "클라 버전 ex(510.0.1) — ref 의 bundleVersion 과 같아야 한다"
+        required: true
+      notes_b64:
+        description: 'base64(JSON {"ko": "...", "en": "...", "ja": "...", "vi": "..."})'
+        required: true
+      dry_run:
+        description: "확인만 하고 제출하지 않는다"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-submit-${{ inputs.app }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    outputs:
+      version_code: ${{ steps.v.outputs.version_code }}
+      package: ${{ steps.v.outputs.package }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: nekoyume/ProjectSettings/ProjectSettings.asset
+          sparse-checkout-cone-mode: false
+      - id: v
+        env:
+          WANT: ${{ inputs.version }}
+          APP: ${{ inputs.app }}
+        run: |
+          f=nekoyume/ProjectSettings/ProjectSettings.asset
+          have=$(awk '/^  bundleVersion:/{print $2}' "$f")
+          code=$(awk '/^  AndroidBundleVersionCode:/{print $2}' "$f")
+          if [ "$have" != "$WANT" ]; then
+            echo "::error::ref ${GITHUB_REF_NAME} 의 bundleVersion=$have 이 입력 $WANT 와 다르다"; exit 1
+          fi
+          pkg=com.planetariumlabs.ninechroniclesmobile
+          [ "$APP" = k ] && pkg=${pkg}k
+          echo "version_code=$code" >> "$GITHUB_OUTPUT"
+          echo "package=$pkg" >> "$GITHUB_OUTPUT"
+          echo "$pkg $WANT (versionCode $code)"
+
+  android:
+    needs: resolve
+    if: inputs.platform != 'ios'
+    runs-on: ubuntu-24.04
+    environment:
+      name: internal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/bin
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Submit to Google Play
+        env:
+          GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
+          NOTES_B64: ${{ inputs.notes_b64 }}
+          PACKAGE: ${{ needs.resolve.outputs.package }}
+          CODE: ${{ needs.resolve.outputs.version_code }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          pip install -q google-auth==2.35.0 requests==2.32.3
+          key=$(mktemp)
+          echo "$GOOGLE_PLAY_KEY_FILE" | base64 -d > "$key"
+          args=(--package "$PACKAGE" --version-code "$CODE" --key-file "$key" --notes-b64 "$NOTES_B64")
+          [ "$DRY_RUN" = true ] && args+=(--dry-run)
+          python .github/bin/play_submit.py "${args[@]}"
+          rm -f "$key"
+
+  ios:
+    needs: resolve
+    if: inputs.platform != 'android'
+    runs-on: macos-26
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      IOS_APP_ID: ${{ inputs.app == 'k' && 'com.planetariumlabs.ninechroniclesmobilek' || 'com.planetariumlabs.ninechroniclesmobile' }}
+      SUBMIT_APP_VERSION: ${{ inputs.version }}
+      RELEASE_NOTES_B64: ${{ inputs.notes_b64 }}
+      SUBMIT_DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            fastlane
+            Gemfile
+            Gemfile.lock
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+      - name: Submit to App Store review
+        run: bundle exec fastlane ios submit
