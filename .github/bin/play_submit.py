@@ -54,26 +54,31 @@ def main():
         return r.json() if r.text else {}
 
     edit = call("POST", "/edits")["id"]
-    internal = call("GET", f"/edits/{edit}/tracks/internal")
-    codes = {c for rel in internal.get("releases", []) for c in rel.get("versionCodes", [])}
-    if str(a.version_code) not in codes:
-        call("DELETE", f"/edits/{edit}")
-        sys.exit(f"version code {a.version_code} is not on the internal track (has {sorted(codes)})")
+    committed = False
+    try:
+        internal = call("GET", f"/edits/{edit}/tracks/internal")
+        codes = {c for rel in internal.get("releases", []) for c in rel.get("versionCodes", [])}
+        if str(a.version_code) not in codes:
+            sys.exit(f"version code {a.version_code} is not on the internal track (has {sorted(codes)})")
 
-    release = {
-        "versionCodes": [str(a.version_code)],
-        "status": "completed",
-        "releaseNotes": [{"language": LANGS[k], "text": v} for k, v in notes.items()],
-    }
-    call("PUT", f"/edits/{edit}/tracks/production", json={"track": "production", "releases": [release]})
+        release = {
+            "versionCodes": [str(a.version_code)],
+            "status": "completed",
+            "releaseNotes": [{"language": LANGS[k], "text": v} for k, v in notes.items()],
+        }
+        call("PUT", f"/edits/{edit}/tracks/production", json={"track": "production", "releases": [release]})
 
-    if a.dry_run:
-        call("POST", f"/edits/{edit}:validate")
-        call("DELETE", f"/edits/{edit}")
-        print(f"dry-run ok: {a.package} {a.version_code} would go to production review")
-        return
-    call("POST", f"/edits/{edit}:commit")
-    print(f"submitted: {a.package} {a.version_code} sent to production review")
+        if a.dry_run:
+            call("POST", f"/edits/{edit}:validate")
+            print(f"dry-run ok: {a.package} {a.version_code} would go to production review")
+            return
+        # A 400 mentioning changesNotSentForReview means Play wants this sent from the console.
+        call("POST", f"/edits/{edit}:commit")
+        committed = True
+        print(f"submitted: {a.package} {a.version_code} sent to production review")
+    finally:
+        if not committed:
+            s.delete(f"{API}/{a.package}/edits/{edit}", timeout=60)
 
 
 if __name__ == "__main__":

@@ -26,6 +26,10 @@ on:
         description: "확인만 하고 제출하지 않는다"
         type: boolean
         default: true
+      managed_publishing_on:
+        description: "플레이 콘솔에서 이 앱의 관리형 게시가 켜져 있음을 확인했다(꺼져 있으면 승인 즉시 출시) — 안드로이드 실제 제출에 필수"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -82,7 +86,11 @@ jobs:
           PACKAGE: ${{ needs.resolve.outputs.package }}
           CODE: ${{ needs.resolve.outputs.version_code }}
           DRY_RUN: ${{ inputs.dry_run }}
+          MANAGED_PUBLISHING_ON: ${{ inputs.managed_publishing_on }}
         run: |
+          if [ "$DRY_RUN" != true ] && [ "$MANAGED_PUBLISHING_ON" != true ]; then
+            echo "::error::관리형 게시 확인(managed_publishing_on) 없이 플레이 실제 제출은 하지 않는다"; exit 1
+          fi
           pip install -q google-auth==2.35.0 requests==2.32.3
           key=$(mktemp)
           echo "$GOOGLE_PLAY_KEY_FILE" | base64 -d > "$key"
@@ -94,7 +102,8 @@ jobs:
   ios:
     needs: resolve
     if: inputs.platform != 'android'
-    runs-on: macos-26
+    # deliver 제출만 하므로 Xcode 가 필요 없다. ruby 2.7 은 24.04 에서 깔린다.
+    runs-on: ubuntu-24.04
     env:
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
