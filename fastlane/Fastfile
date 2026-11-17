@@ -48,6 +48,7 @@ platform :ios do
       builds = Spaceship::ConnectAPI.get_builds(
         filter: { app: app.id, 'preReleaseVersion.version' => version, 'preReleaseVersion.platform' => 'IOS', 'processingState' => 'VALID', 'expired' => 'false' },
         sort: '-uploadedDate',
+        includes: 'preReleaseVersion',
         limit: 1
       )
       UI.user_error!("#{ENV['IOS_APP_ID']} #{version}: no processed, unexpired TestFlight build") if builds.empty?
