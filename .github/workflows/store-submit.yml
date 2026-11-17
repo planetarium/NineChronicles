@@ -8,6 +8,8 @@ on:
   push:
     branches: [development]
     paths: [.github/workflows/store-submit.yml]
+  pull_request:
+    paths: [.github/workflows/store-submit.yml]
   workflow_dispatch:
     inputs:
       app:
