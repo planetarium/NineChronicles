@@ -112,9 +112,10 @@ jobs:
     # deliver 제출만 하므로 Xcode 가 필요 없다. ruby 2.7 은 24.04 에서 깔린다.
     runs-on: ubuntu-24.04
     env:
-      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      # 심사 제출 전용 App Store Connect API 키(App Manager). 빌드 업로드 키(ASC_KEY_*)는 Developer 라 앱스토어 버전을 못 바꾼다.
+      ASC_KEY_ID: ${{ secrets.ASC_SUBMIT_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_SUBMIT_KEY_CONTENT }}
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       IOS_APP_ID: ${{ inputs.app == 'k' && 'com.planetariumlabs.ninechroniclesmobilek' || 'com.planetariumlabs.ninechroniclesmobile' }}
       SUBMIT_APP_VERSION: ${{ inputs.version }}
