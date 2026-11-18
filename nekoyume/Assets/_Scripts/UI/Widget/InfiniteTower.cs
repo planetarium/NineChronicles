@@ -151,8 +151,8 @@ namespace Nekoyume.UI
                 }
 
 
-                // InfiniteTowerBoardState 주소 생성
-                var seasonAddress = new Address($"{scheduleInfo.InfiniteTowerId:X40}");
+                // InfiniteTowerBoardState 주소 생성 — 소문자 hex 여야 한다(대문자면 체크섬 검사로 id 11·13·26 등에서 예외, PLD-1757)
+                var seasonAddress = new Address($"{scheduleInfo.InfiniteTowerId:x40}");
 
                 // State 조회
                 var state = await Game.Game.instance.Agent.GetStateAsync(Addresses.InfiniteTowerBoard, seasonAddress);
