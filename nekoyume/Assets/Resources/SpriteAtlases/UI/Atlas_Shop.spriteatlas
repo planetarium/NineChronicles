@@ -85,6 +85,7 @@ SpriteAtlas:
     - 0d648aa642b7e2f408aa3dc658bd5530: 21300000
     - fb2fb1b67c46f491bb19c272de545c18: 21300000
     - 269c85b65867dab46ab2461e71e5bd2a: 21300000
+    - bcb7e7b6a0574f0da66394a75d83651b: 21300000
     - 65711e27f1bc543e6b9c1ed7a729ed4f: 21300000
     - 1c5789574157148ca8dd4529f00cd13a: 21300000
     - f5697c5701f468c46b57c5156c196676: 21300000
@@ -96,6 +97,7 @@ SpriteAtlas:
     - 4c6b34a80ea8a4867af47bd2e7fc74ba: 21300000
     - adf9cea82b89b49de8912cc58a3f7c1c: 21300000
     - 96f074090c16d7f40b9fb7b2324f299a: 21300000
+    - 60695b090cff4e369ed19c3ad5c137f1: 21300000
     - 60782f2996c1245ada95a3816daa61b1: 21300000
     - 4fee7d49090114040afe8abfc3c07fa9: 21300000
     - 0984dd79ab04d1c46a06353eb0759aca: 21300000
@@ -178,6 +180,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0d648aa642b7e2f408aa3dc658bd5530, type: 3}
   - {fileID: 21300000, guid: fb2fb1b67c46f491bb19c272de545c18, type: 3}
   - {fileID: 21300000, guid: 269c85b65867dab46ab2461e71e5bd2a, type: 3}
+  - {fileID: 21300000, guid: bcb7e7b6a0574f0da66394a75d83651b, type: 3}
   - {fileID: 21300000, guid: 65711e27f1bc543e6b9c1ed7a729ed4f, type: 3}
   - {fileID: 21300000, guid: 1c5789574157148ca8dd4529f00cd13a, type: 3}
   - {fileID: 21300000, guid: f5697c5701f468c46b57c5156c196676, type: 3}
@@ -189,6 +192,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4c6b34a80ea8a4867af47bd2e7fc74ba, type: 3}
   - {fileID: 21300000, guid: adf9cea82b89b49de8912cc58a3f7c1c, type: 3}
   - {fileID: 21300000, guid: 96f074090c16d7f40b9fb7b2324f299a, type: 3}
+  - {fileID: 21300000, guid: 60695b090cff4e369ed19c3ad5c137f1, type: 3}
   - {fileID: 21300000, guid: 60782f2996c1245ada95a3816daa61b1, type: 3}
   - {fileID: 21300000, guid: 4fee7d49090114040afe8abfc3c07fa9, type: 3}
   - {fileID: 21300000, guid: 0984dd79ab04d1c46a06353eb0759aca, type: 3}
@@ -270,6 +274,7 @@ SpriteAtlas:
   - Shop_List_Bg_5
   - Shop_bg_09
   - Shop_List_Bg_2_s
+  - item_bg_Color_Inner
   - Shop_bg_11
   - icon_Search
   - bg_shop_05
@@ -281,6 +286,7 @@ SpriteAtlas:
   - Shop_bg_13
   - Common_Btn_Select
   - Icon_Shop_Package
+  - item_bg_Normal_Inner
   - Shop_bg_02
   - Common_TabSub_Normal
   - Shop_ListBox_Pattern

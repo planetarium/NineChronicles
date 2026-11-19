@@ -1,4 +1,5 @@
 using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -66,6 +67,38 @@ namespace Nekoyume.UI.Module
             {
                 overlayTransform.SetAsLastSibling();
             }
+        }
+
+        /// <summary>
+        /// 색 보정(UIHsvModifier) 없이 등급 배경 파일을 직접 쓰는 칸(보상·합성 칸 등)에서 장비·재료의 등급 배경을 그린다.
+        /// 금테가 있는 등급(9등급~)은 바깥 테두리를 비운 배경 위에 <see cref="ItemViewData.GradeFrameOverlay"/> 를
+        /// 덮어 <see cref="ApplyGradeFrame"/> 을 쓰는 칸과 같은 모양을 만들고, 그 밖의 등급은 예전처럼 item_bg_{등급} 만 쓴다.
+        /// </summary>
+        public static void ApplyItemGradeBackground(Image gradeImage, Image itemImage, int grade)
+        {
+            if (gradeImage == null)
+            {
+                return;
+            }
+
+            var data = FindItemViewData(grade);
+            var hasFrame = data != null && data.Grade == grade && data.GradeFrameOverlay != null;
+            gradeImage.sprite = hasFrame
+                ? SpriteHelper.GetItemInnerBackground(grade)
+                : SpriteHelper.GetItemBackground(grade);
+            ApplyGradeFrame(gradeImage, itemImage, hasFrame ? data : null);
+        }
+
+        private static ItemViewDataScriptableObject _itemViewData;
+
+        private static ItemViewData FindItemViewData(int grade)
+        {
+            if (_itemViewData == null)
+            {
+                _itemViewData = Resources.Load<ItemViewDataScriptableObject>("ScriptableObject/UI_ItemViewData");
+            }
+
+            return _itemViewData != null ? _itemViewData.GetItemViewData(grade) : null;
         }
 
         /// <summary>

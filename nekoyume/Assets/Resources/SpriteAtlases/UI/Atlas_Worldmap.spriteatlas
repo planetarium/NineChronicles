@@ -80,6 +80,7 @@ SpriteAtlas:
     - 6105e7e5b5d97412a86a4586eadc107a: 21300000
     - d7dd09e5fa86e4b13a9c7a7664b8d57f: 21300000
     - cf3d1e363eca2d94a81c8337fad78878: 21300000
+    - f72ef696fa454da694ef7d9e00e2beea: 21300000
     - 8804d0a68f34f4d918c719e22e1b8416: 21300000
     - bcf882b6a6a0746ceac1ef610331efc8: 21300000
     - 111eb0e618e4d4bfeac6318521de9be1: 21300000
@@ -163,6 +164,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6105e7e5b5d97412a86a4586eadc107a, type: 3}
   - {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f, type: 3}
   - {fileID: 21300000, guid: cf3d1e363eca2d94a81c8337fad78878, type: 3}
+  - {fileID: 21300000, guid: f72ef696fa454da694ef7d9e00e2beea, type: 3}
   - {fileID: 21300000, guid: 8804d0a68f34f4d918c719e22e1b8416, type: 3}
   - {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8, type: 3}
   - {fileID: 21300000, guid: 111eb0e618e4d4bfeac6318521de9be1, type: 3}
@@ -245,6 +247,7 @@ SpriteAtlas:
   - bg_worldmap_niflheim_icon_01
   - bg_worldmap_asgard_icon_02
   - bg_worldmap_ragnarokevent_icon_01
+  - UI_worldmap_open_tooltip
   - bg_worldmap_event_icon_03
   - bg_worldmap_asgard_icon_03
   - bg_worldmap_infinitetower_icon_01

@@ -251,6 +251,7 @@ namespace Nekoyume.UI.Module
             itemImage.overrideSprite = RuneFrontHelper.DefaultRuneIcon;
             itemImage.SetNativeSize();
             gradeImage.gameObject.SetActive(false);
+            GradeFrameHelper.Hide(gradeImage);
         }
 
         private void UpdateGrade(RuneListSheet.Row row)
@@ -258,6 +259,7 @@ namespace Nekoyume.UI.Module
             gradeImage.gameObject.SetActive(true);
             var data = itemViewData.GetItemViewData(row.Grade);
             gradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(gradeImage, itemImage, data);
             gradeHsv.range = data.GradeHsvRange;
             gradeHsv.hue = data.GradeHsvHue;
             gradeHsv.saturation = data.GradeHsvSaturation;

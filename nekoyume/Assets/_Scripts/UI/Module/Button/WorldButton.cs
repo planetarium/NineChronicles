@@ -68,6 +68,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
+        [SerializeField][Tooltip("하드월드 개방 조건 말풍선. 없는 버튼(일반 월드 등)은 비워 둔다.")]
+        private WorldOpenStatusBubble openStatusBubble;
+
         private readonly ReactiveProperty<WorldState> _state = new(WorldState.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState = new(AnimationState.None);
@@ -211,6 +214,32 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        /// <summary>아직 열리지 않은 구간의 개방 조건 말풍선을 띄운다. null 이면 숨긴다.</summary>
+        public void ShowOpenStatus(WorldOpenStatus status)
+        {
+            if (openStatusBubble != null)
+            {
+                openStatusBubble.Show(status);
+            }
+        }
+
+        /// <summary>체인에서 열렸고 아직 해금하지 않은 월드에 "눌러서 열기" 말풍선을 띄운다.</summary>
+        public void ShowOpenStatusTapToOpen()
+        {
+            if (openStatusBubble != null)
+            {
+                openStatusBubble.ShowTapToOpen();
+            }
+        }
+
+        public void HideOpenStatus()
+        {
+            if (openStatusBubble != null)
+            {
+                openStatusBubble.Hide();
+            }
         }
 
         public void Unlock(bool crystalLock = false)

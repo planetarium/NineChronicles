@@ -608,7 +608,8 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    _infiniteTowerFloorCount = log.stageId;
+                    _infiniteTowerFloorCount = InfiniteTowerFloorHelper.GetFloorNumber(
+                        TableSheets.Instance.InfiniteTowerFloorSheet, log.stageId);
                     zone = GetCurrentInfiniteTowerBackgroundKey();
                     bgmName = stageRow.BGM;
 
@@ -653,7 +654,8 @@ namespace Nekoyume.Game.Battle
             }
             else if (StageType == StageType.InfiniteTower)
             {
-                title.Show(StageType, stageId);
+                title.Show(StageType, InfiniteTowerFloorHelper.GetFloorNumber(
+                    TableSheets.Instance.InfiniteTowerFloorSheet, stageId));
             }
             else
             {
@@ -819,11 +821,14 @@ namespace Nekoyume.Game.Battle
                     {
                         _battleResultModel.WorldName = worldRow.GetLocalizedName();
                         _battleResultModel.IsEndStage = stageId == worldRow.StageEnd;
+                        _battleResultModel.IsNextStageLocked = !_battleResultModel.IsEndStage &&
+                            !WorldOpenFront.IsStageOpen(worldRow.Id, stageId + 1);
                     }
                     else
                     {
                         _battleResultModel.WorldName = string.Empty;
                         _battleResultModel.IsEndStage = false;
+                        _battleResultModel.IsNextStageLocked = false;
                     }
 
                     if (TableSheets.Instance.StageSheet
@@ -901,6 +906,11 @@ namespace Nekoyume.Game.Battle
                     _battleResultModel.NextState = StageType == StageType.EventDungeon
                         ? BattleResultPopup.NextState.None
                         : BattleResultPopup.NextState.GoToMain;
+                }
+                else if (_battleResultModel.IsNextStageLocked)
+                {
+                    // 다음 스테이지가 아직 열리지 않았다(하드월드 진행 개방). 자동으로 넘어가지 않는다.
+                    _battleResultModel.NextState = BattleResultPopup.NextState.None;
                 }
                 else
                 {

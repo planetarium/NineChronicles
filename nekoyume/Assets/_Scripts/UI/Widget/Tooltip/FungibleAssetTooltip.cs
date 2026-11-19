@@ -286,6 +286,7 @@ namespace Nekoyume.UI
 
             var data = itemViewDataScriptableObject.GetItemViewData(grade);
             gradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(gradeImage, fungibleAssetImage, data);
             gradeHsv.range = data.GradeHsvRange;
             gradeHsv.hue = data.GradeHsvHue;
             gradeHsv.saturation = data.GradeHsvSaturation;

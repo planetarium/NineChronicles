@@ -60,6 +60,7 @@ namespace Nekoyume.Blockchain
                     _balanceUpdateRequired = true;
                     _avatarUpdateRequired = true;
                     RequestBoostScheduleSheetRefresh();
+                    WorldOpenFront.RequestRefresh();
                 }).AddTo(_disposables);
             }
         }
@@ -112,6 +113,11 @@ namespace Nekoyume.Blockchain
                 Game.Game.instance.TableSheets is not null)
             {
                 RefreshBoostScheduleSheetAsync().Forget();
+            }
+
+            if (Game.Game.instance.TableSheets is not null)
+            {
+                WorldOpenFront.OnBlockRendered(agent.BlockIndex);
             }
 
             var agentState = States.Instance.AgentState;

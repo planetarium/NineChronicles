@@ -57,6 +57,7 @@ namespace Nekoyume.UI.Module
             RewardImage.sprite = SpriteHelper.GetFavIcon(fungibleAssetValue.Ticker);
             RewardCount.text = ((BigInteger)fungibleAssetValue.Amount).ToCurrencyNotation();
             RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(fungibleAssetValue.Ticker));
+            GradeFrameHelper.Hide(RewardGrade);
         }
 
         public void SetItemBase(FungibleItemSchema itemBase)
@@ -75,11 +76,12 @@ namespace Nekoyume.UI.Module
             try
             {
                 var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemBase.SheetItemId];
-                RewardGrade.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+                GradeFrameHelper.ApplyItemGradeBackground(RewardGrade, RewardImage, itemSheetData.Grade);
                 itemBaseForToolTip = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
             }
             catch
             {
+                GradeFrameHelper.Hide(RewardGrade);
                 NcDebug.LogError($"Can't Find Item ID {itemBase.SheetItemId} in ItemSheet");
             }
             fungibleAssetValue = null;
