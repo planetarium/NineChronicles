@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using UnityEngine;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -54,6 +55,7 @@ namespace Nekoyume.UI.Scroller
 
             var data = view.GetItemViewData(viewModel.SheetData.Grade);
             view.GradeImage.overrideSprite = data.GradeBackground;
+            GradeFrameHelper.ApplyGradeFrame(view.GradeImage, view.ItemImage, data);
             view.GradeHsv.range = data.GradeHsvRange;
             view.GradeHsv.hue = data.GradeHsvHue;
             view.GradeHsv.saturation = data.GradeHsvSaturation;

@@ -42,10 +42,11 @@ namespace Nekoyume
         
         public static string ToCurrencyNotation(this decimal value)
         {
-            string[] suffixes = { "", "K", "M", "B" };
+            string[] suffixes = { "", "K", "M", "B", "T" };
 
+            // 마지막 단위에서 멈춘다. 그 이상은 T 앞의 수가 커진다.
             var suffixIndex = 0;
-            while (value >= 1000 && suffixIndex < suffixes.Length)
+            while (value >= 1000 && suffixIndex < suffixes.Length - 1)
             {
                 value /= 1000;
                 suffixIndex++;

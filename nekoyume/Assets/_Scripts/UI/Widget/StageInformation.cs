@@ -10,6 +10,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -190,22 +191,40 @@ namespace Nekoyume.UI
                 .FirstOrDefault()?
                 .Goal ?? -1;
 
-            if (worldModel.IsUnlocked)
+            void SetOpenedStage(int selectedStageId)
             {
-                var openedStageId = worldModel.GetNextStageIdForPlay();
-                if (worldModel.StageEnd < worldRow.StageEnd &&
-                    openedStageId == worldModel.StageEnd &&
-                    openedStageId == worldModel.StageClearedId)
+                if (worldModel.IsUnlocked)
                 {
-                    openedStageId += 1;
-                }
+                    var openedStageId = worldModel.GetNextStageIdForPlay();
+                    if (worldModel.StageEnd < worldRow.StageEnd &&
+                        openedStageId == worldModel.StageEnd &&
+                        openedStageId == worldModel.StageClearedId)
+                    {
+                        openedStageId += 1;
+                    }
 
-                world.Set(openedStageId, worldModel.GetNextStageId());
+                    // 하드월드 진행 개방: 아직 열리지 않은 스테이지는 Disabled 로 그린다.
+                    openedStageId = Math.Min(openedStageId, WorldOpenFront.GetOpenedStageEnd(worldRow.Id));
+                    world.Set(openedStageId, selectedStageId);
+                }
+                else
+                {
+                    world.Set(-1, world.SharedViewModel.RowData.StageBegin);
+                }
             }
-            else
-            {
-                world.Set(-1, world.SharedViewModel.RowData.StageBegin);
-            }
+
+            SetOpenedStage(worldModel.GetNextStageId());
+
+            // 확정·열림은 남의 액션·블록 경과로 일어나므로 열 때마다 다시 읽고, 바뀌면 다시 그린다.
+            WorldOpenFront.Changed
+                .Subscribe(_ =>
+                {
+                    var selectedStageId = _sharedViewModel.SelectedStageId.Value;
+                    SetOpenedStage(selectedStageId);
+                    UpdateStageInfoSubmitButtonForWorld(selectedStageId);
+                })
+                .AddTo(_disposablesOnShow);
+            WorldOpenFront.RefreshAsync().Forget();
 
             base.Show(true);
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
@@ -249,7 +268,8 @@ namespace Nekoyume.UI
             {
                 if (worldInfo.TryGetWorldByStageId(stageId, out var innerWorld))
                 {
-                    isSubmittable = innerWorld.IsPlayable(stageId);
+                    isSubmittable = innerWorld.IsPlayable(stageId) &&
+                        WorldOpenFront.IsStageOpen(innerWorld.Id, stageId);
                 }
                 else
                 {
@@ -261,7 +281,8 @@ namespace Nekoyume.UI
                         worldInfo.UpdateWorld(worldRow);
                         if (worldInfo.TryGetWorldByStageId(stageId, out var world2))
                         {
-                            isSubmittable = world2.IsPlayable(stageId);
+                            isSubmittable = world2.IsPlayable(stageId) &&
+                                WorldOpenFront.IsStageOpen(world2.Id, stageId);
                         }
                         else
                         {

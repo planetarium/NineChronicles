@@ -84,13 +84,14 @@ namespace Nekoyume.UI.Module
                     try
                     {
                         var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemInfo.Id];
-                        ItemView.GradeImage.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+                        GradeFrameHelper.ApplyItemGradeBackground(ItemView.GradeImage, ItemView.ItemImage, itemSheetData.Grade);
 
                         var dummyItem = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
                         itemBaseForToolTip = dummyItem;
                     }
                     catch
                     {
+                        GradeFrameHelper.Hide(ItemView.GradeImage);
                         NcDebug.LogError($"Can't Find Item ID {itemInfo.Id} in ItemSheet");
                     }
                 }
@@ -101,6 +102,7 @@ namespace Nekoyume.UI.Module
                     ItemView.ItemImage.overrideSprite = SpriteHelper.GetFavIcon(currencyInfo.Ticker);
                     ItemView.CountText.text = ((BigInteger)currencyInfo.Amount).ToCurrencyNotation();
                     ItemView.GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(currencyInfo.Ticker));
+                    GradeFrameHelper.Hide(ItemView.GradeImage);
                 }
                 else
                 {

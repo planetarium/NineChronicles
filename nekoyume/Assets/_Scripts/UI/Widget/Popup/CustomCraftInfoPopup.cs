@@ -74,7 +74,7 @@ namespace Nekoyume.UI
                         .Aggregate((str1, str2) => $"{str1} / {str2}");
                     var totalCpString = row.SubStatData
                         .Select(stat =>
-                            $"{stat.StatType} {TextHelper.FormatNumber((int) CPHelper.ConvertCpToStat(stat.StatType, maxCp / 100m * stat.Ratio, 1))}")
+                            $"{stat.StatType} {TextHelper.FormatNumber((long) CPHelper.ConvertCpToStat(stat.StatType, maxCp / 100m * stat.Ratio, 1))}")
                         .Aggregate((str1, str2) => $"{str1} / {str2}");
                     return new CustomCraftStatCell.Model
                         {CompositionString = compositionString, SubStatTotalString = totalCpString};

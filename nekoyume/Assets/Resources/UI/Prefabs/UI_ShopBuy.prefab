@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 287133844791679126}
   - component: {fileID: 8438355229655383530}
   m_Layer: 5
-  m_Name: TransactionHistoryText
+  m_Name: CustomFiltersText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -295,7 +295,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: UI_TRANSACTION_HISTORY
+  m_text: BTN_CUSTOM_FILTERS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -382,7 +382,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_TRANSACTION_HISTORY
+  l10nKey: BTN_CUSTOM_FILTERS
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -761,7 +761,7 @@ GameObject:
   - component: {fileID: 6549035835179561476}
   - component: {fileID: 1678776490358706839}
   m_Layer: 5
-  m_Name: TransactionHistoryButton
+  m_Name: CustomFiltersButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1607,7 +1607,7 @@ MonoBehaviour:
   sortOrderButton: {fileID: 7144434130118635500}
   searchButton: {fileID: 9097854314485950692}
   resetButton: {fileID: 4365345903341907662}
-  historyButton: {fileID: 6549035835179561476}
+  customFiltersButton: {fileID: 6549035835179561476}
   showCartButton: {fileID: 8059434100300306845}
   levelLimitToggle: {fileID: 2460315772933951755}
   sortOrderIcon: {fileID: 3682001794804497696}

@@ -81,6 +81,10 @@ namespace Nekoyume.Blockchain
                 case InvalidWorldException _:
                     code = "13";
                     break;
+                case StageNotOpenedException _:
+                    key = "UI_WORLD_OPEN_LOCKED";
+                    code = "67";
+                    break;
                 case InvalidStageException _:
                     code = "14";
                     break;

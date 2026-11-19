@@ -336,7 +336,7 @@ namespace Nekoyume
             try
             {
                 var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemId];
-                GradeImage.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+                GradeFrameHelper.ApplyItemGradeBackground(GradeImage, ItemImage, itemSheetData.Grade);
             }
             catch
             {

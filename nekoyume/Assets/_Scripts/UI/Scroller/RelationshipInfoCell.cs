@@ -11,8 +11,8 @@ namespace Nekoyume.UI.Scroller
         {
             public int MinRelationship;
             public int MaxRelationship;
-            public int MinCp;
-            public int MaxCp;
+            public long MinCp;
+            public long MaxCp;
             public int RequiredLevel;
         }
 

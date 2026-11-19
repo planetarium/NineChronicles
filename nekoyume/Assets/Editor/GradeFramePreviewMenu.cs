@@ -117,7 +117,7 @@ namespace Nekoyume.EditorTools
             {
                 Debug.LogError(
                     "[등급테두리] 9등급 항목에 gradeFrameOverlay 가 비어 있다." +
-                    " UI_ItemViewData.asset 의 9등급에 item_frame_9 를 지정해야 한다.");
+                    " UI_ItemViewData.asset 의 9등급에 item_frame_ultimate 를 지정해야 한다.");
                 return;
             }
 
