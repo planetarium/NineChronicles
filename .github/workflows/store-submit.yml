@@ -142,7 +142,7 @@ jobs:
 
   ios-release:
     # 심사 통과 → 출시 대기(PENDING_DEVELOPER_RELEASE)인 버전만 출시한다. 이미 출시됐으면 성공(already released).
-    if: ${{ inputs.action == 'release' && !startsWith(github.ref_name, 'donggeul/') }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'release' && !startsWith(github.ref_name, 'donggeul/') }}
     runs-on: ubuntu-24.04
     env:
       # 심사 제출과 같은 App Manager 키. 빌드 업로드 키(ASC_KEY_*)는 Developer 라 출시할 수 없다.
