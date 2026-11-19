@@ -407,9 +407,21 @@ jobs:
           echo "name=${name}" >> "$GITHUB_OUTPUT"
           echo "size=${size}" >> "$GITHUB_OUTPUT"
           echo "원스토어 APK: ${name} ($((size / 1024 / 1024))MB)"
+          # 원스토어 심사 제출은 AAB 를 받는다 — 같은 빌드의 서명된 AAB 도 같은 이름 규칙으로 꺼낸다(APK 는 QA 설치용).
+          # AAB 를 못 꺼내도 APK 업로드는 그대로 한다(출력 없이 넘어감).
+          aab="${name%.apk}.aab"
+          if sudo cat /tmp/player/Android/android-build.aab > "/tmp/onestore/${aab}" && [ -s "/tmp/onestore/${aab}" ]; then
+            asize=$(stat -c%s "/tmp/onestore/${aab}")
+            echo "aab_path=/tmp/onestore/${aab}" >> "$GITHUB_OUTPUT"
+            echo "aab_name=${aab}" >> "$GITHUB_OUTPUT"
+            echo "aab_size=${asize}" >> "$GITHUB_OUTPUT"
+            echo "원스토어 AAB: ${aab} ($((asize / 1024 / 1024))MB)"
+          else
+            echo "::warning::원스토어 AAB 를 꺼내지 못했다 — APK 만 올린다"
+          fi
 
       # 슬랙 쪽 문제(토큰 스코프·채널 권한)로 릴리즈 빌드가 깨지면 안 된다.
-      - name: Upload ONE Store APK to Slack
+      - name: Upload ONE Store APK·AAB to Slack
         if: steps.apk.outcome == 'success'
         continue-on-error: true
         env:
@@ -418,6 +430,9 @@ jobs:
           APK_PATH: ${{ steps.apk.outputs.path }}
           APK_NAME: ${{ steps.apk.outputs.name }}
           APK_SIZE: ${{ steps.apk.outputs.size }}
+          AAB_PATH: ${{ steps.apk.outputs.aab_path }}
+          AAB_NAME: ${{ steps.apk.outputs.aab_name }}
+          AAB_SIZE: ${{ steps.apk.outputs.aab_size }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
@@ -449,45 +464,49 @@ jobs:
             https://slack.com/api/auth.test | tr -d '\r' | awk -F': ' '/^[Xx]-[Oo][Aa]uth-[Ss]copes:/{print $2}')
           echo "슬랙 토큰 스코프: ${scopes:-확인 불가}"
 
-          mb=$((APK_SIZE / 1024 / 1024))
-
-          # 슬랙 파일 한도는 1GB 다. 넘으면 올리지 않고 아티팩트 링크만 알린다.
-          if [ "$APK_SIZE" -gt $((1024 * 1024 * 1024)) ]; then
-            echo "APK 가 슬랙 한도(1GB)를 넘어 파일 업로드를 건너뛴다."
-            post_text "[Player] Prepared 'ONE Store' apk (${APK_NAME}, ${mb}MB) — 슬랙 한도 초과라 아티팩트로 받으세요: ${RUN_URL}" > /dev/null
-            exit 0
-          fi
-
-          channel_id=$(post_text "[Player] Prepared 'ONE Store' apk - ${APK_NAME} (${mb}MB)")
-          echo "슬랙 채널 ID: ${channel_id}"
-
+          channel_id=""
           # 업로드가 안 되면 조용히 끝내지 않는다 — QA 는 슬랙만 보고 기다린다.
           fallback() {
             echo "$1" >&2
-            post_text "[Player] 'ONE Store' apk 슬랙 업로드 실패 — 아티팩트로 받으세요: ${RUN_URL}" > /dev/null || true
-            exit 0
+            post_text "[Player] 'ONE Store' ${2} 슬랙 업로드 실패 — 아티팩트로 받으세요: ${RUN_URL}" > /dev/null || true
           }
 
-          # files.upload 은 폐기됐다. 외부 업로드 3단계를 쓴다.
-          up=$(curl -sS -X POST https://slack.com/api/files.getUploadURLExternal \
-            -H "Authorization: Bearer ${SLACK_TOKEN}" \
-            --data-urlencode "filename=${APK_NAME}" \
-            --data-urlencode "length=${APK_SIZE}")
-          echo "$up" | jq -e '.ok' > /dev/null || fallback "getUploadURLExternal 실패: $up"
+          # $1=종류(apk|aab) $2=경로 $3=이름 $4=크기 $5=설명 — 파일 하나 실패해도 다음 파일은 올린다
+          upload() {
+            local kind=$1 path=$2 name=$3 size=$4 note=$5 mb up res
+            mb=$((size / 1024 / 1024))
+            # 슬랙 파일 한도는 1GB 다. 넘으면 올리지 않고 아티팩트 링크만 알린다.
+            if [ "$size" -gt $((1024 * 1024 * 1024)) ]; then
+              echo "${kind} 가 슬랙 한도(1GB)를 넘어 파일 업로드를 건너뛴다."
+              post_text "[Player] Prepared 'ONE Store' ${kind} (${name}, ${mb}MB, ${note}) — 슬랙 한도 초과라 아티팩트로 받으세요: ${RUN_URL}" > /dev/null
+              return 0
+            fi
+            channel_id=$(post_text "[Player] Prepared 'ONE Store' ${kind} - ${name} (${mb}MB, ${note})")
+            echo "슬랙 채널 ID: ${channel_id}"
+            # files.upload 은 폐기됐다. 외부 업로드 3단계를 쓴다.
+            up=$(curl -sS -X POST https://slack.com/api/files.getUploadURLExternal \
+              -H "Authorization: Bearer ${SLACK_TOKEN}" \
+              --data-urlencode "filename=${name}" \
+              --data-urlencode "length=${size}")
+            echo "$up" | jq -e '.ok' > /dev/null || { fallback "getUploadURLExternal 실패: $up" "$kind"; return 0; }
+            curl -sS --fail -X POST "$(echo "$up" | jq -r '.upload_url')" \
+              -F "file=@${path}" > /dev/null || { fallback "업로드 전송 실패" "$kind"; return 0; }
+            res=$(curl -sS -X POST https://slack.com/api/files.completeUploadExternal \
+              -H "Authorization: Bearer ${SLACK_TOKEN}" \
+              -H 'Content-Type: application/json; charset=utf-8' \
+              --data "$(jq -nc \
+                --arg id "$(echo "$up" | jq -r '.file_id')" \
+                --arg t "$name" \
+                --arg c "$channel_id" \
+                '{files:[{id:$id, title:$t}], channel_id:$c}')")
+            echo "$res" | jq -e '.ok' > /dev/null || { fallback "completeUploadExternal 실패: $res" "$kind"; return 0; }
+            echo "슬랙 업로드 완료: ${name}"
+          }
 
-          curl -sS --fail -X POST "$(echo "$up" | jq -r '.upload_url')" \
-            -F "file=@${APK_PATH}" > /dev/null || fallback "업로드 전송 실패"
-
-          res=$(curl -sS -X POST https://slack.com/api/files.completeUploadExternal \
-            -H "Authorization: Bearer ${SLACK_TOKEN}" \
-            -H 'Content-Type: application/json; charset=utf-8' \
-            --data "$(jq -nc \
-              --arg id "$(echo "$up" | jq -r '.file_id')" \
-              --arg t "$APK_NAME" \
-              --arg c "$channel_id" \
-              '{files:[{id:$id, title:$t}], channel_id:$c}')")
-          echo "$res" | jq -e '.ok' > /dev/null || fallback "completeUploadExternal 실패: $res"
-          echo "슬랙 업로드 완료: ${APK_NAME}"
+          upload apk "$APK_PATH" "$APK_NAME" "$APK_SIZE" "QA 설치용"
+          if [ -n "${AAB_PATH}" ] && [ -s "${AAB_PATH}" ]; then
+            upload aab "$AAB_PATH" "$AAB_NAME" "$AAB_SIZE" "원스토어 심사 제출용"
+          fi
 
   extract:
     if: ${{ ((startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')) && github.event.inputs.onestore != 'true') && !startsWith(github.head_ref || github.event.workflow_run.head_branch || github.ref_name, 'donggeul/') }}
