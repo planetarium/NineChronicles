@@ -3,9 +3,17 @@ name: Store Submit
 # 이미 올라간 빌드(플레이 internal·TestFlight)를 스토어 심사에 제출한다. 바이너리는 다시 올리지 않는다.
 # 승인돼도 자동으로 출시되지 않는다: iOS 는 automatic_release=false, 플레이는 콘솔의 관리형 게시가 켜져 있어야 한다.
 # release/<version> 을 ref 로 실행한다(안드로이드 versionCode 를 그 브랜치의 ProjectSettings 에서 읽는다).
+# action=release(iOS 만): 심사를 통과해 출시 대기(PENDING_DEVELOPER_RELEASE)인 그 버전을 App Store 에 출시한다.
+#   ProjectSettings 를 읽지 않으므로 이 입력이 있는 아무 ref(development 등)로 실행해도 된다. 노트는 쓰지 않는다.
+#   플레이는 관리형 게시라 API 로 게시할 수 없다 — 콘솔에서 사람이.
 on:
   workflow_dispatch:
     inputs:
+      action:
+        description: "submit (심사 제출) | release (iOS — 통과한 버전 출시)"
+        type: choice
+        options: [submit, release]
+        default: submit
       app:
         description: "m (Nine Chronicles M) | k (나인크로니클 K)"
         required: true
@@ -20,10 +28,10 @@ on:
         description: "클라 버전 ex(510.0.1) — ref 의 bundleVersion 과 같아야 한다"
         required: true
       notes_b64:
-        description: 'base64(JSON {"ko": "...", "en": "...", "ja": "...", "vi": "..."})'
-        required: true
+        description: 'base64(JSON {"ko": "...", "en": "...", "ja": "...", "vi": "..."}) — submit 에 필수, release 는 안 씀'
+        required: false
       dry_run:
-        description: "확인만 하고 제출하지 않는다"
+        description: "확인만 하고 제출·출시하지 않는다"
         type: boolean
         default: true
       managed_publishing_on:
@@ -40,6 +48,7 @@ concurrency:
 
 jobs:
   resolve:
+    if: inputs.action != 'release'
     runs-on: ubuntu-24.04
     outputs:
       version_code: ${{ steps.v.outputs.version_code }}
@@ -53,7 +62,11 @@ jobs:
         env:
           WANT: ${{ inputs.version }}
           APP: ${{ inputs.app }}
+          NOTES_B64: ${{ inputs.notes_b64 }}
         run: |
+          if [ -z "$NOTES_B64" ]; then
+            echo "::error::심사 제출(action=submit)에는 notes_b64 가 필요하다"; exit 1
+          fi
           f=nekoyume/ProjectSettings/ProjectSettings.asset
           have=$(awk '/^  bundleVersion:/{print $2}' "$f")
           code=$(awk '/^  AndroidBundleVersionCode:/{print $2}' "$f")
@@ -68,7 +81,7 @@ jobs:
 
   android:
     needs: resolve
-    if: inputs.platform != 'ios'
+    if: inputs.action != 'release' && inputs.platform != 'ios'
     runs-on: ubuntu-24.04
     environment:
       name: internal
@@ -101,7 +114,7 @@ jobs:
 
   ios:
     needs: resolve
-    if: inputs.platform != 'android'
+    if: inputs.action != 'release' && inputs.platform != 'android'
     # deliver 제출만 하므로 Xcode 가 필요 없다. ruby 2.7 은 24.04 에서 깔린다.
     runs-on: ubuntu-24.04
     env:
@@ -126,3 +139,38 @@ jobs:
           bundler-cache: true
       - name: Submit to App Store review
         run: bundle exec fastlane ios submit
+
+  ios-release:
+    # 심사 통과 → 출시 대기(PENDING_DEVELOPER_RELEASE)인 버전만 출시한다. 이미 출시됐으면 성공(already released).
+    if: ${{ inputs.action == 'release' && !startsWith(github.ref_name, 'donggeul/') }}
+    runs-on: ubuntu-24.04
+    env:
+      # 심사 제출과 같은 App Manager 키. 빌드 업로드 키(ASC_KEY_*)는 Developer 라 출시할 수 없다.
+      ASC_KEY_ID: ${{ secrets.ASC_SUBMIT_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_SUBMIT_KEY_CONTENT }}
+      IOS_APP_ID: ${{ inputs.app == 'k' && 'com.planetariumlabs.ninechroniclesmobilek' || 'com.planetariumlabs.ninechroniclesmobile' }}
+      SUBMIT_APP_VERSION: ${{ inputs.version }}
+      SUBMIT_DRY_RUN: ${{ inputs.dry_run }}
+      PLATFORM: ${{ inputs.platform }}
+    steps:
+      - name: Check inputs
+        run: |
+          if [ "$PLATFORM" != ios ]; then
+            echo "::error::release 는 iOS 만(platform=ios) — 플레이는 관리형 게시라 콘솔에서 사람이 게시한다"; exit 1
+          fi
+          if ! printf '%s' "$SUBMIT_APP_VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::version 형식(예 510.0.1): $SUBMIT_APP_VERSION"; exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            fastlane
+            Gemfile
+            Gemfile.lock
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+      - name: Release on the App Store
+        run: bundle exec fastlane ios release_approved

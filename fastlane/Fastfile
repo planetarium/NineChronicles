@@ -84,6 +84,53 @@ platform :ios do
       )
     end
 
+    desc "Release an App Store version that passed review and waits for manual release (no upload, no metadata)"
+    lane :release_approved do
+      # Log lines below are parsed by the ops tooling (donggeul ops-store-submit); keep their wording.
+      app_store_connect_api_key(
+        key_id: ENV['ASC_KEY_ID'],
+        issuer_id: ENV['ASC_ISSUER_ID'],
+        key_content: ENV['ASC_KEY_CONTENT'],
+      )
+      bundle = ENV.fetch('IOS_APP_ID')
+      version = ENV.fetch('SUBMIT_APP_VERSION')
+      app = Spaceship::ConnectAPI::App.find(bundle)
+      UI.user_error!("app #{bundle} not found") if app.nil?
+      versions = app.get_app_store_versions(filter: { versionString: version, platform: 'IOS' })
+      UI.user_error!("#{bundle} #{version}: no App Store version with this version string") if versions.empty?
+      UI.user_error!("#{bundle} #{version}: #{versions.size} App Store versions match") if versions.size > 1
+      asv = versions.first
+      # appStoreState is deprecated (API 3.3) but still returned; appVersionState is the replacement.
+      state = asv.app_version_state || asv.app_store_state
+      build = asv.build ? asv.build.version : 'none'
+      UI.message("release check: #{bundle} #{version} state #{state} (appStoreState #{asv.app_store_state}) build #{build}")
+
+      # Already released, or a release request is already being processed: nothing to do.
+      released = %w[READY_FOR_SALE READY_FOR_DISTRIBUTION PROCESSING_FOR_APP_STORE PROCESSING_FOR_DISTRIBUTION]
+      if released.include?(state) || released.include?(asv.app_store_state)
+        UI.success("already released: #{bundle} #{version} state #{state} build #{build}")
+        next
+      end
+      unless state == 'PENDING_DEVELOPER_RELEASE'
+        UI.user_error!("#{bundle} #{version}: state #{state} is not PENDING_DEVELOPER_RELEASE (approved, waiting for manual release) — not releasing")
+      end
+      if ENV['SUBMIT_DRY_RUN'] == 'true'
+        UI.success("release dry-run ok: #{bundle} #{version} build #{build} would be released")
+        next
+      end
+
+      asv.create_app_store_version_release_request
+      # The state changes asynchronously; read it back for the log (not a failure if it has not moved yet).
+      after = state
+      6.times do
+        sleep(5)
+        cur = Spaceship::ConnectAPI::AppStoreVersion.get(app_store_version_id: asv.id)
+        after = cur.app_version_state || cur.app_store_state
+        break unless after == 'PENDING_DEVELOPER_RELEASE'
+      end
+      UI.success("release requested: #{bundle} #{version} build #{build} state #{after}")
+    end
+
     desc "Submit a new Beta Build to Apple TestFlight"
     lane :beta do
       api_key = app_store_connect_api_key(
