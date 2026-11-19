@@ -45,13 +45,14 @@ platform :ios do
       # latest_testflight_build_number falls back to 1 when the version has no build, so query directly.
       app = Spaceship::ConnectAPI::App.find(ENV['IOS_APP_ID'])
       UI.user_error!("app #{ENV['IOS_APP_ID']} not found") if app.nil?
-      builds = Spaceship::ConnectAPI.get_builds(
+      latest = Spaceship::ConnectAPI.get_builds(
         filter: { app: app.id, 'preReleaseVersion.version' => version, 'preReleaseVersion.platform' => 'IOS', 'processingState' => 'VALID', 'expired' => 'false' },
         sort: '-uploadedDate',
+        includes: 'preReleaseVersion',
         limit: 1
-      )
-      UI.user_error!("#{ENV['IOS_APP_ID']} #{version}: no processed, unexpired TestFlight build") if builds.empty?
-      build = builds.first.version
+      ).first
+      UI.user_error!("#{ENV['IOS_APP_ID']} #{version}: no processed, unexpired TestFlight build") if latest.nil?
+      build = latest.version
       UI.message("#{ENV['IOS_APP_ID']} #{version}: latest valid TestFlight build #{build}")
 
       # deliver creates missing localizations; only allow locales the app already has.
