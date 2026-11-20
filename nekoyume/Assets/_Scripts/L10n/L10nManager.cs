@@ -528,7 +528,6 @@ namespace Nekoyume.L10n
             var key = $"ITEM_NAME_{itemId}";
             if (CurrentState == State.Initialized && !ContainsKey(key))
             {
-                LogMissingKeyOnce(key, warning: true);
                 string fallback = null;
                 try
                 {
@@ -541,6 +540,8 @@ namespace Nekoyume.L10n
 
                 if (!string.IsNullOrEmpty(fallback))
                 {
+                    // 대체 이름이 없으면 아래 Localize 가 오류로 남긴다(!KEY! 가 실제로 보이는 경우).
+                    LogMissingKeyOnce(key, warning: true);
                     return fallback;
                 }
             }
