@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Scroller
 
         private string GetGradeText(Grade targetGrade) => GetGradeText((int)targetGrade);
 
-        private string GetGradeText(int targetGrade) => L10nManager.Localize($"UI_ITEM_GRADE_{targetGrade}");
+        private string GetGradeText(int targetGrade) => L10nManager.LocalizeGrade(targetGrade);
 
         private void CheckNull()
         {

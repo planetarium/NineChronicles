@@ -105,6 +105,7 @@ namespace Nekoyume.Game
 
             ItemSheetInitialize();
             QuestSheetInitialize();
+            ItemSheetNames = ReadItemSheetNames(sheets);
             sw.Stop();
             NcDebug.Log($"[{nameof(TableSheets)}] Initialize Total: {DateTime.UtcNow - started}");
         }
@@ -491,6 +492,108 @@ namespace Nekoyume.Game
         /// <summary>노드가 시트 해시를 낼 때와 같은 정규화(<c>Game.NormalizeText</c>).</summary>
         private static string NormalizeBoostScheduleCsv(string csv) =>
             csv?.Replace("\r\n", "\n").Trim() ?? string.Empty;
+
+        /// <summary>
+        /// 아이템 시트 CSV 의 <c>_name</c> 열(기획이 채우는 영문 이름, 체인은 읽지 않는 주석 열).
+        /// 번역 키가 아직 없는 새 아이템 이름의 대체값으로 쓴다(<see cref="L10n.L10nManager.ItemNameFallback"/>).
+        /// </summary>
+        public IReadOnlyDictionary<int, string> ItemSheetNames { get; private set; } = new Dictionary<int, string>();
+
+        private static readonly string[] ItemSheetNamesSources =
+        {
+            nameof(ConsumableItemSheet), nameof(CostumeItemSheet), nameof(EquipmentItemSheet), nameof(MaterialItemSheet),
+        };
+
+        private static IReadOnlyDictionary<int, string> ReadItemSheetNames(IDictionary<string, string> sheets)
+        {
+            var names = new Dictionary<int, string>();
+            foreach (var sheetName in ItemSheetNamesSources)
+            {
+                if (!sheets.TryGetValue(sheetName, out var csv) || string.IsNullOrEmpty(csv))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    using var reader = new System.IO.StringReader(csv);
+                    var header = SplitCsvLine(reader.ReadLine());
+                    var nameIndex = Array.IndexOf(header, "_name");
+                    if (nameIndex < 1)
+                    {
+                        continue;
+                    }
+
+                    string line;
+                    while ((line = reader.ReadLine()) is not null)
+                    {
+                        var fields = SplitCsvLine(line);
+                        if (fields.Length > nameIndex &&
+                            int.TryParse(fields[0], out var id) &&
+                            !string.IsNullOrWhiteSpace(fields[nameIndex]))
+                        {
+                            names[id] = fields[nameIndex].Trim();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    // 이름은 표시 보조일 뿐이다 — 읽지 못해도 시트 로딩을 막지 않는다.
+                    NcDebug.LogWarning($"[{nameof(TableSheets)}] failed to read _name of {sheetName}: {e.Message}");
+                }
+            }
+
+            return names;
+        }
+
+        /// <summary>따옴표(<c>"a, b"</c>, <c>""</c>)를 지원하는 CSV 한 줄 나누기.</summary>
+        private static string[] SplitCsvLine(string line)
+        {
+            if (line is null)
+            {
+                return Array.Empty<string>();
+            }
+
+            var fields = new List<string>();
+            var sb = new StringBuilder();
+            var quoted = false;
+            for (var i = 0; i < line.Length; i++)
+            {
+                var c = line[i];
+                if (quoted)
+                {
+                    if (c == '"' && i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        sb.Append('"');
+                        i++;
+                    }
+                    else if (c == '"')
+                    {
+                        quoted = false;
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+                }
+                else if (c == '"')
+                {
+                    quoted = true;
+                }
+                else if (c == ',')
+                {
+                    fields.Add(sb.ToString());
+                    sb.Clear();
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            fields.Add(sb.ToString().TrimEnd('\r'));
+            return fields.ToArray();
+        }
 
         public void ItemSheetInitialize()
         {

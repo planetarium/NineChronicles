@@ -453,6 +453,14 @@ namespace Nekoyume.L10n
             return _dictionary.ContainsKey(key) || _additionalDic.ContainsKey(key);
         }
 
+        private static readonly HashSet<string> MissingKeys = new();
+
+        /// <summary>
+        /// 테이블 패치로 시트에 먼저 들어온 아이템의 이름 — 번역 키(<c>ITEM_NAME_{id}</c>)가 없을 때 대신 쓴다.
+        /// L10n 이 시트를 직접 참조하지 않도록 시트를 읽은 쪽(Game)이 넣는다. null 을 돌려주면 <c>!KEY!</c>.
+        /// </summary>
+        public static Func<int, string> ItemNameFallback { get; set; }
+
         // ReSharper disable Unity.PerformanceAnalysis
         private static bool TryLocalize(string key, out string text)
         {
@@ -464,19 +472,32 @@ namespace Nekoyume.L10n
                     text = localized;
                     return true;
                 }
-                else
+
+                if (_dictionary.TryGetValue(key, out var value))
                 {
-                    text = _dictionary[key];
+                    text = value;
+                    return true;
                 }
 
-                return true;
+                // 없는 키는 UI 를 갱신할 때마다 다시 불린다 — 로그는 키마다 한 번만.
+                bool first;
+                lock (MissingKeys)
+                {
+                    first = MissingKeys.Add(key);
+                }
+
+                if (first)
+                {
+                    NcDebug.LogError($"[L10nManager] missing key: {key}");
+                }
             }
             catch (Exception e)
             {
                 NcDebug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
-                text = $"!{key}!";
-                return false;
             }
+
+            text = $"!{key}!";
+            return false;
         }
 
         public static string LocalizeCharacterName(int characterId)
@@ -488,7 +509,32 @@ namespace Nekoyume.L10n
         public static string LocalizeItemName(int itemId)
         {
             var key = $"ITEM_NAME_{itemId}";
+            if (CurrentState == State.Initialized && !ContainsKey(key) &&
+                ItemNameFallback?.Invoke(itemId) is { Length: > 0 } fallback)
+            {
+                return fallback;
+            }
+
             return Localize(key);
+        }
+
+        /// <summary>
+        /// 아이템 설명. 번역 키가 없으면(새 아이템) <c>!ITEM_DESCRIPTION_x!</c> 대신 빈 문자열.
+        /// </summary>
+        public static string LocalizeItemDescription(int itemId)
+        {
+            var key = $"ITEM_DESCRIPTION_{itemId}";
+            return CurrentState == State.Initialized && !ContainsKey(key) ? string.Empty : Localize(key);
+        }
+
+        /// <summary>
+        /// 등급 이름(<c>UI_ITEM_GRADE_{grade}</c>). 시트가 클라보다 먼저 새 등급을 들고 오면 키가 없다 —
+        /// 그때는 <c>!UI_ITEM_GRADE_10!</c> 대신 <c>G10</c> 으로 보인다.
+        /// </summary>
+        public static string LocalizeGrade(int grade)
+        {
+            var key = $"UI_ITEM_GRADE_{grade}";
+            return CurrentState == State.Initialized && !ContainsKey(key) ? $"G{grade}" : Localize(key);
         }
 
         public static string LocalizeCustomItemName(int iconId)

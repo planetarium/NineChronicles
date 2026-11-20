@@ -41,8 +41,13 @@ namespace Nekoyume.Helper
                 return overrideData.Title;
             }
 
-            var data = so.title.FirstOrDefault(x => x.Grade == grade);
-            if (data?.Title == null)
+            // 정확한 등급 모양이 없으면(시트가 클라보다 먼저 새 등급 칭호를 들고 옴) 등록된 등급 중 가장 가까운 아래 등급,
+            // 그것도 없으면(가장 낮은 등록 등급보다 낮음) 가장 낮은 등급 모양으로 — 예전엔 null 이라 머리 위 칭호가 아예 안 보였다.
+            var candidates = so.title.Where(x => x?.Title != null).ToList();
+            var data = candidates.FirstOrDefault(x => x.Grade == grade) ??
+                candidates.Where(x => x.Grade < grade).OrderByDescending(x => x.Grade).FirstOrDefault() ??
+                candidates.OrderBy(x => x.Grade).FirstOrDefault();
+            if (data == null)
             {
                 NcDebug.LogWarning($"[ResourcesHelper] No character title prefab for item {itemId} (grade {grade}).");
                 return null;

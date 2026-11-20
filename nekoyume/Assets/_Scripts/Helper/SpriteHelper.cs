@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -16,8 +18,17 @@ namespace Nekoyume.Helper
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
 
         // Title fallback icons (when original resource is missing)
-        private const int TitleDivinityFallbackIconId = 49900040;
-        private const int TitleMythicFallbackIconId = 49900049;
+        /// <summary>
+        /// 아이콘이 아직 없는 칭호(테이블 패치로 먼저 들어온 칭호)의 등급별 대표 아이콘. 정확한 등급이 없으면
+        /// 가장 가까운 아래 등급을 쓴다 — 8등급 이상(초월·얼티밋…)은 초월 칭호 아이콘. 9등급 49900064 는 6주년 전용
+        /// 그림이라 대표로 쓰지 않는다.
+        /// </summary>
+        private static readonly SortedDictionary<int, int> TitleFallbackIconIds = new()
+        {
+            { 6, 49900040 }, // Divinity
+            { 7, 49900049 }, // Mythic
+            { 8, 49900057 }, // Transcendent
+        };
 
         private const string ProfileIconDefaultPath = "UI/Icons/Profile/10200000";
         private const string ProfileIconPathFormat = "UI/Icons/Profile/{0}";
@@ -87,8 +98,8 @@ namespace Nekoyume.Helper
         /// <summary>
         /// Item icon resolver with contextual fallback.
         /// - Tries to load original icon (UI/Icons/Item/{itemId}) first.
-        /// - If missing and the item is Title, falls back by grade:
-        ///   Divinity(6) -> 49900040, Mythic(7) -> 49900049.
+        /// - If missing and the item is Title, falls back by grade (<see cref="TitleFallbackIconIds"/>,
+        ///   nearest lower grade): 6 -> 49900040, 7 -> 49900049, 8+ -> 49900057.
         /// - Otherwise falls back to default icon (100000).
         /// </summary>
         public static Sprite GetItemIcon(int itemId, ItemSubType itemSubType, int grade)
@@ -99,15 +110,11 @@ namespace Nekoyume.Helper
                 return original;
             }
 
-            if (itemSubType == ItemSubType.Title)
+            if (itemSubType == ItemSubType.Title &&
+                TitleFallbackIconIds.Where(pair => pair.Key <= grade).Select(pair => (int?)pair.Value).LastOrDefault()
+                    is { } titleFallbackId)
             {
-                switch ((Grade)grade)
-                {
-                    case Grade.Mythic:
-                        return GetItemIcon(TitleMythicFallbackIconId);
-                    case Grade.Divinity:
-                        return GetItemIcon(TitleDivinityFallbackIconId);
-                }
+                return GetItemIcon(titleFallbackId);
             }
 
             return Resources.Load<Sprite>(ItemIconDefaultPath);

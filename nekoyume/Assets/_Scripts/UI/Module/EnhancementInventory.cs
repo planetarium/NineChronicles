@@ -160,7 +160,7 @@ namespace Nekoyume.UI.Module
 
             gradeFilter.ClearOptions();
             gradeFilter.AddOptions(_gradeOptions
-                .Select(grade => L10nManager.Localize($"UI_ITEM_GRADE_{grade}"))
+                .Select(grade => L10nManager.LocalizeGrade(grade))
                 .ToList());
 
             FitDropdownTemplate(gradeFilter, _gradeOptions.Length);

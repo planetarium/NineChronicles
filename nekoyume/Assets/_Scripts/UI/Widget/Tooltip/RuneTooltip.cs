@@ -295,7 +295,7 @@ namespace Nekoyume.UI
             gradeHsv.value = data.GradeHsvValue;
 
             var color = LocalizationExtensions.GetItemGradeColor(row.Grade);
-            gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{row.Grade}");
+            gradeText.text = L10nManager.LocalizeGrade(row.Grade);
             gradeText.color = color;
             runeNameText.color = color;
             subTypeText.color = color;

@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module.Pet
             petNameText.color = color;
             if (gradeText)
             {
-                gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+                gradeText.text = L10nManager.LocalizeGrade(grade);
                 gradeText.color = color;
             }
 

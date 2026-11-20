@@ -643,7 +643,7 @@ namespace Nekoyume
         public static string GetLocalizedInformation(this EquipmentItemSheet.Row equipmentRow)
         {
             var grade = equipmentRow.Grade >= 1 ? equipmentRow.Grade : 1;
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var gradeText = L10nManager.LocalizeGrade(grade);
             var subTypeText = GetLocalizedItemSubTypeText(equipmentRow.ItemSubType);
 
             return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subTypeText}</color>";
@@ -652,7 +652,7 @@ namespace Nekoyume
         public static string GetLocalizedInformation(this FungibleAssetValue fav)
         {
             var grade = Util.GetTickerGrade(fav.Currency.Ticker);
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var gradeText = L10nManager.LocalizeGrade(grade);
             var subType = L10nManager.Localize("UI_STONES");
             return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
         }
@@ -660,7 +660,7 @@ namespace Nekoyume
         public static string GetLocalizedInformation(string ticker)
         {
             var grade = Util.GetTickerGrade(ticker);
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var gradeText = L10nManager.LocalizeGrade(grade);
             var subType = L10nManager.Localize("UI_RUNE");
 
             return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
@@ -741,7 +741,7 @@ namespace Nekoyume
 
         public static string GetLocalizedDescription(this ItemBase item)
         {
-            return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
+            return L10nManager.LocalizeItemDescription(item.Id);
         }
 
         public static string GetColorHexByGrade(int grade)
@@ -767,6 +767,28 @@ namespace Nekoyume
                 ElementalType.Wind => "<sprite name=icon_Element_4>",
                 _ => "<sprite name=icon_Element_0>"
             };
+        }
+
+        /// <summary>
+        /// 번역 키(<c>ITEM_NAME_{id}</c>)가 없는 새 아이템의 이름 — ① 시트 <c>_name</c> 열(기획 영문 이름)
+        /// ② 없으면 "등급 이름 + 하위 분류 이름". 시트에도 없는 id 면 null(<c>!KEY!</c> 그대로).
+        /// </summary>
+        public static string GetItemNameFallback(int itemId)
+        {
+            var sheets = Game.Game.instance?.TableSheets;
+            if (sheets is null)
+            {
+                return null;
+            }
+
+            if (sheets.ItemSheetNames.TryGetValue(itemId, out var name))
+            {
+                return name;
+            }
+
+            return sheets.ItemSheet.TryGetValue(itemId, out var row)
+                ? $"{L10nManager.LocalizeGrade(row.Grade)} {GetLocalizedItemSubTypeText(row.ItemSubType)}"
+                : null;
         }
 
         public static string GetLocalizedItemSubTypeText(ItemSubType type)
@@ -813,7 +835,7 @@ namespace Nekoyume
         public static string GetGradeText(this ItemBase itemBase)
         {
             var grade = itemBase.Grade >= 1 ? itemBase.Grade : 1;
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var gradeText = L10nManager.LocalizeGrade(grade);
             return gradeText;
         }
 
@@ -870,7 +892,7 @@ namespace Nekoyume
             var gradeColor = GetItemGradeColor(row.Grade);
 
             var grade = row.Grade >= 1 ? row.Grade : 1;
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var gradeText = L10nManager.LocalizeGrade(grade);
             var subTypeText = GetLocalizedItemSubTypeText(row.ItemSubType);
 
             return (gradeColor, gradeText, subTypeText);
@@ -905,7 +927,7 @@ namespace Nekoyume
             }
 
             var gradeColor = GetItemGradeColor(grade);
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var gradeText = L10nManager.LocalizeGrade(grade);
             return (gradeColor, gradeText, guarantee);
         }
 

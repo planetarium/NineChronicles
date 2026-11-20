@@ -221,7 +221,7 @@ namespace Nekoyume.UI
 
             fungibleAssetImage.sprite = fav.GetIconSprite();
             nameText.text = fav.GetLocalizedName();
-            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{id}");
+            contentText.text = L10nManager.LocalizeItemDescription(id);
             var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
             countText.text = string.Format(countFormat, fav.GetQuantityString());
             levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", 1);
@@ -266,7 +266,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{id}");
+                contentText.text = L10nManager.LocalizeItemDescription(id);
                 UpdateGrade(grade);
             }
 
@@ -293,7 +293,7 @@ namespace Nekoyume.UI
             gradeHsv.value = data.GradeHsvValue;
 
             var color = LocalizationExtensions.GetItemGradeColor(grade);
-            gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            gradeText.text = L10nManager.LocalizeGrade(grade);
             gradeText.color = color;
             nameText.color = color;
             subTypeText.color = color;
