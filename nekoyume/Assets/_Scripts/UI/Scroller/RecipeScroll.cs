@@ -517,11 +517,11 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            var resultItem = equipmentRow.GetResultEquipmentItemRow();
+            var hasResult = equipmentRow.TryGetResultEquipmentItemRow(out var resultItem);
             foreach (var toggle in equipmentCategoryToggles)
             {
                 toggle.IndicatorImage.enabled =
-                    toggle.Type == resultItem.ItemSubType;
+                    hasResult && toggle.Type == resultItem.ItemSubType;
             }
         }
 

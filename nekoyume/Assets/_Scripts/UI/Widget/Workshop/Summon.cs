@@ -376,8 +376,14 @@ namespace Nekoyume.UI
                 {
                     foreach (var recipe in recipes)
                     {
+                        if (!equipmentRecipeSheet.TryGetValue(recipe, out var recipeRow) ||
+                            !recipeRow.TryGetResultEquipmentItemRow(out var resultRow))
+                        {
+                            continue;
+                        }
+
                         var equipment = ItemFactory.CreateItem(
-                            equipmentRecipeSheet[recipe].GetResultEquipmentItemRow(),
+                            resultRow,
                             new ActionRenderHandler.LocalRandom(0));
                         loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(equipment));
 

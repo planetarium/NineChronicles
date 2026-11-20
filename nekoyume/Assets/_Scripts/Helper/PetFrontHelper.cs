@@ -98,13 +98,22 @@ namespace Nekoyume.Helper
 
         public static string GetPetSoulStoneName(int id)
         {
-            return L10nManager.LocalizeItemName(GetRenderingData(id).soulStoneId);
+            // 렌더링 데이터가 없는 펫은 대신 쓴 첫 항목의 이름이 아니라 소울스톤 티커를 보인다(다른 펫으로 오인 방지).
+            if (!PetRenderingData.TryGetValue(id, out var data))
+            {
+                return TableSheets.Instance.PetSheet.TryGetValue(id, out var petRow)
+                    ? petRow.SoulStoneTicker
+                    : $"#{id}";
+            }
+
+            return L10nManager.LocalizeItemName(data.soulStoneId);
         }
 
         public static string GetPetSoulStoneDescription(int id)
         {
-            var dataId = GetRenderingData(id).soulStoneId;
-            return L10nManager.Localize($"ITEM_DESCRIPTION_{dataId}");
+            return PetRenderingData.TryGetValue(id, out var data)
+                ? L10nManager.Localize($"ITEM_DESCRIPTION_{data.soulStoneId}")
+                : string.Empty;
         }
 
         public static bool HasNotification(int id)

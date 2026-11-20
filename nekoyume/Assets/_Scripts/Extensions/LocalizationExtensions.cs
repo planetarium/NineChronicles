@@ -429,12 +429,14 @@ namespace Nekoyume
                         worldQuest.Goal.ToEventDungeonStageNumber());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
                     if (TableSheets.Instance.EquipmentItemRecipeSheet
-                        .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow) &&
-                        recipeRow.TryGetResultEquipmentItemRow(out var itemRow))
+                        .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow))
                     {
+                        // 결과 장비가 아직 시트에 없으면(테이블 패치 짝 행 누락) 이름 대신 레시피 번호를 보인다.
                         return L10nManager.Localize(
                             "QUEST_COMBINATION_EQUIPMENT_FORMAT",
-                            itemRow.GetLocalizedName(false));
+                            recipeRow.TryGetResultEquipmentItemRow(out var itemRow)
+                                ? itemRow.GetLocalizedName(false)
+                                : $"#{recipeRow.Id}");
                     }
 
                     if (TableSheets.Instance.EventScheduleSheet

@@ -175,10 +175,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (!RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
-            {
-                return;
-            }
+            var icon = RuneFrontHelper.GetRuneIconOrDefault(state.RuneId);
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!runeListSheet.TryGetValue(state.RuneId, out var row))
@@ -213,10 +210,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (!RuneFrontHelper.TryGetRuneIcon(runeState.RuneId, out var icon))
-            {
-                return;
-            }
+            var icon = RuneFrontHelper.GetRuneIconOrDefault(runeState.RuneId);
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!runeListSheet.TryGetValue(runeState.RuneId, out var row))

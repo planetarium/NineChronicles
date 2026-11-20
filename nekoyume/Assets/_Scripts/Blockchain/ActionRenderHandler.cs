@@ -3384,6 +3384,10 @@ namespace Nekoyume.Blockchain
             // 렌더 구독이 끊겨 세션 끝까지 분쇄 결과가 안 보이므로, 계산이 안 되면 보상 화면만 건너뛴다(지급은 체인이 했다).
             if (!Util.TryCalculateGrindingReward(prepared.equipmentList, out var crystalReward, out var materialRewards))
             {
+                OneLineSystem.Push(
+                    MailType.Workshop,
+                    L10nManager.Localize("NOTIFICATION_CLAIM_GRINDING_REWARD"),
+                    NotificationCell.NotificationType.Information);
                 return;
             }
 

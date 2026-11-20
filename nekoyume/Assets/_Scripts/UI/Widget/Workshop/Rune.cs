@@ -298,7 +298,9 @@ namespace Nekoyume.UI
 
         private void Enhancement()
         {
-            if (_selectedRuneItem is null)
+            // 비용 행이 없는 룬(최대 레벨·시트 누락)은 강화할 수 없다 — SetInventory 가 Set 검사를 거치지 않고 선택을
+            // 바꾸는 경로도 있어 여기서 한 번 더 막는다.
+            if (_selectedRuneItem?.CostRow is null)
             {
                 return;
             }
