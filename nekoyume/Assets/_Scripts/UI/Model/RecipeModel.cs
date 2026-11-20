@@ -80,9 +80,20 @@ namespace Nekoyume.UI.Model
             {
                 var isEventEquipment = Util.IsEventEquipmentRecipe(recipe.Id);
 
-                var itemSubType = !isEventEquipment
-                    ? recipe.GetResultEquipmentItemRow().ItemSubType
-                    : ItemSubType.EquipmentMaterial;
+                ItemSubType itemSubType;
+                if (isEventEquipment)
+                {
+                    itemSubType = ItemSubType.EquipmentMaterial;
+                }
+                else if (recipe.TryGetResultEquipmentItemRow(out var resultRow))
+                {
+                    itemSubType = resultRow.ItemSubType;
+                }
+                else
+                {
+                    // 결과 장비가 시트에 없는 레시피는 목록에서 뺀다(여기서 던지면 위젯 초기화가 멈춰 부팅이 멈춘다).
+                    continue;
+                }
                 if (!EquipmentRecipeMap.ContainsKey(itemSubType))
                 {
                     EquipmentRecipeMap[itemSubType] = new List<EquipmentItemRecipeSheet.Row>();
@@ -183,9 +194,13 @@ namespace Nekoyume.UI.Model
             }
 
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            // 하위 분류는 레시피 행 값을 먼저 본다 — 체인(UnlockEquipmentRecipe)이 이 값과 UnlockStage 순서로
+            // "앞 레시피가 먼저 해금돼야 함"을 검사하므로, 결과 장비가 없어 화면에서 뺀 레시피도 순서 계산에서는 빼면 안 된다.
             var availableRecipes = sheet.Values
                 .Where(x =>
-                    x.GetResultEquipmentItemRow().ItemSubType == DisplayingItemSubtype &&
+                    (x.ItemSubType ?? (x.TryGetResultEquipmentItemRow(out var resultRow)
+                        ? resultRow.ItemSubType
+                        : (ItemSubType?)null)) == DisplayingItemSubtype &&
                     x.UnlockStage <= lastClearedStageId &&
                     !UnlockedRecipes.Value.Contains(x.Id) &&
                     !UnlockingRecipes.Contains(x.Id) &&
@@ -197,6 +212,12 @@ namespace Nekoyume.UI.Model
             var totalCost = 0L;
             foreach (var availableRecipe in availableRecipes)
             {
+                // 결과 장비가 이 클라 시트에 없는 레시피에서 멈춘다 — 건너뛰고 뒤 레시피를 넣으면 체인이 tx 전체를 거부한다.
+                if (!availableRecipe.TryGetResultEquipmentItemRow(out _))
+                {
+                    break;
+                }
+
                 // should contain at least one recipe.
                 if (unlockableRecipes.Any() && totalCost + availableRecipe.CRYSTAL > balance)
                 {

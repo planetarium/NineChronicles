@@ -239,12 +239,12 @@ namespace Nekoyume.UI
             ShowWithToggleIndex(0, ignoreShowAnimation);
 
             if (!TableSheets.Instance.EquipmentItemRecipeSheet
-                .TryGetValue(equipmentRecipeId, out var row))
+                .TryGetValue(equipmentRecipeId, out var row) ||
+                !row.TryGetResultEquipmentItemRow(out var itemRow))
             {
                 return;
             }
 
-            var itemRow = row.GetResultEquipmentItemRow();
             recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true, row);
             if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeId))
             {

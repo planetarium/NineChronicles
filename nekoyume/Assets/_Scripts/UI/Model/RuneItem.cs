@@ -40,8 +40,9 @@ namespace Nekoyume.UI.Model
 
             IsMaxLevel = Level == optionRow.LevelOptionMap.Count;
 
-            var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
-            if (!States.Instance.CurrentAvatarBalances.ContainsKey(runeRow.Ticker))
+            // RuneListSheet 에는 있는데 RuneSheet 에는 아직 없는 룬(테이블 패치 짝 행 누락)이면 보유량만 모른 채로 둔다.
+            if (!Game.Game.instance.TableSheets.RuneSheet.TryGetValue(row.Id, out var runeRow) ||
+                !States.Instance.CurrentAvatarBalances.ContainsKey(runeRow.Ticker))
             {
                 return;
             }

@@ -277,7 +277,8 @@ namespace Nekoyume.UI
 
         private void OnClickItem(RuneStoneEnhancementInventoryItem item)
         {
-            _selectedRuneItem = null;
+            // 예전엔 여기서 선택을 null 로 비운 뒤 Set 이 조기 반환하면(아이콘 없는 새 룬 등) 화면은 이전 룬인데
+            // 선택은 null 로 남아 강화 버튼에서 NRE 가 났다. Set 이 실패하면 이전 선택을 그대로 둔다.
             Set(item.item);
         }
 
@@ -297,6 +298,13 @@ namespace Nekoyume.UI
 
         private void Enhancement()
         {
+            // 비용 행이 없는 룬(최대 레벨·시트 누락)은 강화할 수 없다 — SetInventory 가 Set 검사를 거치지 않고 선택을
+            // 바꾸는 경로도 있어 여기서 한 번 더 막는다.
+            if (_selectedRuneItem?.CostRow is null)
+            {
+                return;
+            }
+
             if (!CheckTryCountBeforeSend())
             {
                 return;
@@ -306,11 +314,8 @@ namespace Nekoyume.UI
             Animator.Play(HashToMaterialUse);
             ActionManager.Instance.RuneEnhancement(runeId, TryCount.Value);
             LoadingHelper.RuneEnhancement.Value = true;
-            if (RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
-            {
-                var quote = L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING");
-                Find<RuneCombineResultScreen>().Show(runeIcon, quote);
-            }
+            var quote = L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING");
+            Find<RuneCombineResultScreen>().Show(RuneFrontHelper.GetRuneIconOrDefault(runeId), quote);
         }
 
         /// <summary>
@@ -382,10 +387,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!RuneFrontHelper.TryGetRuneStoneIcon(item.Row.Id, out var runeStoneIcon))
-            {
-                return;
-            }
+            var runeStoneIcon = RuneFrontHelper.GetRuneStoneIconOrDefault(item.Row.Id);
 
             if (item.CostRow is null && !item.IsMaxLevel)
             {
@@ -408,12 +410,7 @@ namespace Nekoyume.UI
 
         private void UpdateRuneItems(RuneItem item)
         {
-            if (!RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var runeIcon))
-            {
-                return;
-            }
-
-            runeImage.sprite = runeIcon;
+            runeImage.sprite = RuneFrontHelper.GetRuneIconOrDefault(item.Row.Id);
 
             foreach (var runeItem in _runeItems)
             {
@@ -521,6 +518,11 @@ namespace Nekoyume.UI
 
         private void ShowLackMaterialPopup(Unit _)
         {
+            if (_selectedRuneItem?.CostRow is null)
+            {
+                return;
+            }
+
             var paymentPopup = Find<PaymentPopup>();
             // 다음 강화 한 번의 비용(체인이 과금하는 값 = BoostScheduleSheet 할인 반영). 예전엔 구간 목록을
             // 레벨로 인덱싱(Cost[Level])해 구간 행이 시작되는 고레벨에서 엉뚱한 행을 집었다.
