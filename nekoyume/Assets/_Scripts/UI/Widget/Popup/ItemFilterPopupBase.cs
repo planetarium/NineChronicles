@@ -194,7 +194,7 @@ namespace Nekoyume.UI
 
                     // 시트가 클라보다 먼저 새 등급을 들고 올 수 있다(UI_ITEM_GRADE_9 미등록).
                     // 키가 없으면 화면에 "!UI_ITEM_GRADE_9!" 가 찍히므로 등급 번호로 떨어뜨린다.
-                    return grades is { Length: > 0 } ? grades[0].ToString() : string.Empty;
+                    return grades is { Length: > 0 } ? $"G{grades[0]}" : string.Empty;
                 }
             }
         }

@@ -453,6 +453,41 @@ namespace Nekoyume.L10n
             return _dictionary.ContainsKey(key) || _additionalDic.ContainsKey(key);
         }
 
+        private static readonly HashSet<string> MissingKeys = new();
+
+        /// <summary>
+        /// 테이블 패치로 시트에 먼저 들어온 아이템의 이름 — 번역 키(<c>ITEM_NAME_{id}</c>)가 없을 때 대신 쓴다.
+        /// L10n 이 시트를 직접 참조하지 않도록 시트를 읽은 쪽(Game)이 넣는다. null 을 돌려주면 <c>!KEY!</c>.
+        /// </summary>
+        public static Func<int, string> ItemNameFallback { get; set; }
+
+        /// <summary>
+        /// 없는 키는 UI 를 갱신할 때마다 다시 불린다 — 로그는 키마다 한 번만. 대체 표시가 있는 키(새 아이템 이름·설명·등급)는
+        /// 경고로, 그 밖은 오류로 남긴다(번역 누락 신호는 유지).
+        /// </summary>
+        private static void LogMissingKeyOnce(string key, bool warning)
+        {
+            bool first;
+            lock (MissingKeys)
+            {
+                first = MissingKeys.Add(key);
+            }
+
+            if (!first)
+            {
+                return;
+            }
+
+            if (warning)
+            {
+                NcDebug.LogWarning($"[L10nManager] missing key (fallback shown): {key}");
+            }
+            else
+            {
+                NcDebug.LogError($"[L10nManager] missing key: {key}");
+            }
+        }
+
         // ReSharper disable Unity.PerformanceAnalysis
         private static bool TryLocalize(string key, out string text)
         {
@@ -464,19 +499,22 @@ namespace Nekoyume.L10n
                     text = localized;
                     return true;
                 }
-                else
+
+                if (_dictionary.TryGetValue(key, out var value))
                 {
-                    text = _dictionary[key];
+                    text = value;
+                    return true;
                 }
 
-                return true;
+                LogMissingKeyOnce(key, warning: false);
             }
             catch (Exception e)
             {
                 NcDebug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
-                text = $"!{key}!";
-                return false;
             }
+
+            text = $"!{key}!";
+            return false;
         }
 
         public static string LocalizeCharacterName(int characterId)
@@ -488,6 +526,57 @@ namespace Nekoyume.L10n
         public static string LocalizeItemName(int itemId)
         {
             var key = $"ITEM_NAME_{itemId}";
+            if (CurrentState == State.Initialized && !ContainsKey(key))
+            {
+                string fallback = null;
+                try
+                {
+                    fallback = ItemNameFallback?.Invoke(itemId);
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogWarning($"[L10nManager] item name fallback failed for {itemId}: {e.Message}");
+                }
+
+                if (!string.IsNullOrEmpty(fallback))
+                {
+                    // 대체 이름이 없으면 아래 Localize 가 오류로 남긴다(!KEY! 가 실제로 보이는 경우).
+                    LogMissingKeyOnce(key, warning: true);
+                    return fallback;
+                }
+            }
+
+            return Localize(key);
+        }
+
+        /// <summary>
+        /// 아이템 설명. 번역 키가 없으면(새 아이템) <c>!ITEM_DESCRIPTION_x!</c> 대신 빈 문자열.
+        /// </summary>
+        public static string LocalizeItemDescription(int itemId)
+        {
+            var key = $"ITEM_DESCRIPTION_{itemId}";
+            if (CurrentState == State.Initialized && !ContainsKey(key))
+            {
+                LogMissingKeyOnce(key, warning: true);
+                return string.Empty;
+            }
+
+            return Localize(key);
+        }
+
+        /// <summary>
+        /// 등급 이름(<c>UI_ITEM_GRADE_{grade}</c>). 시트가 클라보다 먼저 새 등급을 들고 오면 키가 없다 —
+        /// 그때는 <c>!UI_ITEM_GRADE_10!</c> 대신 <c>G10</c> 으로 보인다.
+        /// </summary>
+        public static string LocalizeGrade(int grade)
+        {
+            var key = $"UI_ITEM_GRADE_{grade}";
+            if (CurrentState == State.Initialized && !ContainsKey(key))
+            {
+                LogMissingKeyOnce(key, warning: true);
+                return $"G{grade}";
+            }
+
             return Localize(key);
         }
 

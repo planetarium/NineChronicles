@@ -915,6 +915,7 @@ namespace Nekoyume.Game
             // 다음 블록 렌더에서 노드 값으로 한 번 더 맞추고, 그때까지 결과 재현은 액션 직전 상태의 시트를 읽는다.
             tableSheets.MarkBoostScheduleSheetUnverified();
             TableSheets = tableSheets;
+            L10nManager.ItemNameFallback = LocalizationExtensions.GetItemNameFallback;
             BlockRenderHandler.RequestBoostScheduleSheetRefresh();
             // 플래닛·세션이 바뀌었을 수 있다. 이전 개방 판정은 버리고 다음 블록에 다시 읽는다.
             WorldOpenFront.Reset();
