@@ -80,9 +80,20 @@ namespace Nekoyume.UI.Model
             {
                 var isEventEquipment = Util.IsEventEquipmentRecipe(recipe.Id);
 
-                var itemSubType = !isEventEquipment
-                    ? recipe.GetResultEquipmentItemRow().ItemSubType
-                    : ItemSubType.EquipmentMaterial;
+                ItemSubType itemSubType;
+                if (isEventEquipment)
+                {
+                    itemSubType = ItemSubType.EquipmentMaterial;
+                }
+                else if (recipe.TryGetResultEquipmentItemRow(out var resultRow))
+                {
+                    itemSubType = resultRow.ItemSubType;
+                }
+                else
+                {
+                    // 결과 장비가 시트에 없는 레시피는 목록에서 뺀다(여기서 던지면 위젯 초기화가 멈춰 부팅이 멈춘다).
+                    continue;
+                }
                 if (!EquipmentRecipeMap.ContainsKey(itemSubType))
                 {
                     EquipmentRecipeMap[itemSubType] = new List<EquipmentItemRecipeSheet.Row>();
@@ -185,7 +196,8 @@ namespace Nekoyume.UI.Model
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var availableRecipes = sheet.Values
                 .Where(x =>
-                    x.GetResultEquipmentItemRow().ItemSubType == DisplayingItemSubtype &&
+                    x.TryGetResultEquipmentItemRow(out var resultRow) &&
+                    resultRow.ItemSubType == DisplayingItemSubtype &&
                     x.UnlockStage <= lastClearedStageId &&
                     !UnlockedRecipes.Value.Contains(x.Id) &&
                     !UnlockingRecipes.Contains(x.Id) &&

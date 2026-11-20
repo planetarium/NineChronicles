@@ -429,9 +429,9 @@ namespace Nekoyume
                         worldQuest.Goal.ToEventDungeonStageNumber());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
                     if (TableSheets.Instance.EquipmentItemRecipeSheet
-                        .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow))
+                        .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow) &&
+                        recipeRow.TryGetResultEquipmentItemRow(out var itemRow))
                     {
-                        var itemRow = recipeRow.GetResultEquipmentItemRow();
                         return L10nManager.Localize(
                             "QUEST_COMBINATION_EQUIPMENT_FORMAT",
                             itemRow.GetLocalizedName(false));

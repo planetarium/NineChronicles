@@ -3380,16 +3380,14 @@ namespace Nekoyume.Blockchain
 
         private void ResponseGrinding((ActionEvaluation<Grinding> eval, List<Equipment> equipmentList) prepared)
         {
-            var crystalReward = CrystalCalculator.CalculateCrystal(
-                prepared.equipmentList,
-                false,
-                TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                States.Instance.StakingLevel);
-            var itemRewards = Action.Grinding.CalculateMaterialReward(
-                    prepared.equipmentList,
-                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                    TableSheets.Instance.MaterialItemSheet)
+            // 세션 중 테이블 패치로 새 장비가 들어오면 이 클라의 분쇄 시트에는 행이 없다. 여기서 던지면 이 액션의
+            // 렌더 구독이 끊겨 세션 끝까지 분쇄 결과가 안 보이므로, 계산이 안 되면 보상 화면만 건너뛴다(지급은 체인이 했다).
+            if (!Util.TryCalculateGrindingReward(prepared.equipmentList, out var crystalReward, out var materialRewards))
+            {
+                return;
+            }
+
+            var itemRewards = materialRewards
                 .OrderBy(pair => pair.Key.GetMaterialPriority())
                 .ThenByDescending(pair => pair.Key.Grade)
                 .ThenBy(pair => pair.Key.Id)
@@ -3868,7 +3866,15 @@ namespace Nekoyume.Blockchain
                 var random = new LocalRandom(eval.RandomSeed);
                 var (itemId, quantity, tradable) = giftRow.Items.First();
 
-                var costume = ItemFactory.CreateCostume(costumeSheet[itemId], random.GenerateRandomGuid());
+                // 결과 화면은 코스튬만 그린다. 코스튬이 아니거나 이 클라 시트에 아직 없는 아이템(세션 중 패치)이면
+                // 화면만 건너뛴다 — 지급은 체인이 ItemSheet 기준으로 이미 했다.
+                if (!costumeSheet.TryGetValue(itemId, out var costumeRow))
+                {
+                    NcDebug.LogWarning($"[ClaimGifts] gift {giftId} item {itemId} is not a costume in this client's sheet — result screen skipped.");
+                    return;
+                }
+
+                var costume = ItemFactory.CreateCostume(costumeRow, random.GenerateRandomGuid());
                 Widget.Find<ClaimGiftsResultScreen>().Show(costume);
             });
         }

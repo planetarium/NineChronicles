@@ -413,6 +413,7 @@ namespace Nekoyume.UI
 
         public void Show(Model model, bool isBoosted, List<TableData.EquipmentItemRecipeSheet.Row> newRecipes)
         {
+            newRecipes = newRecipes?.Where(x => x.TryGetResultEquipmentItemRow(out _)).ToList();
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
             if (isBoosted && model.StageType == StageType.HackAndSlash)
