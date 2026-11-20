@@ -372,16 +372,24 @@ namespace Nekoyume.UI
             IEnumerator CoChangeItem()
             {
                 var equipmentRecipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+                // 결과 장비가 이 클라 시트에 있는 것만 돌린다. 하나도 없으면(새 소환 그룹이 전부 새 장비) 아이템 교체 연출만
+                // 건너뛴다 — 걸러내지 않고 루프 안에서 건너뛰면 양보 없이 도는 무한 루프가 된다.
+                var resultRows = recipes
+                    .Select(recipe => equipmentRecipeSheet.TryGetValue(recipe, out var recipeRow) &&
+                        recipeRow.TryGetResultEquipmentItemRow(out var resultRow)
+                            ? resultRow
+                            : null)
+                    .Where(row => row is not null)
+                    .ToList();
+                if (resultRows.Count == 0)
+                {
+                    yield break;
+                }
+
                 while (loadingScreen.isActiveAndEnabled)
                 {
-                    foreach (var recipe in recipes)
+                    foreach (var resultRow in resultRows)
                     {
-                        if (!equipmentRecipeSheet.TryGetValue(recipe, out var recipeRow) ||
-                            !recipeRow.TryGetResultEquipmentItemRow(out var resultRow))
-                        {
-                            continue;
-                        }
-
                         var equipment = ItemFactory.CreateItem(
                             resultRow,
                             new ActionRenderHandler.LocalRandom(0));

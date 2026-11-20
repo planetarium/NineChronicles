@@ -3385,7 +3385,7 @@ namespace Nekoyume.Blockchain
             if (!Util.TryCalculateGrindingReward(prepared.equipmentList, out var crystalReward, out var materialRewards))
             {
                 OneLineSystem.Push(
-                    MailType.Workshop,
+                    MailType.Grinding,
                     L10nManager.Localize("NOTIFICATION_CLAIM_GRINDING_REWARD"),
                     NotificationCell.NotificationType.Information);
                 return;
