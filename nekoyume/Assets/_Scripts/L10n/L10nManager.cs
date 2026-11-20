@@ -461,6 +461,33 @@ namespace Nekoyume.L10n
         /// </summary>
         public static Func<int, string> ItemNameFallback { get; set; }
 
+        /// <summary>
+        /// 없는 키는 UI 를 갱신할 때마다 다시 불린다 — 로그는 키마다 한 번만. 대체 표시가 있는 키(새 아이템 이름·설명·등급)는
+        /// 경고로, 그 밖은 오류로 남긴다(번역 누락 신호는 유지).
+        /// </summary>
+        private static void LogMissingKeyOnce(string key, bool warning)
+        {
+            bool first;
+            lock (MissingKeys)
+            {
+                first = MissingKeys.Add(key);
+            }
+
+            if (!first)
+            {
+                return;
+            }
+
+            if (warning)
+            {
+                NcDebug.LogWarning($"[L10nManager] missing key (fallback shown): {key}");
+            }
+            else
+            {
+                NcDebug.LogError($"[L10nManager] missing key: {key}");
+            }
+        }
+
         // ReSharper disable Unity.PerformanceAnalysis
         private static bool TryLocalize(string key, out string text)
         {
@@ -479,17 +506,7 @@ namespace Nekoyume.L10n
                     return true;
                 }
 
-                // 없는 키는 UI 를 갱신할 때마다 다시 불린다 — 로그는 키마다 한 번만.
-                bool first;
-                lock (MissingKeys)
-                {
-                    first = MissingKeys.Add(key);
-                }
-
-                if (first)
-                {
-                    NcDebug.LogError($"[L10nManager] missing key: {key}");
-                }
+                LogMissingKeyOnce(key, warning: false);
             }
             catch (Exception e)
             {
@@ -509,10 +526,23 @@ namespace Nekoyume.L10n
         public static string LocalizeItemName(int itemId)
         {
             var key = $"ITEM_NAME_{itemId}";
-            if (CurrentState == State.Initialized && !ContainsKey(key) &&
-                ItemNameFallback?.Invoke(itemId) is { Length: > 0 } fallback)
+            if (CurrentState == State.Initialized && !ContainsKey(key))
             {
-                return fallback;
+                LogMissingKeyOnce(key, warning: true);
+                string fallback = null;
+                try
+                {
+                    fallback = ItemNameFallback?.Invoke(itemId);
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogWarning($"[L10nManager] item name fallback failed for {itemId}: {e.Message}");
+                }
+
+                if (!string.IsNullOrEmpty(fallback))
+                {
+                    return fallback;
+                }
             }
 
             return Localize(key);
@@ -524,7 +554,13 @@ namespace Nekoyume.L10n
         public static string LocalizeItemDescription(int itemId)
         {
             var key = $"ITEM_DESCRIPTION_{itemId}";
-            return CurrentState == State.Initialized && !ContainsKey(key) ? string.Empty : Localize(key);
+            if (CurrentState == State.Initialized && !ContainsKey(key))
+            {
+                LogMissingKeyOnce(key, warning: true);
+                return string.Empty;
+            }
+
+            return Localize(key);
         }
 
         /// <summary>
@@ -534,7 +570,13 @@ namespace Nekoyume.L10n
         public static string LocalizeGrade(int grade)
         {
             var key = $"UI_ITEM_GRADE_{grade}";
-            return CurrentState == State.Initialized && !ContainsKey(key) ? $"G{grade}" : Localize(key);
+            if (CurrentState == State.Initialized && !ContainsKey(key))
+            {
+                LogMissingKeyOnce(key, warning: true);
+                return $"G{grade}";
+            }
+
+            return Localize(key);
         }
 
         public static string LocalizeCustomItemName(int iconId)

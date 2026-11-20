@@ -707,7 +707,7 @@ namespace Nekoyume
                 6 => Palette.GetColor(EnumType.ColorType.TextGrade05),
                 7 => Palette.GetColor(EnumType.ColorType.TextGrade06),
                 8 => Palette.GetColor(EnumType.ColorType.TextGrade07),
-                > 8 => GetItemGradeColor(((grade - 1) % 8) + 1),
+                > 8 => GetItemGradeColor(GradeVisualHelper.ColorGrade(grade)),
                 // grade 0 은 초기 지급 장비(Wooden Club / Ragged Clothes)라 등급 체계 밖이다.
                 _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
@@ -770,7 +770,8 @@ namespace Nekoyume
         }
 
         /// <summary>
-        /// 번역 키(<c>ITEM_NAME_{id}</c>)가 없는 새 아이템의 이름 — ① 시트 <c>_name</c> 열(기획 영문 이름)
+        /// 번역 키(<c>ITEM_NAME_{id}</c>)가 없는 새 아이템의 이름 — ① 시트 <c>_name</c> 열(기획이 적는 주석 이름) —
+        /// 한글·영문이 섞여 있고 자리표시(TBD)도 있어, 한국어면 그대로, 다른 언어면 한글이 없을 때만 쓰고 TBD 는 버린다.
         /// ② 없으면 "등급 이름 + 하위 분류 이름". 시트에도 없는 id 면 null(<c>!KEY!</c> 그대로).
         /// </summary>
         public static string GetItemNameFallback(int itemId)
@@ -781,14 +782,26 @@ namespace Nekoyume
                 return null;
             }
 
-            if (sheets.ItemSheetNames.TryGetValue(itemId, out var name))
+            if (sheets.ItemSheetNames.TryGetValue(itemId, out var name) && IsUsableSheetName(name))
             {
                 return name;
             }
 
+            // 0 등급(UI_ITEM_GRADE_0)은 "전체" 라벨이라 1 로 올린다(다른 등급 표시와 같게).
             return sheets.ItemSheet.TryGetValue(itemId, out var row)
-                ? $"{L10nManager.LocalizeGrade(row.Grade)} {GetLocalizedItemSubTypeText(row.ItemSubType)}"
+                ? $"{L10nManager.LocalizeGrade(Math.Max(row.Grade, 1))} {GetLocalizedItemSubTypeText(row.ItemSubType)}"
                 : null;
+
+            static bool IsUsableSheetName(string sheetName)
+            {
+                if (sheetName.StartsWith("TBD", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                return L10nManager.CurrentLanguage == LanguageType.Korean ||
+                    !sheetName.Any(c => c >= '\uAC00' && c <= '\uD7A3' || c >= '\u3131' && c <= '\u318E');
+            }
         }
 
         public static string GetLocalizedItemSubTypeText(ItemSubType type)

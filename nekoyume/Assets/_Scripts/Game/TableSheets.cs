@@ -494,7 +494,7 @@ namespace Nekoyume.Game
             csv?.Replace("\r\n", "\n").Trim() ?? string.Empty;
 
         /// <summary>
-        /// 아이템 시트 CSV 의 <c>_name</c> 열(기획이 채우는 영문 이름, 체인은 읽지 않는 주석 열).
+        /// 아이템 시트 CSV 의 <c>_name</c> 열(기획이 적는 주석 이름 — 한글·영문 혼재, 체인은 읽지 않는다).
         /// 번역 키가 아직 없는 새 아이템 이름의 대체값으로 쓴다(<see cref="L10n.L10nManager.ItemNameFallback"/>).
         /// </summary>
         public IReadOnlyDictionary<int, string> ItemSheetNames { get; private set; } = new Dictionary<int, string>();
