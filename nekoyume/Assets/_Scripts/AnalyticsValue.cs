@@ -17,7 +17,7 @@ namespace Nekoyume
         public override string ToString() => _text ?? string.Empty;
 
         public static implicit operator AnalyticsValue(string? value) => new(value);
-        public static implicit operator AnalyticsValue(bool value) => new(value ? "true" : "false");
+        public static implicit operator AnalyticsValue(bool value) => new(value.ToString());
         public static implicit operator AnalyticsValue(int value) => new(value.ToString(CultureInfo.InvariantCulture));
         public static implicit operator AnalyticsValue(uint value) => new(value.ToString(CultureInfo.InvariantCulture));
         public static implicit operator AnalyticsValue(long value) => new(value.ToString(CultureInfo.InvariantCulture));
