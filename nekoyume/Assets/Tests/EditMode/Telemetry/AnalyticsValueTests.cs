@@ -5,7 +5,7 @@ namespace Nekoyume.Tests.Telemetry
     public class AnalyticsValueTests
     {
         [Test]
-        public void Bool_KeepsMixpanelCapitalization()
+        public void Bool_KeepsCapitalizedToString()
         {
             AnalyticsValue t = true;
             AnalyticsValue f = false;
