@@ -251,6 +251,94 @@ namespace Nekoyume.Tests.Telemetry
         }
 
         [Test]
+        public void Enqueue_TruncatesErrorTo200Chars()
+        {
+            var queue = new TelemetryQueue();
+            var sender = NewSender(new FakePost(), queue, () => null);
+
+            sender.Enqueue(
+                TelemetryEvents.PurchaseClickedError,
+                new Dictionary<string, string> { { "productId", "p" }, { "error", new string('e', 1000) } },
+                "rpc",
+                null);
+            sender.Enqueue(
+                TelemetryEvents.PurchaseClickedError,
+                new Dictionary<string, string> { { "error", "short" } },
+                "rpc",
+                null);
+
+            var batch = queue.TakeBatch();
+            Assert.AreEqual(new string('e', TelemetrySender.MaxErrorLength), batch[0].Props["error"]);
+            Assert.AreEqual("p", batch[0].Props["productId"]);
+            Assert.AreEqual("short", batch[1].Props["error"]);
+        }
+
+        private class SignalPost
+        {
+            public readonly List<string> Bodies = new List<string>();
+            public readonly TaskCompletionSource<bool> Posted =
+                new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            public Func<(int status, DateTimeOffset? date)> Respond = () => (204, null);
+
+            public Task<(int status, DateTimeOffset? date)> Post(string batchId, string body)
+            {
+                lock (Bodies)
+                {
+                    Bodies.Add(body);
+                }
+
+                Posted.TrySetResult(true);
+                return Task.FromResult(Respond());
+            }
+        }
+
+        [Test]
+        public async Task Enqueue_ReachingBatchCap_TriggersFlush()
+        {
+            var post = new SignalPost();
+            var queue = new TelemetryQueue();
+            var key = new PrivateKey();
+            var sender = new TelemetrySender(post.Post, queue, new TelemetryClock(), () => key, Context);
+
+            for (var i = 0; i < TelemetrySender.MaxBatchEvents - 1; i++)
+            {
+                sender.Enqueue(TelemetryEvents.RpcDisconnected, null, "rpc", null);
+            }
+
+            await Task.Delay(200);
+            Assert.AreEqual(0, post.Bodies.Count, "below the batch cap only the timer flushes");
+
+            sender.Enqueue(TelemetryEvents.RpcDisconnected, null, "rpc", null);
+
+            var done = await Task.WhenAny(post.Posted.Task, Task.Delay(10000));
+            Assert.AreSame(post.Posted.Task, done, "reaching the batch cap starts a flush");
+            Assert.AreEqual(1, post.Bodies.Count);
+            var payload = JObject.Parse((string)JObject.Parse(post.Bodies[0])["payload"]);
+            Assert.AreEqual(TelemetrySender.MaxBatchEvents, ((JArray)payload["events"]).Count);
+        }
+
+        [Test]
+        public async Task Enqueue_ReachingBatchCap_DuringBackoff_DoesNotFlush()
+        {
+            var post = new SignalPost { Respond = () => (503, null) };
+            var queue = new TelemetryQueue();
+            var key = new PrivateKey();
+            var sender = new TelemetrySender(post.Post, queue, new TelemetryClock(), () => key, Context);
+            sender.Enqueue(TelemetryEvents.RpcDisconnected, null, "rpc", null);
+            await sender.FlushAsync();
+            Assert.AreEqual(1, sender.Failures);
+            Assert.AreEqual(1, post.Bodies.Count);
+
+            for (var i = 0; i < TelemetrySender.MaxBatchEvents; i++)
+            {
+                sender.Enqueue(TelemetryEvents.RpcDisconnected, null, "rpc", null);
+            }
+
+            await Task.Delay(300);
+            Assert.AreEqual(1, post.Bodies.Count, "backoff after failures is respected");
+        }
+
+        [Test]
         public async Task PauseOrQuit_PersistsQueue_ThenRestores()
         {
             var path = Path.Combine(Path.GetTempPath(), "telemetry-queue-" + Guid.NewGuid().ToString("N") + ".json");
@@ -388,6 +476,24 @@ namespace Nekoyume.Tests.Telemetry
             CollectionAssert.IsEmpty(handler.ContentEncoding);
             Assert.AreEqual("{\"a\":1}", Encoding.UTF8.GetString(handler.Body));
             Assert.AreEqual(TimeSpan.FromSeconds(10), client.Timeout);
+        }
+
+        [Test]
+        public async Task Http_GzipThrows_SendsUncompressed()
+        {
+            var handler = new CaptureHandler();
+            var body = "{\"x\":\"" + new string('a', 5000) + "\"}";
+
+            var (status, _) = await TelemetryHttp.PostAsync(
+                TelemetryHttp.CreateClient(handler),
+                "https://telemetry.example/v1/events",
+                body,
+                _ => throw new InvalidDataException("gzip broken"));
+
+            Assert.AreEqual(204, status);
+            CollectionAssert.IsEmpty(handler.ContentEncoding);
+            Assert.AreEqual("application/json", handler.MediaType);
+            Assert.AreEqual(body, Encoding.UTF8.GetString(handler.Body));
         }
 
         [Test]

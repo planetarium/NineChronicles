@@ -1501,7 +1501,16 @@ namespace Nekoyume.Game
 
             if (isTrackable)
             {
-                InitializeTelemetry();
+                try
+                {
+                    InitializeTelemetry();
+                }
+                catch (Exception e)
+                {
+                    // Telemetry must never break startup; run without it.
+                    Telemetry = null;
+                    NcDebug.LogWarning($"[Game] Telemetry initialization failed: {e.GetType().Name}");
+                }
             }
 
             Analyzer = new Analyzer(

@@ -21,6 +21,8 @@ namespace Nekoyume.Telemetry
     {
         public const int MaxBatchEvents = 500;
         public const long MaxPersistedBytes = 200 * 1024;
+        public const int MaxErrorLength = 200;
+        public static readonly TimeSpan SizeFlushMinInterval = TimeSpan.FromSeconds(5);
         public static readonly TimeSpan FlushInterval = TimeSpan.FromSeconds(60);
 
         private readonly Func<string, string, Task<(int status, DateTimeOffset? date)>> _post;
@@ -34,6 +36,7 @@ namespace Nekoyume.Telemetry
 
         private int _failures;
         private int _flushing;
+        private long _lastSizeFlushTimestamp = long.MinValue;
 
         /// <param name="post">
         /// Sends one envelope. Arguments are (batchId, envelope JSON); returns the HTTP status
@@ -94,8 +97,59 @@ namespace Nekoyume.Telemetry
                 Ts = _clock.Now(),
                 Rpc = HostOnly(rpc),
                 AvatarAddress = avatarAddress,
-                Props = TelemetryEvents.FilterProps(name, NormalizeProps(props)),
+                Props = TruncateError(TelemetryEvents.FilterProps(name, NormalizeProps(props))),
             });
+
+            if (_queue.Count >= MaxBatchEvents)
+            {
+                TryStartSizeFlush();
+            }
+        }
+
+        /// <summary>
+        /// Starts a background flush when a full batch is waiting, without waiting for the timer.
+        /// Skipped while a flush is running, while backing off after failures, and at most once per
+        /// <see cref="SizeFlushMinInterval"/> (a full queue of signed events before login must not
+        /// spin a flush on every enqueue).
+        /// </summary>
+        private void TryStartSizeFlush()
+        {
+            if (Volatile.Read(ref _flushing) != 0 || Failures > 0)
+            {
+                return;
+            }
+
+            var now = System.Diagnostics.Stopwatch.GetTimestamp();
+            var last = Interlocked.Read(ref _lastSizeFlushTimestamp);
+            var minTicks = (long)(SizeFlushMinInterval.TotalSeconds * System.Diagnostics.Stopwatch.Frequency);
+            if (last != long.MinValue && now - last < minTicks)
+            {
+                return;
+            }
+
+            if (Interlocked.CompareExchange(ref _lastSizeFlushTimestamp, now, last) != last)
+            {
+                return;
+            }
+
+            _ = Task.Run(() => FlushAsync());
+        }
+
+        private static Dictionary<string, string> TruncateError(Dictionary<string, string> props)
+        {
+            if (props == null || !props.TryGetValue("error", out var error) || error.Length <= MaxErrorLength)
+            {
+                return props;
+            }
+
+            var length = MaxErrorLength;
+            if (char.IsHighSurrogate(error[length - 1]))
+            {
+                length--;
+            }
+
+            props["error"] = error.Substring(0, length);
+            return props;
         }
 
         /// <summary>
@@ -409,23 +463,25 @@ namespace Nekoyume.Telemetry
             };
         }
 
+        /// <param name="compress">Gzip implementation; tests replace it. If it throws, the body is sent uncompressed.</param>
         public static async Task<(int status, DateTimeOffset? date)> PostAsync(
             HttpClient client,
             string endpoint,
-            string body)
+            string body,
+            Func<byte[], byte[]> compress = null)
         {
             var bytes = Encoding.UTF8.GetBytes(body);
-            var gzip = bytes.Length > GzipThresholdBytes;
-            if (gzip)
+            var gzip = false;
+            if (bytes.Length > GzipThresholdBytes)
             {
-                using (var buffer = new MemoryStream())
+                try
                 {
-                    using (var gz = new GZipStream(buffer, System.IO.Compression.CompressionLevel.Fastest, true))
-                    {
-                        gz.Write(bytes, 0, bytes.Length);
-                    }
-
-                    bytes = buffer.ToArray();
+                    bytes = (compress ?? Gzip)(bytes);
+                    gzip = true;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[Telemetry] gzip failed, sending uncompressed: {e.GetType().Name}");
                 }
             }
 
@@ -446,6 +502,19 @@ namespace Nekoyume.Telemetry
                 {
                     return ((int)response.StatusCode, response.Headers.Date);
                 }
+            }
+        }
+
+        public static byte[] Gzip(byte[] bytes)
+        {
+            using (var buffer = new MemoryStream())
+            {
+                using (var gz = new GZipStream(buffer, System.IO.Compression.CompressionLevel.Fastest, true))
+                {
+                    gz.Write(bytes, 0, bytes.Length);
+                }
+
+                return buffer.ToArray();
             }
         }
     }
