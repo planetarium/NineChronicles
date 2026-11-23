@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using mixpanel;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
@@ -822,7 +821,7 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            var props = new Dictionary<string, Value>()
+            var props = new Dictionary<string, AnalyticsValue>()
             {
                 ["StageId"] = SharedModel.StageID
             };
@@ -906,7 +905,7 @@ namespace Nekoyume.UI
 
         private void GoToMain(bool worldClear)
         {
-            var props = new Dictionary<string, Value>()
+            var props = new Dictionary<string, AnalyticsValue>()
             {
                 ["StageId"] = Game.Game.instance.Stage.stageId
             };

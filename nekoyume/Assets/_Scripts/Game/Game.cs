@@ -42,6 +42,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
+using Nekoyume.Telemetry;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
@@ -132,6 +133,27 @@ namespace Nekoyume.Game
         public IAgent Agent { get; private set; }
 
         public Analyzer Analyzer { get; private set; }
+
+        /// <summary>Null in editor, debug/development builds, or when the endpoint is empty.</summary>
+        public TelemetrySender Telemetry { get; private set; }
+
+        /// <summary>
+        /// Hostname of the RPC endpoint the client is talking to right now (no port).
+        /// Falls back to the configured host before the RPC agent is initialized.
+        /// </summary>
+        public string CurrentRpcHost
+        {
+            get
+            {
+                var host = Agent is RPCAgent rpcAgent ? rpcAgent.CurrentRpcServerHost.Value : null;
+                if (string.IsNullOrEmpty(host))
+                {
+                    host = _commandLineOptions?.RpcServerHost;
+                }
+
+                return TelemetrySender.HostOnly(host);
+            }
+        }
 
         public IAPStoreManager IAPStoreManager { get; private set; }
 
@@ -1027,9 +1049,21 @@ namespace Nekoyume.Game
 
 #endregion
 
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+            {
+                // Mobile apps are often killed while paused; persist first, then try once.
+                _ = Telemetry?.OnPauseOrQuitAsync();
+            }
+        }
+
         protected override void OnApplicationQuit()
         {
             ReservePushNotifications();
+
+            // Persists the queue synchronously, then makes a best-effort send.
+            _ = Telemetry?.OnPauseOrQuitAsync();
 
             if (Analyzer.Instance != null)
             {
@@ -1466,11 +1500,86 @@ namespace Nekoyume.Game
                 isTrackable = false;
             }
 
+            if (isTrackable)
+            {
+                try
+                {
+                    InitializeTelemetry();
+                }
+                catch (Exception e)
+                {
+                    // Telemetry must never break startup; run without it.
+                    Telemetry = null;
+                    NcDebug.LogWarning($"[Game] Telemetry initialization failed: {e.GetType().Name}");
+                }
+            }
+
             Analyzer = new Analyzer(
                 agentAddr?.ToString(),
                 planetId?.ToString(),
                 rpcServerHost,
-                isTrackable);
+                isTrackable,
+                Telemetry);
+        }
+
+        private void InitializeTelemetry()
+        {
+            if (Telemetry is not null)
+            {
+                return;
+            }
+
+            var endpoint = _commandLineOptions?.TelemetryEndpoint;
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                NcDebug.Log("[Game] Telemetry disabled: telemetry-endpoint is empty.");
+                return;
+            }
+
+            // Unity APIs are main-thread only; capture them once here.
+            var platform = TelemetrySender.PlatformName(Application.platform);
+            var version = Application.version;
+            var persistPath = Path.Combine(Application.persistentDataPath, "telemetry-queue.json");
+            var http = TelemetryHttp.CreateClient();
+
+            // The key and context delegates are invoked synchronously at the start of a flush
+            // (on the main thread when flushed from here); the HTTP post runs on the thread pool.
+            Telemetry = new TelemetrySender(
+                (batchId, body) => Task.Run(() => TelemetryHttp.PostAsync(http, endpoint, body)),
+                new TelemetryQueue(),
+                new TelemetryClock(),
+                () => Agent?.PrivateKey,
+                () =>
+                {
+                    var key = Agent?.PrivateKey;
+                    return (
+                        CurrentPlanetId?.ToString(),
+                        platform,
+                        version,
+                        key is null ? null : "0x" + key.Address.ToHex().ToLowerInvariant());
+                },
+                persistPath);
+            Telemetry.LoadPersisted();
+            TelemetryFlushLoopAsync(Telemetry, this.GetCancellationTokenOnDestroy()).Forget();
+            NcDebug.Log("[Game] Telemetry initialized.");
+        }
+
+        private static async UniTaskVoid TelemetryFlushLoopAsync(
+            TelemetrySender sender,
+            CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var canceled = await UniTask
+                    .Delay(sender.NextFlushDelay, DelayType.Realtime, cancellationToken: cancellationToken)
+                    .SuppressCancellationThrow();
+                if (canceled)
+                {
+                    return;
+                }
+
+                await sender.FlushAsync();
+            }
         }
 
         public void ShowCLO()
@@ -1676,6 +1785,8 @@ namespace Nekoyume.Game
         public void OnAgentInitializeFailed()
         {
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
+            // The game quits right after this; persist and send now instead of waiting for the timer.
+            _ = Telemetry?.OnPauseOrQuitAsync();
 
             QuitWithAgentConnectionError(null);
         }

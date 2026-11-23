@@ -29,7 +29,6 @@ using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
-using mixpanel;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
 using Nekoyume.Action.Guild;
@@ -129,7 +128,7 @@ namespace Nekoyume.Blockchain
                         var type = actionType.TypeIdentifier.Inspect();
                         Analyzer.Instance.Track(
                             "Unity/ActionRender",
-                            new Dictionary<string, Value>
+                            new Dictionary<string, AnalyticsValue>
                             {
                                 ["ActionType"] = type,
                                 ["Elapsed"] = elapsed,
@@ -1712,7 +1711,7 @@ namespace Nekoyume.Blockchain
                     break;
                 /*case Action.ItemEnhancement.EnhancementResult.Fail:
                     Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
-                        new Dictionary<string, Value>
+                        new Dictionary<string, AnalyticsValue>
                         {
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
                             ["BurntNCG"] = (long)result.gold,
@@ -2636,7 +2635,7 @@ namespace Nekoyume.Blockchain
             if (eval.Action.StageBuffId.HasValue)
             {
                 Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
-                    new Dictionary<string, Value>
+                    new Dictionary<string, AnalyticsValue>
                     {
                         ["RandomSkillId"] = eval.Action.StageBuffId.Value,
                         ["IsCleared"] = simulator.Log.IsClear,

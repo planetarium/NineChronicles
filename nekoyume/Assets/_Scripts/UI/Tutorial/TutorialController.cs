@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using mixpanel;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.LiveAsset;
@@ -102,7 +101,7 @@ namespace Nekoyume.UI
             var scenario = _scenario.FirstOrDefault(x => x.id == id);
             if (scenario != null)
             {
-                SendMixPanel(id);
+                SendTutorialProgress(id);
                 SetCheckPoint(scenario.checkPointId);
                 LastPlayedTutorialId = id;
                 var viewData = GetTutorialData(scenario.data);
@@ -277,7 +276,7 @@ namespace Nekoyume.UI
             PlayerPrefs.SetInt(CheckPointKey, id);
         }
 
-        private void SendMixPanel(int id)
+        private void SendTutorialProgress(int id)
         {
             // tutorial start point (id <= 2 : before stage 5)
             // in playing stage3 tutorial, id 30000 is played. (duplicate tutorial)
@@ -286,7 +285,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var props = new Dictionary<string, Value>()
+            var props = new Dictionary<string, AnalyticsValue>()
             {
                 ["Id"] = id
             };

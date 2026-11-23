@@ -11,7 +11,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using mixpanel;
     using Blockchain;
     using System.Linq;
     using UniRx;

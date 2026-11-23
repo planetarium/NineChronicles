@@ -12,7 +12,6 @@ using Nekoyume.State;
 using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
@@ -364,7 +363,7 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
 
             Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -552,7 +551,7 @@ namespace Nekoyume.UI
             Close(true);
             Find<ArenaJoin>().ShowAsync().Forget();
 
-            Analyzer.Instance.Track("Unity/Enter arena page", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/Enter arena page", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()

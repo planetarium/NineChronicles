@@ -15,7 +15,6 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using JetBrains.Annotations;
 using Lib9c;
-using mixpanel;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
@@ -935,7 +934,7 @@ namespace Nekoyume.Game.Battle
             var characterSheet = TableSheets.Instance.CharacterSheet;
             var costumeStatSheet = TableSheets.Instance.CostumeStatSheet;
             var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-            var props = new Dictionary<string, Value>()
+            var props = new Dictionary<string, AnalyticsValue>()
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,

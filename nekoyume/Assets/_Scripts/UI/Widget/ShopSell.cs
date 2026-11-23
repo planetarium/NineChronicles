@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet.Types.Assets;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Game;
@@ -440,7 +439,7 @@ namespace Nekoyume.UI
 
             Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos, chargeAp).Subscribe();
 
-            Analyzer.Instance.Track("Unity/ReRegisterProductAll", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/ReRegisterProductAll", new Dictionary<string, AnalyticsValue>()
             {
                 ["Quantity"] = reRegisterInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -529,7 +528,7 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.CancelProductRegistration(avatarAddress, productInfos, chargeAp).Subscribe();
-            Analyzer.Instance.Track("Unity/CancelRegisterProductAll", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/CancelRegisterProductAll", new Dictionary<string, AnalyticsValue>()
             {
                 ["Quantity"] = productInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -754,7 +753,7 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager
                 .ReRegisterProduct(avatarAddress, reRegisterInfos, data.ChargeAp.Value).Subscribe();
 
-            Analyzer.Instance.Track("Unity/ReRegisterProduct", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/ReRegisterProduct", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
-using mixpanel;
 using Nekoyume.Game.Avatar;
 using Nekoyume.Game.Battle;
 using Nekoyume.Model.Item;
@@ -359,7 +358,7 @@ namespace Nekoyume.Game.Character
 
             if (Level != beforeLevel)
             {
-                Analyzer.Instance.Track("Unity/User Level Up", new Dictionary<string, Value>()
+                Analyzer.Instance.Track("Unity/User Level Up", new Dictionary<string, AnalyticsValue>()
                 {
                     ["code"] = beforeLevel,
                     ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),

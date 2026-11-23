@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using mixpanel;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
@@ -155,7 +154,7 @@ namespace Nekoyume.UI
             _infiniteTowerId = infiniteTowerId;
             _floorId = floorId;
 
-            Analyzer.Instance.Track("Unity/Click InfiniteTower Preparation", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/Click InfiniteTower Preparation", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),

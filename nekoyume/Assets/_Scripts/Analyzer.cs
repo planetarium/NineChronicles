@@ -5,8 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using mixpanel;
+using System.Linq;
 using Nekoyume.State;
+using Nekoyume.Telemetry;
 
 #if ENABLE_FIREBASE
 using Firebase.Analytics;
@@ -34,13 +35,17 @@ namespace Nekoyume
 
         private readonly bool _isTrackable;
 
+        private readonly TelemetrySender? _telemetry;
+
         public Analyzer(
             string? uniqueId = null,
             string? planetId = null,
             string? rpcServerHost = null,
-            bool isTrackable = false)
+            bool isTrackable = false,
+            TelemetrySender? telemetry = null)
         {
             _isTrackable = isTrackable;
+            _telemetry = telemetry;
             if (!_isTrackable)
             {
                 NcDebug.Log($"Analyzer does not track: {nameof(isTrackable)} is false");
@@ -56,11 +61,6 @@ namespace Nekoyume
             var targetNetwork = Resources.Load<TextAsset>("TargetNetwork")?.text ?? "no-target";
             // ReSharper restore Unity.UnknownResource
 
-            InitializeMixpanel(
-                clientHost,
-                clientHash,
-                targetNetwork,
-                rpcServerHost);
             InitializeSentry(
                 clientHost,
                 clientHash,
@@ -80,53 +80,19 @@ namespace Nekoyume
             Game.Lobby.OnLobbyEnterEvent += UpdateAvatarAddress;
 
             NcDebug.Log($"Analyzer initialized: {uniqueId}");
-
-            Application.logMessageReceivedThreaded += HandleLog;
-        }
-
-        private void HandleLog(string condition, string stackTrace, LogType type)
-        {
-            var options = Game.Game.instance.CommandLineOptions;
-            if (options == null)
-                return;
-
-            bool shouldTrack = type switch
-            {
-                LogType.Error => options.MixpanelDebugError,
-                LogType.Assert => options.MixpanelDebugAssert,
-                LogType.Warning => options.MixpanelDebugWarning,
-                LogType.Exception => options.MixpanelDebugException,
-                LogType.Log => false,
-                _ => false
-            };
-
-            if (!shouldTrack)
-                return;
-
-            string eventName = $"Unity/Debug/{type}";
-            var mixpanelValues = new Value
-            {
-                ["condition"] = condition,
-                ["stackTrace"] = stackTrace
-            };
-            Mixpanel.Track(eventName, mixpanelValues);
         }
 
         public static void SetAgentAddress(string? addressString)
         {
+#if ENABLE_FIREBASE
             if (addressString is not null)
             {
-                Mixpanel.Identify(addressString);
-#if ENABLE_FIREBASE
                 FirebaseAnalytics.SetUserId(addressString);
-#endif
             }
+#endif
 
             addressString ??= "none";
 
-            Mixpanel.Register("AgentAddress", addressString);
-            Mixpanel.People.Set("AgentAddress", addressString);
-            Mixpanel.People.Name = addressString;
             // SentrySdk.ConfigureScope(scope => { scope.User.Id = uniqueId; });
 #if ENABLE_FIREBASE
             FirebaseAnalytics.SetUserProperty("AgentAddress", addressString);
@@ -138,25 +104,10 @@ namespace Nekoyume
             NcDebug.Log($"[Analyzer] SetPlanetId() invoked with {planetId}");
             planetId ??= "no-planet-id";
 
-            Mixpanel.Register("planet-id", planetId);
             // SentrySdk.ConfigureScope(scope => scope.SetTag("planet-id", planetId));
 #if ENABLE_FIREBASE
             FirebaseAnalytics.SetUserProperty("planet_id", planetId);
 #endif
-        }
-
-        private static void InitializeMixpanel(
-            string clientHost,
-            string clientHash,
-            string targetNetwork,
-            string rpcServerHost)
-        {
-            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            Mixpanel.Register("client-host", clientHost);
-            Mixpanel.Register("client-hash", clientHash);
-            Mixpanel.Register("target-network", targetNetwork);
-            Mixpanel.Register("rpc-server-host", rpcServerHost);
-            Mixpanel.Init();
         }
 
         private static void InitializeSentry(
@@ -212,6 +163,20 @@ namespace Nekoyume
 
         public void Track(string eventName, params (string key, string value)[] properties)
         {
+            SendTelemetry(eventName, () =>
+            {
+                var props = new Dictionary<string, string>();
+                foreach (var (key, value) in properties)
+                {
+                    if (key is not null && value is not null)
+                    {
+                        props[key] = value;
+                    }
+                }
+
+                return props;
+            });
+
             if (!_isTrackable)
             {
                 return;
@@ -226,27 +191,23 @@ namespace Nekoyume
 
             if (properties.Length == 0)
             {
-                Mixpanel.Track(eventName);
 #if ENABLE_FIREBASE
                 FirebaseAnalytics.LogEvent(eventName.Replace("/", "_"));
 #endif
                 return;
             }
 
-            var mixpanelValues = new Value();
 #if ENABLE_FIREBASE
             var firebaseParameters = new Parameter[properties.Length];
 #endif
             for (var i = 0; i < properties.Length; i++)
             {
                 var (key, value) = properties[i];
-                mixpanelValues[key] = value;
 #if ENABLE_FIREBASE
                 firebaseParameters[i] = new Parameter(key.Replace("/", "_"), value);
 #endif
             }
 
-            Mixpanel.Track(eventName, mixpanelValues);
 #if ENABLE_FIREBASE
             FirebaseAnalytics.LogEvent(eventName.Replace("/", "_"), firebaseParameters);
 #endif
@@ -254,9 +215,13 @@ namespace Nekoyume
 
         public ITransaction? Track(
             string eventName,
-            Dictionary<string, Value> valueDict,
+            Dictionary<string, AnalyticsValue> valueDict,
             bool returnTrace = false)
         {
+            SendTelemetry(eventName, () => valueDict?.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value.ToString()));
+
             if (!_isTrackable)
             {
                 return null;
@@ -267,9 +232,6 @@ namespace Nekoyume
             //     valueDict.ToDictionary(
             //         item => item.Key,
             //         item => item.Value.ToString()));
-
-            var mixpanelValue = new Value(valueDict);
-            Mixpanel.Track(eventName, mixpanelValue);
 
 #if ENABLE_FIREBASE
             var firebaseParameters = ValuesToParameters(valueDict);
@@ -285,6 +247,34 @@ namespace Nekoyume
             return null;
         }
 
+        /// <summary>
+        /// Hands tracked failure events to the telemetry sender with the event-time RPC host and
+        /// avatar. Telemetry must never break the caller, so every failure is swallowed here.
+        /// </summary>
+        private void SendTelemetry(string eventName, Func<Dictionary<string, string>?> props)
+        {
+            if (_telemetry is null || !TelemetryEvents.Tracked.Contains(eventName))
+            {
+                return;
+            }
+
+            try
+            {
+                var avatarAddress = States.Instance?.CurrentAvatarState?.address;
+                _telemetry.Enqueue(
+                    eventName,
+                    props(),
+                    Game.Game.instance.CurrentRpcHost,
+                    avatarAddress is null
+                        ? null
+                        : "0x" + avatarAddress.Value.ToHex().ToLowerInvariant());
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogWarning($"[Analyzer] telemetry enqueue failed: {e.GetType().Name}");
+            }
+        }
+
         public void Flush()
         {
             if (!_isTrackable)
@@ -292,8 +282,6 @@ namespace Nekoyume
                 return;
             }
 
-            Application.logMessageReceivedThreaded -= HandleLog;
-            Mixpanel.Flush();
         }
 
         private static void UpdateAvatarAddress()
@@ -301,28 +289,26 @@ namespace Nekoyume
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
             {
-                Mixpanel.Register("AvatarAddress", string.Empty);
 #if ENABLE_FIREBASE
                 FirebaseAnalytics.SetUserProperty("AvatarAddress", string.Empty);
 #endif
                 return;
             }
 
-            Mixpanel.Register("AvatarAddress", avatarState.address.ToHex());
 #if ENABLE_FIREBASE
             FirebaseAnalytics.SetUserProperty("AvatarAddress", avatarState.address.ToHex());
 #endif
         }
 
 #if ENABLE_FIREBASE
-        private static Parameter ValueToParameter(KeyValuePair<string, Value> item)
+        private static Parameter ValueToParameter(KeyValuePair<string, AnalyticsValue> item)
         {
             var (key, value) = item;
             var str = value.ToString();
             return new Parameter(key.Replace("/", "_"), str);
         }
 
-        private static Parameter[] ValuesToParameters(Dictionary<string, Value> values)
+        private static Parameter[] ValuesToParameters(Dictionary<string, AnalyticsValue> values)
         {
             var parameters = new Parameter[values.Count];
             var i = 0;

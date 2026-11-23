@@ -116,19 +116,13 @@ namespace Nekoyume.Helper
 
         private bool _enableGuestLogin;
 
-        private bool _mixpanelDebugError;
-
-        private bool _mixpanelDebugAssert;
-
-        private bool _mixpanelDebugException;
-
-        private bool _mixpanelDebugWarning;
-
         private string _sheetBucketUrl;
 
         private string _stateRestoreUrl;
 
         private string _webMarketUrl;
+
+        private string _telemetryEndpoint = "https://telemetry.9c.gg/v1/events";
 
         public bool Empty { get; private set; } = true;
 
@@ -722,50 +716,6 @@ namespace Nekoyume.Helper
             }
         }
 
-        [Option("mixpanel-debug-error", Required = false, HelpText = "mixpanel debug error")]
-        public bool MixpanelDebugError
-        {
-            get => _mixpanelDebugError;
-            set
-            {
-                _mixpanelDebugError = value;
-                Empty = false;
-            }
-        }
-
-        [Option("mixpanel-debug-assert", Required = false, HelpText = "mixpanel debug assert")]
-        public bool MixpanelDebugAssert
-        {
-            get => _mixpanelDebugAssert;
-            set
-            {
-                _mixpanelDebugAssert = value;
-                Empty = false;
-            }
-        }
-
-        [Option("mixpanel-debug-exception", Required = false, HelpText = "mixpanel debug exception")]
-        public bool MixpanelDebugException
-        {
-            get => _mixpanelDebugException;
-            set
-            {
-                _mixpanelDebugException = value;
-                Empty = false;
-            }
-        }
-
-        [Option("mixpanel-debug-warning", Required = false, HelpText = "mixpanel debug warning")]
-        public bool MixpanelDebugWarning
-        {
-            get => _mixpanelDebugWarning;
-            set
-            {
-                _mixpanelDebugWarning = value;
-                Empty = false;
-            }
-        }
-
         [Option("sheet-bucket-url", Required = false, HelpText = "table sheets bucket url")]
         public string SheetBucketUrl
         {
@@ -795,6 +745,17 @@ namespace Nekoyume.Helper
             set
             {
                 _webMarketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("telemetry-endpoint", Required = false, HelpText = "client telemetry endpoint (empty disables)")]
+        public string TelemetryEndpoint
+        {
+            get => _telemetryEndpoint;
+            set
+            {
+                _telemetryEndpoint = value;
                 Empty = false;
             }
         }

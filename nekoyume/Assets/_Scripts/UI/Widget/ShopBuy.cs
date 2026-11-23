@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Types.Assets;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
@@ -244,7 +243,7 @@ namespace Nekoyume.UI
 
             if (models.Count > 0)
             {
-                var props = new Dictionary<string, Value>()
+                var props = new Dictionary<string, AnalyticsValue>()
                 {
                     ["Count"] = models.Count,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -256,7 +255,7 @@ namespace Nekoyume.UI
             foreach (var model in models)
             {
                 var price = model.Product?.Price ?? model.FungibleAssetProduct.Price;
-                var props = new Dictionary<string, Value>()
+                var props = new Dictionary<string, AnalyticsValue>()
                 {
                     ["Price"] = price,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),

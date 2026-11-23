@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using mixpanel;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
@@ -120,7 +119,7 @@ namespace Nekoyume.UI
 
             _type = type;
             _requiredCost = requiredCost;
-            Analyzer.Instance.Track("Unity/Click AdventureBoss Prepareation", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/Click AdventureBoss Prepareation", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()

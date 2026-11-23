@@ -215,6 +215,7 @@ namespace Nekoyume.IAPStore
                 NcDebug.LogError("[OnPurchaseClicked] Log Error " + error);
                 Analyzer.Instance.Track(
                     "Unity/Shop/IAP/OnPurchaseClicked/Error",
+                    ("product-id", productId ?? string.Empty),
                     ("error", error.Message));
             }
 
@@ -515,6 +516,7 @@ namespace Nekoyume.IAPStore
                 NcDebug.LogError("[ProcessPurchase] Log Error " + error);
                 Analyzer.Instance.Track(
                     "Unity/Shop/IAP/ProcessPurchase/Error",
+                    ("product-id", e?.purchasedProduct?.definition?.id ?? string.Empty),
                     ("error", error.Message));
             }
 
