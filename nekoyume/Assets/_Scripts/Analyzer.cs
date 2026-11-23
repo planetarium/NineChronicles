@@ -5,8 +5,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using mixpanel;
 using Nekoyume.State;
+using Nekoyume.Telemetry;
 
 #if ENABLE_FIREBASE
 using Firebase.Analytics;
@@ -34,13 +36,17 @@ namespace Nekoyume
 
         private readonly bool _isTrackable;
 
+        private readonly TelemetrySender? _telemetry;
+
         public Analyzer(
             string? uniqueId = null,
             string? planetId = null,
             string? rpcServerHost = null,
-            bool isTrackable = false)
+            bool isTrackable = false,
+            TelemetrySender? telemetry = null)
         {
             _isTrackable = isTrackable;
+            _telemetry = telemetry;
             if (!_isTrackable)
             {
                 NcDebug.Log($"Analyzer does not track: {nameof(isTrackable)} is false");
@@ -212,6 +218,20 @@ namespace Nekoyume
 
         public void Track(string eventName, params (string key, string value)[] properties)
         {
+            SendTelemetry(eventName, () =>
+            {
+                var props = new Dictionary<string, string>();
+                foreach (var (key, value) in properties)
+                {
+                    if (key is not null && value is not null)
+                    {
+                        props[key] = value;
+                    }
+                }
+
+                return props;
+            });
+
             if (!_isTrackable)
             {
                 return;
@@ -257,6 +277,10 @@ namespace Nekoyume
             Dictionary<string, Value> valueDict,
             bool returnTrace = false)
         {
+            SendTelemetry(eventName, () => valueDict?.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value?.ToString() ?? string.Empty));
+
             if (!_isTrackable)
             {
                 return null;
@@ -283,6 +307,34 @@ namespace Nekoyume
             //
             // Instance.FinishTrace(sentryTrace);
             return null;
+        }
+
+        /// <summary>
+        /// Hands tracked failure events to the telemetry sender with the event-time RPC host and
+        /// avatar. Telemetry must never break the caller, so every failure is swallowed here.
+        /// </summary>
+        private void SendTelemetry(string eventName, Func<Dictionary<string, string>?> props)
+        {
+            if (_telemetry is null || !TelemetryEvents.Tracked.Contains(eventName))
+            {
+                return;
+            }
+
+            try
+            {
+                var avatarAddress = States.Instance?.CurrentAvatarState?.address;
+                _telemetry.Enqueue(
+                    eventName,
+                    props(),
+                    Game.Game.instance.CurrentRpcHost,
+                    avatarAddress is null
+                        ? null
+                        : "0x" + avatarAddress.Value.ToHex().ToLowerInvariant());
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogWarning($"[Analyzer] telemetry enqueue failed: {e.GetType().Name}");
+            }
         }
 
         public void Flush()

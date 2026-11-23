@@ -130,6 +130,8 @@ namespace Nekoyume.Helper
 
         private string _webMarketUrl;
 
+        private string _telemetryEndpoint = "https://telemetry.9c.gg/v1/events";
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -795,6 +797,17 @@ namespace Nekoyume.Helper
             set
             {
                 _webMarketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("telemetry-endpoint", Required = false, HelpText = "client telemetry endpoint (empty disables)")]
+        public string TelemetryEndpoint
+        {
+            get => _telemetryEndpoint;
+            set
+            {
+                _telemetryEndpoint = value;
                 Empty = false;
             }
         }

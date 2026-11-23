@@ -327,8 +327,8 @@ namespace Nekoyume.Blockchain
                 "Unity/Error",
                 ("code", code),
                 ("key", key),
-                ("AgentAddress", Game.Game.instance.Agent.Address.ToString()),
-                ("AvatarAddress", Game.Game.instance.States.CurrentAvatarState.address.ToString()));
+                ("AgentAddress", Game.Game.instance.Agent?.PrivateKey?.Address.ToString() ?? string.Empty),
+                ("AvatarAddress", Game.Game.instance.States?.CurrentAvatarState?.address.ToString() ?? string.Empty));
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(
