@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using mixpanel;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -63,7 +62,7 @@ namespace Nekoyume.UI
             patrolRewardModule.SetData();
 
             var patrolTime = PatrolReward.PatrolTime.Value;
-            Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
+            Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, AnalyticsValue>
             {
                 ["PatrolTime"] = patrolTime,
             });

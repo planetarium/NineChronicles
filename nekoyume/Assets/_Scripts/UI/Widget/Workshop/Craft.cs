@@ -28,7 +28,6 @@ using TMPro;
 
 namespace Nekoyume.UI
 {
-    using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -613,7 +612,7 @@ namespace Nekoyume.UI
 
                         Analyzer.Instance.Track(
                             "Unity/Replace_Combination_Material",
-                            new Dictionary<string, Value>()
+                            new Dictionary<string, AnalyticsValue>()
                             {
                                 ["MaterialCount"] = materialCount,
                                 ["BurntCrystal"] = (long)recipeInfo.CostCrystal.MajorUnit,

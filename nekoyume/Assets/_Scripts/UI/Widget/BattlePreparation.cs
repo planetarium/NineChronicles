@@ -13,7 +13,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -226,7 +225,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             _trackGuideQuest = showByGuideQuest;
 
-            Analyzer.Instance.Track("Unity/Click Stage", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/Click Stage", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()

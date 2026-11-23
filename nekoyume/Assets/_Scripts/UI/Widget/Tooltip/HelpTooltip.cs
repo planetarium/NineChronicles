@@ -12,7 +12,6 @@ using UniRx.Toolkit;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.L10n;
 using System.Text.RegularExpressions;
 using Nekoyume.EnumType;
@@ -156,7 +155,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var props = new Dictionary<string, Value>()
+            var props = new Dictionary<string, AnalyticsValue>()
             {
                 ["HelpPopupId"] = id,
             };

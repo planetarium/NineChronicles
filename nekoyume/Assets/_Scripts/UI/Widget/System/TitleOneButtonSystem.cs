@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Nekoyume.EnumType;
-using mixpanel;
 using Nekoyume.Game.Battle;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +21,7 @@ namespace Nekoyume.UI
 
             if (BattleRenderer.Instance.IsOnBattle)
             {
-                var props = new Dictionary<string, Value>()
+                var props = new Dictionary<string, AnalyticsValue>()
                 {
                     ["StageId"] = Game.Game.instance.Stage.stageId
                 };

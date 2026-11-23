@@ -108,10 +108,6 @@ Command Line Options
  - `--guild-service-url` : URL for guild service (deprecated).
  - `--guild-icon-bucket` : S3 bucket URL for guild icons.
  - `--enable-guest-login`: enable guest login functionality.
- - `--mixpanel-debug-error`: enable Mixpanel debug logging for errors.
- - `--mixpanel-debug-assert`: enable Mixpanel debug logging for assertions.
- - `--mixpanel-debug-exception`: enable Mixpanel debug logging for exceptions.
- - `--mixpanel-debug-warning`: enable Mixpanel debug logging for warnings.
 
 #### Using Command Line Options on Unity Editor
 

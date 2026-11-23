@@ -28,7 +28,6 @@ using MagicOnion;
 using MagicOnion.Client;
 using MagicOnion.Unity;
 using MessagePack;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Game;
@@ -882,9 +881,9 @@ namespace Nekoyume.Blockchain
 
         private void Awake()
         {
-            Dictionary<string, Value> GetPlayerAddressForLogging()
+            Dictionary<string, AnalyticsValue> GetPlayerAddressForLogging()
             {
-                var value = new Dictionary<string, Value>();
+                var value = new Dictionary<string, AnalyticsValue>();
                 if (States.Instance.AgentState is not null)
                 {
                     value["AgentAddress"] = States.Instance.AgentState.address.ToString();

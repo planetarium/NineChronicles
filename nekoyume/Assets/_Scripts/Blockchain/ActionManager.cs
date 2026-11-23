@@ -10,7 +10,6 @@ using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Tx;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -200,7 +199,7 @@ namespace Nekoyume.Blockchain
         {
             if (trackGuideQuest)
             {
-                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", new Dictionary<string, Value>()
+                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", new Dictionary<string, AnalyticsValue>()
                 {
                     ["StageID"] = stageId
                 });
@@ -208,7 +207,7 @@ namespace Nekoyume.Blockchain
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/HackAndSlash",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["WorldId"] = worldId,
                     ["StageId"] = stageId,
@@ -276,7 +275,7 @@ namespace Nekoyume.Blockchain
         {
             if (trackGuideQuest)
             {
-                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", new Dictionary<string, Value>()
+                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", new Dictionary<string, AnalyticsValue>()
                 {
                     ["EventScheduleID"] = eventScheduleId,
                     ["EventDungeonID"] = eventDungeonId,
@@ -299,7 +298,7 @@ namespace Nekoyume.Blockchain
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/EventDungeonBattle",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["EventScheduleId"] = eventScheduleId,
                     ["EventDungeonId"] = eventDungeonId,
@@ -380,7 +379,7 @@ namespace Nekoyume.Blockchain
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Create CombinationConsumable",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["RecipeId"] = recipeInfo.RecipeId,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -411,7 +410,7 @@ namespace Nekoyume.Blockchain
                 int slotIndex)
         {
             var subRecipeId = recipeInfo.SubRecipeId ?? 0;
-            var trackValue = new Dictionary<string, Value>()
+            var trackValue = new Dictionary<string, AnalyticsValue>()
             {
                 ["EventScheduleId"] = eventScheduleId,
                 ["RecipeId"] = recipeInfo.RecipeId,
@@ -524,7 +523,7 @@ namespace Nekoyume.Blockchain
             int stageId,
             int? playCount)
         {
-            var sentryTrace = Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Dictionary<string, AnalyticsValue>()
             {
                 ["stageId"] = stageId,
                 ["apStoneCount"] = apStoneCount,
@@ -595,7 +594,7 @@ namespace Nekoyume.Blockchain
             bool chargeAp)
         {
             var registerInfo = registerInfos.First();
-            var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, AnalyticsValue>()
             {
                 ["ProductType"] = registerInfo.Type.ToString(),
                 ["Price"] = registerInfo.Price.ToString(),
@@ -641,7 +640,7 @@ namespace Nekoyume.Blockchain
             List<IProductInfo> productInfo,
             bool chargeAp)
         {
-            var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -829,7 +828,7 @@ namespace Nekoyume.Blockchain
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Item Enhancement",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -875,7 +874,7 @@ namespace Nekoyume.Blockchain
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Ranking Battle",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
@@ -930,7 +929,7 @@ namespace Nekoyume.Blockchain
                 };
 
                 var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
-                    new Dictionary<string, Value>()
+                    new Dictionary<string, AnalyticsValue>()
                     {
                         ["championshipId"] = championshipId,
                         ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
@@ -1004,7 +1003,7 @@ namespace Nekoyume.Blockchain
         {
             var sentryTx = Analyzer.Instance.Track(
                 "Unity/Create CombinationEquipment",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["RecipeId"] = recipeInfo.RecipeId,
                     ["PetId"] = petId ?? default,
@@ -1091,7 +1090,7 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["HourglassCount"] = cost,
                     ["AvatarAddress"] = avatarAddress.ToString(),
@@ -1194,7 +1193,7 @@ namespace Nekoyume.Blockchain
                 ChargeAP(avatarAddress);
             }
 
-            var sentryTrace = Analyzer.Instance.Track("Unity/Grinding", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/Grinding", new Dictionary<string, AnalyticsValue>()
             {
                 ["EquipmentCount"] = equipmentList.Count,
                 ["GainedCrystal"] = gainedCrystal,
@@ -1297,7 +1296,7 @@ namespace Nekoyume.Blockchain
                 .Forget();
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, AnalyticsValue>()
             {
                 ["BurntCrystal"] = (long)openCost,
                 ["AvatarAddress"] = avatarAddress.ToString(),
@@ -1324,7 +1323,7 @@ namespace Nekoyume.Blockchain
         public IObservable<ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList, int cost)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, AnalyticsValue>()
             {
                 ["BurntCrystal"] = cost,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -1349,7 +1348,7 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced, long burntCrystal)
         {
-            var sentryTrace = Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, AnalyticsValue>()
             {
                 ["BurntCrystal"] = burntCrystal,
                 ["isAdvanced"] = advanced,
@@ -1485,7 +1484,7 @@ namespace Nekoyume.Blockchain
             int petId,
             int targetLevel)
         {
-            var sentryTrace = Analyzer.Instance.Track("Unity/PetEnhancement", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/PetEnhancement", new Dictionary<string, AnalyticsValue>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -1518,7 +1517,7 @@ namespace Nekoyume.Blockchain
             var materialsType = materials.First().Type;
 
             var sentryTrace = Analyzer.Instance.Track($"Unity/{nameof(ActivateCollection)}",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = agentAddress.ToString(),
@@ -1569,7 +1568,7 @@ namespace Nekoyume.Blockchain
             // analytics
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/AuraSummon",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -1602,7 +1601,7 @@ namespace Nekoyume.Blockchain
             // analytics
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/RuneSummon",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -1635,7 +1634,7 @@ namespace Nekoyume.Blockchain
             // analytics
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/AuraSummon",
-                new Dictionary<string, Value>()
+                new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -2036,7 +2035,7 @@ namespace Nekoyume.Blockchain
             List<RuneSlotInfo> runeInfos,
             int playCount)
         {
-            var sentryTrace = Analyzer.Instance.Track("Unity/EventDungeonBattleSweep", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/EventDungeonBattleSweep", new Dictionary<string, AnalyticsValue>()
             {
                 ["EventScheduleId"] = eventScheduleId,
                 ["EventDungeonId"] = eventDungeonId,

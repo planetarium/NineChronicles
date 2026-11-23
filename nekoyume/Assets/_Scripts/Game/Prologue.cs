@@ -13,7 +13,6 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI;
 using UnityEngine;
-using mixpanel;
 using Nekoyume.Game.Battle;
 using Nekoyume.UI.Module;
 
@@ -39,7 +38,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
-            Analyzer.Instance.Track("Unity/Prologuebattle Start", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/Prologuebattle Start", new Dictionary<string, AnalyticsValue>()
             {
                 ["AgentAddress"] = Game.instance.States.AgentState.address.ToString()
             });

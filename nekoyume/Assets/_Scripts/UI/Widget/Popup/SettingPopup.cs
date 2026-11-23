@@ -12,7 +12,6 @@ using Nekoyume.Model.Mail;
 using UniRx;
 using TimeSpan = System.TimeSpan;
 using Nekoyume.UI.Scroller;
-using mixpanel;
 using Nekoyume.State;
 using Nekoyume.Blockchain;
 
@@ -179,7 +178,7 @@ namespace Nekoyume.UI
                         return;
                     }
 
-                    Analyzer.Instance.Track("Unity/DeleteAccount", new Dictionary<string, Value>()
+                    Analyzer.Instance.Track("Unity/DeleteAccount", new Dictionary<string, AnalyticsValue>()
                     {
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString(),

@@ -24,7 +24,6 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using mixpanel;
     using UniRx;
 
     public class WorldMap : Widget
@@ -821,7 +820,7 @@ namespace Nekoyume.UI
 
             if (worldId == 1)
             {
-                Analyzer.Instance.Track("Unity/Click Yggdrasil", new Dictionary<string, Value>()
+                Analyzer.Instance.Track("Unity/Click Yggdrasil", new Dictionary<string, AnalyticsValue>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString()
