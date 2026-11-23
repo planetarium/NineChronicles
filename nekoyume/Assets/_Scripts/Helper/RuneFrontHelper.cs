@@ -86,6 +86,21 @@ namespace Nekoyume.Helper
             return true;
         }
 
+        /// <summary>
+        /// 룬 아이콘. 클라 에셋(<c>UI_RuneData</c>)에 아직 없는 룬(테이블 패치로 먼저 들어온 룬)이면 기본 룬 아이콘.
+        /// 화면을 멈추지 않아야 하는 곳(선택·슬롯·셀)에서 쓴다.
+        /// </summary>
+        public static Sprite GetRuneIconOrDefault(int id)
+        {
+            return TryGetRuneIcon(id, out var icon) && icon ? icon : DefaultRuneIcon;
+        }
+
+        /// <inheritdoc cref="GetRuneIconOrDefault"/>
+        public static Sprite GetRuneStoneIconOrDefault(int id)
+        {
+            return TryGetRuneStoneIcon(id, out var icon) && icon ? icon : DefaultRuneIcon;
+        }
+
         private static bool CanObtain(long currentBlockIndex, int runeStoneId)
         {
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))

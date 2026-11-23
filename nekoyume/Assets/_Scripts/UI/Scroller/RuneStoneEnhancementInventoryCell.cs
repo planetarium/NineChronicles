@@ -48,10 +48,8 @@ namespace Nekoyume.UI.Scroller
             view.SelectCollectionObject.SetActive(false);
             view.SelectArrowObject.SetActive(false);
 
-            if (RuneFrontHelper.TryGetRuneIcon(viewModel.SheetData.Id, out var icon))
-            {
-                view.ItemImage.overrideSprite = icon;
-            }
+            // 재사용 셀이라 아이콘이 없는 룬이면 이전 룬 아이콘이 남지 않게 기본 아이콘을 넣는다.
+            view.ItemImage.overrideSprite = RuneFrontHelper.GetRuneIconOrDefault(viewModel.SheetData.Id);
 
             var data = view.GetItemViewData(viewModel.SheetData.Grade);
             view.GradeImage.overrideSprite = data.GradeBackground;

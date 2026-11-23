@@ -45,29 +45,50 @@ namespace Nekoyume.Helper
                 data => data.color);
         }
 
+        private static readonly HashSet<int> MissingRenderingDataIds = new();
+
+        /// <summary>
+        /// 펫 렌더링 데이터. 클라 에셋(<c>PetRenderingData</c>)에 아직 없는 펫(테이블 패치로 PetSheet 에 먼저 들어온 펫)이면
+        /// 첫 항목으로 대신한다 — 예전엔 딕셔너리 인덱서라 DCC·펫 강화·펫 소환 화면이 KeyNotFound 로 멈췄다.
+        /// </summary>
+        private static PetRenderingScriptableObject.PetRenderingData GetRenderingData(int id)
+        {
+            if (PetRenderingData.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
+            if (MissingRenderingDataIds.Add(id))
+            {
+                NcDebug.LogWarning($"[PetFrontHelper] no rendering data for pet {id} — using the first entry.");
+            }
+
+            return PetRenderingData.Values.First();
+        }
+
         public static Sprite GetSoulStoneSprite(int id)
         {
-            return PetRenderingData[id].soulStoneSprite;
+            return GetRenderingData(id).soulStoneSprite;
         }
 
         public static SkeletonDataAsset GetPetSkeletonData(int id)
         {
-            return PetRenderingData[id].spineDataAsset;
+            return GetRenderingData(id).spineDataAsset;
         }
 
         public static float3 GetHsv(int id)
         {
-            return PetRenderingData[id].hsv;
+            return GetRenderingData(id).hsv;
         }
 
         public static Vector3 GetLocalPositionInCard(int id)
         {
-            return PetRenderingData[id].localPosition;
+            return GetRenderingData(id).localPosition;
         }
 
         public static Vector3 GetLocalScaleInCard(int id)
         {
-            return PetRenderingData[id].localScale;
+            return GetRenderingData(id).localScale;
         }
 
         public static Color GetUIColor(string key)
@@ -77,13 +98,22 @@ namespace Nekoyume.Helper
 
         public static string GetPetSoulStoneName(int id)
         {
-            return L10nManager.LocalizeItemName(PetRenderingData[id].soulStoneId);
+            // 렌더링 데이터가 없는 펫은 대신 쓴 첫 항목의 이름이 아니라 소울스톤 티커를 보인다(다른 펫으로 오인 방지).
+            if (!PetRenderingData.TryGetValue(id, out var data))
+            {
+                return TableSheets.Instance.PetSheet.TryGetValue(id, out var petRow)
+                    ? petRow.SoulStoneTicker
+                    : $"#{id}";
+            }
+
+            return L10nManager.LocalizeItemName(data.soulStoneId);
         }
 
         public static string GetPetSoulStoneDescription(int id)
         {
-            var dataId = PetRenderingData[id].soulStoneId;
-            return L10nManager.Localize($"ITEM_DESCRIPTION_{dataId}");
+            return PetRenderingData.TryGetValue(id, out var data)
+                ? L10nManager.Localize($"ITEM_DESCRIPTION_{data.soulStoneId}")
+                : string.Empty;
         }
 
         public static bool HasNotification(int id)
@@ -94,8 +124,13 @@ namespace Nekoyume.Helper
                 nextLevel = pet.Level + 1;
             }
 
-            var isMaxLevel = !TableSheets.Instance.PetCostSheet[id]
-                .TryGetCost(nextLevel, out var nextCost);
+            if (!TableSheets.Instance.PetCostSheet.TryGetValue(id, out var costRow) ||
+                !TableSheets.Instance.PetSheet.TryGetValue(id, out var petRow))
+            {
+                return false;
+            }
+
+            var isMaxLevel = !costRow.TryGetCost(nextLevel, out var nextCost);
             if (isMaxLevel)
             {
                 return false;
@@ -103,7 +138,7 @@ namespace Nekoyume.Helper
 
             var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * nextCost.NcgQuantity;
             var soulStoneCost =
-                PetHelper.GetSoulstoneCurrency(TableSheets.Instance.PetSheet[id].SoulStoneTicker) *
+                PetHelper.GetSoulstoneCurrency(petRow.SoulStoneTicker) *
                 nextCost.SoulStoneQuantity;
             return States.Instance.GoldBalanceState.Gold >= ncgCost &&
                 States.Instance.CurrentAvatarBalances.TryGetValue(
