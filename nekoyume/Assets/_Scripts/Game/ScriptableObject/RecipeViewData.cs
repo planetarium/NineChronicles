@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Helper;
 using UnityEngine;
 
 namespace Nekoyume.Game.ScriptableObject
@@ -66,7 +67,8 @@ namespace Nekoyume.Game.ScriptableObject
 
         public Data GetData(int grade)
         {
-            if (_dataMap.TryGetValue(grade, out var data))
+            if (_dataMap.TryGetValue(grade, out var data) ||
+                _dataMap.TryGetValue(GradeVisualHelper.ColorGrade(grade), out data))
             {
                 return data;
             }

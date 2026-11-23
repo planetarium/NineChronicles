@@ -169,7 +169,7 @@ namespace Nekoyume.UI.Module
                     baseItemView.EnhancementImage.gameObject.SetActive(false);
                 }
             }
-            else if (row.ItemType == ItemType.Equipment)
+            else if (row.ItemType == ItemType.Costume)
             {
                 baseItemView.EnhancementText.gameObject.SetActive(false);
                 baseItemView.EnhancementImage.gameObject.SetActive(false);

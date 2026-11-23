@@ -431,7 +431,7 @@ namespace Nekoyume.UI
         private void UpdateRuneOptions(RuneItem item)
         {
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
-            gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
+            gradeText.text = L10nManager.LocalizeGrade(item.Row.Grade);
             levelBonusCoef.text = item.Row.BonusCoef.ToString();
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);

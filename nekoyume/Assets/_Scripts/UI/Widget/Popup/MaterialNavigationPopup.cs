@@ -185,7 +185,7 @@ namespace Nekoyume.UI
             itemImage.sprite = costIconData.GetIcon(costType);
             itemCountText.text = itemCount;
             itemNameText.text = L10nManager.LocalizeItemName(itemId);
-            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
+            contentText.text = L10nManager.LocalizeItemDescription(itemId);
             infoText.container.SetActive(false); // set default
 
             actionButton.gameObject.SetActive(false);
@@ -348,7 +348,7 @@ namespace Nekoyume.UI
 
             var icon = costIconData.GetIcon(costType);
             var itemName = L10nManager.LocalizeItemName(itemId);
-            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
+            var content = L10nManager.LocalizeItemDescription(itemId);
 
             SetInfo(false);
             Show(callback, icon, itemName, count, content, buttonText, callback != null);
@@ -357,7 +357,7 @@ namespace Nekoyume.UI
         public void ShowRuneStone(int runeStoneId)
         {
             var itemName = L10nManager.LocalizeItemName(runeStoneId);
-            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
+            var content = L10nManager.LocalizeItemDescription(runeStoneId);
 
             var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
             var icon = SpriteHelper.GetFavIcon(ticker);

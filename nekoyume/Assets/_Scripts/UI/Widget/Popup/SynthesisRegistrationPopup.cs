@@ -244,7 +244,7 @@ namespace Nekoyume.UI
             numberSynthesisText.text = L10nManager.Localize("UI_NUMBER_SYNTHESIS", -1);
 
             var intGrade = (int)model.Grade;
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{intGrade}");
+            var gradeText = L10nManager.LocalizeGrade(intGrade);
             typeText.text = L10nManager.Localize("UI_SYNTHESIZE_MATERIAL", gradeText);
             typeText.color = LocalizationExtensions.GetItemGradeColor(intGrade);
 

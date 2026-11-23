@@ -35,13 +35,13 @@ namespace Nekoyume
                 case BattleConditionType.ItemGrade:
                     if (condition.MinItemGrade.HasValue)
                     {
-                        var minGradeName = L10nManager.Localize($"UI_ITEM_GRADE_{condition.MinItemGrade.Value}");
+                        var minGradeName = L10nManager.LocalizeGrade(condition.MinItemGrade.Value);
                         parts.Add(L10nManager.Localize("UI_CONDITION_MIN_ITEM_GRADE", minGradeName));
                     }
 
                     if (condition.MaxItemGrade.HasValue)
                     {
-                        var maxGradeName = L10nManager.Localize($"UI_ITEM_GRADE_{condition.MaxItemGrade.Value}");
+                        var maxGradeName = L10nManager.LocalizeGrade(condition.MaxItemGrade.Value);
                         parts.Add(L10nManager.Localize("UI_CONDITION_MAX_ITEM_GRADE", maxGradeName));
                     }
 
