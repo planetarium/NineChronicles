@@ -89,10 +89,14 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
+    # `startsWith(...) == 'true'` 는 항상 false 였다(아래 build-onestore 주석 참고). 그래서 release/*
+    # 푸시에서도 환경이 빈 값이라 internal 환경 시크릿(SLACK_TOKEN/SLACK_CHANNEL)이 붙지 않았다.
+    # internal 환경에는 ANDROID_PACKAGE_NAME·AWS_*·GOOGLE_PLAY_KEY_FILE·SLACK_* 만 있고, 이 잡이 쓰는
+    # UNITY_*·ANDROID_KEYSTORE_*·ANDROID_KEY_ALIAS_*·GOOGLE_SERVICES_JSON 은 저장소 시크릿이라 빌드는 그대로다.
     environment: |-
       ${{ github.event.inputs.other-google-services == 'true' && 'k'
       || github.ref_name == 'main' && 'main'
-      || startsWith(github.ref_name, 'release/') == 'true' && 'internal'
+      || startsWith(github.ref_name, 'release/') && 'internal'
       || '' }}
     env:
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -209,6 +213,39 @@ jobs:
           path: /tmp/packages
           retention-days: 7
           if-no-files-found: error
+
+      # 원스토어 빌드처럼 universal.apk 를 꺼내 슬랙에 올린다(QA 설치용, AAB 는 올리지 않는다).
+      # release/* 푸시에서만 한다 — 수동 실행(다른 패키지·clo 주입 빌드)·main·PR 빌드는 슬랙에 올리지 않는다.
+      # 아티팩트 업로드 **뒤에** 둔다. 이 편의 기능이 실패해도 릴리즈 산출물은 이미 남아 있어야 한다.
+      - name: Extract universal APK
+        id: apk
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/') }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/slack-apk
+          ver=$(awk '/^  bundleVersion:/{print $2; exit}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset | tr -d '\r')
+          [ -n "$ver" ] || ver=unknown
+          name="NineChronicles-M-${ver}-${{ github.run_id }}.apk"
+          # 읽기만 sudo 로 하고 쓰기는 runner 소유로 한다 — sudo 로 만든 파일의 모드에 기대지 않는다.
+          sudo unzip -p /tmp/player/Android/result.apks universal.apk > "/tmp/slack-apk/${name}"
+          [ -s "/tmp/slack-apk/${name}" ] || { echo "universal.apk 추출 실패"; exit 1; }
+          echo "path=/tmp/slack-apk/${name}" >> "$GITHUB_OUTPUT"
+          echo "Android M APK: ${name} ($(( $(stat -c%s "/tmp/slack-apk/${name}") / 1024 / 1024 ))MB)"
+
+      # 슬랙 쪽 문제(토큰 스코프·채널 권한)로 릴리즈 빌드가 깨지면 안 된다.
+      - name: Upload Android M APK to Slack
+        if: steps.apk.outcome == 'success'
+        continue-on-error: true
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          APK_PATH: ${{ steps.apk.outputs.path }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # 체크아웃이 CRLF 라 CR 을 지운 사본을 돌린다(pack.sh 와 같은 이유).
+          tr -d "\r" < .github/bin/slack-upload.sh > /tmp/slack-upload.sh
+          bash /tmp/slack-upload.sh "Android M" "$APK_PATH" "QA 설치용"
 
   build-onestore:
     name: Build for ${{ matrix.targetPlatform }} (ONE Store)
