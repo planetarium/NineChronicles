@@ -173,6 +173,72 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+      # universal.apk 를 꺼내 슬랙 업로드 잡(slack-apk)에 넘긴다(QA 설치용, AAB 는 올리지 않는다).
+      # 이 잡은 k 환경이라 SLACK 시크릿이 없다. 빌드가 k 환경 시크릿(GOOGLE_SERVICES_JSON_K)에 기대므로
+      # 환경은 그대로 두고 업로드만 internal 환경 잡으로 뺀다. release/* 푸시에서만 한다.
+      # 아티팩트 업로드 **뒤에** 둔다. 이 편의 기능이 실패해도 릴리즈 산출물은 이미 남아 있어야 한다.
+      - name: Extract universal APK
+        id: apk
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/') }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/slack-apk
+          ver=$(awk '/^  bundleVersion:/{print $2; exit}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset | tr -d '\r')
+          [ -n "$ver" ] || ver=unknown
+          name="NineChronicles-K-${ver}-${{ github.run_id }}.apk"
+          # 읽기만 sudo 로 하고 쓰기는 runner 소유로 한다 — sudo 로 만든 파일의 모드에 기대지 않는다.
+          sudo unzip -p /tmp/player/Android/result.apks universal.apk > "/tmp/slack-apk/${name}"
+          [ -s "/tmp/slack-apk/${name}" ] || { echo "universal.apk 추출 실패"; exit 1; }
+          echo "path=/tmp/slack-apk/${name}" >> "$GITHUB_OUTPUT"
+          echo "Android K APK: ${name} ($(( $(stat -c%s "/tmp/slack-apk/${name}") / 1024 / 1024 ))MB)"
+
+      # APK 는 이미 압축돼 있어 다시 압축하지 않는다. 슬랙에 넘기는 용도라 하루만 둔다.
+      - uses: actions/upload-artifact@v4
+        if: steps.apk.outcome == 'success'
+        continue-on-error: true
+        with:
+          name: apk-k
+          path: ${{ steps.apk.outputs.path }}
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+  # 빌드 잡이 꺼낸 universal.apk 를 internal 환경 시크릿(SLACK_TOKEN/SLACK_CHANNEL)으로 슬랙에 올린다.
+  # 슬랙 쪽 문제로 릴리즈 실행이 실패로 표시되면 안 되므로 잡 전체에 continue-on-error 를 건다.
+  slack-apk:
+    name: Upload Android K APK to Slack
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/') }}
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    environment:
+      name: internal
+    steps:
+      # 업로드 스크립트만 있으면 된다(LFS·서브모듈 불필요).
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/bin
+
+      - name: Download Android K APK
+        uses: actions/download-artifact@v4
+        with:
+          name: apk-k
+          path: /tmp/slack-apk
+
+      - name: Upload Android K APK to Slack
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          apk=$(find /tmp/slack-apk -maxdepth 1 -name 'NineChronicles-K-*.apk' | head -n 1)
+          [ -n "$apk" ] || { echo "내려받은 APK 가 없다"; exit 1; }
+          # 다른 스텝들과 같은 방식으로 CR 을 지운 사본을 돌린다.
+          tr -d "\r" < .github/bin/slack-upload.sh > /tmp/slack-upload.sh
+          bash /tmp/slack-upload.sh "Android K" "$apk" "QA 설치용"
+
   extract:
     if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/') || github.event.inputs.manual_build_option
     needs: build
